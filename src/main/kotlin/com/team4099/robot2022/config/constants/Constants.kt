@@ -3,15 +3,17 @@ package com.team4099.robot2022.config.constants
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.centi
 import com.team4099.lib.units.milli
-import edu.wpi.first.wpilibj.RobotBase
 
 object Constants {
   object Universal {
+    val ROBOT_MODE = Tuning.RobotType.REAL
+
     const val CTRE_CONFIG_TIMEOUT = 0
     const val EPSILON = 1E-9
 
     val SLOW_STATUS_FRAME_TIME = 255.milli.seconds
     val CANIVORE_NAME = "kestrel_vore"
+    val LOG_FOLDER = "/media/sda1/"
 
     val LOOP_PERIOD_TIME = 2.centi.seconds
     val POWER_DISTRIBUTION_HUB_ID = 1
@@ -27,15 +29,6 @@ object Constants {
       SIM,
       REPLAY
     }
-
-    val type: RobotType
-      get() {
-        if (RobotBase.isReal()) {
-          return RobotType.REAL
-        } else {
-          return RobotType.REPLAY
-        }
-      }
   }
 
   object Joysticks {
