@@ -1,0 +1,9 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Auto settings/Mode": "String Chooser",
+      "/Shuffleboard/Auto settings/Starting Orientation": "String Chooser"
+    }
+  }
+}

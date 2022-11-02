@@ -1,0 +1,102 @@
+*.class
+*.iml
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs
+hs_err_pid*
+# User-specific stuff:
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+.idea/*
+.idea
+
+# Sensitive or high-churn files:
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+# Gradle:
+.idea/**/gradle.xml
+.idea/**/libraries
+
+# CMake
+cmake-build-debug/
+cmake-build-release/
+
+# Mongo Explorer plugin:
+.idea/**/mongoSettings.xml
+
+## File-based project format:
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+out/
+*.iml
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Cursive Clojure plugin
+.idea/replstate.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+build/
+
+.gradle/
+/sysProps.xml
+.gradle
+!gradle/wrapper/gradle-wrapper.jar
+InfiniteRecharge-2020_test.iml
+InfiniteRecharge-2020_main.iml
+InfiniteRecharge2020.iml
+InfiniteRecharge-2020.ipr
+.idea/codeStyleSettings.xml
+.idea/codeStyles/codeStyleConfig.xml
+
+# Keeps on changing the Project SDK, really annoying
+.idea/misc.xml
+dist
+dist/FRCUserProgram.jar
+
+# VSCode
+.classpath
+.project
+.vscode/
+.settings/
+.wpilib/
+bin/
+
+# Simulation
+imgui.ini
+logs/*
+
+# Glass
+.glass
+
+**/.DS_Store
+/src/main/kotlin/com/team4099/robot2022/BuildConstants.kt

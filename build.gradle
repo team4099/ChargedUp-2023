@@ -1,0 +1,167 @@
+import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
+
+plugins {
+	id "idea"
+	id "org.jetbrains.kotlin.jvm" version "1.6.10"
+	id "edu.wpi.first.GradleRIO" version "2022.4.1"
+	id "com.diffplug.spotless" version "6.3.0"
+	id "com.peterabeles.gversion" version "1.10"
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+def TEAM = 4099
+// do not change main class (does not run without it being Main
+def ROBOT_MAIN_CLASS = "com.team4099.robot2022.Main"
+def includeDesktopSupport = true
+
+// Define my targets (RoboRIO) and artifacts (deployable files)
+// This is added by GradleRIO's backing project EmbeddedTools.
+deploy {
+	targets {
+		roborio(getTargetTypeClass('RoboRIO')) {
+			// Team number is loaded either from the .wpilib/wpilib_preferences.json
+			// or from command line. If not found an exception will be thrown.
+			// You can use getTeamOrDefault(team) instead of getTeamNumber if you
+			// want to store a team number in this file.
+			team = TEAM
+			debug = project.frc.getDebugOrDefault(false)
+
+			artifacts {
+				// First part is artifact name, 2nd is artifact type
+				// getTargetTypeClass is a shortcut to get the class type using a string
+
+				frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+				}
+
+				// Static files artifact
+				frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+					files = project.fileTree('src/main/deploy')
+					directory = '/home/lvuser/deploy'
+				}
+			}
+		}
+	}
+}
+def deployArtifact = deploy.targets.roborio.artifacts.frcJava
+repositories {
+	mavenCentral()
+	jcenter()
+	maven { url "https://jitpack.io" }
+	maven {
+		url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
+		credentials {
+			username = "Mechanical-Advantage-Bot"
+			password = "\u0067\u0068\u0070\u005f\u006e\u0056\u0051\u006a\u0055\u004f\u004c\u0061\u0079\u0066\u006e\u0078\u006e\u0037\u0051\u0049\u0054\u0042\u0032\u004c\u004a\u006d\u0055\u0070\u0073\u0031\u006d\u0037\u004c\u005a\u0030\u0076\u0062\u0070\u0063\u0051"
+		}
+	}
+}
+
+configurations.all {
+	exclude group: "edu.wpi.first.wpilibj"
+}
+
+// Defining my dependencies. In this case, WPILib (+ friends)
+dependencies {
+	implementation wpi.java.deps.wpilib()
+	implementation wpi.java.vendor.java()
+	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
+
+	roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
+	roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
+
+	roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
+	roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
+
+	nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+	nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+	simulationDebug wpi.sim.enableDebug()
+
+	nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+	nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+	simulationRelease wpi.sim.enableRelease()
+
+	testImplementation 'junit:junit:4.12'
+
+
+	// We need to add the Kotlin stdlib in order to use most Kotlin language features.
+	// compile "org.jetbrains.kotlin:kotlin-stdlib"
+}
+// Simulation configuration (e.g. environment variables).
+wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addDriverstation()
+
+// Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
+// in order to make them all available at runtime. Also adding the manifest so WPILib
+// knows where to look for our Robot Class.
+jar {
+	from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+	manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+test {
+	useJUnitPlatform()
+}
+
+spotless {
+	format 'misc', {
+		// define the files to apply `misc` to
+		target '*.gradle', '*.md', '.gitignore'
+
+		// define the steps to apply to those files
+		trimTrailingWhitespace()
+		indentWithTabs() // or spaces. Takes an integer argument if you don't like 4
+		endWithNewline()
+	}
+	kotlin {
+		// by default the target is every '.kt' and '.kts` file in the java sourcesets
+		target fileTree(".") {
+			include "**/*.kt"
+			exclude "**/BuildConstants.kt", "**/build/**"
+		}
+		ktfmt()
+		ktlint().userData(['max_line_length': '120', 'insert_final_newline': 'true', 'indent_size': '2', 'continuation_indent_size': '2'])
+	}
+}
+
+wrapper {
+	gradleVersion = '7.3.3'
+}
+
+compileKotlin {
+	kotlinOptions {
+		freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+	}
+}
+
+task installLocalGitHook(type: Copy){
+	from new File(rootProject.rootDir, 'scripts/pre-commit')
+	into { new File(rootProject.rootDir, '.git/hooks')}
+	fileMode 0777
+}
+
+build.dependsOn installLocalGitHook
+
+gversion {
+	srcDir       = "src/main/kotlin/"           // path is relative to the sub-project by default
+	// Gradle variables can also be used
+	// E.g. "${project.rootDir}/module/src/main/java"
+	classPackage = "com.team4099.robot2022"
+	className    = "BuildConstants"                // optional. If not specified GVersion is used
+	dateFormat   = "yyyy-MM-dd'T'HH:mm:ss'Z'" // optional. This is the default
+	timeZone     = "EST"                      // optional. UTC is default
+	debug        = false                      // optional. print out extra debug information
+	language     = "kotlin"                     // optional. Can be Java, Kotlin, YAML, or Properties. Case insensitive.
+	explicitType = false                      // optional. Force types to be explicitly printed
+	indent       = "\t"                       // optional. Change how code is indented. 1 tab is default.
+	annotate     = false                      // optional. Java only. Adds @Generated annotation
+}
+
+
+project.compileKotlin.dependsOn(createVersionFile)
+// Configure jar and deploy tasks
+deployArtifact.jarTask = jar
+wpi.java.configureExecutableTasks(jar)
+wpi.java.configureTestTasks(test)
