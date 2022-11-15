@@ -1,6 +1,8 @@
 package com.team4099.robot2022.subsytems.elevator
 
 import com.team4099.lib.units.base.Length
+import com.team4099.lib.units.base.amps
+import com.team4099.lib.units.base.inAmperes
 import com.team4099.lib.units.base.inInches
 import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.derived.ElectricalPotential
@@ -16,16 +18,26 @@ interface ElevatorIO {
 
     var position = 0.0.inches
     var velocity = 0.0.inches.perSecond
+    var leaderSupplyCurrentDraw = 0.0.amps
+    var followerSupplyCurrentDraw = 0.0.amps
 
     override fun toLog(table: LogTable?) {
       table?.put("positionInches", position.inInches)
       table?.put("velocityInchesPerSecond", velocity.inInchesPerSecond)
+      table?.put("leaderSupplyCurrentDrawAmps", leaderSupplyCurrentDraw.inAmperes)
+      table?.put("followerSupplyCurrentDraw", followerSupplyCurrentDraw.inAmperes)
     }
 
     override fun fromLog(table: LogTable?) {
       table?.getDouble("positionInches", position.inInches)?.let { position = it.inches }
       table?.getDouble("velocityInchesPerSecond", velocity.inInchesPerSecond)?.let {
         velocity = it.inches.perSecond
+      }
+      table?.getDouble("leaderSupplyCurrentDrawAmps", leaderSupplyCurrentDraw.inAmperes)?.let {
+        leaderSupplyCurrentDraw = it.amps
+      }
+      table?.getDouble("followerSupplyCurrentDraw", followerSupplyCurrentDraw.inAmperes)?.let {
+        followerSupplyCurrentDraw = it.amps
       }
     }
   }

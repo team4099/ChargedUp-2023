@@ -1,7 +1,10 @@
 package com.team4099.robot2022.subsytems.elevator
 
+import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.base.inKilograms
 import com.team4099.lib.units.base.inMeters
+import com.team4099.lib.units.base.meters
+import com.team4099.lib.units.perSecond
 import com.team4099.robot2022.config.constants.ElevatorConstants
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.ElevatorSim
@@ -20,6 +23,12 @@ object ElevatorIOSim : ElevatorIO {
     )
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorIOInputs) {
-    TODO()
+    inputs.position = simulatedElevator.positionMeters.meters
+    inputs.velocity = simulatedElevator.velocityMetersPerSecond.meters.perSecond
+
+    // WPILIB multiplies current draws by `numMotors`. To get the draw for each theoretical motor
+    // you divide by `numMotors`
+    inputs.leaderSupplyCurrentDraw = (simulatedElevator.currentDrawAmps / 2).amps
+    inputs.followerSupplyCurrentDraw = (simulatedElevator.currentDrawAmps / 2).amps
   }
 }
