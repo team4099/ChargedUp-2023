@@ -31,4 +31,18 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     Logger.getInstance().processInputs("Elevator", inputs)
   }
+
+  fun setOpenLoop(percentOutput: Double) {
+    if (extensionLimitReached && percentOutput > 0.0) {
+      io.setOpenLoop(0.0)
+    } else {
+      io.setOpenLoop(percentOutput)
+    }
+
+    if (retractionLimitReached && percentOutput < 0.0) {
+      io.setOpenLoop(0.0)
+    } else {
+      io.setOpenLoop(percentOutput)
+    }
+  }
 }

@@ -27,4 +27,10 @@ interface ElevatorIO {
    * class
    */
   fun updateInputs(inputs: ElevatorIOInputs) {}
+
+  /**
+   * Runs elevator motors at a specified power
+   * @param percentOutput Ratio that represents the amount of applied power
+   */
+  fun setOpenLoop(percentOutput: Double) {}
 }
