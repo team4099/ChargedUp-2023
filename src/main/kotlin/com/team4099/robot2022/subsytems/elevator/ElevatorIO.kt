@@ -1,17 +1,20 @@
 package com.team4099.robot2022.subsytems.elevator
 
-import org.littletonrobotics.junction.AutoLog
+import org.littletonrobotics.junction.LogTable
+import org.littletonrobotics.junction.inputs.LoggableInputs
 
 /** Interface for all hardware implementations for the Elevator subsystem */
 interface ElevatorIO {
-  /**
-   * Defines and logs all inputs that are required for all hardware implementations.
-   *
-   * @AutoLog Annotation that automatically implements `toLog()` and `fromLog()` for us. For more
-   * info visit
-   * https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/NEW-FOR-2023.md#autolog-annotation
-   */
-  @AutoLog class ElevatorIOInputs
+  /** Defines and logs all inputs that are required for all hardware implementations. */
+  class ElevatorIOInputs : LoggableInputs {
+    override fun toLog(table: LogTable?) {
+      TODO("Not yet implemented")
+    }
+
+    override fun fromLog(table: LogTable?) {
+      TODO("Not yet implemented")
+    }
+  }
 
   /**
    * Method to be implemented to update data encapsulated by `inputs` object
