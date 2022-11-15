@@ -3,6 +3,7 @@ package com.team4099.robot2022
 import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.util.Alert
 import com.team4099.robot2022.util.Alert.AlertType
+import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.LogFileUtil
@@ -56,7 +57,9 @@ object Robot : LoggedRobot() {
         }
 
         logger.addDataReceiver(NT4Publisher())
-        LoggedPowerDistribution.getInstance()
+        LoggedPowerDistribution.getInstance(
+          Constants.Universal.POWER_DISTRIBUTION_HUB_ID, PowerDistribution.ModuleType.kRev
+        )
       }
       Constants.Tuning.RobotType.SIM -> {
         logger.addDataReceiver(NT4Publisher())
