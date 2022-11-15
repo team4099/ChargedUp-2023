@@ -32,6 +32,10 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().processInputs("Elevator", inputs)
   }
 
+  /**
+   * Open loop control for the elevator motors
+   * @param percentOutput Ratio that represents the amount of applied power
+   */
   fun setOpenLoop(percentOutput: Double) {
     if (extensionLimitReached && percentOutput > 0.0) {
       io.setOpenLoop(0.0)
