@@ -1,9 +1,11 @@
 package com.team4099.robot2022.config.constants
 
 import com.team4099.lib.units.base.Length
+import com.team4099.lib.units.base.grams
 import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.volts
+import com.team4099.lib.units.kilo
 import com.team4099.lib.units.perSecond
 
 object ElevatorConstants {
@@ -37,4 +39,8 @@ object ElevatorConstants {
 
   val MAX_VELOCITY = 30.inches.perSecond
   val MAX_ACCELERATION = 60.inches.perSecond.perSecond
+
+  val GEARING = 0.0 // TODO get gearing from ryan
+  val CARRIAGE_MASS = 0.0.kilo.grams
+  val DRUM_RADIUS = 0.0.meters
 }
