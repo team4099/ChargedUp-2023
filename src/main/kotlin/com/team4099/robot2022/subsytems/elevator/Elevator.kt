@@ -69,8 +69,10 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
   fun setPosition(setpoint: TrapezoidProfile.State) {
     // acceleration = dv/dt (where dt = 0.02 seconds)
+    // spotless:off
     val acceleration =
       ((setpoint.velocity - elevatorSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME.inSeconds).meters.perSecond.perSecond
+    // spotless:on
 
     elevatorSetpoint = setpoint
 
