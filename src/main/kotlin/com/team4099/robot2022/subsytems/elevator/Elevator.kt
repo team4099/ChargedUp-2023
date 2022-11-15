@@ -20,6 +20,12 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       (1.meters.perSecond.perSecond * ElevatorConstants.ELEVATOR_KA).inVolts
     )
 
+  val extensionLimitReached: Boolean
+    get() = inputs.position > ElevatorConstants.elevatorMaxExtension
+
+  val retractionLimitReached: Boolean
+    get() = inputs.position > ElevatorConstants.elevatorMinExtension
+
   override fun periodic() {
     io.updateInputs(inputs)
 

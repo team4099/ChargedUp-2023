@@ -17,6 +17,8 @@ object ElevatorConstants {
   val ELEVATOR_KG = 0.0.volts // TODO tune values
 
   val elevatorTolerance: Length = 1.0.inches
+  val elevatorMaxExtension: Length = 32.inches
+  val elevatorMinExtension: Length = 0.0.inches
 
   enum class DesiredElevatorStates(val position: Length) {
     BOTTOM_HEIGHT(0.0.inches),

@@ -1,5 +1,7 @@
 package com.team4099.robot2022.subsytems.elevator
 
+import com.team4099.lib.units.base.inInches
+import com.team4099.lib.units.base.inches
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
@@ -7,12 +9,15 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 interface ElevatorIO {
   /** Defines and logs all inputs that are required for all hardware implementations. */
   class ElevatorIOInputs : LoggableInputs {
+
+    var position = 0.0.inches
+
     override fun toLog(table: LogTable?) {
-      TODO("Not yet implemented")
+      table?.put("positionInches", position.inInches)
     }
 
     override fun fromLog(table: LogTable?) {
-      TODO("Not yet implemented")
+      table?.getDouble("positionInches", position.inInches)?.let { position = it.inches }
     }
   }
 
