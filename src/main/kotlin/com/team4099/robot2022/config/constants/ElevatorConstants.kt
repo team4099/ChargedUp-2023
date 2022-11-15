@@ -34,4 +34,7 @@ object ElevatorConstants {
     BETWEEN_MID_AND_MAX(DesiredElevatorStates.DUMMY),
     MAX_HEIGHT(DesiredElevatorStates.MAX_HEIGHT)
   }
+
+  val MAX_VELOCITY = 30.inches.perSecond
+  val MAX_ACCELERATION = 60.inches.perSecond.perSecond
 }
