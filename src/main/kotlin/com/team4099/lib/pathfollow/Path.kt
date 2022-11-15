@@ -2,11 +2,10 @@ package com.team4099.lib.pathfollow
 
 import com.team4099.lib.geometry.Pose
 import com.team4099.lib.geometry.Translation
-import com.team4099.lib.logging.Logger
-import com.team4099.lib.logging.Logger.Severity.ERROR
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.radians
+import com.team4099.robot2022.util.Alert
 import edu.wpi.first.math.spline.PoseWithCurvature
 import edu.wpi.first.math.spline.SplineHelper
 import edu.wpi.first.math.spline.SplineParameterizer
@@ -24,6 +23,9 @@ class Path constructor(val startingPose: Pose, val endingPose: Pose) {
   private val headingSplineMap = mutableMapOf<Int, Angle>()
   private val waypoints = mutableListOf<Translation>()
   var built = false
+  val addTranslationAlert: Alert =
+    Alert("Failed to add translation to built path", Alert.AlertType.ERROR)
+  val alreadyBuiltAlert: Alert = Alert("Failed build already built path", Alert.AlertType.ERROR)
 
   /**
    * Add a waypoint to the middle of this path.
@@ -38,7 +40,7 @@ class Path constructor(val startingPose: Pose, val endingPose: Pose) {
    */
   fun addWaypoint(nextTranslation: Translation, heading: Angle? = null) {
     if (built) {
-      Logger.addEvent("Path", "Failed to add translation to built path", ERROR)
+      addTranslationAlert.set(true)
       return
     }
 
@@ -51,7 +53,7 @@ class Path constructor(val startingPose: Pose, val endingPose: Pose) {
   /** Build the path after all desired waypoints have been added. */
   fun build() {
     if (built) {
-      Logger.addEvent("Path", "Failed build already built path", ERROR)
+      alreadyBuiltAlert.set(true)
       return
     }
 

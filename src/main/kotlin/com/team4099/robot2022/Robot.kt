@@ -3,22 +3,19 @@ package com.team4099.robot2022
 import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.util.Alert
 import com.team4099.robot2022.util.Alert.AlertType
-import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger
-import org.littletonrobotics.junction.inputs.LoggedNetworkTables
-import org.littletonrobotics.junction.inputs.LoggedSystemStats
-import org.littletonrobotics.junction.io.ByteLogReceiver
-import org.littletonrobotics.junction.io.ByteLogReplay
-import org.littletonrobotics.junction.io.LogSocketServer
+import org.littletonrobotics.junction.inputs.LoggedPowerDistribution
+import org.littletonrobotics.junction.networktables.NT4Publisher
+import org.littletonrobotics.junction.wpilog.WPILOGReader
+import org.littletonrobotics.junction.wpilog.WPILOGWriter
 import java.nio.file.Files
 import java.nio.file.Paths
 
 object Robot : LoggedRobot() {
-
-  private lateinit var logReceiver: ByteLogReceiver
 
   val logFolderAlert =
     Alert("Log folder path does not exist. Data will NOT be logged.", AlertType.ERROR)
@@ -27,16 +24,13 @@ object Robot : LoggedRobot() {
   val logOpenFileAlert = Alert("Failed to open log file. Data will NOT be logged", AlertType.ERROR)
   val logWriteAlert =
     Alert("Failed write to the log file. Data will NOT be logged", AlertType.ERROR)
+  val logSimulationAlert = Alert("Running in simulation", AlertType.INFO)
 
   override fun robotInit() {
     val logger = Logger.getInstance()
-
     // running replays as fast as possible when replaying. (play in real time when robot is real or
     // sim)
     setUseTiming(Constants.Universal.ROBOT_MODE != Constants.Tuning.RobotType.REPLAY)
-
-    // log smart dashboard values (otherwise nothing is logged by default)
-    LoggedNetworkTables.getInstance().addTable("/SmartDashboard")
 
     // metadata value (not timed -- just metadata for given log file)
     logger.recordMetadata("Robot", Constants.Universal.ROBOT_MODE.toString())
@@ -56,25 +50,23 @@ object Robot : LoggedRobot() {
         // check if folder path exists
         if (Files.exists(Paths.get(Constants.Universal.LOG_FOLDER))) {
           // log to USB stick and network for real time data viewing on AdvantageScope
-          logReceiver = ByteLogReceiver(Constants.Universal.LOG_FOLDER)
-          logger.addDataReceiver(logReceiver)
+          logger.addDataReceiver(WPILOGWriter(Constants.Universal.LOG_FOLDER))
         } else {
           logFolderAlert.set(true)
         }
 
-        logger.addDataReceiver(LogSocketServer(5800))
-        LoggedSystemStats.getInstance()
-          .setPowerDistributionConfig(1, PowerDistribution.ModuleType.kRev)
+        logger.addDataReceiver(NT4Publisher())
+        LoggedPowerDistribution.getInstance()
       }
       Constants.Tuning.RobotType.SIM -> {
-        logger.addDataReceiver(LogSocketServer(5800))
+        logger.addDataReceiver(NT4Publisher())
+        logSimulationAlert.set(true)
       }
       Constants.Tuning.RobotType.REPLAY -> {
         // if in replay mode get file path from command line and read log file
-        val path = ByteLogReplay.promptForPath()
-        logger.setReplaySource(ByteLogReplay(path))
-        logger.addDataReceiver(ByteLogReceiver(ByteLogReceiver.addPathSuffix(path, "_sim")))
-        logger.addDataReceiver(LogSocketServer(5800))
+        val path = LogFileUtil.findReplayLog()
+        logger.setReplaySource(WPILOGReader(path))
+        logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")))
       }
     }
 
@@ -91,9 +83,5 @@ object Robot : LoggedRobot() {
 
     // checking for logging errors
     logReceiverQueueAlert.set(Logger.getInstance().receiverQueueFault)
-    if (logReceiver != null) {
-      logOpenFileAlert.set(logReceiver.openFault)
-      logWriteAlert.set(logReceiver.writeFault)
-    }
   }
 }

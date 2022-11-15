@@ -7,6 +7,7 @@ import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.derived.angle
+import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.lib.units.perSecond
@@ -81,7 +82,7 @@ fun trajectoryFromPathPlanner(pathPlannerTrajectory: PathPlannerTrajectory): Tra
         state.poseMeters.rotation.angle,
         state.velocityMetersPerSecond.meters.perSecond,
         state.accelerationMetersPerSecondSq.meters.perSecond.perSecond,
-        angularVelocity = state.angularVelocity.angle.perSecond
+        angularVelocity = state.angularVelocityRadPerSec.radians.perSecond
       )
     }
   )

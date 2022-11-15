@@ -94,6 +94,9 @@ bin/
 # Simulation
 imgui.ini
 logs/*
+simgui.json
+simgui-window.json
+simgui-ds.json
 
 # Glass
 .glass

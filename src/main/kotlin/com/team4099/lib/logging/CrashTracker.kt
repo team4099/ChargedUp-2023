@@ -37,7 +37,7 @@ object CrashTracker {
    * @param throwable The caught throwable.
    */
   private fun logMarker(mark: String, throwable: Throwable?) {
-    Logger.addEvent("CRASH", mark)
+    //    Logger.addEvent("CRASH", mark)
     try {
       FileWriter("/home/lvuser/crash_tracking.txt", true).use { fw ->
         BufferedWriter(fw).use { bw ->
