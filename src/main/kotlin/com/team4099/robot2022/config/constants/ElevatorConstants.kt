@@ -40,7 +40,7 @@ object ElevatorConstants {
   val MAX_VELOCITY = 30.inches.perSecond
   val MAX_ACCELERATION = 60.inches.perSecond.perSecond
 
-  val GEARING = 0.0 // TODO get gearing from ryan
-  val CARRIAGE_MASS = 0.0.kilo.grams
-  val DRUM_RADIUS = 0.0.meters
+  val GEARING = (60.0 / 12.0) * (58.0 / 16.0)
+  val CARRIAGE_MASS = 1.36.kilo.grams
+  val DRUM_RADIUS = 0.5205.inches
 }

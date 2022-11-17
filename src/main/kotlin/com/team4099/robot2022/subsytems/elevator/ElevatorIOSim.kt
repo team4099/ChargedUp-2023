@@ -11,9 +11,12 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim
 
 /** Elevator subsystem implementation using WPILIB simulation */
 object ElevatorIOSim : ElevatorIO {
+
+  private val elevatorGearbox: DCMotor = DCMotor.getNEO(2)
+
   val simulatedElevator: ElevatorSim =
     ElevatorSim(
-      DCMotor.getNEO(2),
+      elevatorGearbox,
       ElevatorConstants.GEARING,
       ElevatorConstants.CARRIAGE_MASS.inKilograms,
       ElevatorConstants.DRUM_RADIUS.inMeters,
