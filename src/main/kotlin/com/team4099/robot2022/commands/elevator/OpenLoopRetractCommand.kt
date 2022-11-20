@@ -10,7 +10,7 @@ class OpenLoopRetractCommand(val elevator: Elevator) : CommandBase() {
   }
 
   override fun execute() {
-    elevator.setOpenLoop(1.0)
+    elevator.setOpenLoop(-1.0)
 
     Logger.getInstance().recordOutput("ActiveCommands/OpenLoopRetractCommand", true)
   }

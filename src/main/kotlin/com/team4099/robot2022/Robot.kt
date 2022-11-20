@@ -3,8 +3,10 @@ package com.team4099.robot2022
 import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.util.Alert
 import com.team4099.robot2022.util.Alert.AlertType
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot
@@ -89,5 +91,14 @@ object Robot : LoggedRobot() {
 
     // checking for logging errors
     logReceiverQueueAlert.set(Logger.getInstance().receiverQueueFault)
+
+    // logging all commands
+    Logger.getInstance()
+      .recordOutput(
+        "ActiveCommands/Scheduler",
+        NetworkTableInstance.getDefault()
+          .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
+          .getStringArray(emptyArray())
+      )
   }
 }

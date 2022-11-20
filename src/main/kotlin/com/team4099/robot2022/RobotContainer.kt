@@ -25,7 +25,7 @@ object RobotContainer {
   }
 
   fun mapTeleopControls() {
-    ControlBoard.openLoopExtend.whileTrue(OpenLoopExtendCommand(elevator))
-    ControlBoard.openLoopExtend.whileTrue(OpenLoopRetractCommand(elevator))
+    ControlBoard.openLoopExtend.whileActiveContinuous(OpenLoopExtendCommand(elevator))
+    ControlBoard.openLoopRetract.whileActiveContinuous(OpenLoopRetractCommand(elevator))
   }
 }

@@ -17,7 +17,6 @@ import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.config.constants.ElevatorConstants
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.ElevatorSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
@@ -35,7 +34,7 @@ object ElevatorIOSim : ElevatorIO {
       ElevatorConstants.GEARING,
       ElevatorConstants.CARRIAGE_MASS.inKilograms,
       ElevatorConstants.DRUM_RADIUS.inMeters,
-      ElevatorConstants.BOTTOM_HEIGHT_OF_TOP_OF_CARRIAGE.inMeters,
+      ElevatorConstants.elevatorMinExtension.inMeters,
       ElevatorConstants.MAX_HEIGHT_OF_TOP_OF_CARRIAGE.inMeters,
       true
     )
@@ -47,12 +46,12 @@ object ElevatorIOSim : ElevatorIO {
       simulatedMotor, ElevatorConstants.GEARING, ElevatorConstants.DRUM_RADIUS
     )
 
-  private val elevatorMechanism2d: MechanismLigament2d =
-    MechanismLigament2d("Elevator", simulatedElevator.positionMeters.meters.inInches, 90.0)
-
+  private val elevatorMechanism2d: MechanismLigament2d
   init {
     val mech2d = Mechanism2d(20.0, 50.0)
     val mech2dRoot = mech2d.getRoot("Robot", 10.0, 0.0)
+    elevatorMechanism2d =
+      MechanismLigament2d("Elevator", simulatedElevator.positionMeters.meters.inInches, 90.0)
     mech2dRoot.append(elevatorMechanism2d)
 
     // publishing the mechanism visualization to SmartDashboard
@@ -60,7 +59,6 @@ object ElevatorIOSim : ElevatorIO {
   }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorIOInputs) {
-    simulatedElevator.setInput(simulatedMotor.get() * RobotController.getBatteryVoltage())
     simulatedElevator.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
     inputs.position = simulatedElevator.positionMeters.meters

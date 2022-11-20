@@ -32,6 +32,6 @@ object ControlBoard {
 
   //  val resetBallCount = Trigger { operator.startButton && operator.selectButton }
 
-  val openLoopExtend = Trigger { operator.dPadUp }
-  val openLoopRetract = Trigger { operator.dPadDown }
+  val openLoopExtend = Trigger { operator.aButton }
+  val openLoopRetract = Trigger { operator.bButton }
 }

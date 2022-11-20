@@ -32,7 +32,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     get() = inputs.position > ElevatorConstants.elevatorMaxExtension
 
   val retractionLimitReached: Boolean
-    get() = inputs.position > ElevatorConstants.elevatorMinExtension
+    get() = inputs.position < ElevatorConstants.elevatorMinExtension
 
   var trapezoidProfileConstrants: TrapezoidProfile.Constraints =
     TrapezoidProfile.Constraints(
@@ -47,6 +47,8 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     io.updateInputs(inputs)
 
     Logger.getInstance().processInputs("Elevator", inputs)
+    Logger.getInstance().recordOutput("extensionLimitReached", extensionLimitReached)
+    Logger.getInstance().recordOutput("retractionLimitReached", retractionLimitReached)
   }
 
   /**
@@ -54,16 +56,13 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    * @param percentOutput Ratio that represents the amount of applied power
    */
   fun setOpenLoop(percentOutput: Double) {
-    if (extensionLimitReached && percentOutput > 0.0) {
+    if ((extensionLimitReached && percentOutput > 0.0) ||
+      (retractionLimitReached && percentOutput < 0.0)
+    ) {
       io.setOpenLoop(0.0)
     } else {
       io.setOpenLoop(percentOutput)
-    }
-
-    if (retractionLimitReached && percentOutput < 0.0) {
-      io.setOpenLoop(0.0)
-    } else {
-      io.setOpenLoop(percentOutput)
+      Logger.getInstance().recordOutput("percentOutput", percentOutput)
     }
   }
 

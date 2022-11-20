@@ -13,13 +13,35 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Auto settings/Mode": "String Chooser",
       "/Shuffleboard/Auto settings/Starting Orientation": "String Chooser",
+      "/SmartDashboard/Elevator": "Mechanism2d",
       "/SmartDashboard/Elevator Simulation Visualization": "Mechanism2d"
     },
     "windows": {
+      "/SmartDashboard/Elevator": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Elevator Simulation Visualization": {
         "window": {
           "visible": true
         }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "Elevator Simulation Visualization": {
+          "Robot": {
+            "Elevator": {
+              "open": true
+            },
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
       }
     }
   }
