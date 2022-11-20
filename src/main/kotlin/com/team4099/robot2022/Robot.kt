@@ -6,7 +6,6 @@ import com.team4099.robot2022.util.Alert.AlertType
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot

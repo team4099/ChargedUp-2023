@@ -48,7 +48,7 @@ object ElevatorIOSim : ElevatorIO {
 
   private val elevatorMechanism2d: MechanismLigament2d
   init {
-    val mech2d = Mechanism2d(20.0, 50.0)
+    val mech2d = Mechanism2d(20.0, 100.0)
     val mech2dRoot = mech2d.getRoot("Robot", 10.0, 0.0)
     elevatorMechanism2d =
       MechanismLigament2d("Elevator", simulatedElevator.positionMeters.meters.inInches, 90.0)
