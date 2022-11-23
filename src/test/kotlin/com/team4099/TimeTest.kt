@@ -118,4 +118,11 @@ class TimeTest {
     val seconds2 = 10.seconds
     assertEquals((seconds1 + seconds2).inSeconds, 19.0, kEpsilon)
   }
+
+  @Test
+  fun testSubtractingSeconds() {
+    val seconds1 = 10.seconds
+    val seconds2 = 9.seconds
+    assertEquals((seconds1 - seconds2).inSeconds, 1.0, kEpsilon)
+  }
 }
