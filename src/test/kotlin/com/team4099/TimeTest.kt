@@ -3,6 +3,7 @@ package com.team4099
 import com.team4099.lib.units.base.SECONDS_PER_HOUR
 import com.team4099.lib.units.base.SECONDS_PER_MINUTE
 import com.team4099.lib.units.base.hours
+import com.team4099.lib.units.base.inCentiseconds
 import com.team4099.lib.units.base.inDeciseconds
 import com.team4099.lib.units.base.inHours
 import com.team4099.lib.units.base.inMinutes
@@ -47,5 +48,11 @@ class TimeTest {
   fun testSecondsToDeciseconds() {
     val seconds = 4099.seconds
     assertEquals(seconds.inDeciseconds, 4099E1, kEpsilon)
+  }
+
+  @Test
+  fun testSecondsToCentiseconds() {
+    val seconds = 4099.seconds
+    assertEquals(seconds.inCentiseconds, 4099E2, kEpsilon)
   }
 }
