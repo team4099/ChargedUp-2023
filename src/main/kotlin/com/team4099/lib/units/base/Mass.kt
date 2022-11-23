@@ -91,7 +91,7 @@ val Mass.inMicrograms: Double
   get() = (value * Magnitude.KILO) / 1.micro
 
 val Mass.inNanograms: Double
-  get() = (value * Magnitude.KILO) * 1.nano
+  get() = (value * Magnitude.KILO) / 1.nano
 
 val Mass.inPicograms: Double
   get() = (value * Magnitude.KILO) * 1.pico

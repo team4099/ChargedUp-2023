@@ -13,6 +13,7 @@ import com.team4099.lib.units.base.inKilograms
 import com.team4099.lib.units.base.inMegagrams
 import com.team4099.lib.units.base.inMicrograms
 import com.team4099.lib.units.base.inMilligrams
+import com.team4099.lib.units.base.inNanograms
 import com.team4099.lib.units.base.inPetagrams
 import com.team4099.lib.units.base.inPounds
 import com.team4099.lib.units.base.inTeragrams
@@ -119,6 +120,12 @@ class MassTest {
   fun testGramstoMicrograms(){
     val weightGrams = 4099.grams
     assertEquals(weightGrams.inMicrograms, 4.099E9, kEpsilon)
+  }
+
+  @Test
+  fun testGramstoNanograms(){
+    val weightGrams = 4099.grams
+    assertEquals(weightGrams.inNanograms, 4.099E12, kEpsilon)
   }
 
 }
