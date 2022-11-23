@@ -175,4 +175,11 @@ class MassTest {
     val weightGrams = 4099.grams
     assertEquals(weightGrams.inYoctograms, 4.099E27, kBeta)
   }
+
+  @Test
+  fun testAddingGrams() {
+    val g1 = 1.0.grams
+    val g2 = 2.0.grams
+    assertEquals((g1 + g2).inGrams, 3.0, kEpsilon)
+  }
 }
