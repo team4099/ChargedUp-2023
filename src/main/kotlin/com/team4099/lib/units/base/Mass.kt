@@ -73,7 +73,7 @@ val Mass.inKilograms: Double
   get() = (value * Magnitude.KILO) / 1.kilo
 
 val Mass.inHectograms: Double
-  get() = (value * Magnitude.KILO) * 1.hecto
+  get() = (value * Magnitude.KILO) / 1.hecto
 
 val Mass.inDecagrams: Double
   get() = (value * Magnitude.KILO) * 1.deca
