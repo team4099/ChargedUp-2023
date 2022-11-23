@@ -14,6 +14,7 @@ import com.team4099.lib.units.base.inMinutes
 import com.team4099.lib.units.base.inNanoseconds
 import com.team4099.lib.units.base.inPicoseconds
 import com.team4099.lib.units.base.inSeconds
+import com.team4099.lib.units.base.inZeptoseconds
 import com.team4099.lib.units.base.minutes
 import com.team4099.lib.units.base.seconds
 import org.junit.jupiter.api.Test
@@ -96,5 +97,11 @@ class TimeTest {
   fun testSecondsToAttoseconds() {
     val seconds = 4099.seconds
     assertEquals(seconds.inAttoseconds, 4099E18, kSigma)
+  }
+
+  @Test
+  fun testSecondsToZeptoseconds() {
+    val seconds = 4099.seconds
+    assertEquals(seconds.inZeptoseconds, 4099E21, kAlpha)
   }
 }
