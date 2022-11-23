@@ -49,7 +49,7 @@ val Mass.inPounds: Double
   get() = (value * Magnitude.KILO) / GRAMS_PER_POUND
 
 val Mass.inYottagrams: Double
-  get() = (value * Magnitude.KILO) * 1.yotta
+  get() = (value * Magnitude.KILO) / 1.yotta
 
 val Mass.inZetagrams: Double
   get() = (value * Magnitude.KILO) * 1.zeta
