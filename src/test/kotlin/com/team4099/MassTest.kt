@@ -20,6 +20,7 @@ import com.team4099.lib.units.base.inPetagrams
 import com.team4099.lib.units.base.inPicograms
 import com.team4099.lib.units.base.inPounds
 import com.team4099.lib.units.base.inTeragrams
+import com.team4099.lib.units.base.inYoctograms
 import com.team4099.lib.units.base.inYottagrams
 import com.team4099.lib.units.base.inZeptograms
 import com.team4099.lib.units.base.inZetagrams
@@ -32,6 +33,7 @@ class MassTest {
   private val kDelta = 1E-3
   private val kSigma = 1E6
   private val kAlpha = 1E9
+  private val kBeta = 1E12
 
   @Test
   fun testGramsToPounds() {
@@ -162,5 +164,12 @@ class MassTest {
   fun testGramstoZeptograms() {
     val weightGrams = 4099.grams
     assertEquals(weightGrams.inZeptograms, 4.099E24, kAlpha)
+  }
+
+  // Unstable due to floating point errors
+  @Test
+  fun testGramstoYoctograms() {
+    val weightGrams = 4099.grams
+    assertEquals(weightGrams.inYoctograms, 4.099E27, kBeta)
   }
 }
