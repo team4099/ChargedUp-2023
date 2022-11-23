@@ -125,18 +125,21 @@ class MassTest {
     assertEquals(weightGrams.inMicrograms, 4.099E9, kEpsilon)
   }
 
+  // Unstable due to floating point errors
   @Test
   fun testGramstoNanograms() {
     val weightGrams = 4099.grams
     assertEquals(weightGrams.inNanograms, 4.099E12, kDelta)
   }
 
+  // Unstable due to floating point errors
   @Test
   fun testGramstoPicograms() {
     val weightGrams = 4099.grams
     assertEquals(weightGrams.inPicograms, 4.099E15, kDelta)
   }
 
+  // Unstable due to floating point errors
   @Test
   fun testGramstoFemtograms() {
     val weightGrams = 4099.grams
