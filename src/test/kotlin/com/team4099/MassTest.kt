@@ -3,6 +3,7 @@ package com.team4099
 import com.team4099.lib.units.base.GRAMS_PER_POUND
 import com.team4099.lib.units.base.grams
 import com.team4099.lib.units.base.inExagrams
+import com.team4099.lib.units.base.inGigagrams
 import com.team4099.lib.units.base.inGrams
 import com.team4099.lib.units.base.inKilograms
 import com.team4099.lib.units.base.inPetagrams
@@ -57,6 +58,12 @@ class MassTest {
   fun testGramsToTeragrams() {
     val weightGrams = 4099.grams
     assertEquals(weightGrams.inTeragrams, 4.099E-9, kEpsilon)
+  }
+
+  @Test
+  fun testGramsToGigagrams() {
+    val weightGrams = 4099.grams
+    assertEquals(weightGrams.inGigagrams, 4.099E-6, kEpsilon)
   }
 
   @Test
