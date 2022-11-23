@@ -6,6 +6,7 @@ import com.team4099.lib.units.base.hours
 import com.team4099.lib.units.base.inCentiseconds
 import com.team4099.lib.units.base.inDeciseconds
 import com.team4099.lib.units.base.inHours
+import com.team4099.lib.units.base.inMilliseconds
 import com.team4099.lib.units.base.inMinutes
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.base.minutes
@@ -54,5 +55,11 @@ class TimeTest {
   fun testSecondsToCentiseconds() {
     val seconds = 4099.seconds
     assertEquals(seconds.inCentiseconds, 4099E2, kEpsilon)
+  }
+
+  @Test
+  fun testSecondsToMilliseconds() {
+    val seconds = 4099.seconds
+    assertEquals(seconds.inMilliseconds, 4099E3, kEpsilon)
   }
 }
