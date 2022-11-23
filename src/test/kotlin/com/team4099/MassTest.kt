@@ -21,6 +21,7 @@ import com.team4099.lib.units.base.inPicograms
 import com.team4099.lib.units.base.inPounds
 import com.team4099.lib.units.base.inTeragrams
 import com.team4099.lib.units.base.inYottagrams
+import com.team4099.lib.units.base.inZeptograms
 import com.team4099.lib.units.base.inZetagrams
 import com.team4099.lib.units.base.pounds
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -30,6 +31,7 @@ class MassTest {
   private val kEpsilon = 1E-9
   private val kDelta = 1E-3
   private val kSigma = 1E6
+  private val kAlpha = 1E9
 
   @Test
   fun testGramsToPounds() {
@@ -153,5 +155,12 @@ class MassTest {
   fun testGramstoAttograms() {
     val weightGrams = 4099.grams
     assertEquals(weightGrams.inAttograms, 4.099E21, kSigma)
+  }
+
+  // Unstable due to floating point errors
+  @Test
+  fun testGramstoZeptograms() {
+    val weightGrams = 4099.grams
+    assertEquals(weightGrams.inZeptograms, 4.099E24, kAlpha)
   }
 }
