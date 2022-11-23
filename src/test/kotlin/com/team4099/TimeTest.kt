@@ -132,4 +132,11 @@ class TimeTest {
     val scalar = 3.0
     assertEquals((seconds * scalar).inSeconds, 6.0, kEpsilon)
   }
+
+  @Test
+  fun testDividingSecondsByScalar() {
+    val seconds = 6.seconds
+    val scalar = 3
+    assertEquals((seconds / scalar).inSeconds, 2.0, kEpsilon)
+  }
 }
