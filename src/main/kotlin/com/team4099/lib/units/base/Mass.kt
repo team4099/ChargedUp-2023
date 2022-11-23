@@ -61,7 +61,7 @@ val Mass.inPetagrams: Double
   get() = (value * Magnitude.KILO) / 1.peta
 
 val Mass.inTeragrams: Double
-  get() = (value * Magnitude.KILO) * 1.tera
+  get() = (value * Magnitude.KILO) / 1.tera
 
 val Mass.inGigaagrams: Double
   get() = (value * Magnitude.KILO) * 1.giga
