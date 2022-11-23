@@ -195,4 +195,10 @@ class MassTest {
     val g1 = 1.0.grams
     assertEquals((g1 * 4099).inGrams, 4099.0, kEpsilon)
   }
+
+  @Test
+  fun testDividingGramsByScalar() {
+    val g1 = 4099.0.grams
+    assertEquals((g1 / 4099.0).inGrams, 1.0, kEpsilon)
+  }
 }
