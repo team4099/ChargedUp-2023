@@ -2,6 +2,7 @@ package com.team4099
 
 import com.team4099.lib.units.base.GRAMS_PER_POUND
 import com.team4099.lib.units.base.grams
+import com.team4099.lib.units.base.inAttograms
 import com.team4099.lib.units.base.inCentigrams
 import com.team4099.lib.units.base.inDecagrams
 import com.team4099.lib.units.base.inDecigrams
@@ -27,7 +28,8 @@ import org.junit.jupiter.api.Test
 
 class MassTest {
   private val kEpsilon = 1E-9
-  private val kDelta = 1E3
+  private val kDelta = 1E-3
+  private val kSigma = 1E6
 
   @Test
   fun testGramsToPounds() {
@@ -136,13 +138,20 @@ class MassTest {
   @Test
   fun testGramstoPicograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inPicograms, 4.099E15, kDelta)
+    assertEquals(weightGrams.inPicograms, 4.099E15, kSigma)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testGramstoFemtograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inFemtograms, 4.099E18, kDelta)
+    assertEquals(weightGrams.inFemtograms, 4.099E18, kSigma)
+  }
+
+  // Unstable due to floating point errors
+  @Test
+  fun testGramstoAttograms() {
+    val weightGrams = 4099.grams
+    assertEquals(weightGrams.inAttograms, 4.099E21, kSigma)
   }
 }

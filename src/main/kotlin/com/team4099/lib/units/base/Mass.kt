@@ -100,7 +100,7 @@ val Mass.inFemtograms: Double
   get() = (value * Magnitude.KILO) / 1.femto
 
 val Mass.inAttograms: Double
-  get() = (value * Magnitude.KILO) * 1.atto
+  get() = (value * Magnitude.KILO) / 1.atto
 
 val Mass.inZeptograms: Double
   get() = (value * Magnitude.KILO) * 1.zepto
