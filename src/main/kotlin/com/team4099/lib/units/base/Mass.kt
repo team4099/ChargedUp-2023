@@ -85,7 +85,7 @@ val Mass.inCentigrams: Double
   get() = (value * Magnitude.KILO) / 1.centi
 
 val Mass.inMilligrams: Double
-  get() = (value * Magnitude.KILO) * 1.milli
+  get() = (value * Magnitude.KILO) / 1.milli
 
 val Mass.inMicrograms: Double
   get() = (value * Magnitude.KILO) * 1.micro
