@@ -78,18 +78,18 @@ class MassTest {
   @Test
   fun testGramsToKilograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inKilograms, 4.099, kEpsilon)
+    assertEquals(weightGrams.inKilograms, 4.099E0, kEpsilon)
   }
 
   @Test
   fun testGramsToHectograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inHectograms, 40.99, kEpsilon)
+    assertEquals(weightGrams.inHectograms, 4.099E1, kEpsilon)
   }
 
   @Test
   fun testGramsToDecagrams() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inDecagrams, 409.9, kEpsilon)
+    assertEquals(weightGrams.inDecagrams, 4.099E2, kEpsilon)
   }
 }
