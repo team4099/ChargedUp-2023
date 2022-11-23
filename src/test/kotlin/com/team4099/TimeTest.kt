@@ -125,4 +125,11 @@ class TimeTest {
     val seconds2 = 9.seconds
     assertEquals((seconds1 - seconds2).inSeconds, 1.0, kEpsilon)
   }
+
+  @Test
+  fun testMultiplyingSecondsByScalar() {
+    val seconds = 2.seconds
+    val scalar = 3.0
+    assertEquals((seconds * scalar).inSeconds, 6.0, kEpsilon)
+  }
 }
