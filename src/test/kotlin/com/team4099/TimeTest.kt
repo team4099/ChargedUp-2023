@@ -5,6 +5,7 @@ import com.team4099.lib.units.base.SECONDS_PER_MINUTE
 import com.team4099.lib.units.base.inHours
 import com.team4099.lib.units.base.inMinutes
 import com.team4099.lib.units.base.inSeconds
+import com.team4099.lib.units.base.minutes
 import com.team4099.lib.units.base.seconds
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -26,5 +27,11 @@ class TimeTest {
   fun testSecondsToHours() {
     val seconds = 4099.seconds
     assertEquals(seconds.inHours, seconds.inSeconds / SECONDS_PER_HOUR, kEpsilon)
+  }
+
+  @Test
+  fun testMinutesToSeconds() {
+    val minutes = 4099.minutes
+    assertEquals(minutes.inSeconds, minutes.inSeconds * SECONDS_PER_MINUTE, kEpsilon)
   }
 }
