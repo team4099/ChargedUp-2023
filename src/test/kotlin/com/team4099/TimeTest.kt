@@ -111,4 +111,11 @@ class TimeTest {
     val seconds = 4099.seconds
     assertEquals(seconds.inYoctoseconds, 4099E24, kBeta)
   }
+
+  @Test
+  fun testAddingSeconds() {
+    val seconds1 = 9.seconds
+    val seconds2 = 10.seconds
+    assertEquals((seconds1 + seconds2).inSeconds, 19.0, kEpsilon)
+  }
 }
