@@ -55,7 +55,7 @@ val Mass.inZetagrams: Double
   get() = (value * Magnitude.KILO) / 1.zeta
 
 val Mass.inExagrams: Double
-  get() = (value * Magnitude.KILO) * 1.exa
+  get() = (value * Magnitude.KILO) / 1.exa
 
 val Mass.inPetagrams: Double
   get() = (value * Magnitude.KILO) * 1.peta
