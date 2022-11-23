@@ -43,7 +43,7 @@ class TimeTest {
   @Test
   fun testMinutesToSeconds() {
     val minutes = 4099.minutes
-    assertEquals(minutes.inSeconds, minutes.inSeconds * SECONDS_PER_MINUTE, kEpsilon)
+    assertEquals(minutes.inSeconds, minutes.inMinutes * SECONDS_PER_MINUTE, kEpsilon)
   }
 
   @Test
@@ -54,62 +54,62 @@ class TimeTest {
 
   @Test
   fun testSecondsToDeciseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inDeciseconds, 4099E1, kEpsilon)
+    val seconds = 1.seconds
+    assertEquals(seconds.inDeciseconds, 1E1, kEpsilon)
   }
 
   @Test
   fun testSecondsToCentiseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inCentiseconds, 4099E2, kEpsilon)
+    val seconds = 1.seconds
+    assertEquals(seconds.inCentiseconds, 1E2, kEpsilon)
   }
 
   @Test
   fun testSecondsToMilliseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inMilliseconds, 4099E3, kEpsilon)
+    val seconds = 1.seconds
+    assertEquals(seconds.inMilliseconds, 1E3, kEpsilon)
   }
 
   @Test
   fun testSecondsToMicroseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inMicroseconds, 4099E6, kEpsilon)
+    val seconds = 1.seconds
+    assertEquals(seconds.inMicroseconds, 1E6, kEpsilon)
   }
 
   @Test
   fun testSecondsToNanoseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inNanoseconds, 4099E9, kEpsilon)
+    val seconds = 1.seconds
+    assertEquals(seconds.inNanoseconds, 1E9, kDelta)
   }
 
   @Test
   fun testSecondsToPicoseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inPicoseconds, 4099E12, kDelta)
+    val seconds = 1.seconds
+    assertEquals(seconds.inPicoseconds, 1E12, kDelta)
   }
 
   @Test
   fun testSecondsToFemtoseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inFemtoseconds, 4099E15, kSigma)
+    val seconds = 1.seconds
+    assertEquals(seconds.inFemtoseconds, 1E15, kSigma)
   }
 
   @Test
   fun testSecondsToAttoseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inAttoseconds, 4099E18, kSigma)
+    val seconds = 1.seconds
+    assertEquals(seconds.inAttoseconds, 1E18, kSigma)
   }
 
   @Test
   fun testSecondsToZeptoseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inZeptoseconds, 4099E21, kAlpha)
+    val seconds = 1.seconds
+    assertEquals(seconds.inZeptoseconds, 1E21, kAlpha)
   }
 
   @Test
   fun testSecondsToYoctoseconds() {
-    val seconds = 4099.seconds
-    assertEquals(seconds.inYoctoseconds, 4099E24, kBeta)
+    val seconds = 1.seconds
+    assertEquals(seconds.inYoctoseconds, 1E24, kBeta)
   }
 
   @Test
