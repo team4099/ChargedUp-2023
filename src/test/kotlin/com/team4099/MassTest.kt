@@ -182,4 +182,11 @@ class MassTest {
     val g2 = 2.0.grams
     assertEquals((g1 + g2).inGrams, 3.0, kEpsilon)
   }
+
+  @Test
+  fun testSubtractingGrams() {
+    val g1 = 1.0.grams
+    val g2 = 2.0.grams
+    assertEquals((g2 - g1).inGrams, 1.0, kEpsilon)
+  }
 }
