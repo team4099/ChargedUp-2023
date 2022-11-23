@@ -83,7 +83,6 @@ dependencies {
 	simulationRelease wpi.sim.enableRelease()
 
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
-	implementation 'junit:junit:4.13.2'
 
 
 	// We need to add the Kotlin stdlib in order to use most Kotlin language features.
