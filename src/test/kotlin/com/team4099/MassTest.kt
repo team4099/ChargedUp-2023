@@ -1,5 +1,6 @@
 package com.team4099
 
+import com.team4099.lib.units.base.GRAMS_PER_POUND
 import com.team4099.lib.units.base.grams
 import com.team4099.lib.units.base.inGrams
 import com.team4099.lib.units.base.inKilograms
@@ -13,7 +14,7 @@ class MassTest {
   @Test
   fun testGramsToPounds() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inPounds, weightGrams.inGrams / 453.5924, kEpsilon)
+    assertEquals(weightGrams.inPounds, weightGrams.inGrams / GRAMS_PER_POUND, kEpsilon)
   }
 
   @Test
