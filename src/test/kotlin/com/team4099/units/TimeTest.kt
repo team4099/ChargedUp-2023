@@ -1,4 +1,4 @@
-package com.team4099
+package com.team4099.units
 
 import com.team4099.lib.units.base.SECONDS_PER_HOUR
 import com.team4099.lib.units.base.SECONDS_PER_MINUTE

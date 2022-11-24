@@ -1,4 +1,4 @@
-package com.team4099
+package com.team4099.units
 
 import com.team4099.lib.units.base.GRAMS_PER_POUND
 import com.team4099.lib.units.base.grams
