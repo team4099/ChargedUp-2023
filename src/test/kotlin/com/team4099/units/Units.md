@@ -1,4 +1,25 @@
-# Offseason Development
-
-# The Falcons (FRC 4099)
-We are a school-based _FIRST&reg; Robotics Competition_ team from Poolesville High School, located in Poolesville, Maryland. Visit our website at [https://www.team4099.com/](https://www.team4099.com).
+# Units Testing
+- Description: The units library we currently use is riddled with bugs that can easily cause large amounts of error that takes hours to solve. We need to make sure every part of the units library works so when we have a code error, it is not a result of a library error.
+- Current tasks:
+  - Perform unit check for each base
+    - Current
+    - Length
+    - Mass [x]
+    - Time [x]
+  - Perform unit check for each derived
+    - Angle
+    - Characterization
+    - Charge
+    - ElectricalPotential
+    - Energy
+    - Force
+  - Perform unit check for each operation
+    - Derivative
+    - Magnitude
+    - MechanismUnits
+    - UnitKey
+    - Value
+- How to create unit checks:
+  - Base/Derived (except Characterization & ElectricalPotential): Every base has a UnitKey variable. This means that whenever we transition a different level of measurement, the initial value is converted to the UnitKey and then from the UnitKey to the intended value. To check each base, every conversion from the UnitKey to other scales of measurement must be checked.
+    - Example: The mass's UnitKey is a kilogram which means if the variable is declared to be 7 grams, it converts it to .007 kilograms. Check out the MassTest.kt file as an example.
+  - Others: Every other part of the library has a unique way to do unit tests
