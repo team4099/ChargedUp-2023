@@ -1,5 +1,7 @@
 package com.team4099
 
+import com.team4099.lib.units.base.newtons
+import com.team4099.lib.units.base.innewtons
 import com.team4099.lib.units.derived.inAttonewtons
 import com.team4099.lib.units.derived.inCentinewtons
 import com.team4099.lib.units.derived.inDecanewtons
@@ -13,6 +15,7 @@ import com.team4099.lib.units.derived.inMeganewtons
 import com.team4099.lib.units.derived.inMicronewtons
 import com.team4099.lib.units.derived.inMillinewtons
 import com.team4099.lib.units.derived.inNanonewtons
+import com.team4099.lib.units.derived.inNewtons
 import com.team4099.lib.units.derived.inPetanewtons
 import com.team4099.lib.units.derived.inPiconewtons
 import com.team4099.lib.units.derived.inTeranewtons
@@ -156,5 +159,31 @@ class ForceTest {
   fun testNewtonsToYoctonewtons() {
     val forceNewtons = 4099.newtons
     Assertions.assertEquals(forceNewtons.inYoctonewtons, 4.099E27, kBeta)
+  }
+
+  @Test
+  fun testAddingNewtons() {
+    val f1 = 1.0.newtons
+    val f2 = 2.0.newtons
+    Assertions.assertEquals((f1 + f2).inNewtons, 3.0, kEpsilon)
+  }
+
+  @Test
+  fun testSubtractingNewtons() {
+    val f1 = 1.0.newtons
+    val f2 = 2.0.newtons
+    Assertions.assertEquals((f2 - f1).inNewtons, 1.0, kEpsilon)
+  }
+
+  @Test
+  fun testMultiplyingNewtonsByScalar() {
+    val f1 = 1.0.newtons
+    Assertions.assertEquals((f1 * 4099).inNewtons, 4099.0, kEpsilon)
+  }
+
+  @Test
+  fun testDividingNewtonsByScalar() {
+    val f1 = 4099.0.newtons
+    Assertions.assertEquals((f1 / 4099.0).inNewtons, 1.0, kEpsilon)
   }
 }
