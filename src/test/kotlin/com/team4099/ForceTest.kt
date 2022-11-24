@@ -1,7 +1,5 @@
 package com.team4099
 
-import com.team4099.lib.units.base.newtons
-import com.team4099.lib.units.base.innewtons
 import com.team4099.lib.units.derived.inAttonewtons
 import com.team4099.lib.units.derived.inCentinewtons
 import com.team4099.lib.units.derived.inDecanewtons

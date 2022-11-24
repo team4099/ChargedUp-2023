@@ -42,61 +42,61 @@ val Force.inNewtons: Double
   get() = value
 
 val Force.inYottanewtons: Double
-  get() = value * 1.yotta
+  get() = value / 1.yotta
 
 val Force.inZetanewtons: Double
-  get() = value * 1.zeta
+  get() = value / 1.zeta
 
 val Force.inExanewtons: Double
-  get() = value * 1.exa
+  get() = value / 1.exa
 
 val Force.inPetanewtons: Double
-  get() = value * 1.peta
+  get() = value / 1.peta
 
 val Force.inTeranewtons: Double
-  get() = value * 1.tera
+  get() = value / 1.tera
 
 val Force.inGiganewtons: Double
-  get() = value * 1.giga
+  get() = value / 1.giga
 
 val Force.inMeganewtons: Double
-  get() = value * 1.mega
+  get() = value / 1.mega
 
 val Force.inKilonewtons: Double
-  get() = value * 1.kilo
+  get() = value / 1.kilo
 
 val Force.inHectonewtons: Double
-  get() = value * 1.hecto
+  get() = value / 1.hecto
 
 val Force.inDecanewtons: Double
-  get() = value * 1.deca
+  get() = value / 1.deca
 
 val Force.inDecinewtons: Double
-  get() = value * 1.deci
+  get() = value / 1.deci
 
 val Force.inCentinewtons: Double
-  get() = value * 1.centi
+  get() = value / 1.centi
 
 val Force.inMillinewtons: Double
-  get() = value * 1.milli
+  get() = value / 1.milli
 
 val Force.inMicronewtons: Double
-  get() = value * 1.micro
+  get() = value / 1.micro
 
 val Force.inNanonewtons: Double
-  get() = value * 1.nano
+  get() = value / 1.nano
 
 val Force.inPiconewtons: Double
-  get() = value * 1.pico
+  get() = value / 1.pico
 
 val Force.inFemtonewtons: Double
-  get() = value * 1.femto
+  get() = value / 1.femto
 
 val Force.inAttonewtons: Double
-  get() = value * 1.atto
+  get() = value / 1.atto
 
 val Force.inZeptonewtons: Double
-  get() = value * 1.zepto
+  get() = value / 1.zepto
 
 val Force.inYoctonewtons: Double
-  get() = value * 1.yocto
+  get() = value / 1.yocto
