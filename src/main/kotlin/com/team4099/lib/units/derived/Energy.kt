@@ -42,61 +42,61 @@ val Energy.inJoules: Double
   get() = value
 
 val Energy.inYottajoules: Double
-  get() = value * 1.yotta
+  get() = value / 1.yotta
 
 val Energy.inZetajoules: Double
-  get() = value * 1.zeta
+  get() = value / 1.zeta
 
 val Energy.inExajoules: Double
-  get() = value * 1.exa
+  get() = value / 1.exa
 
 val Energy.inPetajoules: Double
-  get() = value * 1.peta
+  get() = value / 1.peta
 
 val Energy.inTerajoules: Double
-  get() = value * 1.tera
+  get() = value / 1.tera
 
 val Energy.inGigajoules: Double
-  get() = value * 1.giga
+  get() = value / 1.giga
 
 val Energy.inMegajoules: Double
-  get() = value * 1.mega
+  get() = value / 1.mega
 
 val Energy.inKilojoules: Double
-  get() = value * 1.kilo
+  get() = value / 1.kilo
 
 val Energy.inHectojoules: Double
-  get() = value * 1.hecto
+  get() = value / 1.hecto
 
 val Energy.inDecajoules: Double
-  get() = value * 1.deca
+  get() = value / 1.deca
 
 val Energy.inDecijoules: Double
-  get() = value * 1.deci
+  get() = value / 1.deci
 
 val Energy.inCentijoules: Double
-  get() = value * 1.centi
+  get() = value / 1.centi
 
 val Energy.inMillijoules: Double
-  get() = value * 1.milli
+  get() = value / 1.milli
 
 val Energy.inMicrojoules: Double
-  get() = value * 1.micro
+  get() = value / 1.micro
 
 val Energy.inNanojoules: Double
-  get() = value * 1.nano
+  get() = value / 1.nano
 
 val Energy.inPicojoules: Double
-  get() = value * 1.pico
+  get() = value / 1.pico
 
 val Energy.inFemtojoules: Double
-  get() = value * 1.femto
+  get() = value / 1.femto
 
 val Energy.inAttojoules: Double
-  get() = value * 1.atto
+  get() = value / 1.atto
 
 val Energy.inZeptojoules: Double
-  get() = value * 1.zepto
+  get() = value / 1.zepto
 
 val Energy.inYoctojoules: Double
-  get() = value * 1.yocto
+  get() = value / 1.yocto
