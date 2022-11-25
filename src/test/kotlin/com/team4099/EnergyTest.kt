@@ -33,7 +33,7 @@ class EnergyTest {
   private val kSigma = 1E6
   private val kAlpha = 1E9
   private val kBeta = 1E12
-  
+
   @Test
   fun testJoulesToYottajoules() {
     val energyJoules = 4099.joules
