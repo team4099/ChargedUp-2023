@@ -8,6 +8,7 @@ import com.team4099.lib.units.derived.inExajoules
 import com.team4099.lib.units.derived.inFemtojoules
 import com.team4099.lib.units.derived.inGigajoules
 import com.team4099.lib.units.derived.inHectojoules
+import com.team4099.lib.units.derived.inJoules
 import com.team4099.lib.units.derived.inKilojoules
 import com.team4099.lib.units.derived.inMegajoules
 import com.team4099.lib.units.derived.inMicrojoules
@@ -157,5 +158,31 @@ class EnergyTest {
   fun testJoulestoYoctojoules() {
     val energyJoules = 4099.joules
     Assertions.assertEquals(energyJoules.inYoctojoules, 4.099E27, kBeta)
+  }
+
+  @Test
+  fun testAddingJoules() {
+    val e1 = 1.0.joules
+    val e2 = 2.0.joules
+    Assertions.assertEquals((e1 + e2).inJoules, 3.0, kEpsilon)
+  }
+
+  @Test
+  fun testSubtractingJoules() {
+    val e1 = 1.0.joules
+    val e2 = 2.0.joules
+    Assertions.assertEquals((e2 - e1).inJoules, 1.0, kEpsilon)
+  }
+
+  @Test
+  fun testMultiplyingJoulesByScalar() {
+    val e1 = 1.0.joules
+    Assertions.assertEquals((e1 * 4099).inJoules, 4099.0, kEpsilon)
+  }
+
+  @Test
+  fun testDividingJoulesByScalar() {
+    val e1 = 4099.0.joules
+    Assertions.assertEquals((e1 / 4099.0).inJoules, 1.0, kEpsilon)
   }
 }
