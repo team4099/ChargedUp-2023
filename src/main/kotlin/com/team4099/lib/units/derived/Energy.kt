@@ -30,7 +30,7 @@ import com.team4099.lib.units.zeta
 
 typealias Joule = Fraction<Product<Kilogram, Squared<Meter>>, Squared<Second>>
 
-typealias Energy = Value<Newton>
+typealias Energy = Value<Joule>
 
 val Double.joules
   get() = Energy(this)
@@ -38,65 +38,65 @@ val Double.joules
 val Number.joules
   get() = Energy(this.toDouble())
 
-val Force.inJoules: Double
+val Energy.inJoules: Double
   get() = value
 
-val Force.inYottajoules: Double
+val Energy.inYottajoules: Double
   get() = value * 1.yotta
 
-val Force.inZetajoules: Double
+val Energy.inZetajoules: Double
   get() = value * 1.zeta
 
-val Force.inExajoules: Double
+val Energy.inExajoules: Double
   get() = value * 1.exa
 
-val Force.inPetajoules: Double
+val Energy.inPetajoules: Double
   get() = value * 1.peta
 
-val Force.inTerajoules: Double
+val Energy.inTerajoules: Double
   get() = value * 1.tera
 
-val Force.inGigajoules: Double
+val Energy.inGigajoules: Double
   get() = value * 1.giga
 
-val Force.inMegajoules: Double
+val Energy.inMegajoules: Double
   get() = value * 1.mega
 
-val Force.inKilojoules: Double
+val Energy.inKilojoules: Double
   get() = value * 1.kilo
 
-val Force.inHectojoules: Double
+val Energy.inHectojoules: Double
   get() = value * 1.hecto
 
-val Force.inDecajoules: Double
+val Energy.inDecajoules: Double
   get() = value * 1.deca
 
-val Force.inDecijoules: Double
+val Energy.inDecijoules: Double
   get() = value * 1.deci
 
-val Force.inCentijoules: Double
+val Energy.inCentijoules: Double
   get() = value * 1.centi
 
-val Force.inMillijoules: Double
+val Energy.inMillijoules: Double
   get() = value * 1.milli
 
-val Force.inMicrojoules: Double
+val Energy.inMicrojoules: Double
   get() = value * 1.micro
 
-val Force.inNanojoules: Double
+val Energy.inNanojoules: Double
   get() = value * 1.nano
 
-val Force.inPicojoules: Double
+val Energy.inPicojoules: Double
   get() = value * 1.pico
 
-val Force.inFemtojoules: Double
+val Energy.inFemtojoules: Double
   get() = value * 1.femto
 
-val Force.inAttojoules: Double
+val Energy.inAttojoules: Double
   get() = value * 1.atto
 
-val Force.inZeptojoules: Double
+val Energy.inZeptojoules: Double
   get() = value * 1.zepto
 
-val Force.inYoctojoules: Double
+val Energy.inYoctojoules: Double
   get() = value * 1.yocto
