@@ -22,8 +22,8 @@ import com.team4099.lib.units.base.inYoctoamps
 import com.team4099.lib.units.base.inYottaamps
 import com.team4099.lib.units.base.inZeptoamps
 import com.team4099.lib.units.base.inZetaamps
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 /* Unit tests class for Current.kt */
 class CurrentTest {
@@ -46,7 +46,6 @@ class CurrentTest {
     val currentAmps = 4099.amps
     assertEquals(currentAmps.inZetaamps, 4.099E-18, kEpsilon)
   }
-
 
   @Test
   fun testAmpsToExaamps() {

@@ -47,7 +47,6 @@ class ChargeTest {
     Assertions.assertEquals(chargeCoulombs.inZetacoulombs, 4.099E-18, kEpsilon)
   }
 
-
   @Test
   fun testCoulombsToExacoulombs() {
     val chargeCoulombs = 4099.coulombs

@@ -1,14 +1,19 @@
 package com.team4099.units
 
-
+import com.team4099.lib.units.base.METERS_PER_FOOT
+import com.team4099.lib.units.base.METERS_PER_INCH
+import com.team4099.lib.units.base.METERS_PER_THOU
+import com.team4099.lib.units.base.feet
 import com.team4099.lib.units.base.inAttometers
 import com.team4099.lib.units.base.inCentimeters
 import com.team4099.lib.units.base.inDecameters
 import com.team4099.lib.units.base.inDecimeters
 import com.team4099.lib.units.base.inExameters
+import com.team4099.lib.units.base.inFeet
 import com.team4099.lib.units.base.inFemtometers
 import com.team4099.lib.units.base.inGigameters
 import com.team4099.lib.units.base.inHectometers
+import com.team4099.lib.units.base.inInches
 import com.team4099.lib.units.base.inKilometers
 import com.team4099.lib.units.base.inMegameters
 import com.team4099.lib.units.base.inMeters
@@ -18,13 +23,16 @@ import com.team4099.lib.units.base.inNanometers
 import com.team4099.lib.units.base.inPetameters
 import com.team4099.lib.units.base.inPicometers
 import com.team4099.lib.units.base.inTerameters
+import com.team4099.lib.units.base.inThou
 import com.team4099.lib.units.base.inYoctometers
 import com.team4099.lib.units.base.inYottameters
 import com.team4099.lib.units.base.inZeptometers
 import com.team4099.lib.units.base.inZetameters
+import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.base.meters
-import org.junit.jupiter.api.Test
+import com.team4099.lib.units.base.thou
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 /* Unit tests class for Length.kt */
 class LengthTest {
@@ -37,6 +45,42 @@ class LengthTest {
   private val kBeta = 1E12
 
   @Test
+  fun testMetersToInches() {
+    val lengthMeters = 4099.meters
+    assertEquals(lengthMeters.inInches, lengthMeters.inMeters / METERS_PER_INCH, kEpsilon)
+  }
+
+  @Test
+  fun testInchesToMeters() {
+    val lengthInches = 4099.inches
+    assertEquals(lengthInches.inMeters, lengthInches.inInches * METERS_PER_INCH, kEpsilon)
+  }
+
+  @Test
+  fun testMetersToThou() {
+    val lengthMeters = 4099.meters
+    assertEquals(lengthMeters.inThou, lengthMeters.inMeters / METERS_PER_THOU, kEpsilon)
+  }
+
+  @Test
+  fun testThouToMeters() {
+    val lengthThou = 4099.thou
+    assertEquals(lengthThou.inMeters, lengthThou.inThou * METERS_PER_THOU, kEpsilon)
+  }
+
+  @Test
+  fun testMetersToFeet() {
+    val lengthMeters = 4099.meters
+    assertEquals(lengthMeters.inFeet, lengthMeters.inMeters / METERS_PER_FOOT, kEpsilon)
+  }
+
+  @Test
+  fun testFeetToMeters() {
+    val lengthFeet = 4099.feet
+    assertEquals(lengthFeet.inMeters, lengthFeet.inFeet * METERS_PER_FOOT, kEpsilon)
+  }
+
+  @Test
   fun testMetersToYottameters() {
     val lengthMeters = 4099.meters
     assertEquals(lengthMeters.inYottameters, 4.099E-21, kEpsilon)
@@ -47,7 +91,6 @@ class LengthTest {
     val lengthMeters = 4099.meters
     assertEquals(lengthMeters.inZetameters, 4.099E-18, kEpsilon)
   }
-
 
   @Test
   fun testMetersToExameters() {
