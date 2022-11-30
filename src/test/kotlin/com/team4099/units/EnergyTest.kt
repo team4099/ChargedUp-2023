@@ -1,4 +1,4 @@
-package com.team4099
+package com.team4099.units
 
 import com.team4099.lib.units.derived.inAttojoules
 import com.team4099.lib.units.derived.inCentijoules
@@ -25,6 +25,7 @@ import com.team4099.lib.units.derived.joules
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
+/* Unit tests for Energy units */
 class EnergyTest {
   private val kEpsilon = 1E-9
   // Hacky way to do this. Consider removing support in the future for nanojoules and below due to

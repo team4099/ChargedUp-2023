@@ -25,7 +25,7 @@ import com.team4099.lib.units.base.inZetaamps
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/* Unit tests class for Current.kt */
+/* Unit tests for Current units */
 class CurrentTest {
   private val kEpsilon = 1E-9
   // Hacky way to do this. Consider removing support in the future for nanoamps and below due to

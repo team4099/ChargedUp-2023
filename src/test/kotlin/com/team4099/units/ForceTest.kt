@@ -1,4 +1,4 @@
-package com.team4099
+package com.team4099.units
 
 import com.team4099.lib.units.derived.inAttonewtons
 import com.team4099.lib.units.derived.inCentinewtons
@@ -25,7 +25,7 @@ import com.team4099.lib.units.derived.newtons
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-/* Unit tests class for Force.kt */
+/* Unit tests for Force units */
 class ForceTest {
   private val kEpsilon = 1E-9
   private val kDelta = 1E-3

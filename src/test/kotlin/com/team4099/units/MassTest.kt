@@ -28,7 +28,7 @@ import com.team4099.lib.units.base.pounds
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-/* Unit tests class for Mass.kt */
+/* Unit tests for Mass units */
 class MassTest {
   private val kEpsilon = 1E-9
   // Hacky way to do this. Consider removing support in the future for nanograms and below due to

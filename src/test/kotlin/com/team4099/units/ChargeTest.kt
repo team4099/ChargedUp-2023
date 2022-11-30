@@ -25,7 +25,7 @@ import com.team4099.lib.units.derived.inZetacoulombs
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-/* Unit tests class for Charge.kt */
+/* Unit tests for Charge units */
 class ChargeTest {
   private val kEpsilon = 1E-9
   // Hacky way to do this. Consider removing support in the future for nano and below due to
