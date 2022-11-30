@@ -6,6 +6,7 @@ plugins {
 	id "edu.wpi.first.GradleRIO" version "2023.1.1-beta-4"
 	id "com.diffplug.spotless" version "6.3.0"
 	id "com.peterabeles.gversion" version "1.10"
+	id("org.jetbrains.kotlinx.kover") version "0.4.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
