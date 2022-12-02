@@ -1,5 +1,6 @@
 package com.team4099.robot2022.subsystems.climber
 
+import edu.wpi.first.wpilibj.DoubleSolenoid
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
@@ -15,6 +16,8 @@ interface PivotClimberIO {
       table?.getBoolean("pivotExtended", isExtended)?.let { isExtended = it }
     }
   }
+
+  fun setPivotSolenoid(inputs: DoubleSolenoid.Value) {}
 
   fun updateInputs(io: PivotClimberIOInputs)
 }
