@@ -3,6 +3,7 @@ package com.team4099.robot2022
 import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.util.Alert
 import com.team4099.robot2022.util.Alert.AlertType
+import com.team4099.robot2022.util.BatteryTracker
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
@@ -45,6 +46,15 @@ object Robot : LoggedRobot() {
       0 -> logger.recordMetadata("GitDirty", "All changes committed")
       1 -> logger.recordMetadata("GitDirty", "Uncommitted changes")
       else -> logger.recordMetadata("GitDirty", "Unknown")
+    }
+
+    if (isReal()) {
+      var name = BatteryTracker.scanBattery(2.0)
+      System.out.println(name)
+      logger.recordMetadata("BatteryName", name)
+    } else {
+      System.out.println("N/A")
+      logger.recordMetadata("BatteryName", "N/A")
     }
 
     when (Constants.Universal.ROBOT_MODE) {
