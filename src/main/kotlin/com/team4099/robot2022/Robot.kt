@@ -81,7 +81,20 @@ object Robot : LoggedRobot() {
     // init robot container too
     RobotContainer
     RobotContainer.mapDefaultCommands()
-    RobotContainer.mapTeleopControls()
+    RobotContainer.zeroSensors()
+  }
+
+  override fun autonomousInit() {
+    // autonomousCommand.schedule()
+    RobotContainer.setDriveBrakeMode()
+    //    RobotContainer.zeroSteering()
+    //    RobotContainer.getAutonomousCommand().schedule()
+  }
+
+  override fun disabledInit() {
+    // RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.setDriveBrakeMode()
+    // autonomousCommand.cancel()
   }
 
   override fun robotPeriodic() {
@@ -99,5 +112,18 @@ object Robot : LoggedRobot() {
           .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
           .getStringArray(emptyArray())
       )
+  }
+
+  override fun teleopInit() {
+    RobotContainer.mapTeleopControls()
+    // RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.setDriveBrakeMode() // change to coast
+    //    RobotContainer.zeroSteering()
+    // autonomousCommand.cancel()
+  }
+
+  override fun testInit() {
+    RobotContainer.mapTestControls()
+    // RobotContainer.getAutonomousCommand().cancel()
   }
 }
