@@ -6,6 +6,7 @@ import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.feet
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.angle
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotation2ds
@@ -16,6 +17,7 @@ import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2022.config.constants.DrivetrainConstants
 import edu.wpi.first.math.kinematics.SwerveModulePosition
+import edu.wpi.first.math.kinematics.SwerveModuleState
 import org.littletonrobotics.junction.Logger
 import kotlin.math.IEEErem
 import kotlin.math.withSign
@@ -136,8 +138,8 @@ class SwerveModule(val io: SwerveModuleIO) {
         acceleration
       }
     steeringSetPoint = inputs.steeringPosition + steeringDifference
-    //    driveFalcon.set(speedSetPoint / DrivetrainConstants.DRIVE_SETPOINT_MAX)
 
+    //    io.setClosedLoop(steeringSetPoint, speedSetPoint, accelerationSetPoint)
     io.setClosedLoop(steeringSetPoint, speedSetPoint, accelerationSetPoint)
   }
 
@@ -158,6 +160,63 @@ class SwerveModule(val io: SwerveModuleIO) {
       }
     steeringSetPoint = inputs.steeringPosition + steeringDifference
     io.setOpenLoop(steeringSetPoint, outputPower)
+  }
+
+  /**
+   * Sets the swerve module to the specified angular and X & Y velocities using open loop control.
+   *
+   * @param desiredState The desired SwerveModuleState. Contains desired angle as well as X and Y
+   * velocities
+   */
+  fun setPositionOpenLoop(desiredState: SwerveModuleState, optimize: Boolean = true) {
+    if (optimize) {
+      val optimizedState =
+        SwerveModuleState.optimize(desiredState, inputs.steeringPosition.inRotation2ds)
+      io.setOpenLoop(
+        optimizedState.angle.angle,
+        optimizedState.speedMetersPerSecond /
+          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+      )
+    } else {
+      io.setOpenLoop(
+        desiredState.angle.angle,
+        desiredState.speedMetersPerSecond /
+          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+      )
+    }
+  }
+
+  /**
+   * Sets the swerve module to the specified angular and X & Y velocities using feed forward.
+   *
+   * @param desiredVelState The desired SwerveModuleState. Contains desired angle as well as X and Y
+   * velocities
+   * @param desiredAccelState The desired SwerveModuleState that contains desired acceleration
+   * vectors.
+   * @param optimize Whether velocity and acceleration vectors should be optimized (if possible)
+   */
+  fun setPositionClosedLoop(
+    desiredVelState: SwerveModuleState,
+    desiredAccelState: SwerveModuleState,
+    optimize: Boolean = true
+  ) {
+    if (optimize) {
+      val optimizedVelState =
+        SwerveModuleState.optimize(desiredVelState, inputs.steeringPosition.inRotation2ds)
+      val optimizedAccelState =
+        SwerveModuleState.optimize(desiredAccelState, inputs.steeringPosition.inRotation2ds)
+      io.setClosedLoop(
+        optimizedVelState.angle.angle,
+        optimizedVelState.speedMetersPerSecond.meters.perSecond,
+        optimizedAccelState.speedMetersPerSecond.meters.perSecond.perSecond
+      )
+    } else {
+      io.setClosedLoop(
+        desiredVelState.angle.angle,
+        desiredVelState.speedMetersPerSecond.meters.perSecond,
+        desiredAccelState.speedMetersPerSecond.meters.perSecond.perSecond
+      )
+    }
   }
 
   /** Creates event of the current potentiometer value as needs to be manually readjusted. */
