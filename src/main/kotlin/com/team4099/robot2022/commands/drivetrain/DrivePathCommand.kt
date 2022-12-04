@@ -116,12 +116,12 @@ class DrivePathCommand(
 
     drivetrain.targetPose = desiredState.pose
 
-    drivetrain.set(
+    drivetrain.setClosedLoop(
       -thetaFeedback,
-      Pair(yFF + yFeedback, -xFF - xFeedback),
-      true,
+      Pair(-xFF - xFeedback, yFF + yFeedback),
       0.radians.perSecond.perSecond,
-      Pair(yAccel, xAccel)
+      Pair(xAccel, yAccel),
+      true,
     )
 
     Logger.getInstance().recordOutput("Pathfollow/xFFMetersPerSec", xFF.inMetersPerSecond)
@@ -195,12 +195,12 @@ class DrivePathCommand(
   override fun end(interrupted: Boolean) {
     if (interrupted) {
       // Stop where we are if interrupted
-      drivetrain.set(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
+      drivetrain.setClosedLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
     } else {
       // Execute one last time to end up in the final state of the trajectory
       // Since we weren't interrupted, we know curTime > endTime
       execute()
-      drivetrain.set(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
+      drivetrain.setClosedLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
     }
   }
 }

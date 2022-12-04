@@ -18,9 +18,12 @@ import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.derived.radians
+import com.team4099.lib.units.derived.volts
+import com.team4099.lib.units.inMetersPerSecond
+import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.robot2022.config.constants.DrivetrainConstants
+import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.AnalogPotentiometer
-import kotlin.math.sign
 
 class SwerveModuleIOReal(
   private val steeringFalcon: TalonFX,
@@ -132,10 +135,15 @@ class SwerveModuleIOReal(
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
+    val driveFeedforward =
+      SimpleMotorFeedforward(
+        DrivetrainConstants.PID.DRIVE_KS.inVolts,
+        DrivetrainConstants.PID.DRIVE_KV.value,
+        DrivetrainConstants.PID.DRIVE_KA.value
+      )
     val feedforward =
-      DrivetrainConstants.PID.DRIVE_KS * sign(speed.value) +
-        speed * DrivetrainConstants.PID.DRIVE_KV +
-        acceleration * DrivetrainConstants.PID.DRIVE_KA
+      driveFeedforward.calculate(speed.inMetersPerSecond, acceleration.inMetersPerSecondPerSecond)
+        .volts
 
     driveFalcon.set(
       ControlMode.Velocity,
@@ -146,8 +154,14 @@ class SwerveModuleIOReal(
     setSteeringSetpoint(steering)
   }
 
-  override fun setOpenLoop(steering: Angle, speed: Double) {
-    driveFalcon.set(ControlMode.PercentOutput, speed)
+  /**
+   * Open Loop Control using PercentOutput control on a Falcon
+   *
+   * @param steering: Desired angle
+   * @param power: Desired power that drive motors will be set to: [-1,1]
+   */
+  override fun setOpenLoop(steering: Angle, power: Double) {
+    driveFalcon.set(ControlMode.PercentOutput, power)
     setSteeringSetpoint(steering)
   }
 
