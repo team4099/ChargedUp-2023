@@ -35,8 +35,8 @@ hs_err_pid*
 .idea/**/libraries
 
 # CMake
-cmake-build-debug/
-cmake-build-release/
+cmake-com.team4099.lib.annotations.build-debug/
+cmake-com.team4099.lib.annotations.build-release/
 
 # Mongo Explorer plugin:
 .idea/**/mongoSettings.xml
@@ -62,9 +62,10 @@ atlassian-ide-plugin.xml
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
 crashlytics.properties
-crashlytics-build.properties
+crashlytics-com.team4099.lib.annotations.build.properties
 fabric.properties
 
+com.team4099.lib.annotations.build/
 build/
 
 .gradle/

@@ -25,7 +25,8 @@ class Path constructor(val startingPose: Pose, val endingPose: Pose) {
   var built = false
   val addTranslationAlert: Alert =
     Alert("Failed to add translation to built path", Alert.AlertType.ERROR)
-  val alreadyBuiltAlert: Alert = Alert("Failed build already built path", Alert.AlertType.ERROR)
+  val alreadyBuiltAlert: Alert =
+    Alert("Failed com.team4099.lib.annotations.build already built path", Alert.AlertType.ERROR)
 
   /**
    * Add a waypoint to the middle of this path.
