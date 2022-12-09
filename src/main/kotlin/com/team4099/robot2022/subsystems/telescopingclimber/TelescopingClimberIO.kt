@@ -1,10 +1,12 @@
 package com.team4099.robot2022.subsystems.climber
 
+import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.base.inAmperes
 import com.team4099.lib.units.base.inInches
 import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.base.meters
+import com.team4099.lib.units.derived.ElectricalPotential
 import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.derived.volts
 import com.team4099.lib.units.inInchesPerSecond
@@ -86,4 +88,17 @@ interface TelescopingClimberIO {
       }
     }
   }
+
+  fun updateInputs(inputs: TelescopingClimberIOInputs) {}
+
+  fun setLeftOpenLoop(percentOutput: Double) {}
+  fun setRightOpenLoop(percentOutput: Double) {}
+
+  fun setLeftPosition(height: Length, feedforward: ElectricalPotential) {}
+  fun setRightPosition(height: Length, feedforward: ElectricalPotential) {}
+
+  fun zeroLeftEncoder() {}
+  fun zeroRightEncoder() {}
+
+  fun configPID(kP: Double, kI: Double, kD: Double) {}
 }

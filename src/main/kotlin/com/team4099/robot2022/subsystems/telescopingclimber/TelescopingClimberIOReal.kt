@@ -4,7 +4,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.lib.units.base.Length
+import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.ctreLinearMechanismSensor
+import com.team4099.lib.units.derived.volts
 import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.config.constants.TelescopingClimberConstants
 
@@ -56,5 +58,45 @@ object TelescopingClimberIOReal : TelescopingClimberIO {
         TelescopingClimberConstants.FORWARD_SOFT_LIMIT
       )
     )
+    telescopingRightArm.configForwardSoftLimitEnable(false)
+    telescopingRightArm.configReverseSoftLimitThreshold(
+      telescopingRightArmSensor.positionToRawUnits(
+        TelescopingClimberConstants.REVERSE_SOFT_LIMIT
+      )
+    )
+
+    telescopingLeftArm.configFactoryDefault()
+    telescopingLeftArm.clearStickyFaults()
+    telescopingLeftArm.configAllSettings(telescopingConfiguration)
+    telescopingLeftArm.setNeutralMode(NeutralMode.Brake)
+    telescopingLeftArm.enableVoltageCompensation(true)
+    telescopingLeftArm.inverted = false
+    telescopingLeftArm.configForwardSoftLimitThreshold(
+      telescopingLeftArmSensor.positionToRawUnits(TelescopingClimberConstants.FORWARD_SOFT_LIMIT)
+    )
+    telescopingLeftArm.configForwardSoftLimitEnable(false)
+    telescopingLeftArm.configReverseSoftLimitThreshold(
+      telescopingLeftArmSensor.positionToRawUnits(TelescopingClimberConstants.REVERSE_SOFT_LIMIT)
+    )
+  }
+
+  override fun updateInputs(inputs: TelescopingClimberIO.TelescopingClimberIOInputs) {
+    inputs.leftPosition = telescopingLeftArmSensor.position
+    inputs.rightPosition = telescopingRightArmSensor.position
+
+    inputs.leftVelocity = telescopingLeftArmSensor.velocity
+    inputs.rightVelocity = telescopingRightArmSensor.velocity
+
+    inputs.leftStatorCurrent = telescopingLeftArm.statorCurrent.amps
+    inputs.rightStatorCurrent = telescopingRightArm.statorCurrent.amps
+
+    inputs.leftSupplyCurrent = telescopingLeftArm.supplyCurrent.amps
+    inputs.rightSupplyCurrent = telescopingRightArm.supplyCurrent.amps
+
+    inputs.leftOutputVoltage = telescopingLeftArm.motorOutputVoltage.volts
+    inputs.rightOutputVoltage = telescopingRightArm.motorOutputVoltage.volts
+
+    inputs.leftTemperatureCelsius = telescopingLeftArm.temperature
+    inputs.rightTemperatureCelsius = telescopingRightArm.temperature
   }
 }
