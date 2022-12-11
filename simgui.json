@@ -5,5 +5,15 @@
       "/Shuffleboard/Auto settings/Mode": "String Chooser",
       "/Shuffleboard/Auto settings/Starting Orientation": "String Chooser"
     }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "photonvision": {
+        "hawkeye": {
+          "open": true
+        },
+        "open": true
+      }
+    }
   }
 }
