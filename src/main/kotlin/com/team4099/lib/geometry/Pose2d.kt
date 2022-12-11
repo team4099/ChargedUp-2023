@@ -8,17 +8,10 @@ import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.perSecond
 
-
 data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) {
-  constructor() : this(
-    Translation2d(),
-    Rotation2d()
-  )
+  constructor() : this(Translation2d(), Rotation2d())
 
-  constructor(x: Length, y: Length, rotation: Rotation2d) : this (
-    Translation2d(x, y),
-    rotation
-  )
+  constructor(x: Length, y: Length, rotation: Rotation2d) : this(Translation2d(x, y), rotation)
 
   operator fun plus(other: Transform2d): Pose2d {
     return transformBy(other)
@@ -56,7 +49,8 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
   fun transformBy(other: Transform2d): Pose2d {
     return Pose2d(
       m_translation.plus(other.m_translation.rotateBy(m_rotation)),
-      other.m_rotation.plus(m_rotation))
+      other.m_rotation.plus(m_rotation)
+    )
   }
 
   fun relativeTo(other: Pose2d): Pose2d {
@@ -79,28 +73,30 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
       s = (sinTheta / dtheta)
       c = ((1 - cosTheta) / dtheta)
     }
-    val transform = Transform2d(
-      Translation2d((dx * s - dy * c).meters, (dx * c + dy * s).meters),
-      Rotation2d(cosTheta, sinTheta))
+    val transform =
+      Transform2d(
+        Translation2d((dx * s - dy * c).meters, (dx * c + dy * s).meters),
+        Rotation2d(cosTheta, sinTheta)
+      )
     return this.plus(transform)
   }
-
 
   fun log(end: Pose2d): Twist2d {
     val transform: Pose2d = end.relativeTo(this)
     val dtheta: Double = transform.getRotation().getRadians().inRadians
     val halfDtheta: Double = dtheta / 2.0
-    val cosMinusOne: Double = transform.getRotation().getCos() - 1
+    val cosMinusOne: Double = transform.getRotation().m_cos - 1
     val halfThetaByTanOfHalfDtheta: Double
     if (Math.abs(cosMinusOne) < 1E-9) {
       halfThetaByTanOfHalfDtheta = ((11.0 / 12.0) * dtheta) * dtheta
     } else {
-      halfThetaByTanOfHalfDtheta = (-(halfDtheta * transform.getRotation().getSin()) / cosMinusOne)
+      halfThetaByTanOfHalfDtheta = (-(halfDtheta * transform.getRotation().m_sin) / cosMinusOne)
     }
-    val (x, y) = transform
-      .getTranslation()
-      .rotateBy(Rotation2d(halfThetaByTanOfHalfDtheta, -halfDtheta))
-      .times(Math.hypot(halfThetaByTanOfHalfDtheta, halfDtheta))
+    val (x, y) =
+      transform
+        .getTranslation()
+        .rotateBy(Rotation2d(halfThetaByTanOfHalfDtheta, -halfDtheta))
+        .times(Math.hypot(halfThetaByTanOfHalfDtheta, halfDtheta))
     return Twist2d(x.perSecond, y.perSecond, dtheta.radians.perSecond)
   }
 

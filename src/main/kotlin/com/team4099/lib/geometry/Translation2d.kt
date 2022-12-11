@@ -44,8 +44,7 @@ data class Translation2d(val x: Length, val y: Length) {
   }
 
   fun rotateBy(other: Rotation2d): Translation2d {
-    return Translation2d(
-      x * other.m_cos - y * other.m_sin, x * other.m_sin + y * other.m_cos)
+    return Translation2d(x * other.m_cos - y * other.m_sin, x * other.m_sin + y * other.m_cos)
   }
 
   fun normalize(): Translation2d {
