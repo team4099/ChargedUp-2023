@@ -79,7 +79,10 @@ fun trajectoryFromPathPlanner(pathPlannerTrajectory: PathPlannerTrajectory): Tra
       state as PathPlannerTrajectory.PathPlannerState
       TrajectoryState(
         state.timeSeconds.seconds,
-        Pose(Translation(state.poseMeters.translation), state.holonomicRotation.angle),
+        Pose2d(
+          Translation2d(state.poseMeters.translation),
+          Rotation2d(state.holonomicRotation.angle)
+        ),
         state.poseMeters.rotation.angle,
         state.velocityMetersPerSecond.meters.perSecond,
         state.accelerationMetersPerSecondSq.meters.perSecond.perSecond,

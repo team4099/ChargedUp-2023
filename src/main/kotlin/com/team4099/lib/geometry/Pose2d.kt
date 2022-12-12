@@ -2,6 +2,7 @@ package com.team4099.lib.geometry
 
 import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.meters
+import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.inMetersPerSecond
@@ -19,24 +20,20 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
 
   operator fun minus(other: Pose2d): Transform2d {
     val pose = this.relativeTo(other)
-    return Transform2d(pose.getTranslation(), pose.getRotation())
+    return Transform2d(pose.translation, pose.rotation)
   }
 
-  fun getTranslation(): Translation2d {
-    return m_translation
-  }
+  val translation: Translation2d = m_translation
 
-  fun getX(): Length {
-    return m_translation.x
-  }
+  val x: Length = m_translation.x
 
-  fun getY(): Length {
-    return m_translation.y
-  }
+  val y: Length = m_translation.y
 
-  fun getRotation(): Rotation2d {
-    return m_rotation
-  }
+  val rotation: Rotation2d = m_rotation
+
+  val theta: Angle = m_rotation.getRadians()
+
+  val pose2d: Pose2dWPILIB = Pose2dWPILIB(translation.translation2d, rotation.rotation2d)
 
   operator fun times(scalar: Double): Pose2d {
     return Pose2d(m_translation.times(scalar), m_rotation.times(scalar))
@@ -83,18 +80,18 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
 
   fun log(end: Pose2d): Twist2d {
     val transform: Pose2d = end.relativeTo(this)
-    val dtheta: Double = transform.getRotation().getRadians().inRadians
+    val dtheta: Double = transform.rotation.getRadians().inRadians
     val halfDtheta: Double = dtheta / 2.0
-    val cosMinusOne: Double = transform.getRotation().m_cos - 1
+    val cosMinusOne: Double = transform.rotation.m_cos - 1
     val halfThetaByTanOfHalfDtheta: Double
     if (Math.abs(cosMinusOne) < 1E-9) {
       halfThetaByTanOfHalfDtheta = ((11.0 / 12.0) * dtheta) * dtheta
     } else {
-      halfThetaByTanOfHalfDtheta = (-(halfDtheta * transform.getRotation().m_sin) / cosMinusOne)
+      halfThetaByTanOfHalfDtheta = (-(halfDtheta * transform.rotation.m_sin) / cosMinusOne)
     }
     val (x, y) =
       transform
-        .getTranslation()
+        .translation
         .rotateBy(Rotation2d(halfThetaByTanOfHalfDtheta, -halfDtheta))
         .times(Math.hypot(halfThetaByTanOfHalfDtheta, halfDtheta))
     return Twist2d(x.perSecond, y.perSecond, dtheta.radians.perSecond)
@@ -111,4 +108,17 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
       this.exp(scaledTwist)
     }
   }
+}
+
+/**
+ * Linearly interpolate between two values.
+ *
+ * @param a The first value to interpolate between.
+ * @param b The second value to interpolate between.
+ * @param x The scalar that determines where the returned value falls between [a] and [b]. Limited
+ * to between 0 and 1 inclusive.
+ * @return A value between [a] and [b] determined by [x].
+ */
+fun interpolate(a: Pose2d, b: Pose2d, x: Double): Pose2d {
+  return a + (b - a) * x
 }

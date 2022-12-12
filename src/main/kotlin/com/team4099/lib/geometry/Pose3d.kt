@@ -26,8 +26,8 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
   constructor(
     pose: Pose2d
   ) : this(
-    Translation3d(pose.getX(), pose.getY(), 0.0.meters),
-    Rotation3d(0.0.radians, 0.0.radians, pose.getRotation().getRadians())
+    Translation3d(pose.x, pose.y, 0.0.meters),
+    Rotation3d(0.0.radians, 0.0.radians, pose.rotation.getRadians())
   )
 
   operator fun plus(other: Transform3d): Pose3d {

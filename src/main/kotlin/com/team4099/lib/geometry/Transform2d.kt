@@ -5,10 +5,8 @@ data class Transform2d(var m_translation: Translation2d, var m_rotation: Rotatio
     initial: Pose2d,
     last: Pose2d
   ) : this(
-    last.getTranslation()
-      .minus(initial.getTranslation())
-      .rotateBy(initial.getRotation().unaryMinus()),
-    last.getRotation().minus(initial.getRotation())
+    last.translation.minus(initial.translation).rotateBy(initial.rotation.unaryMinus()),
+    last.rotation.minus(initial.rotation)
   )
 
   operator fun times(scalar: Double): Transform2d {

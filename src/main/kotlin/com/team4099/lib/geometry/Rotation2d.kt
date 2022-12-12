@@ -29,6 +29,8 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
     }
   }
 
+  val rotation2d: Rotation2dWPILIB = Rotation2dWPILIB(m_cos, m_sin)
+
   operator fun plus(other: Rotation2d): Rotation2d {
     return rotateBy(other)
   }
