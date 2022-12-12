@@ -19,7 +19,7 @@ data class Quaternion(val m_r: Angle, val m_v: Vector<N3>) {
 
   operator fun times(other: Quaternion): Quaternion {
     // https://en.wikipedia.org/wiki/Quaternion#Scalar_and_vector_parts
-    val r1 = getW().inRadians
+    val r1 = w.inRadians
     val v1 = m_v
     val r2 = other.m_r.inRadians
     val v2 = other.m_v
@@ -44,38 +44,27 @@ data class Quaternion(val m_r: Angle, val m_v: Vector<N3>) {
   fun normalize(): Quaternion {
     val norm =
       Math.sqrt(
-        this.getW().inRadians * this.getW().inRadians +
-          this.getX().inMeters * this.getX().inMeters +
-          this.getY().inMeters * this.getY().inMeters +
-          this.getZ().inMeters * this.getZ().inMeters
+        this.w.inRadians * this.w.inRadians +
+          this.x.inMeters * this.x.inMeters +
+          this.y.inMeters * this.y.inMeters +
+          this.z.inMeters * this.z.inMeters
       )
     return if (norm == 0.0) {
       Quaternion()
     } else {
       Quaternion(
-        this.getW() / norm,
-        this.getX().inMeters / norm,
-        this.getY().inMeters / norm,
-        this.getZ().inMeters / norm
+        this.w / norm, this.x.inMeters / norm, this.y.inMeters / norm, this.z.inMeters / norm
       )
     }
   }
 
-  fun getW(): Angle {
-    return m_r
-  }
+  val w: Angle = m_r
 
-  fun getX(): Length {
-    return m_v.get(0, 0).meters
-  }
+  val x: Length = m_v.get(0, 0).meters
 
-  fun getY(): Length {
-    return m_v.get(1, 0).meters
-  }
+  val y: Length = m_v.get(1, 0).meters
 
-  fun getZ(): Length {
-    return m_v.get(2, 0).meters
-  }
+  val z: Length = m_v.get(2, 0).meters
 
   fun toRotationVector(): Vector<N3> {
     // See equation (31) in "Integrating Generic Sensor Fusion Algorithms with
@@ -85,14 +74,13 @@ data class Quaternion(val m_r: Angle, val m_v: Vector<N3>) {
     val norm = m_v.norm()
     return if (norm < 1e-9) {
       m_v.times(
-        2.0 / getW().inRadians -
-          2.0 / 3.0 * norm * norm / (getW().inRadians * getW().inRadians * getW().inRadians)
+        2.0 / w.inRadians - 2.0 / 3.0 * norm * norm / (w.inRadians * w.inRadians * w.inRadians)
       )
     } else {
-      if (getW().inRadians < 0.0) {
-        m_v.times(2.0 * Math.atan2(-norm, -getW().inRadians) / norm)
+      if (w.inRadians < 0.0) {
+        m_v.times(2.0 * Math.atan2(-norm, -w.inRadians) / norm)
       } else {
-        m_v.times(2.0 * Math.atan2(norm, getW().inRadians) / norm)
+        m_v.times(2.0 * Math.atan2(norm, w.inRadians) / norm)
       }
     }
   }

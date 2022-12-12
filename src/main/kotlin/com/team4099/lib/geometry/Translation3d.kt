@@ -12,9 +12,9 @@ data class Translation3d(val m_x: Length, val m_y: Length, val m_z: Length) {
     distance: Length,
     angle: Rotation3d
   ) : this(
-    Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).getX(),
-    Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).getY(),
-    Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).getZ()
+    Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).x,
+    Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).y,
+    Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).z
   )
 
   fun getDistance(other: Translation3d): Length {
@@ -26,33 +26,28 @@ data class Translation3d(val m_x: Length, val m_y: Length, val m_z: Length) {
       .meters
   }
 
-  fun getX(): Length {
-    return m_x
-  }
+  val x: Length = m_x
 
-  fun getY(): Length {
-    return m_y
-  }
+  val y: Length = m_y
 
-  fun getZ(): Length {
-    return m_z
-  }
+  val z: Length = m_z
 
-  fun getNorm(): Length {
-    return Math.sqrt(
-      (
-        m_x.inMeters * m_x.inMeters +
-          m_y.inMeters * m_y.inMeters +
-          m_z.inMeters * m_z.inMeters
-        )
-    )
-      .meters
-  }
+  val norm: Length
+    get() {
+      return Math.sqrt(
+        (
+          m_x.inMeters * m_x.inMeters +
+            m_y.inMeters * m_y.inMeters +
+            m_z.inMeters * m_z.inMeters
+          )
+      )
+        .meters
+    }
 
   fun rotateBy(other: Rotation3d): Translation3d {
     val p = Quaternion(0.0.radians, m_x.inMeters, m_y.inMeters, m_z.inMeters)
     val qprime = other.quaternion.times(p).times(other.quaternion.inverse())
-    return Translation3d(qprime.getX(), qprime.getY(), qprime.getZ())
+    return Translation3d(qprime.x, qprime.y, qprime.z)
   }
 
   fun toTranslation2d(): Translation2d {

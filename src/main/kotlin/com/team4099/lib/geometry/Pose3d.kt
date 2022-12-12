@@ -27,7 +27,7 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
     pose: Pose2d
   ) : this(
     Translation3d(pose.x, pose.y, 0.0.meters),
-    Rotation3d(0.0.radians, 0.0.radians, pose.rotation.getRadians())
+    Rotation3d(0.0.radians, 0.0.radians, pose.rotation.theta)
   )
 
   operator fun plus(other: Transform3d): Pose3d {
@@ -36,28 +36,18 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
 
   operator fun minus(other: Pose3d): Transform3d {
     val pose: Pose3d = relativeTo(other)
-    return Transform3d(pose.getTranslation(), pose.getRotation())
+    return Transform3d(pose.translation, pose.rotation3d)
   }
 
-  fun getTranslation(): Translation3d {
-    return m_translation
-  }
+  val translation: Translation3d = m_translation
 
-  fun getX(): Length {
-    return m_translation.getX()
-  }
+  val x: Length = m_translation.x
 
-  fun getY(): Length {
-    return m_translation.getY()
-  }
+  val y: Length = m_translation.y
 
-  fun getZ(): Length {
-    return m_translation.getZ()
-  }
+  val z: Length = m_translation.z
 
-  fun getRotation(): Rotation3d {
-    return m_rotation
-  }
+  val rotation3d: Rotation3d = m_rotation
 
   operator fun times(scalar: Double): Pose3d {
     return Pose3d(m_translation.times(scalar), m_rotation.times(scalar)!!)
@@ -69,14 +59,14 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
 
   fun transformBy(other: Transform3d): Pose3d {
     return Pose3d(
-      m_translation.plus(other.getTranslation().rotateBy(m_rotation)),
-      other.getRotation().plus(m_rotation)
+      m_translation.plus(other.translation3d.rotateBy(m_rotation)),
+      other.rotation3d.plus(m_rotation)
     )
   }
 
   fun relativeTo(other: Pose3d): Pose3d {
     val transform = Transform3d(other, this)
-    return Pose3d(transform.getTranslation(), transform.getRotation())
+    return Pose3d(transform.translation3d, transform.rotation3d)
   }
 
   fun exp(twist: Twist3d): Pose3d {
@@ -125,7 +115,7 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
 
   fun log(end: Pose3d): Twist3d {
     val transform = end.relativeTo(this)
-    val rotVec = transform.getRotation().quaternion.toRotationVector()
+    val rotVec = transform.rotation3d.quaternion.toRotationVector()
     val Omega: Matrix<N3, N3> = rotationVectorToMatrix(rotVec)
     val OmegaSq: Matrix<N3, N3> = Omega.times(Omega)
     val thetaSq =
@@ -156,11 +146,7 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
     val dtranslation: Matrix<N3, N1> =
       Jinv.times(
         MatBuilder(Nat.N3(), Nat.N1())
-          .fill(
-            transform.getX().inMeters,
-            transform.getY().inMeters,
-            transform.getZ().inMeters
-          )
+          .fill(transform.x.inMeters, transform.y.inMeters, transform.z.inMeters)
       )
     return Twist3d(
       dtranslation.get(0, 0).meters,

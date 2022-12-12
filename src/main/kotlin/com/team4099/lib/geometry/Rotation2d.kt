@@ -2,10 +2,7 @@ package com.team4099.lib.geometry
 
 import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.cos
-import com.team4099.lib.units.derived.degrees
-import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.derived.rotations
 import com.team4099.lib.units.derived.sin
 import edu.wpi.first.math.MathUtil
 
@@ -44,7 +41,7 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
   }
 
   operator fun times(scalar: Double): Rotation2d {
-    return Rotation2d(getRadians() * scalar)
+    return Rotation2d(theta * scalar)
   }
 
   operator fun div(scalar: Double): Rotation2d {
@@ -57,21 +54,9 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
     )
   }
 
-  fun getRadians(): Angle {
-    return Math.atan2(m_sin, m_cos).radians
-  }
+  val theta: Angle = Math.atan2(m_sin, m_cos).radians
 
-  fun getDegrees(): Angle {
-    return Math.toDegrees(getRadians().inRadians).degrees
-  }
-
-  fun getRotations(): Angle {
-    return getRadians().inRadians.rotations
-  }
-
-  fun getTan(): Double {
-    return m_sin / m_cos
-  }
+  val tan: Double = m_sin / m_cos
 
   fun interpolate(endValue: Rotation2d, t: Double): Rotation2d? {
     return plus(endValue.minus(this).times(MathUtil.clamp(t, 0.0, 1.0)))

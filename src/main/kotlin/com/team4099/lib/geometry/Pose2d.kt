@@ -31,7 +31,7 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
 
   val rotation: Rotation2d = m_rotation
 
-  val theta: Angle = m_rotation.getRadians()
+  val theta: Angle = m_rotation.theta
 
   val pose2d: Pose2dWPILIB = Pose2dWPILIB(translation.translation2d, rotation.rotation2d)
 
@@ -80,7 +80,7 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
 
   fun log(end: Pose2d): Twist2d {
     val transform: Pose2d = end.relativeTo(this)
-    val dtheta: Double = transform.rotation.getRadians().inRadians
+    val dtheta: Double = transform.rotation.theta.inRadians
     val halfDtheta: Double = dtheta / 2.0
     val cosMinusOne: Double = transform.rotation.m_cos - 1
     val halfThetaByTanOfHalfDtheta: Double

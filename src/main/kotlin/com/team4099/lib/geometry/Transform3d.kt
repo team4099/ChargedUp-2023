@@ -8,10 +8,8 @@ class Transform3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
     initial: Pose3d,
     last: Pose3d
   ) : this(
-    last.getTranslation()
-      .minus(initial.getTranslation())
-      .rotateBy(initial.getRotation().unaryMinus()),
-    last.getRotation().minus(initial.getRotation())
+    last.translation.minus(initial.translation).rotateBy(initial.rotation3d.unaryMinus()),
+    last.rotation3d.minus(initial.rotation3d)
   )
 
   constructor() : this(Translation3d(), Rotation3d())
@@ -28,30 +26,19 @@ class Transform3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
     return Transform3d(Pose3d(), Pose3d().transformBy(this).transformBy(other!!))
   }
 
-  fun getTranslation(): Translation3d {
-    return m_translation
-  }
+  val translation3d: Translation3d = m_translation
 
-  fun getX(): Length {
-    return m_translation.getX()
-  }
+  val x: Length = m_translation.x
 
-  fun getY(): Length {
-    return m_translation.getY()
-  }
+  val y: Length = m_translation.y
 
-  fun getZ(): Length {
-    return m_translation.getZ()
-  }
+  val z: Length = m_translation.z
 
-  fun getRotation(): Rotation3d {
-    return m_rotation
-  }
+  val rotation3d: Rotation3d = m_rotation
 
   fun inverse(): Transform3d {
     return Transform3d(
-      getTranslation().unaryMinus().rotateBy(getRotation().unaryMinus()),
-      getRotation().unaryMinus()
+      translation3d.unaryMinus().rotateBy(rotation3d.unaryMinus()), rotation3d.unaryMinus()
     )
   }
 }

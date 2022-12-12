@@ -157,69 +157,72 @@ data class Rotation3d(val quaternion: Quaternion) {
     return Rotation3d(other.m_q.times(m_q))
   }
 
-  fun getX(): Angle {
-    val w: Double = m_q.getW().inRadians
-    val x: Double = m_q.getX().inMeters
-    val y: Double = m_q.getY().inMeters
-    val z: Double = m_q.getZ().inMeters
+  val x: Angle
+    get() {
+      val w: Double = m_q.w.inRadians
+      val x: Double = m_q.x.inMeters
+      val y: Double = m_q.y.inMeters
+      val z: Double = m_q.z.inMeters
 
-    // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
-    return Math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y)).radians
-  }
-
-  fun getY(): Angle {
-    val w: Double = m_q.getW().inRadians
-    val x: Double = m_q.getX().inMeters
-    val y: Double = m_q.getY().inMeters
-    val z: Double = m_q.getZ().inMeters
-
-    // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
-    val ratio = 2.0 * (w * y - z * x)
-    return if (Math.abs(ratio) >= 1.0) {
-      Math.copySign(Math.PI / 2.0, ratio).radians
-    } else {
-      Math.asin(ratio).radians
+      // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
+      return Math.atan2(2.0 * (w * x + y * z), 1.0 - 2.0 * (x * x + y * y)).radians
     }
-  }
 
-  fun getZ(): Angle {
-    val w: Double = m_q.getW().inRadians
-    val x: Double = m_q.getX().inMeters
-    val y: Double = m_q.getY().inMeters
-    val z: Double = m_q.getZ().inMeters
+  val y: Angle
+    get() {
+      val w: Double = m_q.w.inRadians
+      val x: Double = m_q.x.inMeters
+      val y: Double = m_q.y.inMeters
+      val z: Double = m_q.z.inMeters
 
-    // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
-    return Math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z)).radians
-  }
-
-  fun getAxis(): Vector<N3> {
-    val norm =
-      Math.sqrt(
-        m_q.getX().inMeters * m_q.getX().inMeters +
-          m_q.getY().inMeters * m_q.getY().inMeters +
-          m_q.getZ().inMeters * m_q.getZ().inMeters
-      )
-    return if (norm == 0.0) {
-      VecBuilder.fill(0.0, 0.0, 0.0)
-    } else {
-      VecBuilder.fill(
-        m_q.getX().inMeters / norm, m_q.getY().inMeters / norm, m_q.getZ().inMeters / norm
-      )
+      // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
+      val ratio = 2.0 * (w * y - z * x)
+      return if (Math.abs(ratio) >= 1.0) {
+        Math.copySign(Math.PI / 2.0, ratio).radians
+      } else {
+        Math.asin(ratio).radians
+      }
     }
-  }
 
-  fun getAngle(): Angle {
-    val norm =
-      Math.sqrt(
-        m_q.getX().inMeters * m_q.getX().inMeters +
-          m_q.getY().inMeters * m_q.getY().inMeters +
-          m_q.getZ().inMeters * m_q.getZ().inMeters
-      )
-    return (2.0 * Math.atan2(norm, m_q.getW().inRadians)).radians
-  }
+  val z: Angle
+    get() {
+      val w: Double = m_q.w.inRadians
+      val x: Double = m_q.x.inMeters
+      val y: Double = m_q.y.inMeters
+      val z: Double = m_q.z.inMeters
+
+      // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
+      return Math.atan2(2.0 * (w * z + x * y), 1.0 - 2.0 * (y * y + z * z)).radians
+    }
+
+  val axis: Vector<N3>
+    get() {
+      val norm =
+        Math.sqrt(
+          m_q.x.inMeters * m_q.x.inMeters +
+            m_q.y.inMeters * m_q.y.inMeters +
+            m_q.z.inMeters * m_q.z.inMeters
+        )
+      return if (norm == 0.0) {
+        VecBuilder.fill(0.0, 0.0, 0.0)
+      } else {
+        VecBuilder.fill(m_q.x.inMeters / norm, m_q.y.inMeters / norm, m_q.z.inMeters / norm)
+      }
+    }
+
+  val theta: Angle
+    get() {
+      val norm =
+        Math.sqrt(
+          m_q.x.inMeters * m_q.x.inMeters +
+            m_q.y.inMeters * m_q.y.inMeters +
+            m_q.z.inMeters * m_q.z.inMeters
+        )
+      return (2.0 * Math.atan2(norm, m_q.w.inRadians)).radians
+    }
 
   fun toRotation2d(): Rotation2d {
-    return Rotation2d(getZ())
+    return Rotation2d(z)
   }
 
   operator fun plus(other: Rotation3d): Rotation3d {
@@ -236,15 +239,15 @@ data class Rotation3d(val quaternion: Quaternion) {
 
   operator fun times(scalar: Double): Rotation3d? {
     // https://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp
-    return if (m_q.getW().inRadians >= 0.0) {
+    return if (m_q.w.inRadians >= 0.0) {
       Rotation3d(
-        VecBuilder.fill(m_q.getX().inMeters, m_q.getY().inMeters, m_q.getZ().inMeters),
-        (2.0 * scalar * acos(m_q.getW().inRadians)).radians
+        VecBuilder.fill(m_q.x.inMeters, m_q.y.inMeters, m_q.z.inMeters),
+        (2.0 * scalar * acos(m_q.w.inRadians)).radians
       )
     } else {
       Rotation3d(
-        VecBuilder.fill(-m_q.getX().inMeters, -m_q.getY().inMeters, -m_q.getZ().inMeters),
-        ((2.0 * scalar) * acos(-m_q.getW().inRadians)).radians
+        VecBuilder.fill(-m_q.x.inMeters, -m_q.y.inMeters, -m_q.z.inMeters),
+        ((2.0 * scalar) * acos(-m_q.w.inRadians)).radians
       )
     }
   }
