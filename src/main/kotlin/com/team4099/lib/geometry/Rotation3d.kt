@@ -4,102 +4,15 @@ import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.radians
-import edu.wpi.first.math.MatBuilder
 import edu.wpi.first.math.Matrix
-import edu.wpi.first.math.Nat
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.numbers.N3
-import org.ejml.dense.row.factory.DecompositionFactory_DDRM
-import kotlin.math.acos
 
 data class Rotation3d(val quaternion: Quaternion) {
   val m_q: Quaternion = quaternion.normalize()
 
-  companion object {
-    fun setupRotation3d1(rotationMatrix: Matrix<N3, N3>): Quaternion {
-      var R: Matrix<N3, N3> = rotationMatrix
-
-      val trace: Double = R.get(0, 0) + R.get(1, 1) + R.get(2, 2)
-      val w: Double
-      val x: Double
-      val y: Double
-      val z: Double
-
-      if (trace > 0.0) {
-        val s = 0.5 / Math.sqrt(trace + 1.0)
-        w = 0.25 / s
-        x = (R.get(2, 1) - R.get(1, 2)) * s
-        y = (R.get(0, 2) - R.get(2, 0)) * s
-        z = (R.get(1, 0) - R.get(0, 1)) * s
-      } else {
-        if (R.get(0, 0) > R.get(1, 1) && R.get(0, 0) > R.get(2, 2)) {
-          val s = 2.0 * Math.sqrt(1.0 + R.get(0, 0) - R.get(1, 1) - R.get(2, 2))
-          w = (R.get(2, 1) - R.get(1, 2)) / s
-          x = 0.25 * s
-          y = (R.get(0, 1) + R.get(1, 0)) / s
-          z = (R.get(0, 2) + R.get(2, 0)) / s
-        } else if (R.get(1, 1) > R.get(2, 2)) {
-          val s = 2.0 * Math.sqrt(1.0 + R.get(1, 1) - R.get(0, 0) - R.get(2, 2))
-          w = (R.get(0, 2) - R.get(2, 0)) / s
-          x = (R.get(0, 1) + R.get(1, 0)) / s
-          y = 0.25 * s
-          z = (R.get(1, 2) + R.get(2, 1)) / s
-        } else {
-          val s = 2.0 * Math.sqrt(1.0 + R.get(2, 2) - R.get(0, 0) - R.get(1, 1))
-          w = (R.get(1, 0) - R.get(0, 1)) / s
-          x = (R.get(0, 2) + R.get(2, 0)) / s
-          y = (R.get(1, 2) + R.get(2, 1)) / s
-          z = 0.25 * s
-        }
-      }
-
-      return Quaternion(w.radians, x, y, z)
-    }
-
-    fun setupRotation3d2(initial: Vector<N3>, last: Vector<N3>): Quaternion {
-      val dot: Double = initial.dot(last)
-      val normProduct: Double = initial.norm() * last.norm()
-      val dotNorm = dot / normProduct
-
-      if (dotNorm > 1.0 - 1E-9) {
-        // If the dot product is 1, the two vectors point in the same direction so
-        // there's no rotation. The default initialization of m_q will work.
-        return Quaternion()
-      } else if (dotNorm < -1.0 + 1E-9) {
-        // If the dot product is -1, the two vectors point in opposite directions
-        // so a 180 degree rotation is required. Any orthogonal vector can be used
-        // for it. Q in the QR decomposition is an orthonormal basis, so it
-        // contains orthogonal unit vectors.
-        val X =
-          MatBuilder(Nat.N3(), Nat.N1())
-            .fill(initial.get(0, 0), initial.get(1, 0), initial.get(2, 0))
-        val qr = DecompositionFactory_DDRM.qr(3, 1)
-        qr.decompose(X.storage.getMatrix())
-        val Q = qr.getQ(null, false)
-
-        // w = cos(θ/2) = cos(90°) = 0
-        //
-        // For x, y, and z, we use the second column of Q because the first is
-        // parallel instead of orthogonal. The third column would also work.
-        return Quaternion(0.0.radians, Q[0, 1], Q[1, 1], Q[2, 1])
-      } else {
-        // initial x last
-        val axis: Vector<N3> =
-          VecBuilder.fill(
-            initial.get(1, 0) * last[2, 0] - last[1, 0] * initial.get(2, 0),
-            last[0, 0] * initial.get(2, 0) - initial.get(0, 0) * last[2, 0],
-            initial.get(0, 0) * last[1, 0] - last[0, 0] * initial.get(1, 0)
-          )
-
-        // https://stackoverflow.com/a/11741520
-        return Quaternion(
-          (normProduct + dot).radians, axis.get(0, 0), axis.get(1, 0), axis.get(2, 0)
-        )
-          .normalize()
-      }
-    }
-  }
+  constructor(rotation3dWPILIB: Rotation3dWPILIB) : this(Quaternion(rotation3dWPILIB.quaternion))
 
   constructor(
     roll: Angle,
@@ -149,7 +62,9 @@ data class Rotation3d(val quaternion: Quaternion) {
     )
   )
 
-  constructor(rotationMatrix: Matrix<N3, N3>) : this(setupRotation3d1(rotationMatrix))
+  constructor(rotationMatrix: Matrix<N3, N3>) : this(Rotation3dWPILIB(rotationMatrix))
+
+  constructor(initial: Vector<N3>, last: Vector<N3>) : this(Rotation3dWPILIB(initial, last))
 
   constructor() : this(Quaternion())
 
@@ -221,6 +136,8 @@ data class Rotation3d(val quaternion: Quaternion) {
       return (2.0 * Math.atan2(norm, m_q.w.inRadians)).radians
     }
 
+  val rotation3d: Rotation3dWPILIB = Rotation3dWPILIB(m_q.quaternion)
+
   fun toRotation2d(): Rotation2d {
     return Rotation2d(z)
   }
@@ -237,18 +154,7 @@ data class Rotation3d(val quaternion: Quaternion) {
     return Rotation3d(m_q.inverse())
   }
 
-  operator fun times(scalar: Double): Rotation3d? {
-    // https://en.wikipedia.org/wiki/Slerp#Quaternion_Slerp
-    return if (m_q.w.inRadians >= 0.0) {
-      Rotation3d(
-        VecBuilder.fill(m_q.x.inMeters, m_q.y.inMeters, m_q.z.inMeters),
-        (2.0 * scalar * acos(m_q.w.inRadians)).radians
-      )
-    } else {
-      Rotation3d(
-        VecBuilder.fill(-m_q.x.inMeters, -m_q.y.inMeters, -m_q.z.inMeters),
-        ((2.0 * scalar) * acos(-m_q.w.inRadians)).radians
-      )
-    }
+  operator fun times(scalar: Double): Rotation3d {
+    return Rotation3d(rotation3d.times(scalar))
   }
 }

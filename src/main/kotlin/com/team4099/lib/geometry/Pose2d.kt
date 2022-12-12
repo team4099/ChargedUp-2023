@@ -3,7 +3,6 @@ package com.team4099.lib.geometry
 import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
-import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.inRadiansPerSecond
@@ -13,6 +12,10 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
   constructor() : this(Translation2d(), Rotation2d())
 
   constructor(x: Length, y: Length, rotation: Rotation2d) : this(Translation2d(x, y), rotation)
+
+  constructor(
+    pose2dWPILIB: Pose2dWPILIB
+  ) : this(Translation2d(pose2dWPILIB.translation), Rotation2d(pose2dWPILIB.rotation))
 
   operator fun plus(other: Transform2d): Pose2d {
     return transformBy(other)
@@ -79,34 +82,14 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
   }
 
   fun log(end: Pose2d): Twist2d {
-    val transform: Pose2d = end.relativeTo(this)
-    val dtheta: Double = transform.rotation.theta.inRadians
-    val halfDtheta: Double = dtheta / 2.0
-    val cosMinusOne: Double = transform.rotation.m_cos - 1
-    val halfThetaByTanOfHalfDtheta: Double
-    if (Math.abs(cosMinusOne) < 1E-9) {
-      halfThetaByTanOfHalfDtheta = ((11.0 / 12.0) * dtheta) * dtheta
-    } else {
-      halfThetaByTanOfHalfDtheta = (-(halfDtheta * transform.rotation.m_sin) / cosMinusOne)
-    }
-    val (x, y) =
-      transform
-        .translation
-        .rotateBy(Rotation2d(halfThetaByTanOfHalfDtheta, -halfDtheta))
-        .times(Math.hypot(halfThetaByTanOfHalfDtheta, halfDtheta))
-    return Twist2d(x.perSecond, y.perSecond, dtheta.radians.perSecond)
+    val twist = pose2d.log(end.pose2d)
+    return Twist2d(
+      twist.dx.meters.perSecond, twist.dy.meters.perSecond, twist.dtheta.radians.perSecond
+    )
   }
 
   fun interpolate(endValue: Pose2d, t: Double): Pose2d {
-    return if (t < 0) {
-      this
-    } else if (t >= 1) {
-      endValue
-    } else {
-      val twist: Twist2d = this.log(endValue)
-      val scaledTwist = Twist2d(twist.dx * t, twist.dy * t, twist.dtheta * t)
-      this.exp(scaledTwist)
-    }
+    return Pose2d(pose2d.interpolate(endValue.pose2d, t))
   }
 }
 

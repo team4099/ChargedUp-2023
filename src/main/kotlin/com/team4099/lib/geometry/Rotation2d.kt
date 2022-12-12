@@ -13,7 +13,7 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
 
   constructor(
     wpilib_rotation2d: Rotation2dWPILIB
-  ) : this(wpilib_rotation2d.getCos(), wpilib_rotation2d.getSin())
+  ) : this(wpilib_rotation2d.cos, wpilib_rotation2d.sin)
 
   init {
     var magnitude: Double = Math.hypot(m_cos, m_sin)
