@@ -1,6 +1,5 @@
 package com.team4099.lib.pathfollow
 
-import com.team4099.lib.geometry.interpolate
 import com.team4099.lib.interpolate
 import com.team4099.lib.units.base.Time
 
