@@ -1,11 +1,15 @@
 package com.team4099.robot2022.subsystems.climber
 
+import com.ctre.phoenix.motorcontrol.ControlMode
+import com.ctre.phoenix.motorcontrol.DemandType
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.ctreLinearMechanismSensor
+import com.team4099.lib.units.derived.ElectricalPotential
+import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.derived.volts
 import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.config.constants.TelescopingClimberConstants
@@ -98,5 +102,48 @@ object TelescopingClimberIOReal : TelescopingClimberIO {
 
     inputs.leftTemperatureCelsius = telescopingLeftArm.temperature
     inputs.rightTemperatureCelsius = telescopingRightArm.temperature
+  }
+
+  override fun zeroLeftEncoder() {
+    telescopingLeftArm.selectedSensorPosition = 0.0
+  }
+
+  override fun zeroRightEncoder() {
+    telescopingRightArm.selectedSensorPosition = 0.0
+  }
+
+  override fun setLeftOpenLoop(percentOutput: Double) {
+    telescopingLeftArm.set(ControlMode.PercentOutput, percentOutput)
+  }
+
+  override fun setRightOpenLoop(percentOutput: Double) {
+    telescopingRightArm.set(ControlMode.PercentOutput, percentOutput)
+  }
+
+  override fun setLeftPosition(height: Length, feedforward: ElectricalPotential) {
+    telescopingLeftArm.set(
+      ControlMode.Position,
+      telescopingLeftArmSensor.positionToRawUnits(height),
+      DemandType.ArbitraryFeedForward,
+      feedforward.inVolts / 12.0
+    )
+  }
+
+  override fun setRightPosition(height: Length, feedforward: ElectricalPotential) {
+    telescopingRightArm.set(
+      ControlMode.Position,
+      telescopingLeftArmSensor.positionToRawUnits(height),
+      DemandType.ArbitraryFeedForward,
+      feedforward.inVolts / 12.0
+    )
+  }
+
+  override fun configPID(kP: Double, kI: Double, kD: Double) {
+    telescopingLeftArm.config_kP(0, kP)
+    telescopingLeftArm.config_kI(0, kI)
+    telescopingLeftArm.config_kD(0, kD)
+    telescopingRightArm.config_kP(0, kP)
+    telescopingRightArm.config_kI(0, kI)
+    telescopingRightArm.config_kD(0, kD)
   }
 }
