@@ -1,13 +1,20 @@
 {
   "MainWindow": {
     "GLOBAL": {
-      "height": "720",
-      "maximized": "0",
+      "height": "1009",
+      "maximized": "1",
       "style": "0",
       "userScale": "2",
-      "width": "1280",
-      "xpos": "-1",
-      "ypos": "-1"
+      "width": "1607",
+      "xpos": "1920",
+      "ypos": "53"
+    }
+  },
+  "Table": {
+    "0x542B5671,2": {
+      "Column 0  Width": "262",
+      "Column 1  Width": "462",
+      "RefScale": "13"
     }
   },
   "Window": {
@@ -24,7 +31,7 @@
     "###NetworkTables": {
       "Collapsed": "0",
       "Pos": "275,103",
-      "Size": "750,278"
+      "Size": "750,516"
     },
     "###Other Devices": {
       "Collapsed": "0",

@@ -74,7 +74,7 @@ object Robot : LoggedRobot() {
 
     LiveWindow.disableAllTelemetry()
 
-    // init robot container too
+    RobotContainer
   }
 
   override fun robotPeriodic() {
