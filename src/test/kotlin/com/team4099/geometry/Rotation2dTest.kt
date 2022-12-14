@@ -4,7 +4,6 @@ import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inDegrees
 import com.team4099.lib.units.derived.inRadians
-import edu.wpi.first.math.geometry.Rotation2d.fromDegrees
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -22,7 +21,8 @@ class Rotation2dTest {
     val rotated = zero.rotateBy(Rotation2d(90.0.degrees))
     assertAll(
       { assertEquals(Math.PI / 2.0, rotated.theta.inRadians, kEpsilon) },
-      { assertEquals(90.0, rotated.theta.inDegrees, kEpsilon) })
+      { assertEquals(90.0, rotated.theta.inDegrees, kEpsilon) }
+    )
   }
 
   @Test
