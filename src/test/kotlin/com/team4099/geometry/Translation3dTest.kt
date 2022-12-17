@@ -87,7 +87,7 @@ internal class Translation3dTest {
   @Test
   fun testDivision() {
     val original = Translation3d(3.0.meters, 5.0.meters, 7.0.meters)
-    val div = original.div(2.0)
+    val div = original / 2.0
     assertAll(
       { assertEquals(1.5, div.x.inMeters, kEpsilon) },
       { assertEquals(2.5, div.y.inMeters, kEpsilon) },

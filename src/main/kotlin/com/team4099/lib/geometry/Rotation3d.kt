@@ -8,6 +8,7 @@ import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.numbers.N3
+import kotlin.math.abs
 
 data class Rotation3d(val quaternion: Quaternion) {
   val m_q: Quaternion = quaternion.normalize()
@@ -155,6 +156,6 @@ data class Rotation3d(val quaternion: Quaternion) {
   }
 
   operator fun times(scalar: Double): Rotation3d {
-    return Rotation3d(rotation3d.times(scalar))
+    return Rotation3d(rotation3d * scalar)
   }
 }

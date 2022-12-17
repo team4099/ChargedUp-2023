@@ -5,6 +5,7 @@ import com.team4099.lib.units.derived.cos
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.sin
 import edu.wpi.first.math.MathUtil
+import kotlin.math.abs
 
 data class Rotation2d(var m_cos: Double, var m_sin: Double) {
   constructor() : this(1.0, 0.0)
@@ -59,6 +60,16 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
   val tan: Double = m_sin / m_cos
 
   fun interpolate(endValue: Rotation2d, t: Double): Rotation2d? {
-    return plus(endValue.minus(this).times(MathUtil.clamp(t, 0.0, 1.0)))
+    return plus((endValue - this) * MathUtil.clamp(t, 0.0, 1.0))
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Rotation2d) return false
+
+    if (abs(m_cos - other.m_cos) > 1E-9) return false
+    if (abs(m_sin - other.m_sin) > 1E-9) return false
+
+    return true
   }
 }

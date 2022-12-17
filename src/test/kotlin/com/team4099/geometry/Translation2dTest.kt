@@ -50,7 +50,7 @@ internal class Translation2dTest {
   @Test
   fun testMultiplication() {
     val original = Translation2d(3.0.meters, 5.0.meters)
-    val mult = original.times(3.0)
+    val mult = original * 3.0
     assertAll(
       { assertEquals(9.0, mult.x.inMeters, kEpsilon) },
       { assertEquals(15.0, mult.y.inMeters, kEpsilon) }

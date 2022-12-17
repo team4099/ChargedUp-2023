@@ -46,7 +46,7 @@ data class Translation3d(val m_x: Length, val m_y: Length, val m_z: Length) {
 
   fun rotateBy(other: Rotation3d): Translation3d {
     val p = Quaternion(0.0.radians, m_x.inMeters, m_y.inMeters, m_z.inMeters)
-    val qprime = other.quaternion.times(p).times(other.quaternion.inverse())
+    val qprime = other.quaternion * p * other.quaternion.inverse()
     return Translation3d(qprime.x, qprime.y, qprime.z)
   }
 

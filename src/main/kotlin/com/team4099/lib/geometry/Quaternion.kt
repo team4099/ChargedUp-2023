@@ -18,7 +18,7 @@ data class Quaternion(val m_r: Angle, val m_v: Vector<N3>) {
   constructor(m_q: QuaternionWPILIB) : this(m_q.w.radians, VecBuilder.fill(m_q.x, m_q.y, m_q.z))
 
   operator fun times(other: Quaternion): Quaternion {
-    return Quaternion(quaternion.times(other.quaternion))
+    return Quaternion(quaternion * other.quaternion)
   }
 
   fun inverse(): Quaternion {

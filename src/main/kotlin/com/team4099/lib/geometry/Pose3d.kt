@@ -52,7 +52,7 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
   val pose3d: Pose3dWPILIB = Pose3dWPILIB(x.inMeters, y.inMeters, z.inMeters, rotation3d.rotation3d)
 
   operator fun times(scalar: Double): Pose3d {
-    return Pose3d(m_translation.times(scalar), m_rotation.times(scalar)!!)
+    return Pose3d(m_translation * scalar, m_rotation * scalar)
   }
 
   operator fun div(scalar: Double): Pose3d {

@@ -10,7 +10,7 @@ data class Transform2d(var m_translation: Translation2d, var m_rotation: Rotatio
   )
 
   operator fun times(scalar: Double): Transform2d {
-    return Transform2d(m_translation.times(scalar), m_rotation.times(scalar))
+    return Transform2d(m_translation * scalar, m_rotation * scalar)
   }
 
   operator fun div(scalar: Double): Transform2d {

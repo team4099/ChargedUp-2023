@@ -57,7 +57,7 @@ class Rotation2dTest {
     var rot1 = Rotation2d(43.0.degrees)
     var rot2 = Rotation2d(43.0.degrees)
     assertEquals(rot1, rot2)
-    rot1 = Rotation2d(-180.0.degrees)
+    rot1 = Rotation2d((-180.0).degrees)
     rot2 = Rotation2d(180.0.degrees)
     assertEquals(rot1, rot2)
   }
