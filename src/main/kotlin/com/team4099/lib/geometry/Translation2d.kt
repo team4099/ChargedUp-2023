@@ -12,7 +12,7 @@ import kotlin.math.hypot
  * the origin, facing toward the X direction, moving forward increases the X, moving to the left
  * increases the Y, and moving upwards increases the Z.
  */
-data class Translation2d(val x: Length, val y: Length) {
+data class Translation2d(var x: Length, var y: Length) {
   constructor(translation: Translation2dWPILIB) : this(translation.x.meters, translation.y.meters)
 
   constructor() : this(0.0.meters, 0.0.meters)
@@ -27,8 +27,26 @@ data class Translation2d(val x: Length, val y: Length) {
     return Translation2d(x + other.x, y + other.y)
   }
 
+  fun plusMutator(other: Translation2d) {
+    x += other.x
+    y += other.y
+  }
+
+  fun plusMutator(addX: Length, addY: Length) {
+    x += addX
+    y += addY
+  }
+
   operator fun minus(other: Translation2d): Translation2d {
     return Translation2d(x - other.x, y - other.y)
+  }
+
+  fun minusMutator(other: Translation2d) {
+    plusMutator(-other.x, -other.y)
+  }
+
+  fun minusMutator(minusX: Length, minusY: Length) {
+    plusMutator(-minusX, -minusY)
   }
 
   operator fun times(scalar: Double): Translation2d {

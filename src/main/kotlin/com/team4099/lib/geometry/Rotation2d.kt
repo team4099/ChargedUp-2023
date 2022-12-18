@@ -43,7 +43,7 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
     return rotateBy(other.unaryMinus())
   }
 
-  fun minusMutation(angle : Angle) {
+  fun minusMutation(angle: Angle) {
     plusMutation(-angle)
   }
 
