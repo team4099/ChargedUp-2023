@@ -49,61 +49,61 @@ val Mass.inPounds: Double
   get() = (value * Magnitude.KILO) / GRAMS_PER_POUND
 
 val Mass.inYottagrams: Double
-  get() = (value * Magnitude.KILO) * 1.yotta
+  get() = (value * Magnitude.KILO) / 1.yotta
 
 val Mass.inZetagrams: Double
-  get() = (value * Magnitude.KILO) * 1.zeta
+  get() = (value * Magnitude.KILO) / 1.zeta
 
 val Mass.inExagrams: Double
-  get() = (value * Magnitude.KILO) * 1.exa
+  get() = (value * Magnitude.KILO) / 1.exa
 
 val Mass.inPetagrams: Double
-  get() = (value * Magnitude.KILO) * 1.peta
+  get() = (value * Magnitude.KILO) / 1.peta
 
 val Mass.inTeragrams: Double
-  get() = (value * Magnitude.KILO) * 1.tera
+  get() = (value * Magnitude.KILO) / 1.tera
 
-val Mass.inGigaagrams: Double
-  get() = (value * Magnitude.KILO) * 1.giga
+val Mass.inGigagrams: Double
+  get() = (value * Magnitude.KILO) / 1.giga
 
 val Mass.inMegagrams: Double
-  get() = (value * Magnitude.KILO) * 1.mega
+  get() = (value * Magnitude.KILO) / 1.mega
 
 val Mass.inKilograms: Double
-  get() = (value * Magnitude.KILO) * 1.kilo
+  get() = (value * Magnitude.KILO) / 1.kilo
 
 val Mass.inHectograms: Double
-  get() = (value * Magnitude.KILO) * 1.hecto
+  get() = (value * Magnitude.KILO) / 1.hecto
 
 val Mass.inDecagrams: Double
-  get() = (value * Magnitude.KILO) * 1.deca
+  get() = (value * Magnitude.KILO) / 1.deca
 
 val Mass.inDecigrams: Double
-  get() = (value * Magnitude.KILO) * 1.deci
+  get() = (value * Magnitude.KILO) / 1.deci
 
 val Mass.inCentigrams: Double
-  get() = (value * Magnitude.KILO) * 1.centi
+  get() = (value * Magnitude.KILO) / 1.centi
 
 val Mass.inMilligrams: Double
-  get() = (value * Magnitude.KILO) * 1.milli
+  get() = (value * Magnitude.KILO) / 1.milli
 
 val Mass.inMicrograms: Double
-  get() = (value * Magnitude.KILO) * 1.micro
+  get() = (value * Magnitude.KILO) / 1.micro
 
 val Mass.inNanograms: Double
-  get() = (value * Magnitude.KILO) * 1.nano
+  get() = (value * Magnitude.KILO) / 1.nano
 
 val Mass.inPicograms: Double
-  get() = (value * Magnitude.KILO) * 1.pico
+  get() = (value * Magnitude.KILO) / 1.pico
 
 val Mass.inFemtograms: Double
-  get() = (value * Magnitude.KILO) * 1.femto
+  get() = (value * Magnitude.KILO) / 1.femto
 
 val Mass.inAttograms: Double
-  get() = (value * Magnitude.KILO) * 1.atto
+  get() = (value * Magnitude.KILO) / 1.atto
 
 val Mass.inZeptograms: Double
-  get() = (value * Magnitude.KILO) * 1.zepto
+  get() = (value * Magnitude.KILO) / 1.zepto
 
 val Mass.inYoctograms: Double
-  get() = (value * Magnitude.KILO) * 1.yocto
+  get() = (value * Magnitude.KILO) / 1.yocto

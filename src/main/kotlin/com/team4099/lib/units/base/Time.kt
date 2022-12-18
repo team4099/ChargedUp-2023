@@ -49,31 +49,31 @@ val Time.inHours: Double
   get() = value / SECONDS_PER_HOUR
 
 val Time.inDeciseconds: Double
-  get() = value * 1.deci
+  get() = value / 1.deci
 
 val Time.inCentiseconds: Double
-  get() = value * 1.centi
+  get() = value / 1.centi
 
 val Time.inMilliseconds: Double
-  get() = value * 1.milli
+  get() = value / 1.milli
 
 val Time.inMicroseconds: Double
-  get() = value * 1.micro
+  get() = value / 1.micro
 
 val Time.inNanoseconds: Double
-  get() = value * 1.nano
+  get() = value / 1.nano
 
 val Time.inPicoseconds: Double
-  get() = value * 1.pico
+  get() = value / 1.pico
 
 val Time.inFemtoseconds: Double
-  get() = value * 1.femto
+  get() = value / 1.femto
 
 val Time.inAttoseconds: Double
-  get() = value * 1.atto
+  get() = value / 1.atto
 
 val Time.inZeptoseconds: Double
-  get() = value * 1.zepto
+  get() = value / 1.zepto
 
 val Time.inYoctoseconds: Double
-  get() = value * 1.yocto
+  get() = value / 1.yocto

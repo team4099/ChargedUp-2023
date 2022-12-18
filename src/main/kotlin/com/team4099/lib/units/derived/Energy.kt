@@ -30,7 +30,7 @@ import com.team4099.lib.units.zeta
 
 typealias Joule = Fraction<Product<Kilogram, Squared<Meter>>, Squared<Second>>
 
-typealias Energy = Value<Newton>
+typealias Energy = Value<Joule>
 
 val Double.joules
   get() = Energy(this)
@@ -38,65 +38,65 @@ val Double.joules
 val Number.joules
   get() = Energy(this.toDouble())
 
-val Force.inJoules: Double
+val Energy.inJoules: Double
   get() = value
 
-val Force.inYottajoules: Double
-  get() = value * 1.yotta
+val Energy.inYottajoules: Double
+  get() = value / 1.yotta
 
-val Force.inZetajoules: Double
-  get() = value * 1.zeta
+val Energy.inZetajoules: Double
+  get() = value / 1.zeta
 
-val Force.inExajoules: Double
-  get() = value * 1.exa
+val Energy.inExajoules: Double
+  get() = value / 1.exa
 
-val Force.inPetajoules: Double
-  get() = value * 1.peta
+val Energy.inPetajoules: Double
+  get() = value / 1.peta
 
-val Force.inTerajoules: Double
-  get() = value * 1.tera
+val Energy.inTerajoules: Double
+  get() = value / 1.tera
 
-val Force.inGigajoules: Double
-  get() = value * 1.giga
+val Energy.inGigajoules: Double
+  get() = value / 1.giga
 
-val Force.inMegajoules: Double
-  get() = value * 1.mega
+val Energy.inMegajoules: Double
+  get() = value / 1.mega
 
-val Force.inKilojoules: Double
-  get() = value * 1.kilo
+val Energy.inKilojoules: Double
+  get() = value / 1.kilo
 
-val Force.inHectojoules: Double
-  get() = value * 1.hecto
+val Energy.inHectojoules: Double
+  get() = value / 1.hecto
 
-val Force.inDecajoules: Double
-  get() = value * 1.deca
+val Energy.inDecajoules: Double
+  get() = value / 1.deca
 
-val Force.inDecijoules: Double
-  get() = value * 1.deci
+val Energy.inDecijoules: Double
+  get() = value / 1.deci
 
-val Force.inCentijoules: Double
-  get() = value * 1.centi
+val Energy.inCentijoules: Double
+  get() = value / 1.centi
 
-val Force.inMillijoules: Double
-  get() = value * 1.milli
+val Energy.inMillijoules: Double
+  get() = value / 1.milli
 
-val Force.inMicrojoules: Double
-  get() = value * 1.micro
+val Energy.inMicrojoules: Double
+  get() = value / 1.micro
 
-val Force.inNanojoules: Double
-  get() = value * 1.nano
+val Energy.inNanojoules: Double
+  get() = value / 1.nano
 
-val Force.inPicojoules: Double
-  get() = value * 1.pico
+val Energy.inPicojoules: Double
+  get() = value / 1.pico
 
-val Force.inFemtojoules: Double
-  get() = value * 1.femto
+val Energy.inFemtojoules: Double
+  get() = value / 1.femto
 
-val Force.inAttojoules: Double
-  get() = value * 1.atto
+val Energy.inAttojoules: Double
+  get() = value / 1.atto
 
-val Force.inZeptojoules: Double
-  get() = value * 1.zepto
+val Energy.inZeptojoules: Double
+  get() = value / 1.zepto
 
-val Force.inYoctojoules: Double
-  get() = value * 1.yocto
+val Energy.inYoctojoules: Double
+  get() = value / 1.yocto

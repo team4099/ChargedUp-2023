@@ -39,61 +39,61 @@ val Charge.inCoulombs: Double
   get() = value
 
 val Charge.inYottacoulombs: Double
-  get() = value * 1.yotta
+  get() = value / 1.yotta
 
 val Charge.inZetacoulombs: Double
-  get() = value * 1.zeta
+  get() = value / 1.zeta
 
 val Charge.inExacoulombs: Double
-  get() = value * 1.exa
+  get() = value / 1.exa
 
 val Charge.inPetacoulombs: Double
-  get() = value * 1.peta
+  get() = value / 1.peta
 
 val Charge.inTeracoulombs: Double
-  get() = value * 1.tera
+  get() = value / 1.tera
 
 val Charge.inGigacoulombs: Double
-  get() = value * 1.giga
+  get() = value / 1.giga
 
 val Charge.inMegacoulombs: Double
-  get() = value * 1.mega
+  get() = value / 1.mega
 
 val Charge.inKilocoulombs: Double
-  get() = value * 1.kilo
+  get() = value / 1.kilo
 
 val Charge.inHectocoulombs: Double
-  get() = value * 1.hecto
+  get() = value / 1.hecto
 
 val Charge.inDecacoulombs: Double
-  get() = value * 1.deca
+  get() = value / 1.deca
 
 val Charge.inDecicoulombs: Double
-  get() = value * 1.deci
+  get() = value / 1.deci
 
 val Charge.inCenticoulombs: Double
-  get() = value * 1.centi
+  get() = value / 1.centi
 
 val Charge.inMillicoulombs: Double
-  get() = value * 1.milli
+  get() = value / 1.milli
 
 val Charge.inMicrocoulombs: Double
-  get() = value * 1.micro
+  get() = value / 1.micro
 
 val Charge.inNanocoulombs: Double
-  get() = value * 1.nano
+  get() = value / 1.nano
 
 val Charge.inPicocoulombs: Double
-  get() = value * 1.pico
+  get() = value / 1.pico
 
 val Charge.inFemtocoulombs: Double
-  get() = value * 1.femto
+  get() = value / 1.femto
 
 val Charge.inAttocoulombs: Double
-  get() = value * 1.atto
+  get() = value / 1.atto
 
 val Charge.inZeptocoulombs: Double
-  get() = value * 1.zepto
+  get() = value / 1.zepto
 
 val Charge.inYoctocoulombs: Double
-  get() = value * 1.yocto
+  get() = value / 1.yocto

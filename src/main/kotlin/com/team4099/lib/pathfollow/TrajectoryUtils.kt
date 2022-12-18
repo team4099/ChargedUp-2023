@@ -1,8 +1,9 @@
 package com.team4099.lib.pathfollow
 
 import com.pathplanner.lib.PathPlannerTrajectory
-import com.team4099.lib.geometry.Pose
-import com.team4099.lib.geometry.Translation
+import com.team4099.lib.geometry.Pose2d
+import com.team4099.lib.geometry.Rotation2d
+import com.team4099.lib.geometry.Translation2d
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
@@ -62,7 +63,7 @@ fun trajectoryFromPath(
         */
       TrajectoryState(
         state.timeSeconds.seconds,
-        Pose(Translation(state.poseMeters.translation), headingTarget),
+        Pose2d(Translation2d(state.poseMeters.translation), Rotation2d(headingTarget)),
         state.poseMeters.rotation.angle,
         state.velocityMetersPerSecond.meters.perSecond,
         state.accelerationMetersPerSecondSq.meters.perSecond.perSecond
@@ -78,7 +79,10 @@ fun trajectoryFromPathPlanner(pathPlannerTrajectory: PathPlannerTrajectory): Tra
       state as PathPlannerTrajectory.PathPlannerState
       TrajectoryState(
         state.timeSeconds.seconds,
-        Pose(Translation(state.poseMeters.translation), state.holonomicRotation.angle),
+        Pose2d(
+          Translation2d(state.poseMeters.translation),
+          Rotation2d(state.holonomicRotation.angle)
+        ),
         state.poseMeters.rotation.angle,
         state.velocityMetersPerSecond.meters.perSecond,
         state.accelerationMetersPerSecondSq.meters.perSecond.perSecond,

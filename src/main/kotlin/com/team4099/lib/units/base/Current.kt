@@ -37,61 +37,61 @@ val Current.inAmperes
   get() = value
 
 val Current.inYottaamps
-  get() = value * 1.yotta
+  get() = value / 1.yotta
 
 val Current.inZetaamps
-  get() = value * 1.zeta
+  get() = value / 1.zeta
 
 val Current.inExaamps
-  get() = value * 1.exa
+  get() = value / 1.exa
 
 val Current.inPetaamps
-  get() = value * 1.peta
+  get() = value / 1.peta
 
 val Current.inTeraamps
-  get() = value * 1.tera
+  get() = value / 1.tera
 
 val Current.inGigaamps
-  get() = value * 1.giga
+  get() = value / 1.giga
 
 val Current.inMegaamps
-  get() = value * 1.mega
+  get() = value / 1.mega
 
 val Current.inKiloamps
-  get() = value * 1.kilo
+  get() = value / 1.kilo
 
 val Current.inHectoamps
-  get() = value * 1.hecto
+  get() = value / 1.hecto
 
 val Current.inDecaamps
-  get() = value * 1.deca
+  get() = value / 1.deca
 
 val Current.inDeciamps
-  get() = value * 1.deci
+  get() = value / 1.deci
 
 val Current.inCentiamps
-  get() = value * 1.centi
+  get() = value / 1.centi
 
 val Current.inMilliamps
-  get() = value * 1.milli
+  get() = value / 1.milli
 
 val Current.inMicroamps
-  get() = value * 1.micro
+  get() = value / 1.micro
 
 val Current.inNanoamps
-  get() = value * 1.nano
+  get() = value / 1.nano
 
 val Current.inPicoamps
-  get() = value * 1.pico
+  get() = value / 1.pico
 
 val Current.inFemtoamps
-  get() = value * 1.femto
+  get() = value / 1.femto
 
 val Current.inAttoamps
-  get() = value * 1.atto
+  get() = value / 1.atto
 
 val Current.inZeptoamps
-  get() = value * 1.zepto
+  get() = value / 1.zepto
 
 val Current.inYoctoamps
-  get() = value * 1.yocto
+  get() = value / 1.yocto

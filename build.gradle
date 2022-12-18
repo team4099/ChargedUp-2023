@@ -6,6 +6,7 @@ plugins {
 	id "edu.wpi.first.GradleRIO" version "2023.1.1-beta-4"
 	id "com.diffplug.spotless" version "6.3.0"
 	id "com.peterabeles.gversion" version "1.10"
+	id("org.jetbrains.kotlinx.kover") version "0.4.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -82,8 +83,7 @@ dependencies {
 	nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
 	simulationRelease wpi.sim.enableRelease()
 
-	testImplementation 'junit:junit:4.12'
-
+	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 
 	// We need to add the Kotlin stdlib in order to use most Kotlin language features.
 	// compile "org.jetbrains.kotlin:kotlin-stdlib"
@@ -104,6 +104,11 @@ jar {
 test {
 	useJUnitPlatform()
 }
+
+// Disabling unwanted unit tests tasks
+project.gradle.startParameter.excludedTaskNames.add("test")
+project.gradle.startParameter.excludedTaskNames.add("koverHtmlReport")
+project.gradle.startParameter.excludedTaskNames.add("koverXmlReport")
 
 spotless {
 	format 'misc', {
