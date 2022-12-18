@@ -1,7 +1,8 @@
 package com.team4099.lib.pathfollow
 
-import com.team4099.lib.geometry.Pose
-import com.team4099.lib.geometry.Translation
+import com.team4099.lib.geometry.Pose2d
+import com.team4099.lib.geometry.Rotation2d
+import com.team4099.lib.geometry.Translation2d
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.radians
@@ -17,11 +18,11 @@ import kotlin.math.atan2
  *
  * Heading of holonomic drivetrains can be controlled at any waypoint.
  */
-class Path constructor(val startingPose: Pose, val endingPose: Pose) {
+class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
   val headingPointMap = sortedMapOf<Int, Angle>()
   var splinePoints = mutableListOf<PoseWithCurvature>()
   private val headingSplineMap = mutableMapOf<Int, Angle>()
-  private val waypoints = mutableListOf<Translation>()
+  private val waypoints = mutableListOf<Translation2d>()
   var built = false
   val addTranslationAlert: Alert =
     Alert("Failed to add translation to built path", Alert.AlertType.ERROR)
@@ -38,7 +39,7 @@ class Path constructor(val startingPose: Pose, val endingPose: Pose) {
    * @param heading The target heading at this waypoint, null if the heading at this waypoint does
    * not matter.
    */
-  fun addWaypoint(nextTranslation: Translation, heading: Angle? = null) {
+  fun addWaypoint(nextTranslation: Translation2d, heading: Angle? = null) {
     if (built) {
       addTranslationAlert.set(true)
       return
@@ -82,9 +83,9 @@ class Path constructor(val startingPose: Pose, val endingPose: Pose) {
 
     val controlVectors =
       SplineHelper.getCubicControlVectorsFromWaypoints(
-        startingPose.copy(theta = startHeading).pose2d,
+        startingPose.copy(m_rotation = Rotation2d(startHeading)).pose2d,
         waypointTranslation2ds,
-        endingPose.copy(theta = endHeading).pose2d
+        endingPose.copy(m_rotation = Rotation2d(endHeading)).pose2d
       )
 
     // Create a list of splines

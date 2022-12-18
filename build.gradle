@@ -105,6 +105,11 @@ test {
 	useJUnitPlatform()
 }
 
+// Disabling unwanted unit tests tasks
+project.gradle.startParameter.excludedTaskNames.add("test")
+project.gradle.startParameter.excludedTaskNames.add("koverHtmlReport")
+project.gradle.startParameter.excludedTaskNames.add("koverXmlReport")
+
 spotless {
 	format 'misc', {
 		// define the files to apply `misc` to
