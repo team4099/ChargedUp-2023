@@ -4,6 +4,7 @@ import com.team4099.lib.geometry.Pose2d
 import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Transform2d
 import com.team4099.lib.geometry.Translation2d
+import com.team4099.lib.geometry.interpolate
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.derived.degrees
@@ -61,6 +62,13 @@ class Pose2dTest {
       one.interpolate(two, 0.5.seconds),
       Pose2d(3.565826248793698.meters, 5.434173751206302.meters, Rotation2d(60.degrees))
     )
+  }
+
+  @Test
+  fun testLinearInterpolation() {
+    val one = Pose2d(3.0.meters, 5.0.meters, Rotation2d(45.0.degrees))
+    val two = Pose2d(4.0.meters, 6.0.meters, Rotation2d(75.0.degrees))
+    assertEquals(interpolate(one, two, 0.5), Pose2d(3.5.meters, 5.5.meters, Rotation2d(60.degrees)))
   }
 
   @Test
