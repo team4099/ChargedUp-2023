@@ -28,12 +28,6 @@ import org.junit.jupiter.api.Test
 /* Unit tests for Energy units */
 class EnergyTest {
   private val kEpsilon = 1E-9
-  // Hacky way to do this. Consider removing support in the future for nanojoules and below due to
-  // floating point imprecision
-  private val kDelta = 1E-3
-  private val kSigma = 1E6
-  private val kAlpha = 1E9
-  private val kBeta = 1E12
 
   @Test
   fun testJoulesToYottajoules() {
@@ -123,42 +117,42 @@ class EnergyTest {
   @Test
   fun testJoulestoNanojoules() {
     val energyJoules = 4099.joules
-    Assertions.assertEquals(energyJoules.inNanojoules, 4.099E12, kDelta)
+    Assertions.assertEquals(energyJoules.inNanojoules, 4.099E12, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testJoulestoPicojoules() {
     val energyJoules = 4099.joules
-    Assertions.assertEquals(energyJoules.inPicojoules, 4.099E15, kSigma)
+    Assertions.assertEquals(energyJoules.inPicojoules, 4.099E15, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testJoulestoFemtojoules() {
     val energyJoules = 4099.joules
-    Assertions.assertEquals(energyJoules.inFemtojoules, 4.099E18, kSigma)
+    Assertions.assertEquals(energyJoules.inFemtojoules, 4.099E18, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testJoulestoAttojoules() {
     val energyJoules = 4099.joules
-    Assertions.assertEquals(energyJoules.inAttojoules, 4.099E21, kSigma)
+    Assertions.assertEquals(energyJoules.inAttojoules, 4.099E21, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testJoulestoZeptojoules() {
     val energyJoules = 4099.joules
-    Assertions.assertEquals(energyJoules.inZeptojoules, 4.099E24, kAlpha)
+    Assertions.assertEquals(energyJoules.inZeptojoules, 4.099E24, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testJoulestoYoctojoules() {
     val energyJoules = 4099.joules
-    Assertions.assertEquals(energyJoules.inYoctojoules, 4.099E27, kBeta)
+    Assertions.assertEquals(energyJoules.inYoctojoules, 4.099E27, kEpsilon)
   }
 
   @Test

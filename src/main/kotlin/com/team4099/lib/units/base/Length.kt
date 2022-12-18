@@ -10,6 +10,7 @@ import com.team4099.lib.units.exa
 import com.team4099.lib.units.femto
 import com.team4099.lib.units.giga
 import com.team4099.lib.units.hecto
+import com.team4099.lib.units.inverse
 import com.team4099.lib.units.kilo
 import com.team4099.lib.units.mega
 import com.team4099.lib.units.micro
@@ -70,61 +71,61 @@ val Length.inFeet: Double
   get() = value / METERS_PER_FOOT
 
 val Length.inYottameters: Double
-  get() = value / 1.yotta
+  get() = value * 1.yotta.inverse
 
 val Length.inZetameters: Double
-  get() = value / 1.zeta
+  get() = value * 1.zeta.inverse
 
 val Length.inExameters: Double
-  get() = value / 1.exa
+  get() = value * 1.exa.inverse
 
 val Length.inPetameters: Double
-  get() = value / 1.peta
+  get() = value * 1.peta.inverse
 
 val Length.inTerameters: Double
-  get() = value / 1.tera
+  get() = value * 1.tera.inverse
 
 val Length.inGigameters: Double
-  get() = value / 1.giga
+  get() = value * 1.giga.inverse
 
 val Length.inMegameters: Double
-  get() = value / 1.mega
+  get() = value * 1.mega.inverse
 
 val Length.inKilometers: Double
-  get() = value / 1.kilo
+  get() = value * 1.kilo.inverse
 
 val Length.inHectometers: Double
-  get() = value / 1.hecto
+  get() = value * 1.hecto.inverse
 
 val Length.inDecameters: Double
-  get() = value / 1.deca
+  get() = value * 1.deca.inverse
 
 val Length.inDecimeters: Double
-  get() = value / 1.deci
+  get() = value * 1.deci.inverse
 
 val Length.inCentimeters: Double
-  get() = value / 1.centi
+  get() = value * 1.centi.inverse
 
 val Length.inMillimeters: Double
-  get() = value / 1.milli
+  get() = value * 1.milli.inverse
 
 val Length.inMicrometers: Double
-  get() = value / 1.micro
+  get() = value * 1.micro.inverse
 
 val Length.inNanometers: Double
-  get() = value / 1.nano
+  get() = value * 1.nano.inverse
 
 val Length.inPicometers: Double
-  get() = value / 1.pico
+  get() = value * 1.pico.inverse
 
 val Length.inFemtometers: Double
-  get() = value / 1.femto
+  get() = value * 1.femto.inverse
 
 val Length.inAttometers: Double
-  get() = value / 1.atto
+  get() = value * 1.atto.inverse
 
 val Length.inZeptometers: Double
-  get() = value / 1.zepto
+  get() = value * 1.zepto.inverse
 
 val Length.inYoctometers: Double
-  get() = value / 1.yocto
+  get() = value * 1.yocto.inverse

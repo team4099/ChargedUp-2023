@@ -28,12 +28,6 @@ import org.junit.jupiter.api.Test
 /* Unit tests for Current units */
 class CurrentTest {
   private val kEpsilon = 1E-9
-  // Hacky way to do this. Consider removing support in the future for nanoamps and below due to
-  // floating point imprecision
-  private val kDelta = 1E-3
-  private val kSigma = 1E6
-  private val kAlpha = 1E9
-  private val kBeta = 1E12
 
   @Test
   fun testAmpsToYottaamps() {
@@ -123,42 +117,42 @@ class CurrentTest {
   @Test
   fun testAmpstoNanoamps() {
     val currentAmps = 4099.amps
-    assertEquals(currentAmps.inNanoamps, 4.099E12, kDelta)
+    assertEquals(currentAmps.inNanoamps, 4.099E12, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testAmpstoPicoamps() {
     val currentAmps = 4099.amps
-    assertEquals(currentAmps.inPicoamps, 4.099E15, kSigma)
+    assertEquals(currentAmps.inPicoamps, 4.099E15, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testAmpstoFemtoamps() {
     val currentAmps = 4099.amps
-    assertEquals(currentAmps.inFemtoamps, 4.099E18, kSigma)
+    assertEquals(currentAmps.inFemtoamps, 4.099E18, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testAmpstoAttoamps() {
     val currentAmps = 4099.amps
-    assertEquals(currentAmps.inAttoamps, 4.099E21, kSigma)
+    assertEquals(currentAmps.inAttoamps, 4.099E21, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testAmpstoZeptoamps() {
     val currentAmps = 4099.amps
-    assertEquals(currentAmps.inZeptoamps, 4.099E24, kAlpha)
+    assertEquals(currentAmps.inZeptoamps, 4.099E24, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testAmpstoYoctoamps() {
     val currentAmps = 4099.amps
-    assertEquals(currentAmps.inYoctoamps, 4.099E27, kBeta)
+    assertEquals(currentAmps.inYoctoamps, 4.099E27, kEpsilon)
   }
 
   @Test

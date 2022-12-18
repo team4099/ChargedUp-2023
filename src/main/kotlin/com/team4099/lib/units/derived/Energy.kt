@@ -15,6 +15,7 @@ import com.team4099.lib.units.exa
 import com.team4099.lib.units.femto
 import com.team4099.lib.units.giga
 import com.team4099.lib.units.hecto
+import com.team4099.lib.units.inverse
 import com.team4099.lib.units.kilo
 import com.team4099.lib.units.mega
 import com.team4099.lib.units.micro
@@ -42,61 +43,61 @@ val Energy.inJoules: Double
   get() = value
 
 val Energy.inYottajoules: Double
-  get() = value / 1.yotta
+  get() = value * 1.yotta.inverse
 
 val Energy.inZetajoules: Double
-  get() = value / 1.zeta
+  get() = value * 1.zeta.inverse
 
 val Energy.inExajoules: Double
-  get() = value / 1.exa
+  get() = value * 1.exa.inverse
 
 val Energy.inPetajoules: Double
-  get() = value / 1.peta
+  get() = value * 1.peta.inverse
 
 val Energy.inTerajoules: Double
-  get() = value / 1.tera
+  get() = value * 1.tera.inverse
 
 val Energy.inGigajoules: Double
-  get() = value / 1.giga
+  get() = value * 1.giga.inverse
 
 val Energy.inMegajoules: Double
-  get() = value / 1.mega
+  get() = value * 1.mega.inverse
 
 val Energy.inKilojoules: Double
-  get() = value / 1.kilo
+  get() = value * 1.kilo.inverse
 
 val Energy.inHectojoules: Double
-  get() = value / 1.hecto
+  get() = value * 1.hecto.inverse
 
 val Energy.inDecajoules: Double
-  get() = value / 1.deca
+  get() = value * 1.deca.inverse
 
 val Energy.inDecijoules: Double
-  get() = value / 1.deci
+  get() = value * 1.deci.inverse
 
 val Energy.inCentijoules: Double
-  get() = value / 1.centi
+  get() = value * 1.centi.inverse
 
 val Energy.inMillijoules: Double
-  get() = value / 1.milli
+  get() = value * 1.milli.inverse
 
 val Energy.inMicrojoules: Double
-  get() = value / 1.micro
+  get() = value * 1.micro.inverse
 
 val Energy.inNanojoules: Double
-  get() = value / 1.nano
+  get() = value * 1.nano.inverse
 
 val Energy.inPicojoules: Double
-  get() = value / 1.pico
+  get() = value * 1.pico.inverse
 
 val Energy.inFemtojoules: Double
-  get() = value / 1.femto
+  get() = value * 1.femto.inverse
 
 val Energy.inAttojoules: Double
-  get() = value / 1.atto
+  get() = value * 1.atto.inverse
 
 val Energy.inZeptojoules: Double
-  get() = value / 1.zepto
+  get() = value * 1.zepto.inverse
 
 val Energy.inYoctojoules: Double
-  get() = value / 1.yocto
+  get() = value * 1.yocto.inverse

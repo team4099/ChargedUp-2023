@@ -12,6 +12,7 @@ import com.team4099.lib.units.exa
 import com.team4099.lib.units.femto
 import com.team4099.lib.units.giga
 import com.team4099.lib.units.hecto
+import com.team4099.lib.units.inverse
 import com.team4099.lib.units.kilo
 import com.team4099.lib.units.mega
 import com.team4099.lib.units.micro
@@ -39,61 +40,61 @@ val Charge.inCoulombs: Double
   get() = value
 
 val Charge.inYottacoulombs: Double
-  get() = value / 1.yotta
+  get() = value * 1.yotta.inverse
 
 val Charge.inZetacoulombs: Double
-  get() = value / 1.zeta
+  get() = value * 1.zeta.inverse
 
 val Charge.inExacoulombs: Double
-  get() = value / 1.exa
+  get() = value * 1.exa.inverse
 
 val Charge.inPetacoulombs: Double
-  get() = value / 1.peta
+  get() = value * 1.peta.inverse
 
 val Charge.inTeracoulombs: Double
-  get() = value / 1.tera
+  get() = value * 1.tera.inverse
 
 val Charge.inGigacoulombs: Double
-  get() = value / 1.giga
+  get() = value * 1.giga.inverse
 
 val Charge.inMegacoulombs: Double
-  get() = value / 1.mega
+  get() = value * 1.mega.inverse
 
 val Charge.inKilocoulombs: Double
-  get() = value / 1.kilo
+  get() = value * 1.kilo.inverse
 
 val Charge.inHectocoulombs: Double
-  get() = value / 1.hecto
+  get() = value * 1.hecto.inverse
 
 val Charge.inDecacoulombs: Double
-  get() = value / 1.deca
+  get() = value * 1.deca.inverse
 
 val Charge.inDecicoulombs: Double
-  get() = value / 1.deci
+  get() = value * 1.deci.inverse
 
 val Charge.inCenticoulombs: Double
-  get() = value / 1.centi
+  get() = value * 1.centi.inverse
 
 val Charge.inMillicoulombs: Double
-  get() = value / 1.milli
+  get() = value * 1.milli.inverse
 
 val Charge.inMicrocoulombs: Double
-  get() = value / 1.micro
+  get() = value * 1.micro.inverse
 
 val Charge.inNanocoulombs: Double
-  get() = value / 1.nano
+  get() = value * 1.nano.inverse
 
 val Charge.inPicocoulombs: Double
-  get() = value / 1.pico
+  get() = value * 1.pico.inverse
 
 val Charge.inFemtocoulombs: Double
-  get() = value / 1.femto
+  get() = value * 1.femto.inverse
 
 val Charge.inAttocoulombs: Double
-  get() = value / 1.atto
+  get() = value * 1.atto.inverse
 
 val Charge.inZeptocoulombs: Double
-  get() = value / 1.zepto
+  get() = value * 1.zepto.inverse
 
 val Charge.inYoctocoulombs: Double
-  get() = value / 1.yocto
+  get() = value * 1.yocto.inverse

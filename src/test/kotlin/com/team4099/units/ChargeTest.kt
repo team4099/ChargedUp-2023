@@ -28,12 +28,6 @@ import org.junit.jupiter.api.Test
 /* Unit tests for Charge units */
 class ChargeTest {
   private val kEpsilon = 1E-9
-  // Hacky way to do this. Consider removing support in the future for nano and below due to
-  // floating point imprecision
-  private val kDelta = 1E-3
-  private val kSigma = 1E6
-  private val kAlpha = 1E9
-  private val kBeta = 1E12
 
   @Test
   fun testCoulombsToYottacoulombs() {
@@ -123,42 +117,42 @@ class ChargeTest {
   @Test
   fun testCoulombstoNanocoulombs() {
     val chargeCoulombs = 4099.coulombs
-    Assertions.assertEquals(chargeCoulombs.inNanocoulombs, 4.099E12, kDelta)
+    Assertions.assertEquals(chargeCoulombs.inNanocoulombs, 4.099E12, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testCoulombstoPicocoulombs() {
     val chargeCoulombs = 4099.coulombs
-    Assertions.assertEquals(chargeCoulombs.inPicocoulombs, 4.099E15, kSigma)
+    Assertions.assertEquals(chargeCoulombs.inPicocoulombs, 4.099E15, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testCoulombstoFemtocoulombs() {
     val chargeCoulombs = 4099.coulombs
-    Assertions.assertEquals(chargeCoulombs.inFemtocoulombs, 4.099E18, kSigma)
+    Assertions.assertEquals(chargeCoulombs.inFemtocoulombs, 4.099E18, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testCoulombstoAttocoulombs() {
     val chargeCoulombs = 4099.coulombs
-    Assertions.assertEquals(chargeCoulombs.inAttocoulombs, 4.099E21, kSigma)
+    Assertions.assertEquals(chargeCoulombs.inAttocoulombs, 4.099E21, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testCoulombstoZeptocoulombs() {
     val chargeCoulombs = 4099.coulombs
-    Assertions.assertEquals(chargeCoulombs.inZeptocoulombs, 4.099E24, kAlpha)
+    Assertions.assertEquals(chargeCoulombs.inZeptocoulombs, 4.099E24, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testCoulombstoYoctocoulombs() {
     val chargeCoulombs = 4099.coulombs
-    Assertions.assertEquals(chargeCoulombs.inYoctocoulombs, 4.099E27, kBeta)
+    Assertions.assertEquals(chargeCoulombs.inYoctocoulombs, 4.099E27, kEpsilon)
   }
 
   @Test

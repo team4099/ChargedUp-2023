@@ -1,5 +1,8 @@
 package com.team4099.lib.units
 
+import kotlin.math.log
+import kotlin.math.roundToInt
+
 object Magnitude {
   const val YOTTA = 1E24
   const val ZETA = 1E21
@@ -83,6 +86,9 @@ val Double.zepto: Double
 val Double.yocto: Double
   get() = this * Magnitude.YOCTO
 
+val Double.inverse: Double
+  get() = "1E${-log(this, 10.0).roundToInt()}".toDouble()
+
 val Number.yotta: Double
   get() = this.toDouble() * Magnitude.YOTTA
 
@@ -142,3 +148,6 @@ val Number.zepto: Double
 
 val Number.yocto: Double
   get() = this.toDouble() * Magnitude.YOCTO
+
+val Number.inverse: Double
+  get() = "1E${-log(this.toDouble(), 10.0).roundToInt()}".toDouble()

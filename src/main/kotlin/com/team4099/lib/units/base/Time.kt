@@ -6,6 +6,7 @@ import com.team4099.lib.units.atto
 import com.team4099.lib.units.centi
 import com.team4099.lib.units.deci
 import com.team4099.lib.units.femto
+import com.team4099.lib.units.inverse
 import com.team4099.lib.units.micro
 import com.team4099.lib.units.milli
 import com.team4099.lib.units.nano
@@ -49,31 +50,31 @@ val Time.inHours: Double
   get() = value / SECONDS_PER_HOUR
 
 val Time.inDeciseconds: Double
-  get() = value / 1.deci
+  get() = value * 1.deci.inverse
 
 val Time.inCentiseconds: Double
-  get() = value / 1.centi
+  get() = value * 1.centi.inverse
 
 val Time.inMilliseconds: Double
-  get() = value / 1.milli
+  get() = value * 1.milli.inverse
 
 val Time.inMicroseconds: Double
-  get() = value / 1.micro
+  get() = value * 1.micro.inverse
 
 val Time.inNanoseconds: Double
-  get() = value / 1.nano
+  get() = value * 1.nano.inverse
 
 val Time.inPicoseconds: Double
-  get() = value / 1.pico
+  get() = value * 1.pico.inverse
 
 val Time.inFemtoseconds: Double
-  get() = value / 1.femto
+  get() = value * 1.femto.inverse
 
 val Time.inAttoseconds: Double
-  get() = value / 1.atto
+  get() = value * 1.atto.inverse
 
 val Time.inZeptoseconds: Double
-  get() = value / 1.zepto
+  get() = value * 1.zepto.inverse
 
 val Time.inYoctoseconds: Double
-  get() = value / 1.yocto
+  get() = value * 1.yocto.inverse

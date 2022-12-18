@@ -28,10 +28,6 @@ import org.junit.jupiter.api.Test
 /* Unit tests for Force units */
 class ForceTest {
   private val kEpsilon = 1E-9
-  private val kDelta = 1E-3
-  private val kSigma = 1E6
-  private val kAlpha = 1E9
-  private val kBeta = 1E12
 
   @Test
   fun testNewtonsToYottanewtons() {
@@ -121,42 +117,42 @@ class ForceTest {
   @Test
   fun testNewtonsToNanonewtons() {
     val forceNewtons = 4099.newtons
-    Assertions.assertEquals(forceNewtons.inNanonewtons, 4.099E12, kDelta)
+    Assertions.assertEquals(forceNewtons.inNanonewtons, 4.099E12, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testNewtonsToPiconewtons() {
     val forceNewtons = 4099.newtons
-    Assertions.assertEquals(forceNewtons.inPiconewtons, 4.099E15, kSigma)
+    Assertions.assertEquals(forceNewtons.inPiconewtons, 4.099E15, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testNewtonsToFemtonewtons() {
     val forceNewtons = 4099.newtons
-    Assertions.assertEquals(forceNewtons.inFemtonewtons, 4.099E18, kSigma)
+    Assertions.assertEquals(forceNewtons.inFemtonewtons, 4.099E18, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testNewtonsToAttonewtons() {
     val forceNewtons = 4099.newtons
-    Assertions.assertEquals(forceNewtons.inAttonewtons, 4.099E21, kSigma)
+    Assertions.assertEquals(forceNewtons.inAttonewtons, 4.099E21, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testNewtonsToZeptonewtons() {
     val forceNewtons = 4099.newtons
-    Assertions.assertEquals(forceNewtons.inZeptonewtons, 4.099E24, kAlpha)
+    Assertions.assertEquals(forceNewtons.inZeptonewtons, 4.099E24, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testNewtonsToYoctonewtons() {
     val forceNewtons = 4099.newtons
-    Assertions.assertEquals(forceNewtons.inYoctonewtons, 4.099E27, kBeta)
+    Assertions.assertEquals(forceNewtons.inYoctonewtons, 4.099E27, kEpsilon)
   }
 
   @Test

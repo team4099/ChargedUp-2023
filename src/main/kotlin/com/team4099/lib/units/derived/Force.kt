@@ -15,6 +15,7 @@ import com.team4099.lib.units.exa
 import com.team4099.lib.units.femto
 import com.team4099.lib.units.giga
 import com.team4099.lib.units.hecto
+import com.team4099.lib.units.inverse
 import com.team4099.lib.units.kilo
 import com.team4099.lib.units.mega
 import com.team4099.lib.units.micro
@@ -42,61 +43,61 @@ val Force.inNewtons: Double
   get() = value
 
 val Force.inYottanewtons: Double
-  get() = value / 1.yotta
+  get() = value * 1.yotta.inverse
 
 val Force.inZetanewtons: Double
-  get() = value / 1.zeta
+  get() = value * 1.zeta.inverse
 
 val Force.inExanewtons: Double
-  get() = value / 1.exa
+  get() = value * 1.exa.inverse
 
 val Force.inPetanewtons: Double
-  get() = value / 1.peta
+  get() = value * 1.peta.inverse
 
 val Force.inTeranewtons: Double
-  get() = value / 1.tera
+  get() = value * 1.tera.inverse
 
 val Force.inGiganewtons: Double
-  get() = value / 1.giga
+  get() = value * 1.giga.inverse
 
 val Force.inMeganewtons: Double
-  get() = value / 1.mega
+  get() = value * 1.mega.inverse
 
 val Force.inKilonewtons: Double
-  get() = value / 1.kilo
+  get() = value * 1.kilo.inverse
 
 val Force.inHectonewtons: Double
-  get() = value / 1.hecto
+  get() = value * 1.hecto.inverse
 
 val Force.inDecanewtons: Double
-  get() = value / 1.deca
+  get() = value * 1.deca.inverse
 
 val Force.inDecinewtons: Double
-  get() = value / 1.deci
+  get() = value * 1.deci.inverse
 
 val Force.inCentinewtons: Double
-  get() = value / 1.centi
+  get() = value * 1.centi.inverse
 
 val Force.inMillinewtons: Double
-  get() = value / 1.milli
+  get() = value * 1.milli.inverse
 
 val Force.inMicronewtons: Double
-  get() = value / 1.micro
+  get() = value * 1.micro.inverse
 
 val Force.inNanonewtons: Double
-  get() = value / 1.nano
+  get() = value * 1.nano.inverse
 
 val Force.inPiconewtons: Double
-  get() = value / 1.pico
+  get() = value * 1.pico.inverse
 
 val Force.inFemtonewtons: Double
-  get() = value / 1.femto
+  get() = value * 1.femto.inverse
 
 val Force.inAttonewtons: Double
-  get() = value / 1.atto
+  get() = value * 1.atto.inverse
 
 val Force.inZeptonewtons: Double
-  get() = value / 1.zepto
+  get() = value * 1.zepto.inverse
 
 val Force.inYoctonewtons: Double
-  get() = value / 1.yocto
+  get() = value * 1.yocto.inverse
