@@ -11,7 +11,6 @@ import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inDegrees
 import com.team4099.lib.units.derived.radians
 import edu.wpi.first.math.VecBuilder
-import org.intellij.lang.annotations.JdkConstants
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals

@@ -3,7 +3,6 @@ package com.team4099.geometry
 import com.team4099.lib.geometry.Pose2d
 import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Twist2d
-import com.team4099.lib.geometry.Twist3d
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.radians

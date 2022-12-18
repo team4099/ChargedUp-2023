@@ -1,7 +1,6 @@
 package com.team4099.lib.geometry
 
 import com.team4099.lib.units.base.Length
-import javax.xml.crypto.dsig.Transform
 
 class Transform3d(val m_translation: Translation3d, val m_rotation: Rotation3d) {
   val transform3d: Transform3dWPILIB =

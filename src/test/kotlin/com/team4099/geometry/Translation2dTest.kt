@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
-import kotlin.math.hypot
 import kotlin.math.sqrt
 
 internal class Translation2dTest {
@@ -70,7 +69,9 @@ internal class Translation2dTest {
   @Test
   fun testNorm() {
     val one = Translation2d(3.0.meters, 5.0.meters)
-    assertEquals(one.normalize(), Translation2d(3.0.meters / one.magnitude, 5.0.meters / one.magnitude))
+    assertEquals(
+      one.normalize(), Translation2d(3.0.meters / one.magnitude, 5.0.meters / one.magnitude)
+    )
   }
 
   // Need to implement distance method
