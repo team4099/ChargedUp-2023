@@ -33,8 +33,18 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
     return rotateBy(other)
   }
 
+  fun plusMutation(angle: Angle) {
+    theta += angle
+    m_cos = theta.cos
+    m_sin = theta.sin
+  }
+
   operator fun minus(other: Rotation2d): Rotation2d {
     return rotateBy(other.unaryMinus())
+  }
+
+  fun minusMutation(angle : Angle) {
+    plusMutation(-angle)
   }
 
   operator fun unaryMinus(): Rotation2d {
@@ -45,8 +55,18 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
     return Rotation2d(theta * scalar)
   }
 
+  fun timesMutation(scalar: Double) {
+    theta *= scalar
+    m_cos = theta.cos
+    m_sin = theta.sin
+  }
+
   operator fun div(scalar: Double): Rotation2d {
     return times(1.0 / scalar)
+  }
+
+  fun divMutation(scalar: Double) {
+    timesMutation(1.0 / scalar)
   }
 
   fun rotateBy(other: Rotation2d): Rotation2d {
@@ -55,13 +75,15 @@ data class Rotation2d(var m_cos: Double, var m_sin: Double) {
     )
   }
 
-  val theta: Angle = Math.atan2(m_sin, m_cos).radians
+  var theta: Angle = Math.atan2(m_sin, m_cos).radians
 
-  val tan: Double = m_sin / m_cos
+  var tan: Double = m_sin / m_cos
 
   fun interpolate(endValue: Rotation2d, t: Double): Rotation2d? {
     return plus((endValue - this) * MathUtil.clamp(t, 0.0, 1.0))
   }
+
+  // TODO: create interpolate mutator
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
