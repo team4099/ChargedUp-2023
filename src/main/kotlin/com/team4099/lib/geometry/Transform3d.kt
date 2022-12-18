@@ -17,7 +17,7 @@ class Transform3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
   constructor() : this(Translation3d(), Rotation3d())
 
   operator fun times(scalar: Double): Transform3d {
-    return Transform3d(m_translation.times(scalar), m_rotation.times(scalar)!!)
+    return Transform3d(m_translation.times(scalar), m_rotation.times(scalar))
   }
 
   operator fun div(scalar: Double): Transform3d {
