@@ -1,6 +1,8 @@
 package com.team4099.lib.geometry
 
 import com.team4099.lib.units.base.Length
+import com.team4099.lib.units.base.Time
+import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.derived.Angle
 
 data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) {
@@ -58,8 +60,8 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
     return Twist2d(pose2d.log(end.pose2d))
   }
 
-  fun interpolate(endValue: Pose2d, t: Double): Pose2d {
-    return Pose2d(pose2d.interpolate(endValue.pose2d, t))
+  fun interpolate(endValue: Pose2d, t: Time): Pose2d {
+    return Pose2d(pose2d.interpolate(endValue.pose2d, t.inSeconds))
   }
 
   override fun equals(other: Any?): Boolean {

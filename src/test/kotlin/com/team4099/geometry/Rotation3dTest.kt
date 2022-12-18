@@ -263,13 +263,13 @@ internal class Rotation3dTest {
     val yAxis = VecBuilder.fill(0.0, 1.0, 0.0)
     val zAxis = VecBuilder.fill(0.0, 0.0, 1.0)
     val rot1 = Rotation3d(xAxis, 90.degrees)
-    assertEquals(xAxis, rot1.axis)
+    assertEquals(xAxis, rot1.rotation3d.axis)
     assertEquals(Math.PI / 2.0, rot1.theta.inRadians, 1e-9)
     val rot2 = Rotation3d(yAxis, 45.degrees)
-    assertEquals(yAxis, rot2.axis)
+    assertEquals(yAxis, rot2.rotation3d.axis)
     assertEquals(Math.PI / 4.0, rot2.theta.inRadians, 1e-9)
     val rot3 = Rotation3d(zAxis, 60.degrees)
-    assertEquals(zAxis, rot3.axis)
+    assertEquals(zAxis, rot3.rotation3d.axis)
     assertEquals(Math.PI / 3.0, rot3.theta.inRadians, 1e-9)
   }
 
@@ -292,7 +292,7 @@ internal class Rotation3dTest {
   fun testEmptyAxis() {
     val zAxis = VecBuilder.fill(0.0, 0.0, 0.0)
     val rot = Rotation3d()
-    assertEquals(rot.axis, zAxis)
+    assertEquals(rot.rotation3d.axis, zAxis)
   }
   /*
   @Test
