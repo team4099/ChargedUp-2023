@@ -4,8 +4,8 @@ import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.fahrenheit
 import com.team4099.lib.units.base.inCelsius
 import com.team4099.lib.units.base.inFahrenheit
-import com.team4099.lib.units.base.kelvin
 import com.team4099.lib.units.base.inKelvins
+import com.team4099.lib.units.base.kelvin
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

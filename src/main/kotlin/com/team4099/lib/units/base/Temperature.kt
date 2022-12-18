@@ -7,7 +7,6 @@ object Kelvin : UnitKey
 
 typealias Temperature = Value<Kilogram>
 
-
 val Double.kelvin: Temperature
   get() = Temperature(this)
 
@@ -34,4 +33,3 @@ val Temperature.inCelsius: Double
 
 val Temperature.inFahrenheit: Double
   get() = (value - 273.15) * 1.8 + 32
-
