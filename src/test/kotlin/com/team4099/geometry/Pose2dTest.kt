@@ -18,11 +18,11 @@ class Pose2dTest {
   fun testTransformBy() {
     val initial = Pose2d(Translation2d(1.0.meters, 2.0.meters), Rotation2d(45.0.degrees))
     val transformation = Transform2d(Translation2d(5.0.meters, 0.0.meters), Rotation2d(5.0.degrees))
-    val transformed = initial.plus(transformation)
+    val transformed = initial.transformBy(transformation)
     assertAll(
       { assertEquals(1.0 + 5.0 / Math.sqrt(2.0), transformed.x.value, kEpsilon) },
       { assertEquals(2.0 + 5.0 / Math.sqrt(2.0), transformed.y.value, kEpsilon) },
-      { assertEquals(50.0, transformed.theta.value, kEpsilon) }
+      { assertEquals(50.0.degrees.value, transformed.theta.value, kEpsilon) }
     )
   }
 
@@ -62,5 +62,19 @@ class Pose2dTest {
       { assertEquals(0.0, transform.m_translation.y.value, kEpsilon) },
       { assertEquals(0.0, transform.m_rotation.theta.value, kEpsilon) }
     )
+  }
+
+  @Test
+  fun testMultiply() {
+    val rot = Rotation2d(45.0.degrees)
+    val pose2d = Pose2d(5.0.meters, 5.0.meters, rot)
+    assertEquals(pose2d * 3.0, Pose2d(15.0.meters, 15.0.meters, rot * 3.0))
+  }
+
+  @Test
+  fun testDivide() {
+    val rot = Rotation2d(45.0.degrees)
+    val pose2d = Pose2d(10.0.meters, 10.0.meters, rot)
+    assertEquals(pose2d / 2.0, Pose2d(5.0.meters, 5.0.meters, rot / 2.0))
   }
 }

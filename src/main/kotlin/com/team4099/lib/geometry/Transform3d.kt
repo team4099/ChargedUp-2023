@@ -1,8 +1,11 @@
 package com.team4099.lib.geometry
 
 import com.team4099.lib.units.base.Length
+import javax.xml.crypto.dsig.Transform
 
 class Transform3d(val m_translation: Translation3d, val m_rotation: Rotation3d) {
+  val transform3d: Transform3dWPILIB =
+    Transform3dWPILIB(m_translation.translation3d, m_rotation.rotation3d)
 
   constructor(
     initial: Pose3d,
@@ -40,5 +43,15 @@ class Transform3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
     return Transform3d(
       translation3d.unaryMinus().rotateBy(rotation3d.unaryMinus()), rotation3d.unaryMinus()
     )
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Transform3d) return false
+
+    if (m_translation != other.m_translation) return false
+    if (m_rotation != other.m_rotation) return false
+
+    return true
   }
 }

@@ -13,6 +13,13 @@ import org.junit.jupiter.api.Test
 
 class Twist3dTest {
   @Test
+  fun testInit() {
+    val one = Twist3d()
+    val two = Twist3d(0.0.meters, 0.0.meters, 0.0.meters, 0.0.radians, 0.0.radians, 0.0.radians)
+    assertEquals(one, two)
+  }
+
+  @Test
   fun testStraightX() {
     val straight =
       Twist3d(5.0.meters, 0.0.meters, 0.0.meters, 0.0.radians, 0.0.radians, 0.0.radians)

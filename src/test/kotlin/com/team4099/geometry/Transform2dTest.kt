@@ -28,4 +28,20 @@ class Transform2dTest {
     val transformedCombined = initial.plus(transform1.plus(transform2))
     assertEquals(transformedSeparate, transformedCombined)
   }
+
+  @Test
+  fun testMultiplication() {
+    val translation2d = Translation2d(1.0.meters, 1.0.meters)
+    val rotation2d = Rotation2d(15.degrees)
+    val transform2d = Transform2d(translation2d, rotation2d)
+    assertEquals(transform2d * 3.0, Transform2d(translation2d * 3.0, rotation2d * 3.0))
+  }
+
+  @Test
+  fun testDivision() {
+    val translation2d = Translation2d(1.0.meters, 1.0.meters)
+    val rotation2d = Rotation2d(15.degrees)
+    val transform2d = Transform2d(translation2d, rotation2d)
+    assertEquals(transform2d / 3.0, Transform2d(translation2d / 3.0, rotation2d / 3.0))
+  }
 }

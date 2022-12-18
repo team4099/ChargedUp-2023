@@ -70,7 +70,7 @@ internal class Translation2dTest {
   @Test
   fun testNorm() {
     val one = Translation2d(3.0.meters, 5.0.meters)
-    assertEquals(hypot(3.0, 5.0), one.magnitude, kEpsilon)
+    assertEquals(one.normalize(), Translation2d(3.0.meters / one.magnitude, 5.0.meters / one.magnitude))
   }
 
   // Need to implement distance method

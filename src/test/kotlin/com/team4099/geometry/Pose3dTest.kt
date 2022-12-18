@@ -9,7 +9,9 @@ import com.team4099.lib.geometry.Translation3d
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inDegrees
+import com.team4099.lib.units.derived.radians
 import edu.wpi.first.math.VecBuilder
+import org.intellij.lang.annotations.JdkConstants
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
@@ -17,6 +19,14 @@ import org.junit.jupiter.api.Test
 
 class Pose3dTest {
   private val kEpsilon = 1E-9
+
+  @Test
+  fun testInit() {
+    val pose2d = Pose2d(0.0.meters, 0.0.meters, Rotation2d(45.degrees))
+    val translation3d = Translation3d(pose2d.x, pose2d.y, 0.0.meters)
+    val rotation3d = Rotation3d(0.0.radians, 0.0.radians, pose2d.rotation.theta)
+    assertEquals(Pose3d(pose2d), Pose3d(translation3d, rotation3d))
+  }
 
   @Test
   fun testTransformByRotations() {
@@ -140,6 +150,22 @@ class Pose3dTest {
       { assertEquals(0.0, transform.y.value, kEpsilon) },
       { assertEquals(0.0, transform.m_rotation.z.inDegrees, kEpsilon) }
     )
+  }
+
+  @Test
+  fun testMultiplication() {
+    val translation3d = Translation3d(1.0.meters, 1.0.meters, 1.0.meters)
+    val rotation3d = Rotation3d(VecBuilder.fill(0.0, 0.0, 0.0), 45.0.degrees)
+    val pose3d = Pose3d(translation3d, rotation3d)
+    assertEquals(pose3d * 3.0, Pose3d(translation3d * 3.0, rotation3d * 3.0))
+  }
+
+  @Test
+  fun testDivide() {
+    val translation3d = Translation3d(1.0.meters, 1.0.meters, 1.0.meters)
+    val rotation3d = Rotation3d(VecBuilder.fill(0.0, 0.0, 0.0), 45.0.degrees)
+    val pose3d = Pose3d(translation3d, rotation3d)
+    assertEquals(pose3d / 3.0, Pose3d(translation3d / 3.0, rotation3d / 3.0))
   }
 
   @Test

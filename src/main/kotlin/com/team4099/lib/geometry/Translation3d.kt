@@ -6,6 +6,9 @@ import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.radians
 
 data class Translation3d(val m_x: Length, val m_y: Length, val m_z: Length) {
+  val translation3d: Translation3dWPILIB =
+    Translation3dWPILIB(m_x.inMeters, m_y.inMeters, m_z.inMeters)
+
   constructor() : this(0.0.meters, 0.0.meters, 0.0.meters)
 
   constructor(
@@ -16,6 +19,10 @@ data class Translation3d(val m_x: Length, val m_y: Length, val m_z: Length) {
     Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).y,
     Translation3d(distance, 0.0.meters, 0.0.meters).rotateBy(angle).z
   )
+
+  constructor(
+    translation3dWPILIB: Translation3dWPILIB
+  ) : this(translation3dWPILIB.x.meters, translation3dWPILIB.y.meters, translation3dWPILIB.z.meters)
 
   fun getDistance(other: Translation3d): Length {
     return Math.sqrt(

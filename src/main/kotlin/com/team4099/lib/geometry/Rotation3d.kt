@@ -158,4 +158,17 @@ data class Rotation3d(val quaternion: Quaternion) {
   operator fun times(scalar: Double): Rotation3d {
     return Rotation3d(rotation3d * scalar)
   }
+
+  operator fun div(scalar: Double): Rotation3d {
+    return times(1.0 / scalar)
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Rotation3d) return false
+
+    if (m_q != other.m_q) return false
+
+    return true
+  }
 }

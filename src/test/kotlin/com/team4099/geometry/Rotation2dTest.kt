@@ -70,6 +70,13 @@ class Rotation2dTest {
   }
 
   @Test
+  fun testNoMagnitude() {
+    val rot1 = Rotation2d(0.0, 0.0)
+    val rot2 = Rotation2d(1.0, 0.0)
+    assertEquals(rot1, rot2)
+  }
+
+  @Test
   fun testInterpolate() {
     // 50 + (70 - 50) * 0.5 = 60
     var rot1 = Rotation2d(50.degrees)

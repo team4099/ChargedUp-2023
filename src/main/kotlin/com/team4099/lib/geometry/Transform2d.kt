@@ -1,6 +1,9 @@
 package com.team4099.lib.geometry
 
 data class Transform2d(var m_translation: Translation2d, var m_rotation: Rotation2d) {
+  val transform2d: Transform2dWPILIB =
+    Transform2dWPILIB(m_translation.translation2d, m_rotation.rotation2d)
+
   constructor(
     initial: Pose2d,
     last: Pose2d
@@ -8,6 +11,10 @@ data class Transform2d(var m_translation: Translation2d, var m_rotation: Rotatio
     last.translation.minus(initial.translation).rotateBy(initial.rotation.unaryMinus()),
     last.rotation.minus(initial.rotation)
   )
+
+  constructor(
+    transform2dWPILIB: Transform2dWPILIB
+  ) : this(Translation2d(transform2dWPILIB.translation), Rotation2d(transform2dWPILIB.rotation))
 
   operator fun times(scalar: Double): Transform2d {
     return Transform2d(m_translation * scalar, m_rotation * scalar)
@@ -18,7 +25,7 @@ data class Transform2d(var m_translation: Translation2d, var m_rotation: Rotatio
   }
 
   operator fun plus(other: Transform2d): Transform2d {
-    return Transform2d(Pose2d(), Pose2d().transformBy(this).transformBy(other))
+    return Transform2d(transform2d.plus(other.transform2d))
   }
 
   fun inverse(): Transform2d {

@@ -50,4 +50,14 @@ data class Translation2d(val x: Length, val y: Length) {
   fun normalize(): Translation2d {
     return this / magnitude
   }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Translation2d) return false
+
+    if ((x - other.x).absoluteValue.value > 1E-9) return false
+    if ((y - other.y).absoluteValue.value > 1E-9) return false
+
+    return true
+  }
 }

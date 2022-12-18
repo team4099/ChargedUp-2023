@@ -123,7 +123,7 @@ internal class Rotation3dTest {
     assertAll(
       { assertEquals(0.0, rot1.x.inRadians, kEpsilon) },
       { assertEquals(0.0, rot1.y.inRadians, kEpsilon) },
-      { assertEquals(60.degrees.inRadians, rot1.y.inRadians, kEpsilon) }
+      { assertEquals(60.degrees.inRadians, rot1.z.inRadians, kEpsilon) }
     )
     val rot2 = Rotation3d(zAxis, (Math.PI / 4).radians)
     assertAll(
@@ -233,6 +233,20 @@ internal class Rotation3dTest {
   }
 
   @Test
+  fun testMultiplication() {
+    val zAxis = VecBuilder.fill(0.0, 0.0, 1.0)
+    val rot = Rotation3d(zAxis, 15.degrees)
+    assertEquals(rot.times(2.0).z.inRadians, 30.degrees.inRadians, kEpsilon)
+  }
+
+  @Test
+  fun testDivide() {
+    val zAxis = VecBuilder.fill(0.0, 0.0, 1.0)
+    val rot = Rotation3d(zAxis, 15.degrees)
+    assertEquals((rot / 5.0).z.inRadians, 3.degrees.inRadians, kEpsilon)
+  }
+
+  @Test
   fun testEquality() {
     val zAxis = VecBuilder.fill(0.0, 0.0, 1.0)
     var rot1 = Rotation3d(zAxis, 43.0.degrees)
@@ -274,6 +288,12 @@ internal class Rotation3dTest {
     assertNotEquals(rot1, rot2)
   }
 
+  @Test
+  fun testEmptyAxis() {
+    val zAxis = VecBuilder.fill(0.0, 0.0, 0.0)
+    val rot = Rotation3d()
+    assertEquals(rot.axis, zAxis)
+  }
   /*
   @Test
   fun testInterpolate() {

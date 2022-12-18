@@ -1,12 +1,7 @@
 package com.team4099.lib.geometry
 
 import com.team4099.lib.units.base.Length
-import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
-import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.inRadiansPerSecond
-import com.team4099.lib.units.perSecond
 
 data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) {
   constructor() : this(Translation2d(), Rotation2d())
@@ -47,10 +42,7 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
   }
 
   fun transformBy(other: Transform2d): Pose2d {
-    return Pose2d(
-      m_translation.plus(other.m_translation.rotateBy(m_rotation)),
-      other.m_rotation.plus(m_rotation)
-    )
+    return Pose2d(pose2d.transformBy(other.transform2d))
   }
 
   fun relativeTo(other: Pose2d): Pose2d {
@@ -59,37 +51,29 @@ data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) 
   }
 
   fun exp(twist: Twist2d): Pose2d {
-    val dx: Double = twist.dx.inMetersPerSecond
-    val dy: Double = twist.dy.inMetersPerSecond
-    val dtheta: Double = twist.dtheta.inRadiansPerSecond
-    val sinTheta = Math.sin(dtheta)
-    val cosTheta = Math.cos(dtheta)
-    val s: Double
-    val c: Double
-    if (Math.abs(dtheta) < 1E-9) {
-      s = (5.0 / 6.0 * dtheta * dtheta)
-      c = (0.5 * dtheta)
-    } else {
-      s = (sinTheta / dtheta)
-      c = ((1 - cosTheta) / dtheta)
-    }
-    val transform =
-      Transform2d(
-        Translation2d((dx * s - dy * c).meters, (dx * c + dy * s).meters),
-        Rotation2d(cosTheta, sinTheta)
-      )
-    return this.plus(transform)
+    return Pose2d(pose2d.exp(twist.twist2d))
   }
 
   fun log(end: Pose2d): Twist2d {
-    val twist = pose2d.log(end.pose2d)
-    return Twist2d(
-      twist.dx.meters.perSecond, twist.dy.meters.perSecond, twist.dtheta.radians.perSecond
-    )
+    return Twist2d(pose2d.log(end.pose2d))
   }
 
   fun interpolate(endValue: Pose2d, t: Double): Pose2d {
     return Pose2d(pose2d.interpolate(endValue.pose2d, t))
+  }
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is Pose2d) return false
+
+    if ((x - other.x).absoluteValue.value > 1E-9) return false
+    if ((y - other.y).absoluteValue.value > 1E-9) return false
+
+    if (rotation != other.rotation) return false
+
+    if ((theta - other.theta).absoluteValue.value > 1E-9) return false
+
+    return true
   }
 }
 
