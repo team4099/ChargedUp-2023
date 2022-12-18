@@ -5,7 +5,7 @@ import com.team4099.lib.units.Value
 
 object Kelvin : UnitKey
 
-typealias Temperature = Value<Kilogram>
+typealias Temperature = Value<Kelvin>
 
 val Double.kelvin: Temperature
   get() = Temperature(this)

@@ -3,6 +3,3 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
-
-include(":autologannotation")
-include(":logan")
