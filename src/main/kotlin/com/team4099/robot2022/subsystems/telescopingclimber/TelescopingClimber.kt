@@ -1,6 +1,7 @@
 package com.team4099.robot2022.subsystems.climber
 
 import com.team4099.lib.logging.TunableNumber
+import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.perSecond
@@ -39,11 +40,28 @@ class TelescopingClimber(val io: TelescopingClimberIO) : SubsystemBase() {
     get() {
       return inputs.leftPosition > TelescopingClimberConstants.FORWARD_SOFT_LIMIT
     }
+  val leftReverseLimitReached: Boolean
+    get() {
+      return inputs.leftPosition < TelescopingClimberConstants.REVERSE_SOFT_LIMIT
+    }
+
   val rightForwardLimitReached: Boolean
     get() {
       return inputs.rightPosition > TelescopingClimberConstants.FORWARD_SOFT_LIMIT
     }
+  val rightReverseLimitReached: Boolean
+    get() {
+      return inputs.rightPosition < TelescopingClimberConstants.REVERSE_SOFT_LIMIT
+    }
 
+  val currentPosition: Length
+    get() {
+      if (inputs.leftPosition > inputs.rightPosition) {
+        return inputs.leftPosition
+      } else {
+        return inputs.rightPosition
+      }
+    }
   init {}
 
   override fun periodic() {
@@ -55,6 +73,24 @@ class TelescopingClimber(val io: TelescopingClimberIO) : SubsystemBase() {
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
       io.configPID(kP.get(), kI.get(), kD.get())
+    }
+  }
+
+  fun setOpenLoop(leftPower: Double, rightPower: Double, useSoftLimits: Boolean = true) {
+    if (useSoftLimits && (leftForwardLimitReached && leftPower > 0.0) ||
+      (leftReverseLimitReached && leftPower < 0.0)
+    ) {
+      io.setLeftOpenLoop(0.0)
+    } else {
+      io.setLeftOpenLoop(leftPower)
+    }
+
+    if (useSoftLimits && (rightForwardLimitReached && rightPower > 0.0) ||
+      (rightReverseLimitReached && rightPower < 0.0)
+    ) {
+      io.setLeftOpenLoop(0.0)
+    } else {
+      io.setLeftOpenLoop(rightPower)
     }
   }
 }
