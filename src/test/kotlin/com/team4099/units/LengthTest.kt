@@ -37,12 +37,6 @@ import org.junit.jupiter.api.Test
 /* Unit tests for Length units */
 class LengthTest {
   private val kEpsilon = 1E-9
-  // Hacky way to do this. Consider removing support in the future for nano and below due to
-  // floating point imprecision
-  private val kDelta = 1E-3
-  private val kSigma = 1E6
-  private val kAlpha = 1E9
-  private val kBeta = 1E12
 
   @Test
   fun testMetersToInches() {
@@ -168,42 +162,42 @@ class LengthTest {
   @Test
   fun testMeterstoNanometers() {
     val lengthMeters = 4099.meters
-    assertEquals(lengthMeters.inNanometers, 4.099E12, kDelta)
+    assertEquals(lengthMeters.inNanometers, 4.099E12, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testMeterstoPicometers() {
     val lengthMeters = 4099.meters
-    assertEquals(lengthMeters.inPicometers, 4.099E15, kSigma)
+    assertEquals(lengthMeters.inPicometers, 4.099E15, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testMeterstoFemtometers() {
     val lengthMeters = 4099.meters
-    assertEquals(lengthMeters.inFemtometers, 4.099E18, kSigma)
+    assertEquals(lengthMeters.inFemtometers, 4.099E18, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testMeterstoAttometers() {
     val lengthMeters = 4099.meters
-    assertEquals(lengthMeters.inAttometers, 4.099E21, kSigma)
+    assertEquals(lengthMeters.inAttometers, 4.099E21, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testMeterstoZeptometers() {
     val lengthMeters = 4099.meters
-    assertEquals(lengthMeters.inZeptometers, 4.099E24, kAlpha)
+    assertEquals(lengthMeters.inZeptometers, 4.099E24, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testMeterstoYoctometers() {
     val lengthMeters = 4099.meters
-    assertEquals(lengthMeters.inYoctometers, 4.099E27, kBeta)
+    assertEquals(lengthMeters.inYoctometers, 4.099E27, kEpsilon)
   }
 
   @Test

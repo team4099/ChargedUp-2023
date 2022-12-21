@@ -3,26 +3,26 @@ package com.team4099.lib.units.base
 import com.team4099.lib.units.Magnitude
 import com.team4099.lib.units.UnitKey
 import com.team4099.lib.units.Value
-import com.team4099.lib.units.atto
-import com.team4099.lib.units.centi
-import com.team4099.lib.units.deca
-import com.team4099.lib.units.deci
-import com.team4099.lib.units.exa
-import com.team4099.lib.units.femto
-import com.team4099.lib.units.giga
-import com.team4099.lib.units.hecto
-import com.team4099.lib.units.kilo
-import com.team4099.lib.units.mega
-import com.team4099.lib.units.micro
-import com.team4099.lib.units.milli
-import com.team4099.lib.units.nano
-import com.team4099.lib.units.peta
-import com.team4099.lib.units.pico
-import com.team4099.lib.units.tera
-import com.team4099.lib.units.yocto
-import com.team4099.lib.units.yotta
-import com.team4099.lib.units.zepto
-import com.team4099.lib.units.zeta
+import com.team4099.lib.units.attoinverse
+import com.team4099.lib.units.centiinverse
+import com.team4099.lib.units.decainverse
+import com.team4099.lib.units.deciinverse
+import com.team4099.lib.units.exainverse
+import com.team4099.lib.units.femtoinverse
+import com.team4099.lib.units.gigainverse
+import com.team4099.lib.units.hectoinverse
+import com.team4099.lib.units.kiloinverse
+import com.team4099.lib.units.megainverse
+import com.team4099.lib.units.microinverse
+import com.team4099.lib.units.milliinverse
+import com.team4099.lib.units.nanoinverse
+import com.team4099.lib.units.petainverse
+import com.team4099.lib.units.picoinverse
+import com.team4099.lib.units.terainverse
+import com.team4099.lib.units.yoctoinverse
+import com.team4099.lib.units.yottainverse
+import com.team4099.lib.units.zeptoinverse
+import com.team4099.lib.units.zetainverse
 
 object Kilogram : UnitKey
 
@@ -49,61 +49,61 @@ val Mass.inPounds: Double
   get() = (value * Magnitude.KILO) / GRAMS_PER_POUND
 
 val Mass.inYottagrams: Double
-  get() = (value * Magnitude.KILO) / 1.yotta
+  get() = (value * Magnitude.KILO) * 1.yottainverse
 
 val Mass.inZetagrams: Double
-  get() = (value * Magnitude.KILO) / 1.zeta
+  get() = (value * Magnitude.KILO) * 1.zetainverse
 
 val Mass.inExagrams: Double
-  get() = (value * Magnitude.KILO) / 1.exa
+  get() = (value * Magnitude.KILO) * 1.exainverse
 
 val Mass.inPetagrams: Double
-  get() = (value * Magnitude.KILO) / 1.peta
+  get() = (value * Magnitude.KILO) * 1.petainverse
 
 val Mass.inTeragrams: Double
-  get() = (value * Magnitude.KILO) / 1.tera
+  get() = (value * Magnitude.KILO) * 1.terainverse
 
 val Mass.inGigagrams: Double
-  get() = (value * Magnitude.KILO) / 1.giga
+  get() = (value * Magnitude.KILO) * 1.gigainverse
 
 val Mass.inMegagrams: Double
-  get() = (value * Magnitude.KILO) / 1.mega
+  get() = (value * Magnitude.KILO) * 1.megainverse
 
 val Mass.inKilograms: Double
-  get() = (value * Magnitude.KILO) / 1.kilo
+  get() = (value * Magnitude.KILO) * 1.kiloinverse
 
 val Mass.inHectograms: Double
-  get() = (value * Magnitude.KILO) / 1.hecto
+  get() = (value * Magnitude.KILO) * 1.hectoinverse
 
 val Mass.inDecagrams: Double
-  get() = (value * Magnitude.KILO) / 1.deca
+  get() = (value * Magnitude.KILO) * 1.decainverse
 
 val Mass.inDecigrams: Double
-  get() = (value * Magnitude.KILO) / 1.deci
+  get() = (value * Magnitude.KILO) * 1.deciinverse
 
 val Mass.inCentigrams: Double
-  get() = (value * Magnitude.KILO) / 1.centi
+  get() = (value * Magnitude.KILO) * 1.centiinverse
 
 val Mass.inMilligrams: Double
-  get() = (value * Magnitude.KILO) / 1.milli
+  get() = (value * Magnitude.KILO) * 1.milliinverse
 
 val Mass.inMicrograms: Double
-  get() = (value * Magnitude.KILO) / 1.micro
+  get() = (value * Magnitude.KILO) * 1.microinverse
 
 val Mass.inNanograms: Double
-  get() = (value * Magnitude.KILO) / 1.nano
+  get() = (value * Magnitude.KILO) * 1.nanoinverse
 
 val Mass.inPicograms: Double
-  get() = (value * Magnitude.KILO) / 1.pico
+  get() = (value * Magnitude.KILO) * 1.picoinverse
 
 val Mass.inFemtograms: Double
-  get() = (value * Magnitude.KILO) / 1.femto
+  get() = (value * Magnitude.KILO) * 1.femtoinverse
 
 val Mass.inAttograms: Double
-  get() = (value * Magnitude.KILO) / 1.atto
+  get() = (value * Magnitude.KILO) * 1.attoinverse
 
 val Mass.inZeptograms: Double
-  get() = (value * Magnitude.KILO) / 1.zepto
+  get() = (value * Magnitude.KILO) * 1.zeptoinverse
 
 val Mass.inYoctograms: Double
-  get() = (value * Magnitude.KILO) / 1.yocto
+  get() = (value * Magnitude.KILO) * 1.yoctoinverse

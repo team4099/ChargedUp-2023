@@ -31,12 +31,6 @@ import org.junit.jupiter.api.Test
 /* Unit tests for Mass units */
 class MassTest {
   private val kEpsilon = 1E-9
-  // Hacky way to do this. Consider removing support in the future for nanograms and below due to
-  // floating point imprecision
-  private val kDelta = 1E-3
-  private val kSigma = 1E6
-  private val kAlpha = 1E9
-  private val kBeta = 1E12
 
   @Test
   fun testGramsToPounds() {
@@ -138,42 +132,42 @@ class MassTest {
   @Test
   fun testGramstoNanograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inNanograms, 4.099E12, kDelta)
+    assertEquals(weightGrams.inNanograms, 4.099E12, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testGramstoPicograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inPicograms, 4.099E15, kSigma)
+    assertEquals(weightGrams.inPicograms, 4.099E15, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testGramstoFemtograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inFemtograms, 4.099E18, kSigma)
+    assertEquals(weightGrams.inFemtograms, 4.099E18, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testGramstoAttograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inAttograms, 4.099E21, kSigma)
+    assertEquals(weightGrams.inAttograms, 4.099E21, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testGramstoZeptograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inZeptograms, 4.099E24, kAlpha)
+    assertEquals(weightGrams.inZeptograms, 4.099E24, kEpsilon)
   }
 
   // Unstable due to floating point errors
   @Test
   fun testGramstoYoctograms() {
     val weightGrams = 4099.grams
-    assertEquals(weightGrams.inYoctograms, 4.099E27, kBeta)
+    assertEquals(weightGrams.inYoctograms, 4.099E27, kEpsilon)
   }
 
   @Test

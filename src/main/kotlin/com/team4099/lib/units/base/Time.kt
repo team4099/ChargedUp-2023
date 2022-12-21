@@ -2,16 +2,16 @@ package com.team4099.lib.units.base
 
 import com.team4099.lib.units.UnitKey
 import com.team4099.lib.units.Value
-import com.team4099.lib.units.atto
-import com.team4099.lib.units.centi
-import com.team4099.lib.units.deci
-import com.team4099.lib.units.femto
-import com.team4099.lib.units.micro
-import com.team4099.lib.units.milli
-import com.team4099.lib.units.nano
-import com.team4099.lib.units.pico
-import com.team4099.lib.units.yocto
-import com.team4099.lib.units.zepto
+import com.team4099.lib.units.attoinverse
+import com.team4099.lib.units.centiinverse
+import com.team4099.lib.units.deciinverse
+import com.team4099.lib.units.femtoinverse
+import com.team4099.lib.units.microinverse
+import com.team4099.lib.units.milliinverse
+import com.team4099.lib.units.nanoinverse
+import com.team4099.lib.units.picoinverse
+import com.team4099.lib.units.yoctoinverse
+import com.team4099.lib.units.zeptoinverse
 
 object Second : UnitKey
 
@@ -49,31 +49,31 @@ val Time.inHours: Double
   get() = value / SECONDS_PER_HOUR
 
 val Time.inDeciseconds: Double
-  get() = value / 1.deci
+  get() = value * 1.deciinverse
 
 val Time.inCentiseconds: Double
-  get() = value / 1.centi
+  get() = value * 1.centiinverse
 
 val Time.inMilliseconds: Double
-  get() = value / 1.milli
+  get() = value * 1.milliinverse
 
 val Time.inMicroseconds: Double
-  get() = value / 1.micro
+  get() = value * 1.microinverse
 
 val Time.inNanoseconds: Double
-  get() = value / 1.nano
+  get() = value * 1.nanoinverse
 
 val Time.inPicoseconds: Double
-  get() = value / 1.pico
+  get() = value * 1.picoinverse
 
 val Time.inFemtoseconds: Double
-  get() = value / 1.femto
+  get() = value * 1.femtoinverse
 
 val Time.inAttoseconds: Double
-  get() = value / 1.atto
+  get() = value * 1.attoinverse
 
 val Time.inZeptoseconds: Double
-  get() = value / 1.zepto
+  get() = value * 1.zeptoinverse
 
 val Time.inYoctoseconds: Double
-  get() = value / 1.yocto
+  get() = value * 1.yoctoinverse

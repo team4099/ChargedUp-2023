@@ -24,10 +24,6 @@ import kotlin.test.assertEquals
 /* Unit tests for Time units */
 class TimeTest {
   private val kEpsilon = 1E-9
-  private val kDelta = 1E-3
-  private val kSigma = 1E6
-  private val kAlpha = 1E9
-  private val kBeta = 1E12
 
   @Test
   fun testSecondsToMinutes() {
@@ -80,37 +76,37 @@ class TimeTest {
   @Test
   fun testSecondsToNanoseconds() {
     val seconds = 1.seconds
-    assertEquals(seconds.inNanoseconds, 1E9, kDelta)
+    assertEquals(seconds.inNanoseconds, 1E9, kEpsilon)
   }
 
   @Test
   fun testSecondsToPicoseconds() {
     val seconds = 1.seconds
-    assertEquals(seconds.inPicoseconds, 1E12, kDelta)
+    assertEquals(seconds.inPicoseconds, 1E12, kEpsilon)
   }
 
   @Test
   fun testSecondsToFemtoseconds() {
     val seconds = 1.seconds
-    assertEquals(seconds.inFemtoseconds, 1E15, kSigma)
+    assertEquals(seconds.inFemtoseconds, 1E15, kEpsilon)
   }
 
   @Test
   fun testSecondsToAttoseconds() {
     val seconds = 1.seconds
-    assertEquals(seconds.inAttoseconds, 1E18, kSigma)
+    assertEquals(seconds.inAttoseconds, 1E18, kEpsilon)
   }
 
   @Test
   fun testSecondsToZeptoseconds() {
     val seconds = 1.seconds
-    assertEquals(seconds.inZeptoseconds, 1E21, kAlpha)
+    assertEquals(seconds.inZeptoseconds, 1E21, kEpsilon)
   }
 
   @Test
   fun testSecondsToYoctoseconds() {
     val seconds = 1.seconds
-    assertEquals(seconds.inYoctoseconds, 1E24, kBeta)
+    assertEquals(seconds.inYoctoseconds, 1E24, kEpsilon)
   }
 
   @Test
