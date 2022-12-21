@@ -1,8 +1,5 @@
 package com.team4099.lib.units
 
-import kotlin.math.log
-import kotlin.math.roundToInt
-
 object Magnitude {
   const val YOTTA = 1E24
   const val ZETA = 1E21
@@ -24,6 +21,27 @@ object Magnitude {
   const val ATTO = 1E-18
   const val ZEPTO = 1E-21
   const val YOCTO = 1E-24
+
+  const val YOTTA_INVERSE = 1E-24
+  const val ZETA_INVERSE = 1E-21
+  const val EXA_INVERSE = 1E-18
+  const val PETA_INVERSE = 1E-15
+  const val TERA_INVERSE = 1E-12
+  const val GIGA_INVERSE = 1E-9
+  const val MEGA_INVERSE = 1E-6
+  const val KILO_INVERSE = 1E-3
+  const val HECTO_INVERSE = 1E-2
+  const val DECA_INVERSE = 1E-1
+  const val DECI_INVERSE = 1E1
+  const val CENTI_INVERSE = 1E2
+  const val MILLI_INVERSE = 1E3
+  const val MICRO_INVERSE = 1E6
+  const val NANO_INVERSE = 1E9
+  const val PICO_INVERSE = 1E12
+  const val FEMTO_INVERSE = 1E15
+  const val ATTO_INVERSE = 1E18
+  const val ZEPTO_INVERSE = 1E21
+  const val YOCTO_INVERSE = 1E24
 }
 
 val Double.yotta: Double
@@ -86,9 +104,6 @@ val Double.zepto: Double
 val Double.yocto: Double
   get() = this * Magnitude.YOCTO
 
-val Double.inverse: Double
-  get() = "1E${-log(this, 10.0).roundToInt()}".toDouble()
-
 val Number.yotta: Double
   get() = this.toDouble() * Magnitude.YOTTA
 
@@ -149,5 +164,122 @@ val Number.zepto: Double
 val Number.yocto: Double
   get() = this.toDouble() * Magnitude.YOCTO
 
-val Number.inverse: Double
-  get() = "1E${-log(this.toDouble(), 10.0).roundToInt()}".toDouble()
+val Double.yottainverse: Double
+  get() = this * Magnitude.YOTTA_INVERSE
+
+val Double.zetainverse: Double
+  get() = this * Magnitude.ZETA_INVERSE
+
+val Double.exainverse: Double
+  get() = this * Magnitude.EXA_INVERSE
+
+val Double.petainverse: Double
+  get() = this * Magnitude.PETA_INVERSE
+
+val Double.terainverse: Double
+  get() = this * Magnitude.TERA_INVERSE
+
+val Double.gigainverse: Double
+  get() = this * Magnitude.GIGA_INVERSE
+
+val Double.megainverse: Double
+  get() = this * Magnitude.MEGA_INVERSE
+
+val Double.kiloinverse: Double
+  get() = this * Magnitude.KILO_INVERSE
+
+val Double.hectoinverse: Double
+  get() = this * Magnitude.HECTO_INVERSE
+
+val Double.decainverse: Double
+  get() = this * Magnitude.DECA_INVERSE
+
+val Double.deciinverse: Double
+  get() = this * Magnitude.DECI_INVERSE
+
+val Double.centiinverse: Double
+  get() = this * Magnitude.CENTI_INVERSE
+
+val Double.milliinverse: Double
+  get() = this * Magnitude.MILLI_INVERSE
+
+val Double.microinverse: Double
+  get() = this * Magnitude.MICRO_INVERSE
+
+val Double.nanoinverse: Double
+  get() = this * Magnitude.NANO_INVERSE
+
+val Double.picoinverse: Double
+  get() = this * Magnitude.PICO_INVERSE
+
+val Double.femtoinverse: Double
+  get() = this * Magnitude.FEMTO_INVERSE
+
+val Double.attoinverse: Double
+  get() = this * Magnitude.ATTO_INVERSE
+
+val Double.zeptoinverse: Double
+  get() = this * Magnitude.ZEPTO_INVERSE
+
+val Double.yoctoinverse: Double
+  get() = this * Magnitude.YOCTO_INVERSE
+
+val Number.yottainverse: Double
+  get() = this.toDouble() * Magnitude.YOTTA_INVERSE
+
+val Number.zetainverse: Double
+  get() = this.toDouble() * Magnitude.ZETA_INVERSE
+
+val Number.exainverse: Double
+  get() = this.toDouble() * Magnitude.EXA_INVERSE
+
+val Number.petainverse: Double
+  get() = this.toDouble() * Magnitude.PETA_INVERSE
+
+val Number.terainverse: Double
+  get() = this.toDouble() * Magnitude.TERA_INVERSE
+
+val Number.gigainverse: Double
+  get() = this.toDouble() * Magnitude.GIGA_INVERSE
+
+val Number.megainverse: Double
+  get() = this.toDouble() * Magnitude.MEGA_INVERSE
+
+val Number.kiloinverse: Double
+  get() = this.toDouble() * Magnitude.KILO_INVERSE
+
+val Number.hectoinverse: Double
+  get() = this.toDouble() * Magnitude.HECTO_INVERSE
+
+val Number.decainverse: Double
+  get() = this.toDouble() * Magnitude.DECA_INVERSE
+
+val Number.deciinverse: Double
+  get() = this.toDouble() * Magnitude.DECI_INVERSE
+
+val Number.centiinverse: Double
+  get() = this.toDouble() * Magnitude.CENTI_INVERSE
+
+val Number.milliinverse: Double
+  get() = this.toDouble() * Magnitude.MILLI_INVERSE
+
+val Number.microinverse: Double
+  get() = this.toDouble() * Magnitude.MICRO_INVERSE
+
+val Number.nanoinverse: Double
+  get() = this.toDouble() * Magnitude.NANO_INVERSE
+
+val Number.picoinverse: Double
+  get() = this.toDouble() * Magnitude.PICO_INVERSE
+
+val Number.femtoinverse: Double
+  get() = this.toDouble() * Magnitude.FEMTO_INVERSE
+
+val Number.attoinverse: Double
+  get() = this.toDouble() * Magnitude.ATTO_INVERSE
+
+val Number.zeptoinverse: Double
+  get() = this.toDouble() * Magnitude.ZEPTO_INVERSE
+
+val Number.yoctoinverse: Double
+  get() = this.toDouble() * Magnitude.YOCTO_INVERSE
