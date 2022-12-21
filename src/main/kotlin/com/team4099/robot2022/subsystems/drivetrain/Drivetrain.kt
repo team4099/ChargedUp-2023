@@ -1,7 +1,9 @@
 package com.team4099.robot2022.subsystems.drivetrain
 
-import com.team4099.lib.geometry.Pose
-import com.team4099.lib.geometry.Translation
+import com.team4099.lib.geometry.Pose2d
+import com.team4099.lib.geometry.Rotation2d
+import com.team4099.lib.geometry.Rotation2dWPILIB
+import com.team4099.lib.geometry.Translation2d
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
@@ -23,7 +25,6 @@ import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2022.config.constants.DrivetrainConstants
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
@@ -56,19 +57,19 @@ class Drivetrain(val io: DrivetrainIO) : SubsystemBase() {
     )
 
   private val frontLeftWheelLocation =
-    Translation(
+    Translation2d(
       DrivetrainConstants.DRIVETRAIN_LENGTH / 2, DrivetrainConstants.DRIVETRAIN_WIDTH / 2
     )
   private val frontRightWheelLocation =
-    Translation(
+    Translation2d(
       DrivetrainConstants.DRIVETRAIN_LENGTH / 2, -DrivetrainConstants.DRIVETRAIN_WIDTH / 2
     )
   private val backLeftWheelLocation =
-    Translation(
+    Translation2d(
       -DrivetrainConstants.DRIVETRAIN_LENGTH / 2, DrivetrainConstants.DRIVETRAIN_WIDTH / 2
     )
   private val backRightWheelLocation =
-    Translation(
+    Translation2d(
       -DrivetrainConstants.DRIVETRAIN_LENGTH / 2, -DrivetrainConstants.DRIVETRAIN_WIDTH / 2
     )
 
@@ -87,8 +88,8 @@ class Drivetrain(val io: DrivetrainIO) : SubsystemBase() {
       swerveModules.map { it.position }.toTypedArray()
     )
 
-  var pose: Pose
-    get() = Pose(swerveDriveOdometry.poseMeters)
+  var pose: Pose2d
+    get() = Pose2d(swerveDriveOdometry.poseMeters)
     set(value) {
       swerveDriveOdometry.resetPosition(
         inputs.gyroYaw.inRotation2ds,
@@ -98,7 +99,7 @@ class Drivetrain(val io: DrivetrainIO) : SubsystemBase() {
       zeroGyroYaw(pose.theta)
     }
 
-  var targetPose: Pose = Pose(0.meters, 0.meters, 0.radians)
+  var targetPose: Pose2d = Pose2d(0.0.meters, 0.0.meters, Rotation2d(0.0.radians))
 
   override fun periodic() {
     io.updateInputs(inputs)
@@ -154,7 +155,7 @@ class Drivetrain(val io: DrivetrainIO) : SubsystemBase() {
             driveVector.first.inMetersPerSecond,
             driveVector.second.inMetersPerSecond,
             angularVelocity.inRadiansPerSecond,
-            Rotation2d(inputs.gyroYaw.cos, inputs.gyroYaw.sin)
+            Rotation2dWPILIB(inputs.gyroYaw.cos, inputs.gyroYaw.sin)
           )
         )
     } else {
@@ -203,7 +204,7 @@ class Drivetrain(val io: DrivetrainIO) : SubsystemBase() {
             driveVector.first.inMetersPerSecond,
             driveVector.second.inMetersPerSecond,
             angularVelocity.inRadiansPerSecond,
-            Rotation2d(inputs.gyroYaw.cos, inputs.gyroYaw.sin)
+            Rotation2dWPILIB(inputs.gyroYaw.cos, inputs.gyroYaw.sin)
           )
         )
       accelSwerveModuleStates =
@@ -212,7 +213,7 @@ class Drivetrain(val io: DrivetrainIO) : SubsystemBase() {
             driveAcceleration.first.inMetersPerSecondPerSecond,
             driveAcceleration.second.inMetersPerSecondPerSecond,
             angularAcceleration.inRadiansPerSecondPerSecond,
-            Rotation2d(inputs.gyroYaw.cos, inputs.gyroYaw.sin)
+            Rotation2dWPILIB(inputs.gyroYaw.cos, inputs.gyroYaw.sin)
           )
         )
     } else {
