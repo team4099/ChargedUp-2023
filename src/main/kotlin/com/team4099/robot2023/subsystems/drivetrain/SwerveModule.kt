@@ -4,6 +4,7 @@ import com.team4099.lib.logging.TunableNumber
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.feet
+import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.angle
@@ -16,6 +17,7 @@ import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.wpilibj.RobotBase.isReal
 import org.littletonrobotics.junction.Logger
@@ -24,6 +26,8 @@ import kotlin.math.withSign
 
 class SwerveModule(val io: SwerveModuleIO) {
   val inputs = SwerveModuleIO.SwerveModuleIOInputs()
+
+  var modulePosition = SwerveModulePosition()
 
   private var speedSetPoint: LinearVelocity = 0.feet.perSecond
   private var accelerationSetPoint: LinearAcceleration = 0.feet.perSecond.perSecond
@@ -76,6 +80,10 @@ class SwerveModule(val io: SwerveModuleIO) {
 
   fun periodic() {
     io.updateInputs(inputs)
+
+    // Updating SwerveModulePosition every loop cycle
+    modulePosition.distanceMeters = inputs.drivePosition.inMeters
+    modulePosition.angle = inputs.steeringPosition.inRotation2ds
 
     if (steeringkP.hasChanged() || steeringkI.hasChanged() || steeringkD.hasChanged()) {
       io.configureSteeringPID(steeringkP.get(), steeringkI.get(), steeringkD.get())

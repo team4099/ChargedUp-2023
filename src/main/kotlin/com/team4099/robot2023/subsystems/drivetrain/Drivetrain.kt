@@ -5,7 +5,6 @@ import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Rotation2dWPILIB
 import com.team4099.lib.geometry.Translation2d
 import com.team4099.lib.geometry.Translation2dWPILIB
-import com.team4099.lib.geometry.Twist2dWPILIB
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
@@ -28,6 +27,7 @@ import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -81,12 +81,28 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       backRightWheelLocation.translation2d
     )
 
+  var swerveDriveOdometry =
+    SwerveDriveOdometry(
+      swerveDriveKinematics,
+      gyroInputs.gyroYaw.inRotation2ds,
+      swerveModules.map { it.modulePosition }.toTypedArray()
+    )
+
   var setPointStates =
     mutableListOf(
       SwerveModuleState(), SwerveModuleState(), SwerveModuleState(), SwerveModuleState()
     )
 
-  var odometryPose: Pose2d = Pose2d(0.0.meters, 0.0.meters, Rotation2d(0.0.radians))
+  var odometryPose: Pose2d
+    get() = Pose2d(swerveDriveOdometry.poseMeters)
+    set(value) {
+      swerveDriveOdometry.resetPosition(
+        gyroInputs.gyroYaw.inRotation2ds,
+        swerveModules.map { it.modulePosition }.toTypedArray(),
+        value.pose2d
+      )
+      zeroGyroYaw(odometryPose.theta)
+    }
 
   var targetPose: Pose2d = Pose2d(0.0.meters, 0.0.meters, Rotation2d(0.0.radians))
 
@@ -101,43 +117,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     swerveModules.forEach { it.periodic() }
 
     // updating odometry every loop cycle
-    val measuredStatesDifference = arrayOfNulls<SwerveModuleState>(4)
-    for (i in 0 until 4) {
-      measuredStatesDifference[i] =
-        SwerveModuleState(
-          (swerveModules[i].inputs.drivePosition - lastModulePositions[i]).inMeters,
-          swerveModules[i].inputs.steeringPosition.inRotation2ds
-        )
-      lastModulePositions[i] = swerveModules[i].inputs.drivePosition
-    }
-    val chassisStateDiff: ChassisSpeeds =
-      swerveDriveKinematics.toChassisSpeeds(*measuredStatesDifference)
-
-    if (gyroInputs.gyroConnected) {
-      odometryPose =
-        Pose2d(
-          odometryPose.pose2d.exp(
-            Twist2dWPILIB(
-              chassisStateDiff.vxMetersPerSecond,
-              chassisStateDiff.vyMetersPerSecond,
-              gyroInputs.gyroYaw.inRadians - lastGyroPosition.inRadians
-            )
-          )
-        )
-    } else {
-      odometryPose =
-        Pose2d(
-          odometryPose.pose2d.exp(
-            Twist2dWPILIB(
-              chassisStateDiff.vxMetersPerSecond,
-              chassisStateDiff.vyMetersPerSecond,
-              chassisStateDiff.omegaRadiansPerSecond
-            )
-          )
-        )
-    }
-
-    lastGyroPosition = gyroInputs.gyroYaw
+    updateOdometry()
 
     // Update field velocity
     val measuredStates = arrayOfNulls<SwerveModuleState>(4)
@@ -173,6 +153,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         "Odometry/targetPose",
         doubleArrayOf(targetPose.x.inMeters, targetPose.y.inMeters, targetPose.theta.inRadians)
       )
+  }
+
+  private fun updateOdometry() {
+    swerveDriveOdometry.update(
+      gyroInputs.gyroYaw.inRotation2ds, swerveModules.map { it.modulePosition }.toTypedArray()
+    )
   }
 
   /**
@@ -311,7 +297,11 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
    */
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
-    odometryPose.theta = toAngle
+    swerveDriveOdometry.resetPosition(
+      toAngle.inRotation2ds,
+      swerveModules.map { it.modulePosition }.toTypedArray(),
+      odometryPose.pose2d
+    )
   }
 
   fun zeroGyroPitch(toAngle: Angle = 0.0.degrees) {

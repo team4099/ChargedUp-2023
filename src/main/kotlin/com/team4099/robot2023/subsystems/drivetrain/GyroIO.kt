@@ -31,7 +31,7 @@ interface GyroIO {
       table?.getDouble("gyroPitchDegrees", gyroPitch.inDegrees)?.let { gyroPitch = it.degrees }
       table?.getDouble("gyroRollDegrees", gyroRoll.inDegrees)?.let { gyroRoll = it.degrees }
       table?.getDouble("gyroVelocityDegreesPerSecond", gyroVelocity.inDegreesPerSecond)?.let {
-        gyroVelocity.inDegreesPerSecond
+        gyroVelocity = it.degrees.perSecond
       }
       table?.getBoolean("gyroConnected", gyroConnected)?.let { gyroConnected = it }
     }
