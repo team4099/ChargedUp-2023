@@ -31,7 +31,7 @@ data class Pose2d(var m_translation: Translation2d, var m_rotation: Rotation2d) 
 
   val rotation: Rotation2d = m_rotation
 
-  val theta: Angle = m_rotation.theta
+  var theta: Angle = m_rotation.theta
 
   val pose2d: Pose2dWPILIB = Pose2dWPILIB(translation.translation2d, rotation.rotation2d)
 
