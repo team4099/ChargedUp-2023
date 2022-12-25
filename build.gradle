@@ -14,7 +14,7 @@ targetCompatibility = JavaVersion.VERSION_11
 
 def TEAM = 4099
 // do not change main class (does not run without it being Main
-def ROBOT_MAIN_CLASS = "com.team4099.robot2022.Main"
+def ROBOT_MAIN_CLASS = "com.team4099.robot2023.Main"
 def includeDesktopSupport = true
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -153,7 +153,7 @@ gversion {
 	srcDir       = "src/main/kotlin/"           // path is relative to the sub-project by default
 	// Gradle variables can also be used
 	// E.g. "${project.rootDir}/module/src/main/java"
-	classPackage = "com.team4099.robot2022"
+	classPackage = "com.team4099.robot2023"
 	className    = "BuildConstants"                // optional. If not specified GVersion is used
 	dateFormat   = "yyyy-MM-dd'T'HH:mm:ss'Z'" // optional. This is the default
 	timeZone     = "EST"                      // optional. UTC is default

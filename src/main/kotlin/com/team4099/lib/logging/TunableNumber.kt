@@ -1,6 +1,6 @@
 package com.team4099.lib.logging
 
-import com.team4099.robot2022.config.constants.Constants
+import com.team4099.robot2023.config.constants.Constants
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 /**
