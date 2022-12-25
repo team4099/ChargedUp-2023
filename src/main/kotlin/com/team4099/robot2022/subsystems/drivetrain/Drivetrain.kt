@@ -231,7 +231,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     fieldOriented: Boolean = true,
   ) {
     var velSwerveModuleStates: Array<SwerveModuleState>?
-    var accelSwerveModuleStates: Array<SwerveModuleState>?
+    val accelSwerveModuleStates: Array<SwerveModuleState>?
     if (fieldOriented) {
       velSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(

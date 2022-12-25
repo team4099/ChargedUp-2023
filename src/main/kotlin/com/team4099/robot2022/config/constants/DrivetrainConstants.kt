@@ -88,5 +88,16 @@ object DrivetrainConstants {
     val DRIVE_KS = 0.23677.volts
     val DRIVE_KV = 2.2678.volts / 1.0.meters.perSecond
     val DRIVE_KA = 0.40499.volts / 1.0.meters.perSecond.perSecond
+
+    val SIM_DRIVE_KS = 0.116970.volts
+    val SIM_DRIVE_KV = 0.133240.volts / 1.0.meters.perSecond
+
+    val SIM_DRIVE_KP = 0.9
+    val SIM_DRIVE_KI = 0.0
+    val SIM_DRIVE_KD = 0.0
+
+    val SIM_STEERING_KP = 23.0
+    val SIM_STEERING_KI = 0.0
+    val SIM_STEERING_KD = 0.0
   }
 }

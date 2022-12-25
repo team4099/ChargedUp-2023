@@ -27,16 +27,14 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
+import org.littletonrobotics.junction.Logger
 
 class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
-  // 6328 has the exact inverses of our gearings which i find odd
+  // Use inverses of gear ratios because our standard is <1 is reduction
   private val driveMotorSim: FlywheelSim =
-    FlywheelSim(
-      DCMotor.getNEO(1),
-      1 / DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO,
-      0.025
-    ) // no idea what the moment of intertia of system is change later
-  private val steerMotorSim: FlywheelSim =
+    FlywheelSim(DCMotor.getNEO(1), 1 / DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO, 0.025)
+
+  private val steerMotorSim =
     FlywheelSim(
       DCMotor.getNEO(1), 1 / DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO, 0.004096955
     )
@@ -46,13 +44,29 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     (Math.random() * 2.0 * Math.PI).radians // getting a random value that we zero to
   var driveVelocity = 0.0.meters.perSecond
 
-  val driveFeedback = PIDController(0.9, 0.0, 0.0, Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
-  val driveFeedForward = SimpleMotorFeedforward(0.116970, 0.133240)
+  private val driveFeedback =
+    PIDController(
+      DrivetrainConstants.PID.SIM_DRIVE_KP,
+      DrivetrainConstants.PID.SIM_DRIVE_KI,
+      DrivetrainConstants.PID.SIM_DRIVE_KD,
+      Constants.Universal.LOOP_PERIOD_TIME.inSeconds
+    )
+  private val driveFeedForward =
+    SimpleMotorFeedforward(
+      DrivetrainConstants.PID.SIM_DRIVE_KS.inVolts, DrivetrainConstants.PID.SIM_DRIVE_KV.value
+    )
 
-  val steeringFeedback =
-    PIDController(23.0, 0.0, 0.0, Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
+  private val steeringFeedback =
+    PIDController(
+      DrivetrainConstants.PID.SIM_STEERING_KP,
+      DrivetrainConstants.PID.SIM_STEERING_KI,
+      DrivetrainConstants.PID.SIM_STEERING_KD,
+      Constants.Universal.LOOP_PERIOD_TIME.inSeconds
+    )
+
   init {
     steeringFeedback.enableContinuousInput(-Math.PI, Math.PI)
+    steeringFeedback.setTolerance(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR.inRadians)
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {
@@ -114,6 +128,10 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
         inputs.driveSupplyCurrent.inAmperes + inputs.steeringSupplyCurrent.inAmperes
       )
     )
+
+    // updating pid every loop cycle bc for some reason it doesn't stay like this otherwise
+    driveFeedback.p = 0.9
+    steeringFeedback.p = 23.0
   }
 
   // helper functions to clamp all inputs and set sim motor voltages properly
@@ -128,7 +146,12 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   }
 
   override fun setSteeringSetpoint(angle: Angle) {
-    setSteeringVoltage(steeringFeedback.calculate(turnAbsolutePosition.inRadians, angle.inRadians))
+    val feedback = steeringFeedback.calculate(turnAbsolutePosition.inRadians, angle.inRadians).volts
+    Logger.getInstance().recordOutput("Drivetrain/PID/steeringFeedback", feedback.inVolts)
+    Logger.getInstance().recordOutput("Drivetrain/PID/kP", steeringFeedback.p)
+    Logger.getInstance().recordOutput("Drivetrain/PID/kI", steeringFeedback.i)
+    Logger.getInstance().recordOutput("Drivetrain/PID/kD", steeringFeedback.d)
+    setSteeringVoltage(feedback.inVolts)
   }
 
   override fun setClosedLoop(
@@ -149,7 +172,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   }
 
   override fun setOpenLoop(steering: Angle, power: Double) {
-    setDriveVoltage(power)
+    setDriveVoltage(RoboRioSim.getVInVoltage() * power)
     setSteeringSetpoint(steering)
   }
 

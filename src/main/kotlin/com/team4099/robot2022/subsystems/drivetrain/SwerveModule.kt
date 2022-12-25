@@ -17,6 +17,7 @@ import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2022.config.constants.DrivetrainConstants
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.wpilibj.RobotBase.isReal
 import org.littletonrobotics.junction.Logger
 import kotlin.math.IEEErem
 import kotlin.math.withSign
@@ -53,7 +54,25 @@ class SwerveModule(val io: SwerveModuleIO) {
   private val drivekI = TunableNumber("Drivetrain/moduleDrivekI", DrivetrainConstants.PID.DRIVE_KI)
   private val drivekD = TunableNumber("Drivetrain/moduleDrivekD", DrivetrainConstants.PID.DRIVE_KD)
 
-  init {}
+  init {
+    if (isReal()) {
+      steeringkP.setDefault(DrivetrainConstants.PID.STEERING_KP)
+      steeringkI.setDefault(DrivetrainConstants.PID.STEERING_KI)
+      steeringkD.setDefault(DrivetrainConstants.PID.STEERING_KD)
+
+      drivekP.setDefault(DrivetrainConstants.PID.DRIVE_KP)
+      drivekI.setDefault(DrivetrainConstants.PID.DRIVE_KI)
+      drivekD.setDefault(DrivetrainConstants.PID.DRIVE_KD)
+    } else {
+      steeringkP.setDefault(DrivetrainConstants.PID.SIM_STEERING_KP)
+      steeringkI.setDefault(DrivetrainConstants.PID.SIM_STEERING_KI)
+      steeringkD.setDefault(DrivetrainConstants.PID.SIM_STEERING_KD)
+
+      drivekP.setDefault(DrivetrainConstants.PID.SIM_DRIVE_KP)
+      drivekI.setDefault(DrivetrainConstants.PID.SIM_DRIVE_KI)
+      drivekD.setDefault(DrivetrainConstants.PID.SIM_DRIVE_KD)
+    }
+  }
 
   fun periodic() {
     io.updateInputs(inputs)
@@ -163,8 +182,6 @@ class SwerveModule(val io: SwerveModuleIO) {
    * velocities
    */
   fun setPositionOpenLoop(desiredState: SwerveModuleState, optimize: Boolean = true) {
-    println("grr")
-    println(desiredState.speedMetersPerSecond)
     if (optimize) {
       val optimizedState =
         SwerveModuleState.optimize(desiredState, inputs.steeringPosition.inRotation2ds)
