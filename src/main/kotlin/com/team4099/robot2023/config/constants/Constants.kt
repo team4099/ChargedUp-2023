@@ -56,38 +56,4 @@ object Constants {
     const val BACK_LEFT_STEERING_ID = 24
     const val BACK_LEFT_ANALOG_POTENTIOMETER = 3
   }
-
-  object Shooter {
-    const val FLYWHEEL_MOTOR_ID = 51
-    const val BACK_WHEELS_MOTOR_ID = 52
-  }
-
-  object Feeder {
-    const val FLOOR_MOTOR_ID = 61
-    const val VERTICAL_MOTOR_ID = 62
-
-    const val TOP_DIO_PIN = 9
-    const val BOTTOM_DIO_PIN = 8
-  }
-
-  object Intake {
-    const val INTAKE_MOTOR = 31
-    const val ARM_SOLENOID = 8
-  }
-
-  object LED {
-    const val LED_CONTROLLER_ID = 1
-    const val TAB = "LED"
-  }
-
-  object TelescopingClimber {
-    const val SOLENOID_ID = 0
-    const val R_ARM_ID = 42
-    const val L_ARM_ID = 41
-  }
-
-  object PivotClimber {
-    const val IN_PORT = 11
-    const val OUT_PORT = 12
-  }
 }
