@@ -13,7 +13,7 @@ class ResetGyroPitchCommand(val drivetrain: Drivetrain, val toAngle: Angle = 0.0
   }
 
   override fun initialize() {
-    drivetrain.zeroPitchYaw(toAngle)
+    drivetrain.gyroIO.zeroGyroPitch(toAngle)
   }
 
   override fun execute() {

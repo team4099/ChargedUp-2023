@@ -6,8 +6,10 @@ import com.team4099.robot2022.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2022.config.ControlBoard
 import com.team4099.robot2022.config.constants.Constants
 import com.team4099.robot2022.subsystems.drivetrain.Drivetrain
-import com.team4099.robot2022.subsystems.drivetrain.DrivetrainIO
 import com.team4099.robot2022.subsystems.drivetrain.DrivetrainIOReal
+import com.team4099.robot2022.subsystems.drivetrain.DrivetrainIOSim
+import com.team4099.robot2022.subsystems.drivetrain.GyroIO
+import com.team4099.robot2022.subsystems.drivetrain.GyroIONavx
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -15,15 +17,11 @@ object RobotContainer {
   init {
     if (Constants.Universal.ROBOT_MODE == Constants.Tuning.RobotType.REAL) {
       // Real Hardware Implementations
-      drivetrain = Drivetrain(DrivetrainIOReal)
+      drivetrain = Drivetrain(GyroIONavx, DrivetrainIOReal)
     } else {
       // Simulation implementations
-      drivetrain = Drivetrain(object : DrivetrainIO {})
+      drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
     }
-  }
-
-  fun zeroSteering() {
-    drivetrain.zeroSteering()
   }
 
   fun mapDefaultCommands() {
@@ -36,6 +34,10 @@ object RobotContainer {
         drivetrain
       )
     //    PivotClimber.defaultCommand = PivotIdleCommand()
+  }
+
+  fun zeroSteering() {
+    drivetrain.zeroGyroYaw()
   }
 
   fun zeroSensors() {

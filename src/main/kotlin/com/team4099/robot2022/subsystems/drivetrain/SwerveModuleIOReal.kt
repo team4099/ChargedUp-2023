@@ -10,6 +10,7 @@ import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.amps
+import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.inAmperes
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.ctreAngularMechanismSensor
@@ -119,8 +120,8 @@ class SwerveModuleIOReal(
     inputs.driveVelocity = -driveSensor.velocity
     inputs.steeringVelocity = steeringSensor.velocity
 
-    inputs.driveTempCelcius = driveFalcon.temperature
-    inputs.steeringTempCelcius = steeringFalcon.temperature
+    inputs.driveTemp = driveFalcon.temperature.celsius
+    inputs.steeringTemp = steeringFalcon.temperature.celsius
 
     inputs.potentiometerOutputRaw = potentiometer.get()
     inputs.potentiometerOutputRadians = potentiometer.get().radians

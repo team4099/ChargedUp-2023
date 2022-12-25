@@ -5,7 +5,7 @@ import com.team4099.lib.units.base.Time
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.derived.Angle
 
-data class Pose2d(val m_translation: Translation2d, val m_rotation: Rotation2d) {
+data class Pose2d(var m_translation: Translation2d, var m_rotation: Rotation2d) {
   constructor() : this(Translation2d(), Rotation2d())
 
   constructor(x: Length, y: Length, rotation: Rotation2d) : this(Translation2d(x, y), rotation)

@@ -11,7 +11,7 @@ class ResetPoseCommand(val drivetrain: Drivetrain, val pose: Pose2d) : CommandBa
   }
 
   override fun initialize() {
-    drivetrain.pose = pose
+    drivetrain.odometryPose = pose
     Logger.getInstance().recordOutput("ActiveCommands/ResetPoseCommand", true)
   }
 

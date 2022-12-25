@@ -81,10 +81,10 @@ class DrivePathCommand(
 
   override fun initialize() {
     if (resetPose) {
-      drivetrain.pose = trajectory.startingPose
+      drivetrain.odometryPose = trajectory.startingPose
     }
     trajStartTime = Clock.fpgaTime + trajectory.startTime
-    thetaPID.reset(drivetrain.pose.theta.inRadians)
+    thetaPID.reset(drivetrain.odometryPose.theta.inRadians)
     xPID.reset()
     yPID.reset()
   }
@@ -96,7 +96,7 @@ class DrivePathCommand(
     val yFF = desiredState.linearVelocity * desiredState.curvature.sin
     val thetaFeedback =
       thetaPID.calculate(
-        drivetrain.pose.theta.inRadians,
+        drivetrain.odometryPose.theta.inRadians,
         TrapezoidProfile.State(
           desiredState.pose.theta.inRadians,
           desiredState.angularVelocity.inRadiansPerSecond
@@ -107,9 +107,13 @@ class DrivePathCommand(
 
     // Calculate feedback velocities (based on position error).
     val xFeedback =
-      xPID.calculate(drivetrain.pose.x.inMeters, desiredState.pose.x.inMeters).meters.perSecond
+      xPID.calculate(drivetrain.odometryPose.x.inMeters, desiredState.pose.x.inMeters)
+        .meters
+        .perSecond
     val yFeedback =
-      yPID.calculate(drivetrain.pose.y.inMeters, desiredState.pose.y.inMeters).meters.perSecond
+      yPID.calculate(drivetrain.odometryPose.y.inMeters, desiredState.pose.y.inMeters)
+        .meters
+        .perSecond
 
     val xAccel = desiredState.linearAcceleration * desiredState.curvature.cos
     val yAccel = desiredState.linearAcceleration * desiredState.curvature.sin

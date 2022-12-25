@@ -80,8 +80,8 @@ object Robot : LoggedRobot() {
 
     // init robot container too
     RobotContainer
+    // RobotContainer.zeroSensors() UNCOMMENT THIS PLS
     RobotContainer.mapDefaultCommands()
-    RobotContainer.zeroSensors()
   }
 
   override fun autonomousInit() {

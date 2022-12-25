@@ -5,7 +5,9 @@ import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.amps
+import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.inAmperes
+import com.team4099.lib.units.base.inCelsius
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
@@ -36,8 +38,8 @@ interface SwerveModuleIO {
     var driveVelocity = 0.0.meters.perSecond
     var steeringVelocity = 0.0.degrees.perSecond
 
-    var driveTempCelcius = 0.0
-    var steeringTempCelcius = 0.0
+    var driveTemp = 0.0.celsius
+    var steeringTemp = 0.0.celsius
 
     var potentiometerOutputRaw = 0.0
     var potentiometerOutputRadians = 0.0.radians
@@ -53,8 +55,8 @@ interface SwerveModuleIO {
       table?.put("steeringPositionRadians", steeringPosition.inRadians)
       table?.put("driveVelocityMetersPerSecond", driveVelocity.inMetersPerSecond)
       table?.put("steeringVelocityRadiansPerSecond", steeringVelocity.inRadiansPerSecond)
-      table?.put("driveTempCelcius", driveTempCelcius)
-      table?.put("steeringTempCelcius", steeringTempCelcius)
+      table?.put("driveTempCelcius", driveTemp.inCelsius)
+      table?.put("steeringTempCelcius", steeringTemp.inCelsius)
       table?.put("potentiometerOutputRaw", potentiometerOutputRaw)
       table?.put("potentiometerOutputRadians", potentiometerOutputRadians.inRadians)
     }
@@ -89,8 +91,10 @@ interface SwerveModuleIO {
       }
       table?.getDouble("steeringVelocityRadiansPerSecond", steeringVelocity.inRadiansPerSecond)
         ?.let { steeringVelocity = it.radians.perSecond }
-      table?.getDouble("driveTempCelcius", driveTempCelcius)?.let { driveTempCelcius = it }
-      table?.getDouble("steeringTempCelcius", steeringTempCelcius)?.let { steeringTempCelcius = it }
+      table?.getDouble("driveTempCelcius", driveTemp.inCelsius)?.let { driveTemp = it.celsius }
+      table?.getDouble("steeringTempCelcius", steeringTemp.inCelsius)?.let {
+        steeringTemp = it.celsius
+      }
       table?.getDouble("potentiometerOutputRaw", potentiometerOutputRaw)?.let {
         potentiometerOutputRaw = it
       }

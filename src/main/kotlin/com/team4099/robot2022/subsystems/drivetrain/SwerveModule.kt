@@ -16,7 +16,6 @@ import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2022.config.constants.DrivetrainConstants
-import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import org.littletonrobotics.junction.Logger
 import kotlin.math.IEEErem
@@ -24,11 +23,6 @@ import kotlin.math.withSign
 
 class SwerveModule(val io: SwerveModuleIO) {
   val inputs = SwerveModuleIO.SwerveModuleIOInputs()
-
-  var position: SwerveModulePosition =
-    SwerveModulePosition(
-      inputs.driveVelocity.inMetersPerSecond, inputs.steeringPosition.inRotation2ds
-    )
 
   private var speedSetPoint: LinearVelocity = 0.feet.perSecond
   private var accelerationSetPoint: LinearAcceleration = 0.feet.perSecond.perSecond
@@ -169,19 +163,27 @@ class SwerveModule(val io: SwerveModuleIO) {
    * velocities
    */
   fun setPositionOpenLoop(desiredState: SwerveModuleState, optimize: Boolean = true) {
+    println("grr")
+    println(desiredState.speedMetersPerSecond)
     if (optimize) {
       val optimizedState =
         SwerveModuleState.optimize(desiredState, inputs.steeringPosition.inRotation2ds)
       io.setOpenLoop(
         optimizedState.angle.angle,
-        optimizedState.speedMetersPerSecond /
+        if (optimizedState.speedMetersPerSecond >
           DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+        )
+          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+        else optimizedState.speedMetersPerSecond
       )
     } else {
       io.setOpenLoop(
         desiredState.angle.angle,
-        desiredState.speedMetersPerSecond /
+        if (desiredState.speedMetersPerSecond >
           DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+        )
+          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+        else desiredState.speedMetersPerSecond
       )
     }
   }
