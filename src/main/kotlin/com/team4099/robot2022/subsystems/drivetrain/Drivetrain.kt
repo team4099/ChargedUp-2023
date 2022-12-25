@@ -94,6 +94,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   var lastGyroPosition = 0.0.radians
 
   override fun periodic() {
+    if (!(gyroInputs.gyroConnected)) {
+      gyroInputs.gyroYaw = odometryPose.theta
+    }
     gyroIO.updateInputs(gyroInputs)
     swerveModules.forEach { it.periodic() }
 
@@ -193,7 +196,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       }
     } else {
       val swerveModuleStates: Array<SwerveModuleState>
-      if (gyroInputs.gyroConnected && fieldOriented) {
+      if (fieldOriented) {
         swerveModuleStates =
           swerveDriveKinematics.toSwerveModuleStates(
             ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -242,7 +245,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       Pair(0.0.meters.perSecond.perSecond, 0.0.meters.perSecond.perSecond),
     fieldOriented: Boolean = true,
   ) {
-    var velSwerveModuleStates: Array<SwerveModuleState>?
+    val velSwerveModuleStates: Array<SwerveModuleState>?
     val accelSwerveModuleStates: Array<SwerveModuleState>?
     if (fieldOriented) {
       velSwerveModuleStates =
