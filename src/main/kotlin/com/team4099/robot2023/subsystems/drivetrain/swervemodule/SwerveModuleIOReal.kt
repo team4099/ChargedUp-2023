@@ -1,4 +1,4 @@
-package com.team4099.robot2023.subsystems.drivetrain
+package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 
 import com.ctre.phoenix.motorcontrol.ControlMode
 import com.ctre.phoenix.motorcontrol.DemandType

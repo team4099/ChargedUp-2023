@@ -1,4 +1,4 @@
-package com.team4099.robot2023.subsystems.drivetrain
+package com.team4099.robot2023.subsystems.drivetrain.drive
 
 import com.team4099.lib.geometry.Pose2d
 import com.team4099.lib.geometry.Rotation2d
@@ -26,6 +26,7 @@ import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry

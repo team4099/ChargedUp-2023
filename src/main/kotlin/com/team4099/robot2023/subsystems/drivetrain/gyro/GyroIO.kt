@@ -1,4 +1,4 @@
-package com.team4099.robot2023.subsystems.drivetrain
+package com.team4099.robot2023.subsystems.drivetrain.gyro
 
 import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.degrees

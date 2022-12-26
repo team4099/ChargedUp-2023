@@ -1,4 +1,4 @@
-package com.team4099.robot2023.subsystems.drivetrain
+package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity

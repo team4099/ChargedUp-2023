@@ -21,7 +21,7 @@ import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
-import com.team4099.robot2023.subsystems.drivetrain.Drivetrain
+import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import edu.wpi.first.math.controller.PIDController
 import edu.wpi.first.math.controller.ProfiledPIDController
 import edu.wpi.first.math.trajectory.TrapezoidProfile
