@@ -12,7 +12,7 @@ import kotlin.math.hypot
  * the origin, facing toward the X direction, moving forward increases the X, moving to the left
  * increases the Y, and moving upwards increases the Z.
  */
-data class Translation2d(val x: Length, val y: Length) {
+data class Translation2d(var x: Length, var y: Length) {
   constructor(translation: Translation2dWPILIB) : this(translation.x.meters, translation.y.meters)
 
   constructor() : this(0.0.meters, 0.0.meters)

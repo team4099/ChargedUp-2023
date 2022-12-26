@@ -25,9 +25,9 @@ data class Pose2d(var m_translation: Translation2d, var m_rotation: Rotation2d) 
 
   val translation: Translation2d = m_translation
 
-  val x: Length = m_translation.x
+  var x: Length = m_translation.x
 
-  val y: Length = m_translation.y
+  var y: Length = m_translation.y
 
   val rotation: Rotation2d = m_rotation
 
