@@ -1,5 +1,6 @@
 # ChargedUp-2023
-[![Build](https://github.com/team4099/ChargedUp-2023/blob/main/.github/workflows/gradle.yml/badge.svg?branch=main&event=push)](https://github.com/team4099/ChargedUp-2023/blob/main/.github/workflows/gradle.yml)
+[![Build](https://github.com/team4099/ChargedUp-2023/actions/workflows/gradle.yml/badge.svg?event=push)](https://github.com/team4099/ChargedUp-2023/blob/main/.github/workflows/gradle.yml)
+
 
 ![ChargedUp-2023](./assets/chargedup_logo.png)
 
