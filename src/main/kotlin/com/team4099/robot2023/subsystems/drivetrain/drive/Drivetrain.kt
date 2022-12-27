@@ -250,6 +250,10 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
           )
         )
     }
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+      swerveModuleStates, DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+    )
+
     setPointStates = swerveModuleStates.toMutableList()
 
     for (moduleIndex in 0 until DrivetrainConstants.WHEEL_COUNT) {

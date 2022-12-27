@@ -12,7 +12,6 @@ import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotation2ds
 import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
@@ -195,21 +194,12 @@ class SwerveModule(val io: SwerveModuleIO) {
         SwerveModuleState.optimize(desiredState, inputs.steeringPosition.inRotation2ds)
       io.setOpenLoop(
         optimizedState.angle.angle,
-        if (optimizedState.speedMetersPerSecond >
-          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
-        )
-          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
-        else optimizedState.speedMetersPerSecond
+        optimizedState
+          .speedMetersPerSecond // consider desaturating wheel speeds here if it doesn't work
+        // from drivetrain
       )
     } else {
-      io.setOpenLoop(
-        desiredState.angle.angle,
-        if (desiredState.speedMetersPerSecond >
-          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
-        )
-          DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
-        else desiredState.speedMetersPerSecond
-      )
+      io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond)
     }
   }
 
