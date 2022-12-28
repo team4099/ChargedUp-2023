@@ -9,14 +9,14 @@ import com.team4099.lib.units.base.METERS_PER_INCH
 import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.Second
 
-typealias ProportionalGain<T, K> = Value<Fraction<T, K>>
+typealias ProportionalGain<E, O> = Value<Fraction<O, E>>
 
-typealias IntegralGain<T, K> = Value<Fraction<Product<T, Second>, K>>
+typealias IntegralGain<E, O> = Value<Fraction<O, Product<E, Second>>>
 
-typealias DerivativeGain<T, K> = Value<Fraction<Product<T, Fraction<T, Second>>, K>>
+typealias DerivativeGain<E, O> = Value<Fraction<O, Fraction<E, Second>>>
 
 val <K : UnitKey> Value<K>.perMeter
-  get() = ProportionalGain<K, Meter>(value)
+  get() = Value<Fraction<K, Meter>>(value)
 
 val <K : UnitKey> Value<K>.perInch
   get() = perMeter / METERS_PER_INCH
@@ -25,13 +25,13 @@ val <K : UnitKey> Value<K>.perFoot
   get() = perMeter / METERS_PER_FOOT
 
 val <K : UnitKey> Value<K>.perRadian
-  get() = ProportionalGain<K, Radian>(value)
+  get() = Value<Fraction<K, Radian>>(value)
 
 val <K : UnitKey> Value<K>.perDegree
   get() = perRadian / RADIANS_PER_DEGREES
 
 val <K : UnitKey> Value<K>.perMeterBySecond
-  get() = IntegralGain<K, Meter>(value)
+  get() = Value<Fraction<K, Product<Meter, Second>>>(value)
 
 val <K : UnitKey> Value<K>.perInchBySecond
   get() = perMeterBySecond / METERS_PER_INCH
@@ -40,13 +40,13 @@ val <K : UnitKey> Value<K>.perFootBySecond
   get() = perMeterBySecond / METERS_PER_FOOT
 
 val <K : UnitKey> Value<K>.perRadianBySecond
-  get() = IntegralGain<K, Radian>(value)
+  get() = Value<Fraction<K, Product<Radian, Second>>>(value)
 
 val <K : UnitKey> Value<K>.perDegreeBySecond
   get() = perRadianBySecond / RADIANS_PER_DEGREES
 
 val <K : UnitKey> Value<K>.perMeterPerSecond
-  get() = DerivativeGain<K, Meter>(value)
+  get() = Value<Fraction<K, Fraction<Meter, Second>>>(value)
 
 val <K : UnitKey> Value<K>.perInchPerSecond
   get() = perMeterPerSecond / METERS_PER_INCH
@@ -55,52 +55,52 @@ val <K : UnitKey> Value<K>.perFootPerSecond
   get() = perMeterPerSecond / METERS_PER_FOOT
 
 val <K : UnitKey> Value<K>.perRadianPerSecond
-  get() = DerivativeGain<K, Radian>(value)
+  get() = Value<Fraction<K, Fraction<Radian, Second>>>(value)
 
 val <K : UnitKey> Value<K>.perDegreePerSecond
   get() = perRadianPerSecond / RADIANS_PER_DEGREES
 
-val ProportionalGain<Volt, Meter>.inVoltsPerMeter: Double
+val ProportionalGain<Meter, Volt>.inVoltsPerMeter: Double
   get() = value
 
-val ProportionalGain<Volt, Meter>.inVoltsPerInch: Double
+val ProportionalGain<Meter, Volt>.inVoltsPerInch: Double
   get() = inVoltsPerMeter / METERS_PER_INCH
 
-val ProportionalGain<Volt, Meter>.inVoltsPerFoot: Double
+val ProportionalGain<Meter, Volt>.inVoltsPerFoot: Double
   get() = inVoltsPerMeter / METERS_PER_FOOT
 
-val ProportionalGain<Volt, Radian>.inVoltsPerRadian: Double
+val ProportionalGain<Radian, Volt>.inVoltsPerRadian: Double
   get() = value
 
-val ProportionalGain<Volt, Radian>.inVoltsPerDegrees: Double
+val ProportionalGain<Radian, Volt>.inVoltsPerDegrees: Double
   get() = inVoltsPerRadian / RADIANS_PER_DEGREES
 
-val IntegralGain<Volt, Meter>.inVoltsPerMeterBySecond: Double
+val IntegralGain<Meter, Volt>.inVoltsPerMeterBySecond: Double
   get() = value
 
-val IntegralGain<Volt, Meter>.inVoltsPerInchBySecond: Double
+val IntegralGain<Meter, Volt>.inVoltsPerInchBySecond: Double
   get() = inVoltsPerMeterBySecond / METERS_PER_INCH
 
-val IntegralGain<Volt, Meter>.inVoltsPerFootBySecond: Double
+val IntegralGain<Meter, Volt>.inVoltsPerFootBySecond: Double
   get() = inVoltsPerMeterBySecond / METERS_PER_FOOT
 
-val IntegralGain<Volt, Radian>.inVoltsPerRadianBySecond: Double
+val IntegralGain<Radian, Volt>.inVoltsPerRadianBySecond: Double
   get() = value
 
-val IntegralGain<Volt, Radian>.inVoltsPerDegreeBySecond: Double
+val IntegralGain<Radian, Volt>.inVoltsPerDegreeBySecond: Double
   get() = inVoltsPerRadianBySecond / RADIANS_PER_DEGREES
 
-val DerivativeGain<Volt, Meter>.inVoltsPerMeterPerSecond: Double
+val DerivativeGain<Meter, Volt>.inVoltsPerMeterPerSecond: Double
   get() = value
 
-val DerivativeGain<Volt, Meter>.inVoltsPerInchPerSecond: Double
+val DerivativeGain<Meter, Volt>.inVoltsPerInchPerSecond: Double
   get() = inVoltsPerMeterPerSecond / METERS_PER_INCH
 
-val DerivativeGain<Volt, Meter>.inVoltsPerFootPerSecond: Double
+val DerivativeGain<Meter, Volt>.inVoltsPerFootPerSecond: Double
   get() = inVoltsPerMeterPerSecond / METERS_PER_FOOT
 
-val DerivativeGain<Volt, Radian>.inVoltsPerRadianPerSecond: Double
+val DerivativeGain<Radian, Volt>.inVoltsPerRadianPerSecond: Double
   get() = value
 
-val DerivativeGain<Volt, Radian>.inVoltsPerDegreePerSecond: Double
+val DerivativeGain<Radian, Volt>.inVoltsPerDegreePerSecond: Double
   get() = inVoltsPerRadianPerSecond / RADIANS_PER_DEGREES
