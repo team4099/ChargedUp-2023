@@ -12,6 +12,8 @@ import kotlin.math.PI
 
 object Radian : UnitKey
 
+internal const val RADIANS_PER_DEGREES = (2 * Math.PI) / 360
+
 typealias Angle = Value<Radian>
 
 val Double.radians: Angle

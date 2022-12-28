@@ -7,6 +7,12 @@ import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.derived.degrees
+import com.team4099.lib.units.derived.perMeter
+import com.team4099.lib.units.derived.perMeterBySecond
+import com.team4099.lib.units.derived.perMeterPerSecond
+import com.team4099.lib.units.derived.perRadian
+import com.team4099.lib.units.derived.perRadianBySecond
+import com.team4099.lib.units.derived.perRadianPerSecond
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
 import com.team4099.lib.units.inMetersPerSecond
@@ -74,15 +80,15 @@ object DrivetrainConstants {
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
 
-    const val STEERING_KP = 0.125
-    const val STEERING_KI = 0.0
-    const val STEERING_KD = 0.0
+    val STEERING_KP = 0.125.volts.perRadian
+    val STEERING_KI = 0.0.volts.perRadianBySecond
+    val STEERING_KD = 0.0.volts.perRadianPerSecond
 
     const val STEERING_KFF = 0.0 // 0.0375
 
-    const val DRIVE_KP = 0.050046
-    const val DRIVE_KI = 0.0
-    const val DRIVE_KD = 0.0
+    val DRIVE_KP = 0.050046.volts.perMeter
+    val DRIVE_KI = 0.0.volts.perMeterBySecond
+    val DRIVE_KD = 0.0.volts.perMeterPerSecond
     const val DRIVE_KFF = 0.0
 
     val DRIVE_KS = 0.23677.volts
@@ -92,12 +98,12 @@ object DrivetrainConstants {
     val SIM_DRIVE_KS = 0.116970.volts
     val SIM_DRIVE_KV = 0.133240.volts / 1.0.meters.perSecond
 
-    val SIM_DRIVE_KP = 0.9
-    val SIM_DRIVE_KI = 0.0
-    val SIM_DRIVE_KD = 0.0
+    val SIM_DRIVE_KP = 0.9.volts.perMeter
+    val SIM_DRIVE_KI = 0.0.volts.perMeterBySecond
+    val SIM_DRIVE_KD = 0.0.volts.perMeterPerSecond
 
-    val SIM_STEERING_KP = 23.0
-    val SIM_STEERING_KI = 0.0
-    val SIM_STEERING_KD = 0.0
+    val SIM_STEERING_KP = 23.0.volts.perRadian
+    val SIM_STEERING_KI = 0.0.volts.perRadianBySecond
+    val SIM_STEERING_KD = 0.0.volts.perRadianPerSecond
   }
 }
