@@ -14,8 +14,7 @@ value class Value<T : UnitKey>(internal val value: Double) : Comparable<Value<T>
   operator fun times(k: Number): Value<T> = this * k.toDouble()
   operator fun <K : UnitKey> times(o: Value<Fraction<K, T>>): Value<K> = Value(value * o.value)
 
-  operator fun <K: UnitKey> times(o: Value<K>): Value<Product<T, K>> =
-    Value(value * o.value)
+  operator fun <K : UnitKey> times(o: Value<K>): Value<Product<T, K>> = Value(value * o.value)
 
   operator fun unaryMinus(): Value<T> = Value(-value)
 

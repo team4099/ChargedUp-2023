@@ -7,6 +7,7 @@ import com.team4099.lib.units.Value
 import com.team4099.lib.units.base.METERS_PER_FOOT
 import com.team4099.lib.units.base.METERS_PER_INCH
 import com.team4099.lib.units.base.Meter
+import com.team4099.lib.units.base.SECONDS_PER_MINUTE
 import com.team4099.lib.units.base.Second
 
 typealias ProportionalGain<E, O> = Value<Fraction<O, E>>
@@ -29,6 +30,9 @@ val <K : UnitKey> Value<K>.perRadian
 
 val <K : UnitKey> Value<K>.perDegree
   get() = perRadian / RADIANS_PER_DEGREES
+
+val <K : UnitKey> Value<K>.perRotation
+  get() = perRadian / RADIANS_PER_ROTATION
 
 val <K : UnitKey> Value<K>.perMeterBySecond
   get() = Value<Fraction<K, Product<Meter, Second>>>(value)
@@ -75,6 +79,9 @@ val ProportionalGain<Radian, Volt>.inVoltsPerRadian: Double
 val ProportionalGain<Radian, Volt>.inVoltsPerDegrees: Double
   get() = inVoltsPerRadian / RADIANS_PER_DEGREES
 
+val ProportionalGain<Radian, Volt>.inVoltsPerRotation: Double
+  get() = inVoltsPerRadian / RADIANS_PER_ROTATION
+
 val IntegralGain<Meter, Volt>.inVoltsPerMeterBySecond: Double
   get() = value
 
@@ -90,6 +97,9 @@ val IntegralGain<Radian, Volt>.inVoltsPerRadianBySecond: Double
 val IntegralGain<Radian, Volt>.inVoltsPerDegreeBySecond: Double
   get() = inVoltsPerRadianBySecond / RADIANS_PER_DEGREES
 
+val IntegralGain<Radian, Volt>.inVoltsPerRotationsByMinute: Double
+  get() = inVoltsPerRadianBySecond * SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
+
 val DerivativeGain<Meter, Volt>.inVoltsPerMeterPerSecond: Double
   get() = value
 
@@ -104,3 +114,6 @@ val DerivativeGain<Radian, Volt>.inVoltsPerRadianPerSecond: Double
 
 val DerivativeGain<Radian, Volt>.inVoltsPerDegreePerSecond: Double
   get() = inVoltsPerRadianPerSecond / RADIANS_PER_DEGREES
+
+val DerivativeGain<Radian, Volt>.inVoltsPerRotationsPerMinute: Double
+  get() = inVoltsPerRadianPerSecond / SECONDS_PER_MINUTE / RADIANS_PER_ROTATION

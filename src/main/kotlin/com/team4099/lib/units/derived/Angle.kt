@@ -14,6 +14,8 @@ object Radian : UnitKey
 
 internal const val RADIANS_PER_DEGREES = (2 * Math.PI) / 360
 
+internal const val RADIANS_PER_ROTATION = (2 * Math.PI)
+
 typealias Angle = Value<Radian>
 
 val Double.radians: Angle

@@ -11,13 +11,16 @@ class Fraction<N : UnitKey, D : UnitKey> : UnitKey
 operator fun <T : UnitKey, K : UnitKey> Value<Fraction<K, T>>.times(o: Value<T>): Value<K> =
   Value(value * o.value)
 
-operator fun <T : UnitKey, K : UnitKey, P : UnitKey> Value<Fraction<K, T>>.times(o: Value<Fraction<T, P>>): Value<Fraction<K, P>> =
-  Value(value * o.value)
+operator fun <T : UnitKey, K : UnitKey, P : UnitKey> Value<Fraction<K, T>>.times(
+  o: Value<Fraction<T, P>>
+): Value<Fraction<K, P>> = Value(value * o.value)
 
-operator fun <T : UnitKey, K : UnitKey> Value<Fraction<K, T>>.times(o: Value<Fraction<T, K>>): Value<Unitless> =
-  Value(value * o.value)
+operator fun <T : UnitKey, K : UnitKey> Value<Fraction<K, T>>.times(
+  o: Value<Fraction<T, K>>
+): Value<Unitless> = Value(value * o.value)
 
-//operator fun <T : UnitKey, K : UnitKey, P : UnitKey> Value<Fraction<K, T>>.times(o: Value<Fraction<T, P>>): Value<Fraction<K, P>> =
+// operator fun <T : UnitKey, K : UnitKey, P : UnitKey> Value<Fraction<K, T>>.times(o:
+// Value<Fraction<T, P>>): Value<Fraction<K, P>> =
 //  Value(value * o.value)
 
 typealias Inverse<K> = Fraction<Unitless, K>

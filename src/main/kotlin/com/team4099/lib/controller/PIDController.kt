@@ -36,7 +36,6 @@ class PIDController<E : UnitKey, O : UnitKey> {
   val period: Time
     get() = wpiPidController.period.seconds
 
-
   var errorTolerance: Value<E>
     get() = Value(wpiPidController.positionTolerance)
     set(value) {
@@ -75,13 +74,9 @@ class PIDController<E : UnitKey, O : UnitKey> {
       )
   }
 
-  fun calculate(measurement: Value<E>, setpoint: Value<O>) {
-
-  }
+  fun calculate(measurement: Value<E>, setpoint: Value<O>) {}
 
   fun reset() {
     wpiPidController.reset()
   }
-
-
 }

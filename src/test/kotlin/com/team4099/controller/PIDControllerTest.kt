@@ -2,8 +2,6 @@ package com.team4099.controller
 
 import com.team4099.lib.controller.PIDController
 import com.team4099.lib.units.Fraction
-import com.team4099.lib.units.LinearVelocity
-import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.Second
 import com.team4099.lib.units.base.meters
