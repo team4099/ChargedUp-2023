@@ -4,6 +4,7 @@ import com.team4099.lib.units.Fraction
 import com.team4099.lib.units.Product
 import com.team4099.lib.units.UnitKey
 import com.team4099.lib.units.Value
+import com.team4099.lib.units.base.Ampere
 import com.team4099.lib.units.base.METERS_PER_FOOT
 import com.team4099.lib.units.base.METERS_PER_INCH
 import com.team4099.lib.units.base.Meter
@@ -117,3 +118,57 @@ val DerivativeGain<Radian, Volt>.inVoltsPerDegreePerSecond: Double
 
 val DerivativeGain<Radian, Volt>.inVoltsPerRotationsPerMinute: Double
   get() = inVoltsPerRadianPerSecond / SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
+
+val ProportionalGain<Meter, Ampere>.inAmpsPerMeter: Double
+  get() = value
+
+val ProportionalGain<Meter, Ampere>.inAmpsPerInch: Double
+  get() = inAmpsPerMeter / METERS_PER_INCH
+
+val ProportionalGain<Meter, Ampere>.inAmpsPerFoot: Double
+  get() = inAmpsPerMeter / METERS_PER_FOOT
+
+val ProportionalGain<Radian, Ampere>.inAmpsPerRadian: Double
+  get() = value
+
+val ProportionalGain<Radian, Ampere>.inAmpsPerDegrees: Double
+  get() = inAmpsPerRadian / RADIANS_PER_DEGREES
+
+val ProportionalGain<Radian, Ampere>.inAmpsPerRotation: Double
+  get() = inAmpsPerRadian / RADIANS_PER_ROTATION
+
+val IntegralGain<Meter, Ampere>.inAmpsPerMeterBySecond: Double
+  get() = value
+
+val IntegralGain<Meter, Ampere>.inAmpsPerInchBySecond: Double
+  get() = inAmpsPerMeterBySecond / METERS_PER_INCH
+
+val IntegralGain<Meter, Ampere>.inAmpsPerFootBySecond: Double
+  get() = inAmpsPerMeterBySecond / METERS_PER_FOOT
+
+val IntegralGain<Radian, Ampere>.inAmpsPerRadianBySecond: Double
+  get() = value
+
+val IntegralGain<Radian, Ampere>.inAmpsPerDegreeBySecond: Double
+  get() = inAmpsPerRadianBySecond / RADIANS_PER_DEGREES
+
+val IntegralGain<Radian, Ampere>.inAmpsPerRotationsByMinute: Double
+  get() = inAmpsPerRadianBySecond * SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
+
+val DerivativeGain<Meter, Ampere>.inAmpsPerMeterPerSecond: Double
+  get() = value
+
+val DerivativeGain<Meter, Ampere>.inAmpsPerInchPerSecond: Double
+  get() = inAmpsPerMeterPerSecond / METERS_PER_INCH
+
+val DerivativeGain<Meter, Ampere>.inAmpsPerFootPerSecond: Double
+  get() = inAmpsPerMeterPerSecond / METERS_PER_FOOT
+
+val DerivativeGain<Radian, Ampere>.inAmpsPerRadianPerSecond: Double
+  get() = value
+
+val DerivativeGain<Radian, Ampere>.inAmpsPerDegreePerSecond: Double
+  get() = inAmpsPerRadianPerSecond / RADIANS_PER_DEGREES
+
+val DerivativeGain<Radian, Ampere>.inAmpsPerRotationsPerMinute: Double
+  get() = inAmpsPerRadianPerSecond / SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
