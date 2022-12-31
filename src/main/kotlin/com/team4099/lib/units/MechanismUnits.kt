@@ -18,8 +18,12 @@ import com.team4099.lib.units.derived.Radian
 import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRotations
 import com.team4099.lib.units.derived.inVolts
+import com.team4099.lib.units.derived.inVoltsPerMeter
+import com.team4099.lib.units.derived.inVoltsPerMeterPerSecond
+import com.team4099.lib.units.derived.inVoltsPerMeterSeconds
 import com.team4099.lib.units.derived.inVoltsPerRadianBySecond
 import com.team4099.lib.units.derived.inVoltsPerRadianPerSecond
+import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.rotations
 import kotlin.math.PI
@@ -82,21 +86,21 @@ class LinearMechanismSensor(
   override fun proportionalGainToRawUnits(
     proportionalGain: ProportionalGain<Meter, Volt>,
   ): Double {
-    return (proportionalGain.value / (positionToRawUnits(1.meters))) / compensationVoltage.inVolts *
+    return (proportionalGain.inVoltsPerMeter / (positionToRawUnits(1.meters))) / compensationVoltage.inVolts *
       fullPowerThrottle
   }
 
   override fun integralGainToRawUnits(
     integralGain: IntegralGain<Meter, Volt>,
   ): Double {
-    return (integralGain.value / (positionToRawUnits(1.meters) * timescale.velocity.inSeconds)) /
+    return (integralGain.inVoltsPerMeterSeconds / (positionToRawUnits(1.meters) * timescale.velocity.inSeconds)) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
 
   override fun derivativeGainToRawUnits(
     derivativeGain: DerivativeGain<Meter, Volt>,
   ): Double {
-    return (derivativeGain.value * timescale.velocity.inSeconds / positionToRawUnits(1.meters)) /
+    return (derivativeGain.inVoltsPerMeterPerSecond * timescale.velocity.inSeconds / positionToRawUnits(1.meters)) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
 }
@@ -136,7 +140,7 @@ class AngularMechanismSensor(
 
   override fun integralGainToRawUnits(integralGain: IntegralGain<Radian, Volt>): Double {
     return (
-      integralGain.inVoltsPerRadianBySecond /
+      integralGain.inVoltsPerRadianSeconds /
         (positionToRawUnits(1.radians) * timescale.velocity.inSeconds)
       ) /
       compensationVoltage.inVolts * fullPowerThrottle
