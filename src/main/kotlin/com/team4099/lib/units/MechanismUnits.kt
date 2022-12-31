@@ -93,14 +93,14 @@ class LinearMechanismSensor(
   override fun integralGainToRawUnits(
     integralGain: IntegralGain<Meter, Volt>,
   ): Double {
-    return (integralGain.inVoltsPerMeterSeconds / (positionToRawUnits(1.meters) * timescale.velocity.inSeconds)) /
+    return (integralGain.inVoltsPerMeterSeconds / ((positionToRawUnits(1.meters) * timescale.velocity.inSeconds))) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
 
   override fun derivativeGainToRawUnits(
     derivativeGain: DerivativeGain<Meter, Volt>,
   ): Double {
-    return (derivativeGain.inVoltsPerMeterPerSecond * timescale.velocity.inSeconds / positionToRawUnits(1.meters)) /
+    return (derivativeGain.inVoltsPerMeterPerSecond / positionToRawUnits(1.meters) * timescale.velocity.inSeconds) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
 }
