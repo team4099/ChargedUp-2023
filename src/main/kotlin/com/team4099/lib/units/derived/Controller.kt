@@ -48,20 +48,20 @@ val <K : UnitKey> Value<K>.perDegree
 val <K : UnitKey> Value<K>.perRotation
   get() = perRadian / RADIANS_PER_ROTATION
 
-val <K : UnitKey> Value<K>.perMeterBySecond
+val <K : UnitKey> Value<K>.perMeterSeconds
   get() = Value<Fraction<K, Product<Meter, Second>>>(value)
 
-val <K : UnitKey> Value<K>.perInchBySecond
-  get() = perMeterBySecond / METERS_PER_INCH
+val <K : UnitKey> Value<K>.perInchSeconds
+  get() = perMeterSeconds / METERS_PER_INCH
 
-val <K : UnitKey> Value<K>.perFootBySecond
-  get() = perMeterBySecond / METERS_PER_FOOT
+val <K : UnitKey> Value<K>.perFootSeconds
+  get() = perMeterSeconds / METERS_PER_FOOT
 
-val <K : UnitKey> Value<K>.perRadianBySecond
+val <K : UnitKey> Value<K>.perRadianSeconds
   get() = Value<Fraction<K, Product<Radian, Second>>>(value)
 
-val <K : UnitKey> Value<K>.perDegreeBySecond
-  get() = perRadianBySecond / RADIANS_PER_DEGREES
+val <K : UnitKey> Value<K>.perDegreeSeconds
+  get() = perRadianSeconds / RADIANS_PER_DEGREES
 
 val <K : UnitKey> Value<K>.perMeterPerSecond
   get() = Value<Fraction<K, Fraction<Meter, Second>>>(value)
@@ -96,23 +96,23 @@ val ProportionalGain<Radian, Volt>.inVoltsPerDegrees: Double
 val ProportionalGain<Radian, Volt>.inVoltsPerRotation: Double
   get() = inVoltsPerRadian / RADIANS_PER_ROTATION
 
-val IntegralGain<Meter, Volt>.inVoltsPerMeterBySecond: Double
+val IntegralGain<Meter, Volt>.inVoltsPerMeterSeconds: Double
   get() = value
 
-val IntegralGain<Meter, Volt>.inVoltsPerInchBySecond: Double
-  get() = inVoltsPerMeterBySecond / METERS_PER_INCH
+val IntegralGain<Meter, Volt>.inVoltsPerInchSeconds: Double
+  get() = inVoltsPerMeterSeconds / METERS_PER_INCH
 
-val IntegralGain<Meter, Volt>.inVoltsPerFootBySecond: Double
-  get() = inVoltsPerMeterBySecond / METERS_PER_FOOT
+val IntegralGain<Meter, Volt>.inVoltsPerFootSeconds: Double
+  get() = inVoltsPerMeterSeconds / METERS_PER_FOOT
 
-val IntegralGain<Radian, Volt>.inVoltsPerRadianBySecond: Double
+val IntegralGain<Radian, Volt>.inVoltsPerRadianSeconds: Double
   get() = value
 
-val IntegralGain<Radian, Volt>.inVoltsPerDegreeBySecond: Double
-  get() = inVoltsPerRadianBySecond / RADIANS_PER_DEGREES
+val IntegralGain<Radian, Volt>.inVoltsPerDegreeSeconds: Double
+  get() = inVoltsPerRadianSeconds / RADIANS_PER_DEGREES
 
-val IntegralGain<Radian, Volt>.inVoltsPerRotationsByMinute: Double
-  get() = inVoltsPerRadianBySecond * SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
+val IntegralGain<Radian, Volt>.inVoltsPerRotationsMinutes: Double
+  get() = inVoltsPerRadianSeconds * SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
 
 val DerivativeGain<Meter, Volt>.inVoltsPerMeterPerSecond: Double
   get() = value
@@ -150,23 +150,23 @@ val ProportionalGain<Radian, Ampere>.inAmpsPerDegrees: Double
 val ProportionalGain<Radian, Ampere>.inAmpsPerRotation: Double
   get() = inAmpsPerRadian / RADIANS_PER_ROTATION
 
-val IntegralGain<Meter, Ampere>.inAmpsPerMeterBySecond: Double
+val IntegralGain<Meter, Ampere>.inAmpsPerMeterSeconds: Double
   get() = value
 
-val IntegralGain<Meter, Ampere>.inAmpsPerInchBySecond: Double
-  get() = inAmpsPerMeterBySecond / METERS_PER_INCH
+val IntegralGain<Meter, Ampere>.inAmpsPerInchSeconds: Double
+  get() = inAmpsPerMeterSeconds / METERS_PER_INCH
 
-val IntegralGain<Meter, Ampere>.inAmpsPerFootBySecond: Double
-  get() = inAmpsPerMeterBySecond / METERS_PER_FOOT
+val IntegralGain<Meter, Ampere>.inAmpsPerFootSeconds: Double
+  get() = inAmpsPerMeterSeconds / METERS_PER_FOOT
 
-val IntegralGain<Radian, Ampere>.inAmpsPerRadianBySecond: Double
+val IntegralGain<Radian, Ampere>.inAmpsPerRadianSeconds: Double
   get() = value
 
-val IntegralGain<Radian, Ampere>.inAmpsPerDegreeBySecond: Double
-  get() = inAmpsPerRadianBySecond / RADIANS_PER_DEGREES
+val IntegralGain<Radian, Ampere>.inAmpsPerDegreeSeconds: Double
+  get() = inAmpsPerRadianSeconds / RADIANS_PER_DEGREES
 
-val IntegralGain<Radian, Ampere>.inAmpsPerRotationsByMinute: Double
-  get() = inAmpsPerRadianBySecond * SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
+val IntegralGain<Radian, Ampere>.inAmpsPerRotationsMinutes: Double
+  get() = inAmpsPerRadianSeconds * SECONDS_PER_MINUTE / RADIANS_PER_ROTATION
 
 val DerivativeGain<Meter, Ampere>.inAmpsPerMeterPerSecond: Double
   get() = value
