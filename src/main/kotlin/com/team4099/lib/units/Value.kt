@@ -20,7 +20,7 @@ value class Value<T : UnitKey>(internal val value: Double) : Comparable<Value<T>
 
   operator fun div(k: Double): Value<T> = Value(value / k)
   operator fun div(k: Number): Value<T> = this / k.toDouble()
-  operator fun div(o: Value<T>): Value<Unitless> = Value(value / o.value)
+  operator fun div(o: Value<T>): Double = value / o.value
   operator fun <K : UnitKey> div(o: Value<K>): Value<Fraction<T, K>> = Value(value / o.value)
 
   override operator fun compareTo(other: Value<T>): Int = value.compareTo(other.value)

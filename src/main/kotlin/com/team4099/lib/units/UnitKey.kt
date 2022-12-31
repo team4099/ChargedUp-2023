@@ -17,7 +17,7 @@ operator fun <T : UnitKey, K : UnitKey, P : UnitKey> Value<Fraction<K, T>>.times
 
 operator fun <T : UnitKey, K : UnitKey> Value<Fraction<K, T>>.times(
   o: Value<Fraction<T, K>>
-): Value<Unitless> = Value(value * o.value)
+): Double = value * o.value
 
 // operator fun <T : UnitKey, K : UnitKey, P : UnitKey> Value<Fraction<K, T>>.times(o:
 // Value<Fraction<T, P>>): Value<Fraction<K, P>> =

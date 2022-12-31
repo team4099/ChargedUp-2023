@@ -3,6 +3,7 @@ package com.team4099.lib.units.derived
 import com.team4099.lib.units.Fraction
 import com.team4099.lib.units.Product
 import com.team4099.lib.units.UnitKey
+import com.team4099.lib.units.Unitless
 import com.team4099.lib.units.Value
 import com.team4099.lib.units.base.Ampere
 import com.team4099.lib.units.base.METERS_PER_FOOT
@@ -16,6 +17,18 @@ typealias ProportionalGain<E, O> = Value<Fraction<O, E>>
 typealias IntegralGain<E, O> = Value<Fraction<O, Product<E, Second>>>
 
 typealias DerivativeGain<E, O> = Value<Fraction<O, Fraction<E, Second>>>
+
+val Double.metersPerMeter
+  get() = Value<Fraction<Meter, Meter>>(this)
+
+val Double.metersPerSecondPerMetersPerSecond
+  get() = Value<Fraction<Fraction<Meter, Second>, Fraction<Meter, Second>>>(this)
+
+val Value<Unitless>.metersPerMeter
+  get() = Value<Fraction<Meter, Meter>>(value)
+
+val Value<Unitless>.metersPerSecondPerMeterPerSecond
+  get() = Value<Fraction<Fraction<Meter, Second>, Fraction<Meter, Second>>>(value)
 
 val <K : UnitKey> Value<K>.perMeter
   get() = Value<Fraction<K, Meter>>(value)
