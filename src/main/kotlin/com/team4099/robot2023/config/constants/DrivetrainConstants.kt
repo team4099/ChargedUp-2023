@@ -68,6 +68,9 @@ object DrivetrainConstants {
   val BACK_RIGHT_MODULE_ZERO = 4.608515.radians
   val BACK_LEFT_MODULE_ZERO = 5.204072.radians
 
+  val STEERING_COMPENSATION_VOLTAGE = 10.volts
+  val DRIVE_COMPENSATION_VOLTAGE = 12.volts
+
   object PID {
     const val AUTO_POS_KP = 2.0
     const val AUTO_POS_KI = 0.0

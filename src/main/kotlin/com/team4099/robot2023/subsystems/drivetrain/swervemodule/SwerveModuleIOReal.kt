@@ -37,14 +37,16 @@ class SwerveModuleIOReal(
     ctreAngularMechanismSensor(
       steeringFalcon,
       DrivetrainConstants.STEERING_SENSOR_CPR,
-      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO
+      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO,
+      DrivetrainConstants.STEERING_COMPENSATION_VOLTAGE
     )
   private val driveSensor =
     ctreLinearMechanismSensor(
       driveFalcon,
       DrivetrainConstants.DRIVE_SENSOR_CPR,
       DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO,
-      DrivetrainConstants.WHEEL_DIAMETER
+      DrivetrainConstants.WHEEL_DIAMETER,
+      DrivetrainConstants.DRIVE_COMPENSATION_VOLTAGE
     )
 
   // motor params
@@ -58,9 +60,15 @@ class SwerveModuleIOReal(
     driveFalcon.clearStickyFaults()
     steeringFalcon.clearStickyFaults()
 
-    steeringConfiguration.slot0.kP = DrivetrainConstants.PID.STEERING_KP
-    steeringConfiguration.slot0.kI = DrivetrainConstants.PID.STEERING_KI
-    steeringConfiguration.slot0.kD = DrivetrainConstants.PID.STEERING_KD
+    steeringConfiguration.slot0.kP =
+      steeringSensor.proportionalGainToRawUnits(
+        DrivetrainConstants.PID.STEERING_KP
+      )
+    steeringConfiguration.slot0.kI =
+      steeringSensor.integralGainToRawUnits(
+        DrivetrainConstants.PID.STEERING_KI
+      )
+    steeringConfiguration.slot0.kD = steeringSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
     steeringConfiguration.slot0.kF = DrivetrainConstants.PID.STEERING_KFF
     steeringConfiguration.motionCruiseVelocity =
       steeringSensor.velocityToRawUnits(DrivetrainConstants.STEERING_VEL_MAX)
@@ -79,9 +87,9 @@ class SwerveModuleIOReal(
       0, steeringSensor.positionToRawUnits(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR)
     )
 
-    driveConfiguration.slot0.kP = DrivetrainConstants.PID.DRIVE_KP
-    driveConfiguration.slot0.kI = DrivetrainConstants.PID.DRIVE_KI
-    driveConfiguration.slot0.kD = DrivetrainConstants.PID.DRIVE_KD
+    driveConfiguration.slot0.kP = driveSensor.proportionalGainToRawUnits(DrivetrainConstants.PID.DRIVE_KP)
+    driveConfiguration.slot0.kI = driveSensor.integralGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
+    driveConfiguration.slot0.kD = driveSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
     driveConfiguration.slot0.kF = DrivetrainConstants.PID.DRIVE_KFF
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
