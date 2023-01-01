@@ -26,12 +26,6 @@ import com.team4099.lib.units.derived.Radian
 import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inVolts
-import com.team4099.lib.units.derived.inVoltsPerMeters
-import com.team4099.lib.units.derived.inVoltsPerMetersPerSecond
-import com.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
-import com.team4099.lib.units.derived.inVoltsPerRadian
-import com.team4099.lib.units.derived.inVoltsPerRadianPerSecond
-import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.wpilibj.AnalogPotentiometer
@@ -208,9 +202,9 @@ class SwerveModuleIOReal(
     kI: IntegralGain<Velocity<Meter>, Volt>,
     kD: DerivativeGain<Velocity<Meter>, Volt>
   ) {
-    driveFalcon.config_kP(0, kP.inVoltsPerMetersPerSecond)
-    driveFalcon.config_kI(0, kI.inVoltsPerMeters)
-    driveFalcon.config_kD(0, kD.inVoltsPerMetersPerSecondPerSecond)
+    driveFalcon.config_kP(0, driveSensor.proportionalVelocityGainToRawUnits(kP))
+    driveFalcon.config_kI(0, driveSensor.integralVelocityGainToRawUnits(kI))
+    driveFalcon.config_kD(0, driveSensor.derivativeVelocityGainToRawUnits(kD))
   }
 
   override fun configureSteeringPID(
@@ -218,9 +212,9 @@ class SwerveModuleIOReal(
     kI: IntegralGain<Radian, Volt>,
     kD: DerivativeGain<Radian, Volt>
   ) {
-    steeringFalcon.config_kP(0, kP.inVoltsPerRadian)
-    steeringFalcon.config_kI(0, kI.inVoltsPerRadianSeconds)
-    steeringFalcon.config_kD(0, kD.inVoltsPerRadianPerSecond)
+    steeringFalcon.config_kP(0, steeringSensor.proportionalPositionGainToRawUnits(kP))
+    steeringFalcon.config_kI(0, steeringSensor.integralPositionGainToRawUnits(kI))
+    steeringFalcon.config_kD(0, steeringSensor.derivativePositionGainToRawUnits(kD))
   }
 
   override fun configureSteeringMotionMagic(
