@@ -87,7 +87,7 @@ object DrivetrainConstants {
     val STEERING_KI = 0.0.volts.perRadianSeconds
     val STEERING_KD = 0.0.volts.perRadianPerSecond
 
-    const val STEERING_KFF = 0.0 // 0.0375
+    val STEERING_KFF = 0.0.volts.perRadianPerSecond // 0.0375
 
     val DRIVE_KP = 0.050046.volts.perMeter
     val DRIVE_KI = 0.0.volts.perMeterSeconds

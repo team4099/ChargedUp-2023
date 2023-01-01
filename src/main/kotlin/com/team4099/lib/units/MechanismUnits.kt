@@ -15,6 +15,7 @@ import com.team4099.lib.units.derived.ElectricalPotential
 import com.team4099.lib.units.derived.IntegralGain
 import com.team4099.lib.units.derived.ProportionalGain
 import com.team4099.lib.units.derived.Radian
+import com.team4099.lib.units.derived.VelocityFeedforward
 import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRotations
 import com.team4099.lib.units.derived.inVolts
@@ -49,6 +50,8 @@ interface MechanismSensor<U : UnitKey> {
   fun derivativeGainToRawUnits(
     derivativeGain: DerivativeGain<U, Volt>,
   ): Double
+
+  fun velocityFeedforwardToRawUnits(velocityFeedforward: VelocityFeedforward<U>): Double
 }
 
 class LinearMechanismSensor(
@@ -107,6 +110,13 @@ class LinearMechanismSensor(
         positionToRawUnits(1.meters)
       ) / compensationVoltage.inVolts * fullPowerThrottle
   }
+
+  override fun velocityFeedforwardToRawUnits(
+    velocityFeedforward: VelocityFeedforward<Meter>
+  ): Double {
+    return velocityFeedforward.value * velocityToRawUnits(1.0.meters.perSecond) /
+      compensationVoltage.inVolts * fullPowerThrottle
+  }
 }
 
 class AngularMechanismSensor(
@@ -155,6 +165,13 @@ class AngularMechanismSensor(
       derivativeGain.inVoltsPerRadianPerSecond * timescale.velocity.inSeconds /
         positionToRawUnits(1.radians)
       ) / compensationVoltage.inVolts * fullPowerThrottle
+  }
+
+  override fun velocityFeedforwardToRawUnits(
+    velocityFeedforward: VelocityFeedforward<Radian>
+  ): Double {
+    return velocityFeedforward.value * velocityToRawUnits(1.0.radians.perSecond) /
+      compensationVoltage.inVolts * fullPowerThrottle
   }
 }
 

@@ -70,7 +70,8 @@ class SwerveModuleIOReal(
       steeringSensor.integralGainToRawUnits(DrivetrainConstants.PID.STEERING_KI)
     steeringConfiguration.slot0.kD =
       steeringSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
-    steeringConfiguration.slot0.kF = DrivetrainConstants.PID.STEERING_KFF
+    steeringConfiguration.slot0.kF =
+      steeringSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.STEERING_KFF)
     steeringConfiguration.motionCruiseVelocity =
       steeringSensor.velocityToRawUnits(DrivetrainConstants.STEERING_VEL_MAX)
     steeringConfiguration.motionAcceleration =
