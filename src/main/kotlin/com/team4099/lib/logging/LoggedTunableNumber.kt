@@ -7,19 +7,35 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber
  * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or
  * value not in dashboard.
  */
-class LoggedTunableNumber(private val dashboardKey: String, private val defaultValue: Double) {
-  private val key = "$tableKey/$dashboardKey"
+class LoggedTunableNumber(dashboardKey: String) {
+  private val key: String
+  private var hasDefault = false
+  private var defaultValue = 0.0
   private var dashboardNumber: LoggedDashboardNumber? = null
   private var lastHasChangedValue = 0.0
 
   /**
-   * Create a new LoggedTunableNumber
+   * Create a new LoggedTunableNumber with the default value
    *
    * @param dashboardKey Key on dashboard
+   * @param defaultValue Default value
    */
-  init {
-    if (Constants.Tuning.TUNING_MODE) {
-      dashboardNumber = LoggedDashboardNumber(key, defaultValue)
+  constructor(dashboardKey: String, defaultValue: Double) : this(dashboardKey) {
+    initDefault(defaultValue)
+  }
+
+  /**
+   * Set the default value of the number. The default value can only be set once.
+   *
+   * @param defaultValue The default value
+   */
+  fun initDefault(defaultValue: Double) {
+    if (!hasDefault) {
+      hasDefault = true
+      this.defaultValue = defaultValue
+      if (Constants.Tuning.TUNING_MODE) {
+        dashboardNumber = LoggedDashboardNumber(key, defaultValue)
+      }
     }
   }
 
@@ -29,10 +45,15 @@ class LoggedTunableNumber(private val dashboardKey: String, private val defaultV
    * @return The current value
    */
   fun get(): Double {
-    // TODO: clean up (there are two elses here, one for the null case and one for the non tuning
-    // mode case)
-    return if (Constants.Tuning.TUNING_MODE) dashboardNumber?.get() ?: defaultValue
-    else defaultValue
+    if (!hasDefault) {
+      return 0.0
+    } else {
+      if (Constants.Tuning.TUNING_MODE) {
+        return dashboardNumber!!.get()
+      } else {
+        return defaultValue
+      }
+    }
   }
 
   /**
@@ -52,5 +73,14 @@ class LoggedTunableNumber(private val dashboardKey: String, private val defaultV
 
   companion object {
     private const val tableKey = "TunableNumbers"
+  }
+
+  /**
+   * Create a new LoggedTunableNumber
+   *
+   * @param dashboardKey Key on dashboard
+   */
+  init {
+    key = tableKey + "/" + dashboardKey
   }
 }

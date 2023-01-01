@@ -1,6 +1,6 @@
 package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 
-import com.team4099.lib.logging.TunableNumber
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.feet
@@ -12,22 +12,19 @@ import com.team4099.lib.units.derived.angle
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotation2ds
-import com.team4099.lib.units.derived.inVoltsPerDegreePerSecond
-import com.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import com.team4099.lib.units.derived.inVoltsPerMeters
 import com.team4099.lib.units.derived.inVoltsPerMetersPerSecond
 import com.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import com.team4099.lib.units.derived.inVoltsPerRadian
-import com.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import com.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
+import com.team4099.lib.units.derived.perMeterPerSecond
+import com.team4099.lib.units.derived.perMeterPerSecondPerSecond
 import com.team4099.lib.units.derived.perRadian
 import com.team4099.lib.units.derived.perRadianPerSecond
 import com.team4099.lib.units.derived.perRadianSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
-import com.team4099.lib.units.inRadiansPerSecond
-import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.math.kinematics.SwerveModulePosition
@@ -50,60 +47,71 @@ class SwerveModule(val io: SwerveModuleIO) {
   private var shouldInvert = false
 
   private val steeringkP =
-    TunableNumber(
-      "Drivetrain/moduleSteeringkP", DrivetrainConstants.PID.STEERING_KP.inVoltsPerRadian
+    LoggedTunableValue(
+      "Drivetrain/moduleSteeringkP",
+      DrivetrainConstants.PID.STEERING_KP,
+      Pair({ it.inVoltsPerRadian }, { it.volts.perRadian })
     )
   private val steeringkI =
-    TunableNumber(
+    LoggedTunableValue(
       "Drivetrain/moduleSteeringkI",
-      DrivetrainConstants.PID.STEERING_KI.inVoltsPerRadianSeconds
+      DrivetrainConstants.PID.STEERING_KI,
+      Pair({ it.inVoltsPerRadianSeconds }, { it.volts.perRadianSeconds })
     )
   private val steeringkD =
-    TunableNumber(
+    LoggedTunableValue(
       "Drivetrain/moduleSteeringkD",
-      DrivetrainConstants.PID.STEERING_KD.inVoltsPerDegreePerSecond
+      DrivetrainConstants.PID.STEERING_KD,
+      Pair({ it.inVoltsPerRadiansPerSecond }, { it.volts.perRadianPerSecond })
     )
 
   private val steeringMaxVel =
-    TunableNumber(
-      "Drivetrain/moduleSteeringMaxVelRadPerSec",
-      DrivetrainConstants.STEERING_VEL_MAX.inRadiansPerSecond
+    LoggedTunableValue(
+      "Drivetrain/moduleSteeringMaxVelRadPerSec", DrivetrainConstants.STEERING_VEL_MAX
     )
   private val steeringMaxAccel =
-    TunableNumber(
-      "Drivetrain/moduleSteeringMaxAccelRadPerSecSq",
-      DrivetrainConstants.STEERING_ACCEL_MAX.inRadiansPerSecondPerSecond
+    LoggedTunableValue(
+      "Drivetrain/moduleSteeringMaxAccelRadPerSecSq", DrivetrainConstants.STEERING_ACCEL_MAX
     )
 
   private val drivekP =
-    TunableNumber(
-      "Drivetrain/moduleDrivekP", DrivetrainConstants.PID.DRIVE_KP.inVoltsPerMetersPerSecond
+    LoggedTunableValue(
+      "Drivetrain/moduleDrivekP",
+      DrivetrainConstants.PID.DRIVE_KP,
+      Pair({ it.inVoltsPerMetersPerSecond }, { it.volts.perMeterPerSecond })
     )
+
   private val drivekI =
-    TunableNumber("Drivetrain/moduleDrivekI", DrivetrainConstants.PID.DRIVE_KI.inVoltsPerMeters)
+    LoggedTunableValue(
+      "Drivetrain/moduleDrivekI",
+      DrivetrainConstants.PID.DRIVE_KI,
+      Pair({ it.inVoltsPerMeters }, { it.volts / (1.meters.perSecond * 1.seconds) })
+    )
+
   private val drivekD =
-    TunableNumber(
+    LoggedTunableValue(
       "Drivetrain/moduleDrivekD",
-      DrivetrainConstants.PID.DRIVE_KD.inVoltsPerMetersPerSecondPerSecond
+      DrivetrainConstants.PID.DRIVE_KD,
+      Pair({ it.inVoltsPerMetersPerSecondPerSecond }, { it.volts.perMeterPerSecondPerSecond })
     )
 
   init {
     if (isReal()) {
-      steeringkP.setDefault(DrivetrainConstants.PID.STEERING_KP.inVoltsPerRadian)
-      steeringkI.setDefault(DrivetrainConstants.PID.STEERING_KI.inVoltsPerRadianSeconds)
-      steeringkD.setDefault(DrivetrainConstants.PID.STEERING_KD.inVoltsPerRadiansPerSecond)
+      steeringkP.initDefault(DrivetrainConstants.PID.STEERING_KP)
+      steeringkI.initDefault(DrivetrainConstants.PID.STEERING_KI)
+      steeringkD.initDefault(DrivetrainConstants.PID.STEERING_KD)
 
-      drivekP.setDefault(DrivetrainConstants.PID.DRIVE_KP.inVoltsPerMetersPerSecond)
-      drivekI.setDefault(DrivetrainConstants.PID.DRIVE_KI.inVoltsPerMeters)
-      drivekD.setDefault(DrivetrainConstants.PID.DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)
+      drivekP.initDefault(DrivetrainConstants.PID.DRIVE_KP)
+      drivekI.initDefault(DrivetrainConstants.PID.DRIVE_KI)
+      drivekD.initDefault(DrivetrainConstants.PID.DRIVE_KD)
     } else {
-      steeringkP.setDefault(DrivetrainConstants.PID.SIM_STEERING_KP.inVoltsPerRadian)
-      steeringkI.setDefault(DrivetrainConstants.PID.SIM_STEERING_KI.inVoltsPerRadianSeconds)
-      steeringkD.setDefault(DrivetrainConstants.PID.SIM_STEERING_KD.inVoltsPerRadianPerSecond)
+      steeringkP.initDefault(DrivetrainConstants.PID.SIM_STEERING_KP)
+      steeringkI.initDefault(DrivetrainConstants.PID.SIM_STEERING_KI)
+      steeringkD.initDefault(DrivetrainConstants.PID.SIM_STEERING_KD)
 
-      drivekP.setDefault(DrivetrainConstants.PID.SIM_DRIVE_KP.inVoltsPerMeterPerSecond)
-      drivekI.setDefault(DrivetrainConstants.PID.SIM_DRIVE_KI.inVoltsPerMeters)
-      drivekD.setDefault(DrivetrainConstants.PID.SIM_DRIVE_KD.inVoltsPerMetersPerSecondPerSecond)
+      drivekP.initDefault(DrivetrainConstants.PID.SIM_DRIVE_KP)
+      drivekI.initDefault(DrivetrainConstants.PID.SIM_DRIVE_KI)
+      drivekD.initDefault(DrivetrainConstants.PID.SIM_DRIVE_KD)
     }
   }
 
@@ -115,26 +123,15 @@ class SwerveModule(val io: SwerveModuleIO) {
     modulePosition.angle = inputs.steeringPosition.inRotation2ds
 
     if (steeringkP.hasChanged() || steeringkI.hasChanged() || steeringkD.hasChanged()) {
-      io.configureSteeringPID(
-        steeringkP.get().volts.perRadian,
-        steeringkI.get().volts.perRadianSeconds,
-        steeringkD.get().volts.perRadianPerSecond
-      )
+      io.configureSteeringPID(steeringkP.get(), steeringkI.get(), steeringkD.get())
     }
 
     if (steeringMaxVel.hasChanged() || steeringMaxAccel.hasChanged()) {
-      io.configureSteeringMotionMagic(
-        steeringMaxVel.get().radians.perSecond,
-        steeringMaxAccel.get().radians.perSecond.perSecond
-      )
+      io.configureSteeringMotionMagic(steeringMaxVel.get(), steeringMaxAccel.get())
     }
 
     if (drivekP.hasChanged() || drivekI.hasChanged() || drivekD.hasChanged()) {
-      io.configureDrivePID(
-        drivekP.get().volts / 1.meters.perSecond,
-        drivekI.get().volts / (1.meters.perSecond * 1.seconds),
-        drivekD.get().volts / 1.meters.perSecond.perSecond
-      )
+      io.configureDrivePID(drivekP.get(), drivekI.get(), drivekD.get())
     }
 
     Logger.getInstance().processInputs(io.label, inputs)
