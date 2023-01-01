@@ -25,11 +25,41 @@ val Double.metersPerMeter
 val Double.metersPerSecondPerMetersPerSecond
   get() = Value<Fraction<Fraction<Meter, Second>, Fraction<Meter, Second>>>(this)
 
+val Double.radiansPerSecondPerRadiansPerSecond
+  get() = Value<Fraction<Fraction<Radian, Second>, Fraction<Radian, Second>>>(this)
+
+val ProportionalGain<Radian, Velocity<Radian>>.inDegreesPerSecondPerDegree: Double
+  get() = TODO("nyi")
+
+val IntegralGain<Radian, Velocity<Radian>>.inDegreesPerSecondPerDegreeSeconds: Double
+  get() = TODO("nyi")
+
+val DerivativeGain<Radian, Velocity<Radian>>.inDegreesPerSecondPerDegreesPerSecond: Double
+  get() = value
+
+val ProportionalGain<Radian, Velocity<Radian>>.inRadiansPerSecondPerRadian: Double
+  get() = value
+
+val IntegralGain<Radian, Velocity<Radian>>.inRadiansPerSecondPerRadianSeconds: Double
+  get() = value
+
+val DerivativeGain<Radian, Velocity<Radian>>.inRadiansPerSecondPerRadiansPerSecond: Double
+  get() = value
+
 val Value<Unitless>.metersPerMeter
   get() = Value<Fraction<Meter, Meter>>(value)
 
 val Value<Unitless>.metersPerSecondPerMeterPerSecond
   get() = Value<Fraction<Fraction<Meter, Second>, Fraction<Meter, Second>>>(value)
+
+val ProportionalGain<Meter, Velocity<Meter>>.inMetersPerSecondPerMeter
+  get() = value
+
+val IntegralGain<Meter, Velocity<Meter>>.inMetersPerSecondPerMeterSecond
+  get() = value
+
+val DerivativeGain<Meter, Velocity<Meter>>.inMetersPerSecondPerMetersPerSecond
+  get() = value
 
 val <K : UnitKey> Value<K>.perMeter
   get() = Value<Fraction<K, Meter>>(value)

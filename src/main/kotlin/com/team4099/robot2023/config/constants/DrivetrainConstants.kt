@@ -7,6 +7,7 @@ import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.derived.degrees
+import com.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import com.team4099.lib.units.derived.perDegree
 import com.team4099.lib.units.derived.perDegreePerSecond
 import com.team4099.lib.units.derived.perDegreeSeconds
@@ -14,6 +15,7 @@ import com.team4099.lib.units.derived.perRadian
 import com.team4099.lib.units.derived.perRadianPerSecond
 import com.team4099.lib.units.derived.perRadianSeconds
 import com.team4099.lib.units.derived.radians
+import com.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import com.team4099.lib.units.derived.volts
 import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.perSecond
@@ -74,11 +76,13 @@ object DrivetrainConstants {
   object PID {
     val AUTO_POS_KP = 2.0.meters.perSecond / 1.0.meters
     val AUTO_POS_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
-    val AUTO_POS_KD = 0.75.meters.perSecond / (1.0.meters.perSecond)
+    val AUTO_POS_KD =
+      (0.75.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
 
-    const val AUTO_THETA_PID_KP = 7.6
-    const val AUTO_THETA_PID_KI = 0.0
-    const val AUTO_THETA_PID_KD = 0.0
+    val AUTO_THETA_PID_KP = 7.6.degrees.perSecond / 1.degrees
+    val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
+    val AUTO_THETA_PID_KD =
+      (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
