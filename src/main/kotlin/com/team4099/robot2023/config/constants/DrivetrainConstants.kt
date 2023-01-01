@@ -7,6 +7,9 @@ import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.derived.degrees
+import com.team4099.lib.units.derived.perDegree
+import com.team4099.lib.units.derived.perDegreePerSecond
+import com.team4099.lib.units.derived.perDegreeSeconds
 import com.team4099.lib.units.derived.perRadian
 import com.team4099.lib.units.derived.perRadianPerSecond
 import com.team4099.lib.units.derived.perRadianSeconds
@@ -102,8 +105,8 @@ object DrivetrainConstants {
     val SIM_DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
     val SIM_DRIVE_KD = 0.0.volts / 1.meters.perSecond.perSecond
 
-    val SIM_STEERING_KP = 23.0.volts.perRadian
-    val SIM_STEERING_KI = 0.0.volts.perRadianSeconds
-    val SIM_STEERING_KD = 0.0.volts.perRadianPerSecond
+    val SIM_STEERING_KP = 0.4.volts.perDegree
+    val SIM_STEERING_KI = 0.0.volts.perDegreeSeconds
+    val SIM_STEERING_KD = 0.0.volts.perDegreePerSecond
   }
 }
