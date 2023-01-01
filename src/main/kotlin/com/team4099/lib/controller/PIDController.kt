@@ -1,6 +1,7 @@
 package com.team4099.lib.controller
 
 import com.team4099.lib.units.Fraction
+import com.team4099.lib.units.Product
 import com.team4099.lib.units.UnitKey
 import com.team4099.lib.units.Value
 import com.team4099.lib.units.base.Second
@@ -24,13 +25,8 @@ class PIDController<E : UnitKey, O : UnitKey> {
   val isAtSetpoint: Boolean
     get() = wpiPidController.atSetpoint()
 
-  var enableContinousInput: Boolean
+  val isContinuousInputEnabled: Boolean
     get() = wpiPidController.isContinuousInputEnabled
-    set(value) {
-      if (!value) {
-        wpiPidController.disableContinuousInput()
-      }
-    }
 
   var integralGain: IntegralGain<E, O>
     get() = IntegralGain(wpiPidController.i)
@@ -98,7 +94,14 @@ class PIDController<E : UnitKey, O : UnitKey> {
     wpiPidController.enableContinuousInput(minimumInput.value, maximumInput.value)
   }
 
-  fun setIntegratorRange(minimumIntegral: Value<E>, maximumIntegral: Value<E>) {
+  fun disableContinuousInput() {
+    wpiPidController.disableContinuousInput()
+  }
+
+  fun setIntegratorRange(
+    minimumIntegral: Value<Product<E, Second>>,
+    maximumIntegral: Value<Product<E, Second>>
+  ) {
     wpiPidController.setIntegratorRange(minimumIntegral.value, maximumIntegral.value)
   }
 
