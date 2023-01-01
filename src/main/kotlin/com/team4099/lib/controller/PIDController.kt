@@ -21,6 +21,17 @@ class PIDController<E : UnitKey, O : UnitKey> {
       wpiPidController.p = value.value
     }
 
+  val isAtSetpoint: Boolean
+    get() = wpiPidController.atSetpoint()
+
+  var enableContinousInput: Boolean
+    get() = wpiPidController.isContinuousInputEnabled
+    set(value) {
+      if (!value) {
+        wpiPidController.disableContinuousInput()
+      }
+    }
+
   var integralGain: IntegralGain<E, O>
     get() = IntegralGain(wpiPidController.i)
     set(value) {
@@ -62,6 +73,7 @@ class PIDController<E : UnitKey, O : UnitKey> {
     wpiPidController =
       WPIPidController(proportionalGain.value, integralGain.value, derivativeGain.value)
   }
+
   constructor(
     proportionalGain: ProportionalGain<E, O>,
     integralGain: IntegralGain<E, O>,
@@ -74,7 +86,21 @@ class PIDController<E : UnitKey, O : UnitKey> {
       )
   }
 
-  fun calculate(measurement: Value<E>, setpoint: Value<O>) {}
+  fun calculate(measurement: Value<E>, setpoint: Value<O>) {
+    wpiPidController.calculate(measurement.value, setpoint.value)
+  }
+
+  fun calculate(measurement: Value<E>) {
+    wpiPidController.calculate(measurement.value)
+  }
+
+  fun enableContinousInput(minimumInput: Value<E>, maximumInput: Value<E>) {
+    wpiPidController.enableContinuousInput(minimumInput.value, maximumInput.value)
+  }
+
+  fun setIntegratorRange(minimumIntegral: Value<E>, maximumIntegral: Value<E>) {
+    wpiPidController.setIntegratorRange(minimumIntegral.value, maximumIntegral.value)
+  }
 
   fun reset() {
     wpiPidController.reset()

@@ -61,14 +61,11 @@ class SwerveModuleIOReal(
     steeringFalcon.clearStickyFaults()
 
     steeringConfiguration.slot0.kP =
-      steeringSensor.proportionalGainToRawUnits(
-        DrivetrainConstants.PID.STEERING_KP
-      )
+      steeringSensor.proportionalGainToRawUnits(DrivetrainConstants.PID.STEERING_KP)
     steeringConfiguration.slot0.kI =
-      steeringSensor.integralGainToRawUnits(
-        DrivetrainConstants.PID.STEERING_KI
-      )
-    steeringConfiguration.slot0.kD = steeringSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
+      steeringSensor.integralGainToRawUnits(DrivetrainConstants.PID.STEERING_KI)
+    steeringConfiguration.slot0.kD =
+      steeringSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
     steeringConfiguration.slot0.kF = DrivetrainConstants.PID.STEERING_KFF
     steeringConfiguration.motionCruiseVelocity =
       steeringSensor.velocityToRawUnits(DrivetrainConstants.STEERING_VEL_MAX)
@@ -87,9 +84,12 @@ class SwerveModuleIOReal(
       0, steeringSensor.positionToRawUnits(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR)
     )
 
-    driveConfiguration.slot0.kP = driveSensor.proportionalGainToRawUnits(DrivetrainConstants.PID.DRIVE_KP)
-    driveConfiguration.slot0.kI = driveSensor.integralGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
-    driveConfiguration.slot0.kD = driveSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
+    driveConfiguration.slot0.kP =
+      driveSensor.proportionalGainToRawUnits(DrivetrainConstants.PID.DRIVE_KP)
+    driveConfiguration.slot0.kI =
+      driveSensor.integralGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
+    driveConfiguration.slot0.kD =
+      driveSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
     driveConfiguration.slot0.kF = DrivetrainConstants.PID.DRIVE_KFF
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes

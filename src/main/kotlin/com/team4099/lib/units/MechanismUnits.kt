@@ -21,7 +21,6 @@ import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.derived.inVoltsPerMeter
 import com.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import com.team4099.lib.units.derived.inVoltsPerMeterSeconds
-import com.team4099.lib.units.derived.inVoltsPerRadianBySecond
 import com.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import com.team4099.lib.units.derived.radians
@@ -86,22 +85,27 @@ class LinearMechanismSensor(
   override fun proportionalGainToRawUnits(
     proportionalGain: ProportionalGain<Meter, Volt>,
   ): Double {
-    return (proportionalGain.inVoltsPerMeter / (positionToRawUnits(1.meters))) / compensationVoltage.inVolts *
-      fullPowerThrottle
+    return (proportionalGain.inVoltsPerMeter / (positionToRawUnits(1.meters))) /
+      compensationVoltage.inVolts * fullPowerThrottle
   }
 
   override fun integralGainToRawUnits(
     integralGain: IntegralGain<Meter, Volt>,
   ): Double {
-    return (integralGain.inVoltsPerMeterSeconds / ((positionToRawUnits(1.meters) * timescale.velocity.inSeconds))) /
+    return (
+      integralGain.inVoltsPerMeterSeconds /
+        ((positionToRawUnits(1.meters) * timescale.velocity.inSeconds))
+      ) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
 
   override fun derivativeGainToRawUnits(
     derivativeGain: DerivativeGain<Meter, Volt>,
   ): Double {
-    return (derivativeGain.inVoltsPerMeterPerSecond / positionToRawUnits(1.meters) * timescale.velocity.inSeconds) /
-      compensationVoltage.inVolts * fullPowerThrottle
+    return (
+      derivativeGain.inVoltsPerMeterPerSecond / positionToRawUnits(1.meters) *
+        timescale.velocity.inSeconds
+      ) / compensationVoltage.inVolts * fullPowerThrottle
   }
 }
 

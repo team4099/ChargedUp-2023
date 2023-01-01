@@ -8,11 +8,11 @@ import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.perMeter
-import com.team4099.lib.units.derived.perMeterSeconds
 import com.team4099.lib.units.derived.perMeterPerSecond
+import com.team4099.lib.units.derived.perMeterSeconds
 import com.team4099.lib.units.derived.perRadian
-import com.team4099.lib.units.derived.perRadianSeconds
 import com.team4099.lib.units.derived.perRadianPerSecond
+import com.team4099.lib.units.derived.perRadianSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
 import com.team4099.lib.units.inMetersPerSecond
