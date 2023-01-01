@@ -86,15 +86,15 @@ class PIDController<E : UnitKey, O : UnitKey> {
       )
   }
 
-  fun calculate(measurement: Value<E>, setpoint: Value<O>) {
-    wpiPidController.calculate(measurement.value, setpoint.value)
+  fun calculate(measurement: Value<E>, setpoint: Value<E>): Value<O> {
+    return Value(wpiPidController.calculate(measurement.value, setpoint.value))
   }
 
-  fun calculate(measurement: Value<E>) {
-    wpiPidController.calculate(measurement.value)
+  fun calculate(measurement: Value<E>): Value<O> {
+    return Value(wpiPidController.calculate(measurement.value))
   }
 
-  fun enableContinousInput(minimumInput: Value<E>, maximumInput: Value<E>) {
+  fun enableContinuousInput(minimumInput: Value<E>, maximumInput: Value<E>) {
     wpiPidController.enableContinuousInput(minimumInput.value, maximumInput.value)
   }
 

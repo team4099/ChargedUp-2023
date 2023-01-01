@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.DemandType
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
+import com.team4099.lib.controller.SimpleMotorFeedforward
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
@@ -19,11 +20,7 @@ import com.team4099.lib.units.derived.Angle
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.derived.volts
-import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
-import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.AnalogPotentiometer
 
 class SwerveModuleIOReal(
@@ -52,6 +49,13 @@ class SwerveModuleIOReal(
   // motor params
   private val steeringConfiguration: TalonFXConfiguration = TalonFXConfiguration()
   private val driveConfiguration: TalonFXConfiguration = TalonFXConfiguration()
+
+  private val driveFeedforward =
+    SimpleMotorFeedforward(
+      DrivetrainConstants.PID.DRIVE_KS,
+      DrivetrainConstants.PID.DRIVE_KV,
+      DrivetrainConstants.PID.DRIVE_KA
+    )
 
   init {
     driveFalcon.configFactoryDefault()
@@ -144,16 +148,8 @@ class SwerveModuleIOReal(
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
-    val driveFeedforward =
-      SimpleMotorFeedforward(
-        DrivetrainConstants.PID.DRIVE_KS.inVolts,
-        DrivetrainConstants.PID.DRIVE_KV.value,
-        DrivetrainConstants.PID.DRIVE_KA.value
-      )
     val feedforward =
-      driveFeedforward.calculate(speed.inMetersPerSecond, acceleration.inMetersPerSecondPerSecond)
-        .volts
-
+      driveFeedforward.calculate(speed, acceleration)
     driveFalcon.set(
       ControlMode.Velocity,
       driveSensor.velocityToRawUnits(speed),
