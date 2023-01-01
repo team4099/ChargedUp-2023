@@ -16,10 +16,11 @@ import com.team4099.lib.units.derived.ElectricalPotential
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotations
 import com.team4099.lib.units.derived.inVolts
+import com.team4099.lib.units.derived.inVoltsPerDegreePerSecond
+import com.team4099.lib.units.derived.inVoltsPerDegreeSeconds
+import com.team4099.lib.units.derived.inVoltsPerDegrees
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
-import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
@@ -54,8 +55,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     )
   private val driveFeedForward =
     SimpleMotorFeedforward(
-      DrivetrainConstants.PID.SIM_DRIVE_KS,
-      DrivetrainConstants.PID.SIM_DRIVE_KV
+      DrivetrainConstants.PID.SIM_DRIVE_KS, DrivetrainConstants.PID.SIM_DRIVE_KV
     )
 
   private val steeringFeedback =
@@ -67,8 +67,8 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     )
 
   init {
-    steeringFeedback.enableContinuousInput(-Math.PI, Math.PI)
-    steeringFeedback.setTolerance(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR.inRadians)
+    steeringFeedback.enableContinuousInput(-Math.PI.radians, Math.PI.radians)
+    steeringFeedback.errorTolerance = DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {
@@ -150,9 +150,14 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   override fun setSteeringSetpoint(angle: Angle) {
     val feedback = steeringFeedback.calculate(turnAbsolutePosition, angle)
     Logger.getInstance().recordOutput("Drivetrain/PID/steeringFeedback", feedback.inVolts)
-    Logger.getInstance().recordOutput("Drivetrain/PID/kP", steeringFeedback.p)
-    Logger.getInstance().recordOutput("Drivetrain/PID/kI", steeringFeedback.i)
-    Logger.getInstance().recordOutput("Drivetrain/PID/kD", steeringFeedback.d)
+    Logger.getInstance()
+      .recordOutput("Drivetrain/PID/kP", steeringFeedback.proportionalGain.inVoltsPerDegrees)
+    Logger.getInstance()
+      .recordOutput("Drivetrain/PID/kI", steeringFeedback.integralGain.inVoltsPerDegreeSeconds)
+    Logger.getInstance()
+      .recordOutput(
+        "Drivetrain/PID/kD", steeringFeedback.derivativeGain.inVoltsPerDegreePerSecond
+      )
     setSteeringVoltage(feedback)
   }
 
@@ -161,12 +166,8 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
-    val feedforward =
-      driveFeedForward.calculate(speed, acceleration)
-    setDriveVoltage(
-      feedforward +
-        driveFeedback.calculate(driveVelocity, speed)
-    )
+    val feedforward = driveFeedForward.calculate(speed, acceleration)
+    setDriveVoltage(feedforward + driveFeedback.calculate(driveVelocity, speed))
 
     setSteeringSetpoint(steering)
   }

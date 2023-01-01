@@ -148,8 +148,7 @@ class SwerveModuleIOReal(
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
-    val feedforward =
-      driveFeedforward.calculate(speed, acceleration)
+    val feedforward = driveFeedforward.calculate(speed, acceleration)
     driveFalcon.set(
       ControlMode.Velocity,
       driveSensor.velocityToRawUnits(speed),
