@@ -94,7 +94,7 @@ class LinearMechanismSensor(
   ): Double {
     return (
       integralGain.inVoltsPerMeterSeconds /
-        ((positionToRawUnits(1.meters) * timescale.velocity.inSeconds))
+        (positionToRawUnits(1.meters) * timescale.velocity.inSeconds)
       ) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
@@ -103,8 +103,8 @@ class LinearMechanismSensor(
     derivativeGain: DerivativeGain<Meter, Volt>,
   ): Double {
     return (
-      derivativeGain.inVoltsPerMeterPerSecond / positionToRawUnits(1.meters) *
-        timescale.velocity.inSeconds
+      derivativeGain.inVoltsPerMeterPerSecond * timescale.velocity.inSeconds /
+        positionToRawUnits(1.meters)
       ) / compensationVoltage.inVolts * fullPowerThrottle
   }
 }
