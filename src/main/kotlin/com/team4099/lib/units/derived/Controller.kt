@@ -23,16 +23,16 @@ val Double.metersPerMeter
   get() = Value<Fraction<Meter, Meter>>(this)
 
 val Double.metersPerSecondPerMetersPerSecond
-  get() = Value<Fraction<Fraction<Meter, Second>, Fraction<Meter, Second>>>(this)
+  get() = Value<Fraction<Velocity<Meter>, Velocity<Meter>>>(this)
 
 val Double.radiansPerSecondPerRadiansPerSecond
-  get() = Value<Fraction<Fraction<Radian, Second>, Fraction<Radian, Second>>>(this)
+  get() = Value<Fraction<Velocity<Radian>, Velocity<Radian>>>(this)
 
 val ProportionalGain<Radian, Velocity<Radian>>.inDegreesPerSecondPerDegree: Double
-  get() = TODO("nyi")
+  get() = inRadiansPerSecondPerRadian / RADIANS_PER_DEGREES / RADIANS_PER_DEGREES
 
 val IntegralGain<Radian, Velocity<Radian>>.inDegreesPerSecondPerDegreeSeconds: Double
-  get() = TODO("nyi")
+  get() = inRadiansPerSecondPerRadianSeconds / RADIANS_PER_DEGREES / RADIANS_PER_DEGREES
 
 val DerivativeGain<Radian, Velocity<Radian>>.inDegreesPerSecondPerDegreesPerSecond: Double
   get() = value
