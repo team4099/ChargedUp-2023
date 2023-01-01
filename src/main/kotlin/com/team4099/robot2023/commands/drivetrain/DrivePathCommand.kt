@@ -1,30 +1,29 @@
 package com.team4099.robot2023.commands.drivetrain
 
+import com.team4099.lib.controller.PIDController
+import com.team4099.lib.controller.ProfiledPIDController
+import com.team4099.lib.controller.TrapezoidProfile
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.TunableNumber
 import com.team4099.lib.pathfollow.Trajectory
-import com.team4099.lib.units.base.inMeters
+import com.team4099.lib.units.Velocity
+import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
+import com.team4099.lib.units.derived.Radian
 import com.team4099.lib.units.derived.cos
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inDegrees
-import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.sin
 import com.team4099.lib.units.inDegreesPerSecond
 import com.team4099.lib.units.inDegreesPerSecondPerSecond
 import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.inMetersPerSecondPerSecond
-import com.team4099.lib.units.inRadiansPerSecond
-import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.controller.ProfiledPIDController
-import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import kotlin.math.PI
@@ -34,10 +33,10 @@ class DrivePathCommand(
   private val trajectory: Trajectory,
   val resetPose: Boolean = false
 ) : CommandBase() {
-  private val xPID: PIDController
-  private val yPID: PIDController
+  private val xPID: PIDController<Meter, Velocity<Meter>>
+  private val yPID: PIDController<Meter, Velocity<Meter>>
 
-  private val thetaPID: ProfiledPIDController
+  private val thetaPID: ProfiledPIDController<Radian, Velocity<Radian>>
 
   private var trajCurTime = 0.0.seconds
   private var trajStartTime = 0.0.seconds
@@ -71,12 +70,12 @@ class DrivePathCommand(
         thetakI.get(),
         thetakD.get(),
         TrapezoidProfile.Constraints(
-          thetaMaxVel.get().degrees.perSecond.inRadiansPerSecond,
-          thetaMaxAccel.get().degrees.perSecond.perSecond.inRadiansPerSecondPerSecond
+          thetaMaxVel.get().degrees.perSecond,
+          thetaMaxAccel.get().degrees.perSecond.perSecond
         )
       )
 
-    thetaPID.enableContinuousInput(-PI, PI)
+    thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }
 
   override fun initialize() {
@@ -84,7 +83,7 @@ class DrivePathCommand(
       drivetrain.odometryPose = trajectory.startingPose
     }
     trajStartTime = Clock.fpgaTime + trajectory.startTime
-    thetaPID.reset(drivetrain.odometryPose.theta.inRadians)
+    thetaPID.reset(drivetrain.odometryPose.theta)
     xPID.reset()
     yPID.reset()
   }
@@ -96,24 +95,13 @@ class DrivePathCommand(
     val yFF = desiredState.linearVelocity * desiredState.curvature.sin
     val thetaFeedback =
       thetaPID.calculate(
-        drivetrain.odometryPose.theta.inRadians,
-        TrapezoidProfile.State(
-          desiredState.pose.theta.inRadians,
-          desiredState.angularVelocity.inRadiansPerSecond
-        )
+        drivetrain.odometryPose.theta,
+        TrapezoidProfile.State(desiredState.pose.theta, desiredState.angularVelocity)
       )
-        .radians
-        .perSecond
 
     // Calculate feedback velocities (based on position error).
-    val xFeedback =
-      xPID.calculate(drivetrain.odometryPose.x.inMeters, desiredState.pose.x.inMeters)
-        .meters
-        .perSecond
-    val yFeedback =
-      yPID.calculate(drivetrain.odometryPose.y.inMeters, desiredState.pose.y.inMeters)
-        .meters
-        .perSecond
+    val xFeedback = xPID.calculate(drivetrain.odometryPose.x, desiredState.pose.x)
+    val yFeedback = yPID.calculate(drivetrain.odometryPose.y, desiredState.pose.y)
 
     val xAccel = desiredState.linearAcceleration * desiredState.curvature.cos
     val yAccel = desiredState.linearAcceleration * desiredState.curvature.sin
@@ -138,10 +126,9 @@ class DrivePathCommand(
     Logger.getInstance()
       .recordOutput("Pathfollow/yFeedbackMetersPerSec", yFeedback.inMetersPerSecond)
 
+    Logger.getInstance().recordOutput("Pathfollow/thetaPIDPositionErrorRadians", thetaPID.error)
     Logger.getInstance()
-      .recordOutput("Pathfollow/thetaPIDPositionErrorRadians", thetaPID.positionError)
-    Logger.getInstance()
-      .recordOutput("Pathfollow/thetaPIDVelocityErrorRadians", thetaPID.velocityError)
+      .recordOutput("Pathfollow/thetaPIDVelocityErrorRadians", thetaPID.errorDerivative)
 
     Logger.getInstance()
       .recordOutput(
@@ -184,8 +171,7 @@ class DrivePathCommand(
     if (thetaMaxAccel.hasChanged() || thetaMaxVel.hasChanged()) {
       thetaPID.setConstraints(
         TrapezoidProfile.Constraints(
-          thetaMaxVel.get().degrees.perSecond.inRadiansPerSecond,
-          thetaMaxAccel.get().degrees.perSecond.perSecond.inRadiansPerSecondPerSecond
+          thetaMaxVel.get().degrees.perSecond, thetaMaxAccel.get().degrees.perSecond.perSecond
         )
       )
     }

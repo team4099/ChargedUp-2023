@@ -69,9 +69,9 @@ object DrivetrainConstants {
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
 
   object PID {
-    const val AUTO_POS_KP = 2.0
-    const val AUTO_POS_KI = 0.0
-    const val AUTO_POS_KD = 0.75
+    val AUTO_POS_KP = 2.0.meters.perSecond / 1.0.meters
+    val AUTO_POS_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+    val AUTO_POS_KD = 0.75.meters.perSecond / (1.0.meters.perSecond)
 
     const val AUTO_THETA_PID_KP = 7.6
     const val AUTO_THETA_PID_KI = 0.0
