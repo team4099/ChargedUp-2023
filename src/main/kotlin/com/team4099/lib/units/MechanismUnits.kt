@@ -22,8 +22,15 @@ import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.derived.inVoltsPerMeter
 import com.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import com.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import com.team4099.lib.units.derived.inVoltsPerMeters
+import com.team4099.lib.units.derived.inVoltsPerMetersPerSecond
+import com.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
+import com.team4099.lib.units.derived.inVoltsPerRadian
 import com.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
+import com.team4099.lib.units.derived.inVoltsPerRadians
+import com.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
+import com.team4099.lib.units.derived.inVoltsPerRadiansPerSecondPerSecond
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.rotations
 import kotlin.math.PI
@@ -41,14 +48,24 @@ interface MechanismSensor<U : UnitKey> {
   fun velocityToRawUnits(velocity: Value<Velocity<U>>): Double
   fun accelerationToRawUnits(acceleration: Value<Acceleration<U>>): Double
 
-  fun proportionalGainToRawUnits(
+  fun proportionalPositionGainToRawUnits(
     proportionalGain: ProportionalGain<U, Volt>,
   ): Double
-  fun integralGainToRawUnits(
+  fun integralPositionGainToRawUnits(
     integralGain: IntegralGain<U, Volt>,
   ): Double
-  fun derivativeGainToRawUnits(
+  fun derivativePositionGainToRawUnits(
     derivativeGain: DerivativeGain<U, Volt>,
+  ): Double
+
+  fun proportionalVelocityGainToRawUnits(
+    proportionalGain: ProportionalGain<Velocity<U>, Volt>,
+  ): Double
+  fun integralVelocityGainToRawUnits(
+    integralGain: IntegralGain<Velocity<U>, Volt>,
+  ): Double
+  fun derivativeVelocityGainToRawUnits(
+    derivativeGain: DerivativeGain<Velocity<U>, Volt>,
   ): Double
 
   fun velocityFeedforwardToRawUnits(velocityFeedforward: VelocityFeedforward<U>): Double
@@ -85,14 +102,14 @@ class LinearMechanismSensor(
     return linearUnscaledVelocity / diameter.inMeters / ratio / PI
   }
 
-  override fun proportionalGainToRawUnits(
-    proportionalGain: ProportionalGain<Meter, Volt>,
+  override fun proportionalPositionGainToRawUnits(
+    proportionalGain: ProportionalGain<Meter, Volt>
   ): Double {
     return (proportionalGain.inVoltsPerMeter / (positionToRawUnits(1.meters))) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
 
-  override fun integralGainToRawUnits(
+  override fun integralPositionGainToRawUnits(
     integralGain: IntegralGain<Meter, Volt>,
   ): Double {
     return (
@@ -102,12 +119,38 @@ class LinearMechanismSensor(
       compensationVoltage.inVolts * fullPowerThrottle
   }
 
-  override fun derivativeGainToRawUnits(
+  override fun derivativePositionGainToRawUnits(
     derivativeGain: DerivativeGain<Meter, Volt>,
   ): Double {
     return (
       derivativeGain.inVoltsPerMeterPerSecond * timescale.velocity.inSeconds /
         positionToRawUnits(1.meters)
+      ) / compensationVoltage.inVolts * fullPowerThrottle
+  }
+
+  override fun proportionalVelocityGainToRawUnits(
+    proportionalGain: ProportionalGain<Velocity<Meter>, Volt>
+  ): Double {
+    return (proportionalGain.inVoltsPerMetersPerSecond / (velocityToRawUnits(1.meters.perSecond))) /
+      compensationVoltage.inVolts * fullPowerThrottle
+  }
+
+  override fun integralVelocityGainToRawUnits(
+    integralGain: IntegralGain<Velocity<Meter>, Volt>,
+  ): Double {
+    return (
+      integralGain.inVoltsPerMeters /
+        (velocityToRawUnits(1.meters.perSecond) * timescale.velocity.inSeconds)
+      ) /
+      compensationVoltage.inVolts * fullPowerThrottle
+  }
+
+  override fun derivativeVelocityGainToRawUnits(
+    derivativeGain: DerivativeGain<Velocity<Meter>, Volt>,
+  ): Double {
+    return (
+      derivativeGain.inVoltsPerMetersPerSecondPerSecond * timescale.velocity.inSeconds /
+        velocityToRawUnits(1.meters.perSecond)
       ) / compensationVoltage.inVolts * fullPowerThrottle
   }
 
@@ -145,14 +188,14 @@ class AngularMechanismSensor(
         timescale.acceleration.inSeconds
       ) / ratio
 
-  override fun proportionalGainToRawUnits(
+  override fun proportionalPositionGainToRawUnits(
     proportionalGain: ProportionalGain<Radian, Volt>
   ): Double {
-    return (proportionalGain.value / (positionToRawUnits(1.radians))) /
+    return (proportionalGain.inVoltsPerRadian / (positionToRawUnits(1.radians))) /
       compensationVoltage.inVolts * fullPowerThrottle
   }
 
-  override fun integralGainToRawUnits(integralGain: IntegralGain<Radian, Volt>): Double {
+  override fun integralPositionGainToRawUnits(integralGain: IntegralGain<Radian, Volt>): Double {
     return (
       integralGain.inVoltsPerRadianSeconds /
         (positionToRawUnits(1.radians) * timescale.velocity.inSeconds)
@@ -160,10 +203,40 @@ class AngularMechanismSensor(
       compensationVoltage.inVolts * fullPowerThrottle
   }
 
-  override fun derivativeGainToRawUnits(derivativeGain: DerivativeGain<Radian, Volt>): Double {
+  override fun derivativePositionGainToRawUnits(
+    derivativeGain: DerivativeGain<Radian, Volt>
+  ): Double {
     return (
       derivativeGain.inVoltsPerRadianPerSecond * timescale.velocity.inSeconds /
         positionToRawUnits(1.radians)
+      ) / compensationVoltage.inVolts * fullPowerThrottle
+  }
+
+  override fun proportionalVelocityGainToRawUnits(
+    proportionalGain: ProportionalGain<Velocity<Radian>, Volt>
+  ): Double {
+    return (
+      proportionalGain.inVoltsPerRadiansPerSecond /
+        (velocityToRawUnits(1.radians.perSecond))
+      ) / compensationVoltage.inVolts * fullPowerThrottle
+  }
+
+  override fun integralVelocityGainToRawUnits(
+    integralGain: IntegralGain<Velocity<Radian>, Volt>
+  ): Double {
+    return (
+      integralGain.inVoltsPerRadians /
+        (velocityToRawUnits(1.radians.perSecond) * timescale.velocity.inSeconds)
+      ) /
+      compensationVoltage.inVolts * fullPowerThrottle
+  }
+
+  override fun derivativeVelocityGainToRawUnits(
+    derivativeGain: DerivativeGain<Velocity<Radian>, Volt>
+  ): Double {
+    return (
+      derivativeGain.inVoltsPerRadiansPerSecondPerSecond * timescale.velocity.inSeconds /
+        velocityToRawUnits(1.radians.perSecond)
       ) / compensationVoltage.inVolts * fullPowerThrottle
   }
 

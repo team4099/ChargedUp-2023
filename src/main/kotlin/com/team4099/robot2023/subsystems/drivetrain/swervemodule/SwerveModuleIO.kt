@@ -125,7 +125,15 @@ interface SwerveModuleIO {
 
   fun setBrakeMode(brake: Boolean) {}
 
-  fun configureDrivePID(kP: ProportionalGain<Velocity<Meter>, Volt>, kI: IntegralGain<Velocity<Meter>, Volt>, kD: DerivativeGain<Velocity<Meter>, Volt>) {}
-  fun configureSteeringPID(kP: ProportionalGain<Radian, Volt>, kI: IntegralGain<Radian, Volt>, kD: DerivativeGain<Radian, Volt>) {}
+  fun configureDrivePID(
+    kP: ProportionalGain<Velocity<Meter>, Volt>,
+    kI: IntegralGain<Velocity<Meter>, Volt>,
+    kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {}
+  fun configureSteeringPID(
+    kP: ProportionalGain<Radian, Volt>,
+    kI: IntegralGain<Radian, Volt>,
+    kD: DerivativeGain<Radian, Volt>
+  ) {}
   fun configureSteeringMotionMagic(maxVel: AngularVelocity, maxAccel: AngularAcceleration) {}
 }

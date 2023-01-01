@@ -109,7 +109,7 @@ class PIDController<E : UnitKey, O : UnitKey> {
     wpiPidController.reset()
   }
 
-  fun setPID(kP: ProportionalGain<E, O>, kI: IntegralGain<E, O>, kD: DerivativeGain<E, O>){
+  fun setPID(kP: ProportionalGain<E, O>, kI: IntegralGain<E, O>, kD: DerivativeGain<E, O>) {
     proportionalGain = kP
     integralGain = kI
     derivativeGain = kD

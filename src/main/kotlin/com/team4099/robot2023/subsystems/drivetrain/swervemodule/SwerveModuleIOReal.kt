@@ -26,13 +26,9 @@ import com.team4099.lib.units.derived.Radian
 import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inVolts
-import com.team4099.lib.units.derived.inVoltsPerMPS
-import com.team4099.lib.units.derived.inVoltsPerMPSPerSecond
-import com.team4099.lib.units.derived.inVoltsPerMPSSecond
-import com.team4099.lib.units.derived.inVoltsPerMeter
-import com.team4099.lib.units.derived.inVoltsPerMeterPerSecond
-import com.team4099.lib.units.derived.inVoltsPerMeterPerSecondPerSecond
-import com.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import com.team4099.lib.units.derived.inVoltsPerMeters
+import com.team4099.lib.units.derived.inVoltsPerMetersPerSecond
+import com.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
 import com.team4099.lib.units.derived.inVoltsPerRadian
 import com.team4099.lib.units.derived.inVoltsPerRadianPerSecond
 import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
@@ -82,11 +78,11 @@ class SwerveModuleIOReal(
     steeringFalcon.clearStickyFaults()
 
     steeringConfiguration.slot0.kP =
-      steeringSensor.proportionalGainToRawUnits(DrivetrainConstants.PID.STEERING_KP)
+      steeringSensor.proportionalPositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KP)
     steeringConfiguration.slot0.kI =
-      steeringSensor.integralGainToRawUnits(DrivetrainConstants.PID.STEERING_KI)
+      steeringSensor.integralPositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KI)
     steeringConfiguration.slot0.kD =
-      steeringSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
+      steeringSensor.derivativePositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
     steeringConfiguration.slot0.kF =
       steeringSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.STEERING_KFF)
     steeringConfiguration.motionCruiseVelocity =
@@ -107,11 +103,11 @@ class SwerveModuleIOReal(
     )
 
     driveConfiguration.slot0.kP =
-      driveSensor.proportionalGainToRawUnits(DrivetrainConstants.PID.DRIVE_KP)
+      driveSensor.proportionalVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KP)
     driveConfiguration.slot0.kI =
-      driveSensor.integralGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
+      driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
     driveConfiguration.slot0.kD =
-      driveSensor.derivativeGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
+      driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
     driveConfiguration.slot0.kF = DrivetrainConstants.PID.DRIVE_KFF
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
@@ -207,13 +203,21 @@ class SwerveModuleIOReal(
     driveFalcon.selectedSensorPosition = 0.0
   }
 
-  override fun configureDrivePID(kP: ProportionalGain<Velocity<Meter>, Volt>, kI: IntegralGain<Velocity<Meter>, Volt>, kD: DerivativeGain<Velocity<Meter>, Volt>) {
-    driveFalcon.config_kP(0, kP.inVoltsPerMPS)
-    driveFalcon.config_kI(0, kI.inVoltsPerMPSSecond)
-    driveFalcon.config_kD(0, kD.inVoltsPerMPSPerSecond)
+  override fun configureDrivePID(
+    kP: ProportionalGain<Velocity<Meter>, Volt>,
+    kI: IntegralGain<Velocity<Meter>, Volt>,
+    kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {
+    driveFalcon.config_kP(0, kP.inVoltsPerMetersPerSecond)
+    driveFalcon.config_kI(0, kI.inVoltsPerMeters)
+    driveFalcon.config_kD(0, kD.inVoltsPerMetersPerSecondPerSecond)
   }
 
-  override fun configureSteeringPID(kP: ProportionalGain<Radian, Volt>, kI: IntegralGain<Radian, Volt>, kD: DerivativeGain<Radian, Volt>) {
+  override fun configureSteeringPID(
+    kP: ProportionalGain<Radian, Volt>,
+    kI: IntegralGain<Radian, Volt>,
+    kD: DerivativeGain<Radian, Volt>
+  ) {
     steeringFalcon.config_kP(0, kP.inVoltsPerRadian)
     steeringFalcon.config_kI(0, kI.inVoltsPerRadianSeconds)
     steeringFalcon.config_kD(0, kD.inVoltsPerRadianPerSecond)

@@ -4,7 +4,6 @@ import com.team4099.lib.controller.PIDController
 import com.team4099.lib.controller.SimpleMotorFeedforward
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
-import com.team4099.lib.units.Fraction
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.Velocity
@@ -193,11 +192,19 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     turnAbsolutePosition = 0.0.radians
   }
 
-  override fun configureDrivePID(kP: ProportionalGain<Velocity<Meter>, Volt>, kI: IntegralGain<Velocity<Meter>, Volt>, kD: DerivativeGain<Velocity<Meter>, Volt>) {
+  override fun configureDrivePID(
+    kP: ProportionalGain<Velocity<Meter>, Volt>,
+    kI: IntegralGain<Velocity<Meter>, Volt>,
+    kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {
     driveFeedback.setPID(kP, kI, kD)
   }
 
-  override fun configureSteeringPID(kP: ProportionalGain<Radian, Volt>, kI: IntegralGain<Radian, Volt>, kD: DerivativeGain<Radian, Volt>) {
+  override fun configureSteeringPID(
+    kP: ProportionalGain<Radian, Volt>,
+    kI: IntegralGain<Radian, Volt>,
+    kD: DerivativeGain<Radian, Volt>
+  ) {
     steeringFeedback.setPID(kP, kI, kD)
   }
 
