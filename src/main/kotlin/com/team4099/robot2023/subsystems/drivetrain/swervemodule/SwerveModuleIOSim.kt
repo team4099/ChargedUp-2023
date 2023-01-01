@@ -4,15 +4,23 @@ import com.team4099.lib.controller.PIDController
 import com.team4099.lib.controller.SimpleMotorFeedforward
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
+import com.team4099.lib.units.Fraction
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
+import com.team4099.lib.units.Velocity
+import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.inAmperes
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.DerivativeGain
 import com.team4099.lib.units.derived.ElectricalPotential
+import com.team4099.lib.units.derived.IntegralGain
+import com.team4099.lib.units.derived.ProportionalGain
+import com.team4099.lib.units.derived.Radian
+import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotations
 import com.team4099.lib.units.derived.inVolts
@@ -130,10 +138,6 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
         inputs.driveSupplyCurrent.inAmperes + inputs.steeringSupplyCurrent.inAmperes
       )
     )
-
-    // updating pid every loop cycle bc for some reason it doesn't stay like this otherwise
-    driveFeedback.p = 0.9
-    steeringFeedback.p = 23.0
   }
 
   // helper functions to clamp all inputs and set sim motor voltages properly
@@ -189,11 +193,11 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     turnAbsolutePosition = 0.0.radians
   }
 
-  override fun configureDrivePID(kP: Double, kI: Double, kD: Double) {
+  override fun configureDrivePID(kP: ProportionalGain<Velocity<Meter>, Volt>, kI: IntegralGain<Velocity<Meter>, Volt>, kD: DerivativeGain<Velocity<Meter>, Volt>) {
     driveFeedback.setPID(kP, kI, kD)
   }
 
-  override fun configureSteeringPID(kP: Double, kI: Double, kD: Double) {
+  override fun configureSteeringPID(kP: ProportionalGain<Radian, Volt>, kI: IntegralGain<Radian, Volt>, kD: DerivativeGain<Radian, Volt>) {
     steeringFeedback.setPID(kP, kI, kD)
   }
 

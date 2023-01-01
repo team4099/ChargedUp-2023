@@ -10,6 +10,8 @@ import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
+import com.team4099.lib.units.Velocity
+import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.inAmperes
@@ -17,8 +19,23 @@ import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.ctreAngularMechanismSensor
 import com.team4099.lib.units.ctreLinearMechanismSensor
 import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.DerivativeGain
+import com.team4099.lib.units.derived.IntegralGain
+import com.team4099.lib.units.derived.ProportionalGain
+import com.team4099.lib.units.derived.Radian
+import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inVolts
+import com.team4099.lib.units.derived.inVoltsPerMPS
+import com.team4099.lib.units.derived.inVoltsPerMPSPerSecond
+import com.team4099.lib.units.derived.inVoltsPerMPSSecond
+import com.team4099.lib.units.derived.inVoltsPerMeter
+import com.team4099.lib.units.derived.inVoltsPerMeterPerSecond
+import com.team4099.lib.units.derived.inVoltsPerMeterPerSecondPerSecond
+import com.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import com.team4099.lib.units.derived.inVoltsPerRadian
+import com.team4099.lib.units.derived.inVoltsPerRadianPerSecond
+import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.wpilibj.AnalogPotentiometer
@@ -190,16 +207,16 @@ class SwerveModuleIOReal(
     driveFalcon.selectedSensorPosition = 0.0
   }
 
-  override fun configureDrivePID(kP: Double, kI: Double, kD: Double) {
-    driveFalcon.config_kP(0, kP)
-    driveFalcon.config_kI(0, kI)
-    driveFalcon.config_kD(0, kD)
+  override fun configureDrivePID(kP: ProportionalGain<Velocity<Meter>, Volt>, kI: IntegralGain<Velocity<Meter>, Volt>, kD: DerivativeGain<Velocity<Meter>, Volt>) {
+    driveFalcon.config_kP(0, kP.inVoltsPerMPS)
+    driveFalcon.config_kI(0, kI.inVoltsPerMPSSecond)
+    driveFalcon.config_kD(0, kD.inVoltsPerMPSPerSecond)
   }
 
-  override fun configureSteeringPID(kP: Double, kI: Double, kD: Double) {
-    steeringFalcon.config_kP(0, kP)
-    steeringFalcon.config_kI(0, kI)
-    steeringFalcon.config_kD(0, kD)
+  override fun configureSteeringPID(kP: ProportionalGain<Radian, Volt>, kI: IntegralGain<Radian, Volt>, kD: DerivativeGain<Radian, Volt>) {
+    steeringFalcon.config_kP(0, kP.inVoltsPerRadian)
+    steeringFalcon.config_kI(0, kI.inVoltsPerRadianSeconds)
+    steeringFalcon.config_kD(0, kD.inVoltsPerRadianPerSecond)
   }
 
   override fun configureSteeringMotionMagic(
