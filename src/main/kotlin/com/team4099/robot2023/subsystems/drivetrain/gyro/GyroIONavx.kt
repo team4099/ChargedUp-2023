@@ -66,7 +66,7 @@ object GyroIONavx : GyroIO {
     inputs.gyroYaw = gyroYaw
     inputs.gyroVelocity = gyroYawRate
     inputs.gyroPitch = gyroPitch
-    inputs.gyroRoll = gyroRollOffset
+    inputs.gyroRoll = gyroRoll
 
     inputs.gyroConnected = gyro.isConnected
   }
