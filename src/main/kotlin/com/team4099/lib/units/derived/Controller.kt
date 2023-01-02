@@ -50,7 +50,7 @@ val Value<Unitless>.metersPerMeter
   get() = Value<Fraction<Meter, Meter>>(value)
 
 val Value<Unitless>.metersPerSecondPerMeterPerSecond
-  get() = Value<Fraction<Fraction<Meter, Second>, Fraction<Meter, Second>>>(value)
+  get() = Value<Fraction<Velocity<Meter>, Velocity<Meter>>>(value)
 
 val ProportionalGain<Meter, Velocity<Meter>>.inMetersPerSecondPerMeter
   get() = value
