@@ -49,7 +49,7 @@ class LoggedTunableNumber(dashboardKey: String) {
       return 0.0
     } else {
       if (Constants.Tuning.TUNING_MODE) {
-        return dashboardNumber!!.get()
+        return dashboardNumber?.get() ?: defaultValue
       } else {
         return defaultValue
       }
