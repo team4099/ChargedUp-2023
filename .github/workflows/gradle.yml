@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     # This grabs the WPILib docker container
-    container: wpilib/roborio-cross-ubuntu:2022-20.04
+    container: wpilib/roborio-cross-ubuntu:2023-22.04
     steps:
         # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
         - uses: actions/checkout@v2
