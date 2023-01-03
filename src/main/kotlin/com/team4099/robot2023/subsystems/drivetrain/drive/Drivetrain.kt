@@ -234,26 +234,52 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     fieldOriented: Boolean = true
   ) {
     val swerveModuleStates: Array<SwerveModuleState>
+    var desiredChassisSpeeds: ChassisSpeeds
+
     if (fieldOriented) {
-      swerveModuleStates =
-        swerveDriveKinematics.toSwerveModuleStates(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-            driveVector.first.inMetersPerSecond,
-            driveVector.second.inMetersPerSecond,
-            angularVelocity.inRadiansPerSecond,
-            Rotation2dWPILIB(gyroInputs.gyroYaw.cos, gyroInputs.gyroYaw.sin)
-          )
+      desiredChassisSpeeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(
+          driveVector.first.inMetersPerSecond,
+          driveVector.second.inMetersPerSecond,
+          angularVelocity.inRadiansPerSecond,
+          Rotation2dWPILIB(gyroInputs.gyroYaw.cos, gyroInputs.gyroYaw.sin)
         )
     } else {
-      swerveModuleStates =
-        swerveDriveKinematics.toSwerveModuleStates(
-          ChassisSpeeds(
-            driveVector.first.inMetersPerSecond,
-            driveVector.second.inMetersPerSecond,
-            angularVelocity.inRadiansPerSecond
-          )
+      desiredChassisSpeeds =
+        ChassisSpeeds(
+          driveVector.first.inMetersPerSecond,
+          driveVector.second.inMetersPerSecond,
+          angularVelocity.inRadiansPerSecond,
         )
     }
+
+    if (DrivetrainConstants.MINIMIZE_SKEW) {
+      val velocityTransform =
+        Transform2d(
+          Translation2d(
+            Constants.Universal.LOOP_PERIOD_TIME *
+              desiredChassisSpeeds.vxMetersPerSecond.meters.perSecond,
+            Constants.Universal.LOOP_PERIOD_TIME *
+              desiredChassisSpeeds.vyMetersPerSecond.meters.perSecond
+          ),
+          Rotation2d(
+            Constants.Universal.LOOP_PERIOD_TIME *
+              desiredChassisSpeeds.omegaRadiansPerSecond.radians.perSecond
+          )
+        )
+
+      val twistToNextPose: Twist2d = odometryPose.log(odometryPose.transformBy(velocityTransform))
+
+      desiredChassisSpeeds =
+        ChassisSpeeds(
+          (twistToNextPose.dx / Constants.Universal.LOOP_PERIOD_TIME).inMetersPerSecond,
+          (twistToNextPose.dy / Constants.Universal.LOOP_PERIOD_TIME).inMetersPerSecond,
+          (twistToNextPose.dtheta / Constants.Universal.LOOP_PERIOD_TIME).inRadiansPerSecond
+        )
+    }
+
+    swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredChassisSpeeds)
+
     SwerveDriveKinematics.desaturateWheelSpeeds(
       swerveModuleStates, DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
     )

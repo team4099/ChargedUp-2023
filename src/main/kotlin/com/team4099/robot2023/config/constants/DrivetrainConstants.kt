@@ -22,6 +22,8 @@ import com.team4099.lib.units.perSecond
 import kotlin.math.sqrt
 
 object DrivetrainConstants {
+  const val MINIMIZE_SKEW = true
+
   const val WHEEL_COUNT = 4
   val WHEEL_DIAMETER = 3.785.inches
   val DRIVETRAIN_LENGTH = 22.750.inches
