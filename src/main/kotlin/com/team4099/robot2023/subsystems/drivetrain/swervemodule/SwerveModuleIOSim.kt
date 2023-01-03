@@ -28,7 +28,6 @@ import com.team4099.lib.units.derived.inVoltsPerDegreeSeconds
 import com.team4099.lib.units.derived.inVoltsPerDegrees
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
-import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants

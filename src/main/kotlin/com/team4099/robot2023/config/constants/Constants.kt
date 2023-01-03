@@ -57,4 +57,8 @@ object Constants {
     const val BACK_LEFT_STEERING_ID = 24
     const val BACK_LEFT_ANALOG_POTENTIOMETER = 3
   }
+
+  object Gyro {
+    const val PIGEON_2_ID = 1337
+  }
 }
