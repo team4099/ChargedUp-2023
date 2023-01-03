@@ -16,12 +16,20 @@ import com.team4099.lib.units.Value
  */
 class LoggedTunableValue<U : UnitKey>(
   val dashboardKey: String,
-  var defaultValue: Value<U>,
   inline val conversionFunctions: Pair<(Value<U>) -> Double, (Double) -> Value<U>> =
     Pair({ it.value }, { Value(it) })
 ) {
 
-  var tunableNumber = LoggedTunableNumber(dashboardKey, conversionFunctions.first(defaultValue))
+  constructor(
+    dashboardKey: String,
+    defaultValue: Value<U>,
+    conversionFunctions: Pair<(Value<U>) -> Double, (Double) -> Value<U>> =
+      Pair({ it.value }, { Value(it) })
+  ) : this(dashboardKey, conversionFunctions) {
+    initDefault(defaultValue)
+  }
+
+  var tunableNumber = LoggedTunableNumber(dashboardKey)
 
   fun get(): Value<U> {
     return conversionFunctions.second(tunableNumber.get())

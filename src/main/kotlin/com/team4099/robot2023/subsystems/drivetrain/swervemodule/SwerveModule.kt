@@ -48,20 +48,16 @@ class SwerveModule(val io: SwerveModuleIO) {
 
   private val steeringkP =
     LoggedTunableValue(
-      "Drivetrain/moduleSteeringkP",
-      DrivetrainConstants.PID.STEERING_KP,
-      Pair({ it.inVoltsPerDegrees }, { it.volts.perDegree })
+      "Drivetrain/moduleSteeringkP", Pair({ it.inVoltsPerDegrees }, { it.volts.perDegree })
     )
   private val steeringkI =
     LoggedTunableValue(
       "Drivetrain/moduleSteeringkI",
-      DrivetrainConstants.PID.STEERING_KI,
       Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
     )
   private val steeringkD =
     LoggedTunableValue(
       "Drivetrain/moduleSteeringkD",
-      DrivetrainConstants.PID.STEERING_KD,
       Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
     )
 
@@ -77,21 +73,18 @@ class SwerveModule(val io: SwerveModuleIO) {
   private val drivekP =
     LoggedTunableValue(
       "Drivetrain/moduleDrivekP",
-      DrivetrainConstants.PID.DRIVE_KP,
       Pair({ it.inVoltsPerMetersPerSecond }, { it.volts.perMeterPerSecond })
     )
 
   private val drivekI =
     LoggedTunableValue(
       "Drivetrain/moduleDrivekI",
-      DrivetrainConstants.PID.DRIVE_KI,
       Pair({ it.inVoltsPerMeters }, { it.volts / (1.meters.perSecond * 1.seconds) })
     )
 
   private val drivekD =
     LoggedTunableValue(
       "Drivetrain/moduleDrivekD",
-      DrivetrainConstants.PID.DRIVE_KD,
       Pair({ it.inVoltsPerMetersPerSecondPerSecond }, { it.volts.perMeterPerSecondPerSecond })
     )
 
