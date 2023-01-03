@@ -174,7 +174,6 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       }
       val chassisStateDiff: ChassisSpeeds =
         ChassisSpeeds(swerveDriveKinematics.toChassisSpeeds(*measuredStatesDifference))
-
       if (Constants.Tuning.SIMULATE_DRIFT) {
         undriftedPose =
           undriftedPose.exp(
@@ -260,7 +259,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
           Rotation2d(Constants.Universal.LOOP_PERIOD_TIME * desiredChassisSpeeds.omega)
         )
 
-      val twistToNextPose: Twist2d = odometryPose.log(odometryPose.transformBy(velocityTransform))
+      val twistToNextPose: Twist2d = velocityTransform.log()
 
       desiredChassisSpeeds =
         ChassisSpeeds(
