@@ -2,11 +2,11 @@ package com.team4099.robot2023.subsystems.drivetrain.drive
 
 import com.team4099.lib.geometry.Pose2d
 import com.team4099.lib.geometry.Rotation2d
-import com.team4099.lib.geometry.Rotation2dWPILIB
 import com.team4099.lib.geometry.Transform2d
 import com.team4099.lib.geometry.Translation2d
-import com.team4099.lib.geometry.Translation2dWPILIB
 import com.team4099.lib.geometry.Twist2d
+import com.team4099.lib.kinematics.ChassisAccels
+import com.team4099.lib.kinematics.ChassisSpeeds
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
@@ -15,21 +15,16 @@ import com.team4099.lib.units.base.feet
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
-import com.team4099.lib.units.derived.cos
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotation2ds
 import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.derived.sin
 import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.lib.units.inRadiansPerSecond
-import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
-import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModuleState
@@ -131,16 +126,18 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
           swerveModules[i].inputs.steeringPosition.inRotation2ds
         )
     }
-    val chassisState: ChassisSpeeds = swerveDriveKinematics.toChassisSpeeds(*measuredStates)
+    val chassisState: ChassisSpeeds =
+      ChassisSpeeds(swerveDriveKinematics.toChassisSpeeds(*measuredStates))
     val fieldVelocity =
-      Translation2dWPILIB(chassisState.vxMetersPerSecond, chassisState.vyMetersPerSecond)
-        .rotateBy(
-          odometryPose
-            .rotation
-            .rotation2d
-        ) // we don't use this but it's there if you want it ig
-    Logger.getInstance().recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.x)
-    Logger.getInstance().recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.y)
+      Translation2d(
+        chassisState.vx.inMetersPerSecond.meters, chassisState.vy.inMetersPerSecond.meters
+      )
+        .rotateBy(odometryPose.rotation) // we don't use this but it's there if you want it ig
+
+    Logger.getInstance()
+      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.x.inMeters)
+    Logger.getInstance()
+      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.y.inMeters)
 
     Logger.getInstance().processInputs("Drivetrain/Gyro", gyroInputs)
     Logger.getInstance().recordOutput("Drivetrain/ModuleStates", *measuredStates)
@@ -176,24 +173,24 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         lastModulePositions[i] = swerveModules[i].inputs.drivePosition
       }
       val chassisStateDiff: ChassisSpeeds =
-        swerveDriveKinematics.toChassisSpeeds(*measuredStatesDifference)
+        ChassisSpeeds(swerveDriveKinematics.toChassisSpeeds(*measuredStatesDifference))
 
       if (Constants.Tuning.SIMULATE_DRIFT) {
         undriftedPose =
           undriftedPose.exp(
             Twist2d(
-              chassisStateDiff.vxMetersPerSecond.meters,
-              chassisStateDiff.vyMetersPerSecond.meters,
-              chassisStateDiff.omegaRadiansPerSecond.radians
+              chassisStateDiff.vx.inMetersPerSecond.meters,
+              chassisStateDiff.vy.inMetersPerSecond.meters,
+              chassisStateDiff.omega.inRadiansPerSecond.radians
             )
           )
 
         odometryPose =
           odometryPose.exp(
             Twist2d(
-              chassisStateDiff.vxMetersPerSecond.meters * 1.05,
-              chassisStateDiff.vyMetersPerSecond.meters * 1.05,
-              chassisStateDiff.omegaRadiansPerSecond.radians
+              chassisStateDiff.vx.inMetersPerSecond.meters * 1.05,
+              chassisStateDiff.vy.inMetersPerSecond.meters * 1.05,
+              chassisStateDiff.omega.inRadiansPerSecond.radians
             )
           )
 
@@ -204,9 +201,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         odometryPose =
           odometryPose.exp(
             Twist2d(
-              chassisStateDiff.vxMetersPerSecond.meters,
-              chassisStateDiff.vyMetersPerSecond.meters,
-              chassisStateDiff.omegaRadiansPerSecond.radians
+              chassisStateDiff.vx.inMetersPerSecond.meters,
+              chassisStateDiff.vy.inMetersPerSecond.meters,
+              chassisStateDiff.omega.inRadiansPerSecond.radians
             )
           )
       }
@@ -239,17 +236,17 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     if (fieldOriented) {
       desiredChassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-          driveVector.first.inMetersPerSecond,
-          driveVector.second.inMetersPerSecond,
-          angularVelocity.inRadiansPerSecond,
-          Rotation2dWPILIB(gyroInputs.gyroYaw.cos, gyroInputs.gyroYaw.sin)
+          driveVector.first,
+          driveVector.second,
+          angularVelocity,
+          Rotation2d(gyroInputs.gyroYaw)
         )
     } else {
       desiredChassisSpeeds =
         ChassisSpeeds(
-          driveVector.first.inMetersPerSecond,
-          driveVector.second.inMetersPerSecond,
-          angularVelocity.inRadiansPerSecond,
+          driveVector.first,
+          driveVector.second,
+          angularVelocity,
         )
     }
 
@@ -257,28 +254,24 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       val velocityTransform =
         Transform2d(
           Translation2d(
-            Constants.Universal.LOOP_PERIOD_TIME *
-              desiredChassisSpeeds.vxMetersPerSecond.meters.perSecond,
-            Constants.Universal.LOOP_PERIOD_TIME *
-              desiredChassisSpeeds.vyMetersPerSecond.meters.perSecond
+            Constants.Universal.LOOP_PERIOD_TIME * desiredChassisSpeeds.vx,
+            Constants.Universal.LOOP_PERIOD_TIME * desiredChassisSpeeds.vy
           ),
-          Rotation2d(
-            Constants.Universal.LOOP_PERIOD_TIME *
-              desiredChassisSpeeds.omegaRadiansPerSecond.radians.perSecond
-          )
+          Rotation2d(Constants.Universal.LOOP_PERIOD_TIME * desiredChassisSpeeds.omega)
         )
 
       val twistToNextPose: Twist2d = odometryPose.log(odometryPose.transformBy(velocityTransform))
 
       desiredChassisSpeeds =
         ChassisSpeeds(
-          (twistToNextPose.dx / Constants.Universal.LOOP_PERIOD_TIME).inMetersPerSecond,
-          (twistToNextPose.dy / Constants.Universal.LOOP_PERIOD_TIME).inMetersPerSecond,
-          (twistToNextPose.dtheta / Constants.Universal.LOOP_PERIOD_TIME).inRadiansPerSecond
+          (twistToNextPose.dx / Constants.Universal.LOOP_PERIOD_TIME),
+          (twistToNextPose.dy / Constants.Universal.LOOP_PERIOD_TIME),
+          (twistToNextPose.dtheta / Constants.Universal.LOOP_PERIOD_TIME)
         )
     }
 
-    swerveModuleStates = swerveDriveKinematics.toSwerveModuleStates(desiredChassisSpeeds)
+    swerveModuleStates =
+      swerveDriveKinematics.toSwerveModuleStates(desiredChassisSpeeds.chassisSpeedsWPILIB)
 
     SwerveDriveKinematics.desaturateWheelSpeeds(
       swerveModuleStates, DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
@@ -318,37 +311,33 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       velSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(
           ChassisSpeeds.fromFieldRelativeSpeeds(
-            driveVector.first.inMetersPerSecond,
-            driveVector.second.inMetersPerSecond,
-            angularVelocity.inRadiansPerSecond,
-            Rotation2dWPILIB(gyroInputs.gyroYaw.cos, gyroInputs.gyroYaw.sin)
+            driveVector.first,
+            driveVector.second,
+            angularVelocity,
+            Rotation2d(gyroInputs.gyroYaw)
           )
+            .chassisSpeedsWPILIB
         )
       accelSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-            driveAcceleration.first.inMetersPerSecondPerSecond,
-            driveAcceleration.second.inMetersPerSecondPerSecond,
-            angularAcceleration.inRadiansPerSecondPerSecond,
-            Rotation2dWPILIB(gyroInputs.gyroYaw.cos, gyroInputs.gyroYaw.sin)
+          ChassisAccels.fromFieldRelativeAccels(
+            driveAcceleration.first,
+            driveAcceleration.second,
+            angularAcceleration,
+            Rotation2d(gyroInputs.gyroYaw)
           )
+            .chassisAccelsWPILIB
         )
     } else {
       velSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(
-          ChassisSpeeds(
-            driveVector.first.inMetersPerSecond,
-            driveVector.second.inMetersPerSecond,
-            angularVelocity.inRadiansPerSecond
-          )
+          ChassisSpeeds(driveVector.first, driveVector.second, angularVelocity)
+            .chassisSpeedsWPILIB
         )
       accelSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(
-          ChassisSpeeds(
-            driveAcceleration.first.inMetersPerSecondPerSecond,
-            driveAcceleration.second.inMetersPerSecondPerSecond,
-            angularAcceleration.inRadiansPerSecondPerSecond
-          )
+          ChassisAccels(driveAcceleration.first, driveAcceleration.second, angularAcceleration)
+            .chassisAccelsWPILIB
         )
     }
 
