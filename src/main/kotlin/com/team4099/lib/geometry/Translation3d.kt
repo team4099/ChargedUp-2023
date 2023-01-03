@@ -4,6 +4,8 @@ import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.radians
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 data class Translation3d(val x: Length, val y: Length, val z: Length) {
 
@@ -25,19 +27,17 @@ data class Translation3d(val x: Length, val y: Length, val z: Length) {
   ) : this(translation3dWPILIB.x.meters, translation3dWPILIB.y.meters, translation3dWPILIB.z.meters)
 
   fun getDistance(other: Translation3d): Length {
-    return Math.sqrt(
-      Math.pow((other.x - x).inMeters, 2.0) +
-        Math.pow((other.y - y).inMeters, 2.0) +
-        Math.pow((other.z - z).inMeters, 2.0)
+    return sqrt(
+      (other.x - x).inMeters.pow(2.0) +
+        (other.y - y).inMeters.pow(2.0) +
+        (other.z - z).inMeters.pow(2.0)
     )
       .meters
   }
 
   val norm: Length
     get() {
-      return Math.sqrt(
-        (x.inMeters * x.inMeters + y.inMeters * y.inMeters + z.inMeters * z.inMeters)
-      )
+      return sqrt((x.inMeters * x.inMeters + y.inMeters * y.inMeters + z.inMeters * z.inMeters))
         .meters
     }
 

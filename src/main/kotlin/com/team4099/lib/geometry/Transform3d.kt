@@ -35,9 +35,7 @@ class Transform3d(val translation: Translation3d, val rotation: Rotation3d) {
   val z: Length = translation.z
 
   fun inverse(): Transform3d {
-    return Transform3d(
-      translation.unaryMinus().rotateBy(rotation.unaryMinus()), rotation.unaryMinus()
-    )
+    return Transform3d((-translation).rotateBy(-rotation), -rotation)
   }
 
   override fun equals(other: Any?): Boolean {

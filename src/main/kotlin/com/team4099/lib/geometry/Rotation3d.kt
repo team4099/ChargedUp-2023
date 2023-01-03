@@ -91,7 +91,7 @@ class Rotation3d(quaternion: Quaternion) {
     return rotateBy(other.unaryMinus())
   }
 
-  fun unaryMinus(): Rotation3d {
+  operator fun unaryMinus(): Rotation3d {
     return Rotation3d(quaternion.inverse())
   }
 

@@ -63,9 +63,7 @@ data class Pose3d(val translation: Translation3d, val rotation: Rotation3d) {
   }
 
   fun transformBy(other: Transform3d): Pose3d {
-    return Pose3d(
-      translation.plus(other.translation.rotateBy(rotation)), other.rotation.plus(rotation)
-    )
+    return Pose3d(translation + other.translation.rotateBy(rotation), other.rotation + rotation)
   }
 
   fun relativeTo(other: Pose3d): Pose3d {

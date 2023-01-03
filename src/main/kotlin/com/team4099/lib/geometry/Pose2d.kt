@@ -33,7 +33,7 @@ data class Pose2d(val translation: Translation2d, val rotation: Angle) {
   val pose2d: Pose2dWPILIB = Pose2dWPILIB(translation.translation2d, rotation.inRotation2ds)
 
   operator fun times(scalar: Double): Pose2d {
-    return Pose2d(translation.times(scalar), rotation.times(scalar))
+    return Pose2d(translation * scalar, rotation * scalar)
   }
 
   operator fun div(scalar: Double): Pose2d {
