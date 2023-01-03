@@ -28,6 +28,7 @@ import com.team4099.lib.units.derived.inVoltsPerDegreeSeconds
 import com.team4099.lib.units.derived.inVoltsPerDegrees
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
+import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
@@ -175,8 +176,11 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     setSteeringSetpoint(steering)
   }
 
-  override fun setOpenLoop(steering: Angle, power: Double) {
-    setDriveVoltage(RoboRioSim.getVInVoltage().volts * power)
+  override fun setOpenLoop(steering: Angle, speed: Double) {
+    setDriveVoltage(
+      RoboRioSim.getVInVoltage().volts * speed /
+        DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+    )
     setSteeringSetpoint(steering)
   }
 
