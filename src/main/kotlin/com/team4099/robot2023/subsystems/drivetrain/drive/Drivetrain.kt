@@ -19,13 +19,13 @@ import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotation2ds
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.inRadiansPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
+import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -164,33 +164,25 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       // we have to calculate
       // the updated heading of the robot based on the output of what we've commanded (in real life
       // we can just read the heading from the gyro)
-      val measuredStatesDifference = arrayOfNulls<SwerveModuleState>(4)
+      val measuredStatesDifference = arrayOfNulls<SwerveModulePosition>(4)
       for (i in 0 until 4) {
         measuredStatesDifference[i] =
-          SwerveModuleState(
+          SwerveModulePosition(
             (swerveModules[i].inputs.drivePosition - lastModulePositions[i]).inMeters,
             swerveModules[i].inputs.steeringPosition.inRotation2ds
           )
         lastModulePositions[i] = swerveModules[i].inputs.drivePosition
       }
-      val chassisStateDiff: ChassisSpeeds =
-        ChassisSpeeds(swerveDriveKinematics.toChassisSpeeds(*measuredStatesDifference))
+      val positionDeltaTwist = swerveDriveKinematics.toTwist2d(*measuredStatesDifference)
       if (Constants.Tuning.SIMULATE_DRIFT) {
-        undriftedPose =
-          undriftedPose.exp(
-            Twist2d(
-              chassisStateDiff.vx.inMetersPerSecond.meters,
-              chassisStateDiff.vy.inMetersPerSecond.meters,
-              chassisStateDiff.omega.inRadiansPerSecond.radians
-            )
-          )
+        undriftedPose = undriftedPose.exp(Twist2d(positionDeltaTwist))
 
         odometryPose =
           odometryPose.exp(
             Twist2d(
-              chassisStateDiff.vx.inMetersPerSecond.meters * 1.05,
-              chassisStateDiff.vy.inMetersPerSecond.meters * 1.05,
-              chassisStateDiff.omega.inRadiansPerSecond.radians
+              positionDeltaTwist.dx.meters * 1.05,
+              positionDeltaTwist.dy.meters * 1.05,
+              positionDeltaTwist.dtheta.radians
             )
           )
 
@@ -198,14 +190,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
         Logger.getInstance().recordOutput("Odometry/undriftedPose", undriftedPose.pose2d)
       } else {
-        odometryPose =
-          odometryPose.exp(
-            Twist2d(
-              chassisStateDiff.vx.inMetersPerSecond.meters,
-              chassisStateDiff.vy.inMetersPerSecond.meters,
-              chassisStateDiff.omega.inRadiansPerSecond.radians
-            )
-          )
+        odometryPose = odometryPose.exp(Twist2d(positionDeltaTwist))
       }
 
       gyroInputs.gyroYaw = odometryPose.rotation
