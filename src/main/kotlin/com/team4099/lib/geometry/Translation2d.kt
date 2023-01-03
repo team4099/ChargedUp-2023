@@ -3,6 +3,9 @@ package com.team4099.lib.geometry
 import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
+import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.cos
+import com.team4099.lib.units.derived.sin
 import kotlin.math.hypot
 
 /**
@@ -43,8 +46,8 @@ data class Translation2d(var x: Length, var y: Length) {
     return Translation2d(x * -1, y * -1)
   }
 
-  fun rotateBy(other: Rotation2d): Translation2d {
-    return Translation2d(x * other.m_cos - y * other.m_sin, x * other.m_sin + y * other.m_cos)
+  fun rotateBy(other: Angle): Translation2d {
+    return Translation2d(x * other.cos - y * other.sin, x * other.sin + y * other.cos)
   }
 
   fun normalize(): Translation2d {

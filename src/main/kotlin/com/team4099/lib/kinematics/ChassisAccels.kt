@@ -1,10 +1,12 @@
 package com.team4099.lib.kinematics
 
-import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.base.meters
+import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.cos
 import com.team4099.lib.units.derived.radians
+import com.team4099.lib.units.derived.sin
 import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
@@ -34,18 +36,18 @@ class ChassisAccels(
       ax: LinearAcceleration,
       ay: LinearAcceleration,
       alpha: AngularAcceleration,
-      robotAngle: Rotation2d
+      robotAngle: Angle
     ): ChassisAccels {
       return ChassisAccels(
-        ax * robotAngle.m_cos + ay * robotAngle.m_sin,
-        -ax * robotAngle.m_sin + ay * robotAngle.m_cos,
+        ax * robotAngle.cos + ay * robotAngle.sin,
+        -ax * robotAngle.sin + ay * robotAngle.cos,
         alpha
       )
     }
 
     fun fromFieldRelativeAccels(
       fieldRelativeAccels: ChassisAccels,
-      robotAngle: Rotation2d
+      robotAngle: Angle
     ): ChassisAccels {
       return fromFieldRelativeAccels(
         fieldRelativeAccels.ax, fieldRelativeAccels.ay, fieldRelativeAccels.alpha, robotAngle

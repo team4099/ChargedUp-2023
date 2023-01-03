@@ -125,7 +125,7 @@ class DrivePathCommand(
       drivetrain.odometryPose = trajectory.startingPose
     }
     trajStartTime = Clock.fpgaTime + trajectory.startTime
-    thetaPID.reset(drivetrain.odometryPose.theta)
+    thetaPID.reset(drivetrain.odometryPose.rotation)
     xPID.reset()
     yPID.reset()
   }
@@ -137,8 +137,8 @@ class DrivePathCommand(
     val yFF = desiredState.linearVelocity * desiredState.curvature.sin
     val thetaFeedback =
       thetaPID.calculate(
-        drivetrain.odometryPose.theta,
-        TrapezoidProfile.State(desiredState.pose.theta, desiredState.angularVelocity)
+        drivetrain.odometryPose.rotation,
+        TrapezoidProfile.State(desiredState.pose.rotation, desiredState.angularVelocity)
       )
 
     // Calculate feedback velocities (based on position error).
@@ -187,7 +187,7 @@ class DrivePathCommand(
     Logger.getInstance().recordOutput("Pathfollow/Start Time", trajStartTime.inSeconds)
     Logger.getInstance().recordOutput("Pathfollow/Current Time", trajCurTime.inSeconds)
     Logger.getInstance()
-      .recordOutput("Pathfollow/Desired Angle in Degrees", desiredState.pose.theta.inDegrees)
+      .recordOutput("Pathfollow/Desired Angle in Degrees", desiredState.pose.rotation.inDegrees)
     Logger.getInstance()
       .recordOutput(
         "Pathfollow/Desired Angular Velocity in Degrees",

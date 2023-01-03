@@ -4,15 +4,22 @@ import com.team4099.lib.units.base.Length
 import com.team4099.lib.units.base.Time
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.angle
+import com.team4099.lib.units.derived.inRotation2ds
+import com.team4099.lib.units.derived.radians
 
-data class Pose2d(var m_translation: Translation2d, var m_rotation: Rotation2d) {
-  constructor() : this(Translation2d(), Rotation2d())
+data class Pose2d(val translation: Translation2d, val rotation: Angle) {
 
-  constructor(x: Length, y: Length, rotation: Rotation2d) : this(Translation2d(x, y), rotation)
+  val x = translation.x
+  val y = translation.y
+
+  constructor() : this(Translation2d(), 0.0.radians)
+
+  constructor(x: Length, y: Length, rotation: Angle) : this(Translation2d(x, y), rotation)
 
   constructor(
     pose2dWPILIB: Pose2dWPILIB
-  ) : this(Translation2d(pose2dWPILIB.translation), Rotation2d(pose2dWPILIB.rotation))
+  ) : this(Translation2d(pose2dWPILIB.translation), pose2dWPILIB.rotation.angle)
 
   operator fun plus(other: Transform2d): Pose2d {
     return transformBy(other)
@@ -23,20 +30,10 @@ data class Pose2d(var m_translation: Translation2d, var m_rotation: Rotation2d) 
     return Transform2d(pose.translation, pose.rotation)
   }
 
-  val translation: Translation2d = m_translation
-
-  var x: Length = m_translation.x
-
-  var y: Length = m_translation.y
-
-  val rotation: Rotation2d = m_rotation
-
-  var theta: Angle = m_rotation.theta
-
-  val pose2d: Pose2dWPILIB = Pose2dWPILIB(translation.translation2d, rotation.rotation2d)
+  val pose2d: Pose2dWPILIB = Pose2dWPILIB(translation.translation2d, rotation.inRotation2ds)
 
   operator fun times(scalar: Double): Pose2d {
-    return Pose2d(m_translation.times(scalar), m_rotation.times(scalar))
+    return Pose2d(translation.times(scalar), rotation.times(scalar))
   }
 
   operator fun div(scalar: Double): Pose2d {
@@ -49,7 +46,7 @@ data class Pose2d(var m_translation: Translation2d, var m_rotation: Rotation2d) 
 
   fun relativeTo(other: Pose2d): Pose2d {
     val transform = Transform2d(other, this)
-    return Pose2d(transform.m_translation, transform.m_rotation)
+    return Pose2d(transform.translation, transform.rotation)
   }
 
   fun exp(twist: Twist2d): Pose2d {
@@ -66,16 +63,20 @@ data class Pose2d(var m_translation: Translation2d, var m_rotation: Rotation2d) 
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
-    if (other !is Pose2d) return false
+    if (javaClass != other?.javaClass) return false
 
-    if ((x - other.x).absoluteValue.value > 1E-9) return false
-    if ((y - other.y).absoluteValue.value > 1E-9) return false
+    other as Pose2d
 
-    if (rotation != other.rotation) return false
-
-    if ((theta - other.theta).absoluteValue.value > 1E-9) return false
+    if (translation != other.translation) return false
+    if ((rotation - other.rotation).absoluteValue.value > 1E-9) return false
 
     return true
+  }
+
+  override fun hashCode(): Int {
+    var result = translation.hashCode()
+    result = 31 * result + rotation.hashCode()
+    return result
   }
 }
 

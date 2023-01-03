@@ -1,7 +1,6 @@
 package com.team4099.geometry
 
 import com.team4099.lib.geometry.Pose2d
-import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Twist2d
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.degrees
@@ -23,7 +22,7 @@ class Twist2dTest {
   fun testStraight() {
     val straight = Twist2d(5.0.meters, 0.0.meters, 0.0.radians)
     val straightPose = Pose2d().exp(straight)
-    val expected = Pose2d(5.0.meters, 0.0.meters, Rotation2d())
+    val expected = Pose2d(5.0.meters, 0.0.meters, 0.0.radians)
     assertEquals(expected, straightPose)
   }
 
@@ -31,7 +30,7 @@ class Twist2dTest {
   fun testQuarterCircle() {
     val quarterCircle = Twist2d((5.0 / 2.0 * Math.PI).meters, 0.0.meters, (Math.PI / 2.0).radians)
     val quarterCirclePose = Pose2d().exp(quarterCircle)
-    val expected = Pose2d(5.0.meters, 5.0.meters, Rotation2d(90.0.degrees))
+    val expected = Pose2d(5.0.meters, 5.0.meters, 90.0.degrees)
     assertEquals(expected, quarterCirclePose)
   }
 
@@ -39,7 +38,7 @@ class Twist2dTest {
   fun testDiagonalNoDtheta() {
     val diagonal = Twist2d(2.0.meters, 2.0.meters, 0.0.radians)
     val diagonalPose = Pose2d().exp(diagonal)
-    val expected = Pose2d(2.0.meters, 2.0.meters, Rotation2d())
+    val expected = Pose2d(2.0.meters, 2.0.meters, 0.0.radians)
     assertEquals(expected, diagonalPose)
   }
 
@@ -60,7 +59,7 @@ class Twist2dTest {
   @Test
   fun testPose2dLog() {
     val start = Pose2d()
-    val end = Pose2d(5.0.meters, 5.0.meters, Rotation2d(90.0.degrees))
+    val end = Pose2d(5.0.meters, 5.0.meters, 90.0.degrees)
     val twist = start.log(end)
     val expected = Twist2d((5.0 / 2.0 * Math.PI).meters, 0.0.meters, (Math.PI / 2.0).radians)
     assertEquals(expected, twist)
