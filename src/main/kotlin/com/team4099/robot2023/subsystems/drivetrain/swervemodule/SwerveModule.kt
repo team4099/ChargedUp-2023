@@ -12,17 +12,17 @@ import com.team4099.lib.units.derived.angle
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotation2ds
+import com.team4099.lib.units.derived.inVoltsPerDegreePerSecond
+import com.team4099.lib.units.derived.inVoltsPerDegreeSeconds
+import com.team4099.lib.units.derived.inVoltsPerDegrees
 import com.team4099.lib.units.derived.inVoltsPerMeters
 import com.team4099.lib.units.derived.inVoltsPerMetersPerSecond
 import com.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
-import com.team4099.lib.units.derived.inVoltsPerRadian
-import com.team4099.lib.units.derived.inVoltsPerRadianSeconds
-import com.team4099.lib.units.derived.inVoltsPerRadiansPerSecond
+import com.team4099.lib.units.derived.perDegree
+import com.team4099.lib.units.derived.perDegreePerSecond
+import com.team4099.lib.units.derived.perDegreeSeconds
 import com.team4099.lib.units.derived.perMeterPerSecond
 import com.team4099.lib.units.derived.perMeterPerSecondPerSecond
-import com.team4099.lib.units.derived.perRadian
-import com.team4099.lib.units.derived.perRadianPerSecond
-import com.team4099.lib.units.derived.perRadianSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
 import com.team4099.lib.units.perSecond
@@ -50,19 +50,19 @@ class SwerveModule(val io: SwerveModuleIO) {
     LoggedTunableValue(
       "Drivetrain/moduleSteeringkP",
       DrivetrainConstants.PID.STEERING_KP,
-      Pair({ it.inVoltsPerRadian }, { it.volts.perRadian })
+      Pair({ it.inVoltsPerDegrees }, { it.volts.perDegree })
     )
   private val steeringkI =
     LoggedTunableValue(
       "Drivetrain/moduleSteeringkI",
       DrivetrainConstants.PID.STEERING_KI,
-      Pair({ it.inVoltsPerRadianSeconds }, { it.volts.perRadianSeconds })
+      Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
     )
   private val steeringkD =
     LoggedTunableValue(
       "Drivetrain/moduleSteeringkD",
       DrivetrainConstants.PID.STEERING_KD,
-      Pair({ it.inVoltsPerRadiansPerSecond }, { it.volts.perRadianPerSecond })
+      Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
     )
 
   private val steeringMaxVel =

@@ -11,9 +11,7 @@ import com.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import com.team4099.lib.units.derived.perDegree
 import com.team4099.lib.units.derived.perDegreePerSecond
 import com.team4099.lib.units.derived.perDegreeSeconds
-import com.team4099.lib.units.derived.perRadian
 import com.team4099.lib.units.derived.perRadianPerSecond
-import com.team4099.lib.units.derived.perRadianSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import com.team4099.lib.units.derived.volts
@@ -89,9 +87,9 @@ object DrivetrainConstants {
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
 
-    val STEERING_KP = 0.125.volts.perRadian
-    val STEERING_KI = 0.0.volts.perRadianSeconds
-    val STEERING_KD = 0.0.volts.perRadianPerSecond
+    val STEERING_KP = 0.002.volts.perDegree
+    val STEERING_KI = 0.0.volts.perDegreeSeconds
+    val STEERING_KD = 0.0.volts.perDegreePerSecond
 
     val STEERING_KFF = 0.0.volts.perRadianPerSecond // 0.0375
 
