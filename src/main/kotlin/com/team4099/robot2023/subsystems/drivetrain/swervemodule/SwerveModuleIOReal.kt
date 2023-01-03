@@ -170,10 +170,10 @@ class SwerveModuleIOReal(
    * Open Loop Control using PercentOutput control on a Falcon
    *
    * @param steering: Desired angle
-   * @param power: Desired power that drive motors will be set to: [-1,1]
+   * @param speed: Desired speed
    */
-  override fun setOpenLoop(steering: Angle, power: Double) {
-    driveFalcon.set(ControlMode.PercentOutput, power)
+  override fun setOpenLoop(steering: Angle, speed: LinearVelocity) {
+    driveFalcon.set(ControlMode.PercentOutput, speed / DrivetrainConstants.DRIVE_SETPOINT_MAX)
     setSteeringSetpoint(steering)
   }
 

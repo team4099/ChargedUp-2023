@@ -117,7 +117,7 @@ interface SwerveModuleIO {
 
   fun setSteeringSetpoint(angle: Angle) {}
   fun setClosedLoop(steering: Angle, speed: LinearVelocity, acceleration: LinearAcceleration) {}
-  fun setOpenLoop(steering: Angle, speed: Double) {}
+  fun setOpenLoop(steering: Angle, speed: LinearVelocity) {}
 
   fun resetModuleZero() {}
   fun zeroSteering() {}

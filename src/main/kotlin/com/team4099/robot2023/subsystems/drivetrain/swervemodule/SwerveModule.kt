@@ -162,7 +162,7 @@ class SwerveModule(val io: SwerveModuleIO) {
     optimize: Boolean = true
   ) {
     if (speed == 0.feet.perSecond) {
-      io.setOpenLoop(steeringSetPoint, 0.0)
+      io.setOpenLoop(steeringSetPoint, 0.0.meters.perSecond)
       return
     }
     var steeringDifference =
@@ -191,7 +191,7 @@ class SwerveModule(val io: SwerveModuleIO) {
     io.setClosedLoop(steeringSetPoint, speedSetPoint, accelerationSetPoint)
   }
 
-  fun setOpenLoop(steering: Angle, speed: Double, optimize: Boolean = true) {
+  fun setOpenLoop(steering: Angle, speed: LinearVelocity, optimize: Boolean = true) {
     var steeringDifference =
       (steering - inputs.steeringPosition).inRadians.IEEErem(2 * Math.PI).radians
 
@@ -200,14 +200,14 @@ class SwerveModule(val io: SwerveModuleIO) {
       steeringDifference -= Math.PI.withSign(steeringDifference.inRadians).radians
     }
 
-    val outputPower =
+    val outputSpeed =
       if (shouldInvert) {
         speed * -1
       } else {
         speed
       }
     steeringSetPoint = inputs.steeringPosition + steeringDifference
-    io.setOpenLoop(steeringSetPoint, outputPower)
+    io.setOpenLoop(steeringSetPoint, outputSpeed)
   }
 
   /**
@@ -223,11 +223,13 @@ class SwerveModule(val io: SwerveModuleIO) {
       io.setOpenLoop(
         optimizedState.angle.angle,
         optimizedState
-          .speedMetersPerSecond // consider desaturating wheel speeds here if it doesn't work
+          .speedMetersPerSecond
+          .meters
+          .perSecond // consider desaturating wheel speeds here if it doesn't work
         // from drivetrain
       )
     } else {
-      io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond)
+      io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond.meters.perSecond)
     }
   }
 

@@ -176,10 +176,9 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     setSteeringSetpoint(steering)
   }
 
-  override fun setOpenLoop(steering: Angle, speed: Double) {
+  override fun setOpenLoop(steering: Angle, speed: LinearVelocity) {
     setDriveVoltage(
-      RoboRioSim.getVInVoltage().volts * speed /
-        DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+      RoboRioSim.getVInVoltage().volts * (speed / DrivetrainConstants.DRIVE_SETPOINT_MAX)
     )
     setSteeringSetpoint(steering)
   }
