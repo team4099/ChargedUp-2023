@@ -28,6 +28,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 
@@ -40,6 +41,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   val gyroInputs = GyroIO.GyroIOInputs()
   val swerveModules = swerveModuleIOs.getSwerveModules()
+  var gyroYawOffset = 0.0.radians
 
   init {
     // Wheel speeds
@@ -89,7 +91,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     SwerveDriveOdometry(
       swerveDriveKinematics,
       gyroInputs.gyroYaw.inRotation2ds,
-      swerveModules.map { it.modulePosition }.toTypedArray()
+      swerveModules.map { it.modulePosition }.toTypedArray(),
     )
 
   var setPointStates =
@@ -105,7 +107,10 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         swerveModules.map { it.modulePosition }.toTypedArray(),
         value.pose2d
       )
-      zeroGyroYaw(odometryPose.rotation)
+
+      if (RobotBase.isReal()) {
+        zeroGyroYaw(odometryPose.rotation)
+      }
     }
 
   var undriftedPose: Pose2d = Pose2d()
@@ -202,7 +207,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         odometryPose = odometryPose.exp(Twist2d(positionDeltaTwist))
       }
 
-      gyroInputs.gyroYaw = odometryPose.rotation
+      gyroInputs.gyroYaw = odometryPose.rotation + gyroYawOffset
     } else {
       odometryPose =
         Pose2d(
@@ -355,11 +360,15 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
    */
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
-    swerveDriveOdometry.resetPosition(
-      toAngle.inRotation2ds,
-      swerveModules.map { it.modulePosition }.toTypedArray(),
-      odometryPose.pose2d
-    )
+    if (gyroInputs.gyroConnected) {
+      swerveDriveOdometry.resetPosition(
+        toAngle.inRotation2ds,
+        swerveModules.map { it.modulePosition }.toTypedArray(),
+        odometryPose.pose2d
+      )
+    } else {
+      gyroYawOffset = toAngle - undriftedPose.rotation
+    }
   }
 
   fun zeroGyroPitch(toAngle: Angle = 0.0.degrees) {

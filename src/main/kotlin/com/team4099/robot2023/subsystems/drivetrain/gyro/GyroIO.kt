@@ -31,7 +31,7 @@ interface GyroIO {
     }
 
     override fun fromLog(table: LogTable?) {
-      table?.getDouble("gyroAngleDegrees", gyroYaw.inDegrees)?.let { gyroYaw = it.degrees }
+      table?.getDouble("gyroYawAngleDegrees", gyroYaw.inDegrees)?.let { gyroYaw = it.degrees }
       table?.getDouble("gyroPitchDegrees", gyroPitch.inDegrees)?.let { gyroPitch = it.degrees }
       table?.getDouble("gyroRollDegrees", gyroRoll.inDegrees)?.let { gyroRoll = it.degrees }
       table?.getDouble("gyroYawRateDegreesPerSecond", gyroYawRate.inDegreesPerSecond)?.let {
