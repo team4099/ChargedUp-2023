@@ -107,4 +107,16 @@ object GyroIOPigeon2 : GyroIO {
     inputs.gyroPitchRate = gyroPitchRate
     inputs.gyroRollRate = gyroRollRate
   }
+
+  override fun zeroGyroYaw(toAngle: Angle) {
+    gyroYawOffset = toAngle - gyroYaw
+  }
+
+  override fun zeroGyroPitch(toAngle: Angle) {
+    gyroPitchOffset = toAngle - gyroPitch
+  }
+
+  override fun zeroGyroRoll(toAngle: Angle) {
+    gyroRollOffset = toAngle - gyroRoll
+  }
 }

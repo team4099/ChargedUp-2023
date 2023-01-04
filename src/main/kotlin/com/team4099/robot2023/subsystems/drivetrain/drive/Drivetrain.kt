@@ -114,7 +114,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   var lastModulePositions = mutableListOf(0.0.meters, 0.0.meters, 0.0.meters, 0.0.meters)
 
   override fun periodic() {
-    gyroNotConnectedAlert.set(gyroInputs.gyroConnected)
+    gyroNotConnectedAlert.set(!gyroInputs.gyroConnected)
     gyroIO.updateInputs(gyroInputs)
 
     swerveModules.forEach { it.periodic() }
