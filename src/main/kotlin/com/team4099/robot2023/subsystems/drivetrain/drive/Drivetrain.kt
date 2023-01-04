@@ -33,7 +33,10 @@ import org.littletonrobotics.junction.Logger
 
 class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemBase() {
   val gyroNotConnectedAlert =
-    Alert("Gyro is not connected, zeroing Drivetrain Angle will not work.", Alert.AlertType.ERROR)
+    Alert(
+      "Gyro is not connected, field relative driving will be significantly worse.",
+      Alert.AlertType.ERROR
+    )
 
   val gyroInputs = GyroIO.GyroIOInputs()
   val swerveModules = swerveModuleIOs.getSwerveModules()
