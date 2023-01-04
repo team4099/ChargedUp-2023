@@ -60,8 +60,25 @@ object GyroIOPigeon2 : GyroIO {
   val gyroYawRate: AngularVelocity
     get() {
       if (isConnected) {
-        pigeon2.getRawGyro(xyzDps)
         return xyzDps[2].degrees.perSecond
+      } else {
+        return -1.337.degrees.perSecond
+      }
+    }
+
+  val gyroPitchRate: AngularVelocity
+    get() {
+      if (isConnected) {
+        return xyzDps[1].degrees.perSecond
+      } else {
+        return -1.337.degrees.perSecond
+      }
+    }
+
+  val gyroRollRate: AngularVelocity
+    get() {
+      if (isConnected) {
+        return xyzDps[0].degrees.perSecond
       } else {
         return -1.337.degrees.perSecond
       }
@@ -76,7 +93,7 @@ object GyroIOPigeon2 : GyroIO {
   }
 
   override fun updateInputs(inputs: GyroIO.GyroIOInputs) {
-    pigeon2.getRawGyro(xyzDps)
+    pigeon2.getRawGyro(xyzDps) // calling this here so it updated xyzDps which is called upon later
 
     inputs.gyroConnected = isConnected
 
@@ -84,6 +101,8 @@ object GyroIOPigeon2 : GyroIO {
     inputs.gyroPitch = gyroPitch
     inputs.gyroRoll = gyroRoll
 
-    inputs.gyroVelocity = gyroYawRate
+    inputs.gyroYawRate = gyroYawRate
+    inputs.gyroPitchRate = gyroPitchRate
+    inputs.gyroRollRate = gyroRollRate
   }
 }
