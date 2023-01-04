@@ -89,7 +89,9 @@ object GyroIOPigeon2 : GyroIO {
     pigeon2Configuration.MountPosePitch = GyroConstants.mountPitch.inRadians
     pigeon2Configuration.MountPoseYaw = GyroConstants.mountYaw.inRadians
     pigeon2Configuration.MountPoseRoll = GyroConstants.mountRoll.inRadians
+
     // TODO look into more pigeon configuration stuff
+    pigeon2.configAllSettings(pigeon2Configuration)
   }
 
   override fun updateInputs(inputs: GyroIO.GyroIOInputs) {
