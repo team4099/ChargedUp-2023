@@ -23,6 +23,7 @@ import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
+import com.team4099.robot2023.util.Alert
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
@@ -31,6 +32,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 
 class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemBase() {
+  val gyroNotConnectedAlert =
+    Alert("Gyro is not connected, zeroing Drivetrain Angle will not work.", Alert.AlertType.ERROR)
+
   val gyroInputs = GyroIO.GyroIOInputs()
   val swerveModules = swerveModuleIOs.getSwerveModules()
 
@@ -110,7 +114,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   var lastModulePositions = mutableListOf(0.0.meters, 0.0.meters, 0.0.meters, 0.0.meters)
 
   override fun periodic() {
+    gyroNotConnectedAlert.set(gyroInputs.gyroConnected)
     gyroIO.updateInputs(gyroInputs)
+
     swerveModules.forEach { it.periodic() }
 
     // updating odometry every loop cycle

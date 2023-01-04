@@ -53,7 +53,6 @@ object Robot : LoggedRobot() {
         if (Files.exists(Paths.get(Constants.Universal.LOG_FOLDER))) {
           // log to USB stick and network for real time data viewing on AdvantageScope
           logger.addDataReceiver(WPILOGWriter(Constants.Universal.LOG_FOLDER))
-        } else {
           logFolderAlert.set(true)
         }
 
