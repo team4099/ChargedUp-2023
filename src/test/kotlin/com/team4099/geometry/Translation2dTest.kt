@@ -1,6 +1,5 @@
 package com.team4099.geometry
 
-import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Translation2d
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
@@ -39,7 +38,7 @@ internal class Translation2dTest {
   @Test
   fun testRotateBy() {
     val another = Translation2d(3.0.meters, 0.0.meters)
-    val rotated = another.rotateBy(Rotation2d(90.0.degrees))
+    val rotated = another.rotateBy(90.0.degrees)
     assertAll(
       { assertEquals(0.0, rotated.x.inMeters, kEpsilon) },
       { assertEquals(3.0, rotated.y.inMeters, kEpsilon) }

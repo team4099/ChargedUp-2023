@@ -7,8 +7,8 @@ import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.numbers.N3
 
-data class Rotation3d(val quaternion: Quaternion) {
-  val m_q: Quaternion = quaternion.normalize()
+class Rotation3d(quaternion: Quaternion) {
+  val quaternion: Quaternion = quaternion.normalize()
 
   constructor(rotation3dWPILIB: Rotation3dWPILIB) : this(Quaternion(rotation3dWPILIB.quaternion))
 
@@ -67,9 +67,9 @@ data class Rotation3d(val quaternion: Quaternion) {
   constructor() : this(Quaternion())
 
   fun rotateBy(other: Rotation3d): Rotation3d {
-    return Rotation3d(other.m_q.times(m_q))
+    return Rotation3d(other.quaternion.times(quaternion))
   }
-  val rotation3d: Rotation3dWPILIB = Rotation3dWPILIB(m_q.quaternion)
+  val rotation3d: Rotation3dWPILIB = Rotation3dWPILIB(this.quaternion.quaternion)
 
   val x: Angle = rotation3d.x.radians
 
@@ -79,8 +79,8 @@ data class Rotation3d(val quaternion: Quaternion) {
 
   val theta: Angle = rotation3d.angle.radians
 
-  fun toRotation2d(): Rotation2d {
-    return Rotation2d(z)
+  fun toAngle(): Angle {
+    return z
   }
 
   operator fun plus(other: Rotation3d): Rotation3d {
@@ -91,8 +91,8 @@ data class Rotation3d(val quaternion: Quaternion) {
     return rotateBy(other.unaryMinus())
   }
 
-  fun unaryMinus(): Rotation3d {
-    return Rotation3d(m_q.inverse())
+  operator fun unaryMinus(): Rotation3d {
+    return Rotation3d(quaternion.inverse())
   }
 
   operator fun times(scalar: Double): Rotation3d {
@@ -107,7 +107,7 @@ data class Rotation3d(val quaternion: Quaternion) {
     if (this === other) return true
     if (other !is Rotation3d) return false
 
-    if (m_q != other.m_q) return false
+    if (quaternion != other.quaternion) return false
 
     return true
   }

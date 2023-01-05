@@ -5,10 +5,13 @@ import com.ctre.phoenix.motorcontrol.DemandType
 import com.ctre.phoenix.motorcontrol.NeutralMode
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
+import com.team4099.lib.controller.SimpleMotorFeedforward
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
+import com.team4099.lib.units.Velocity
+import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.inAmperes
@@ -16,14 +19,15 @@ import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.ctreAngularMechanismSensor
 import com.team4099.lib.units.ctreLinearMechanismSensor
 import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.DerivativeGain
+import com.team4099.lib.units.derived.IntegralGain
+import com.team4099.lib.units.derived.ProportionalGain
+import com.team4099.lib.units.derived.Radian
+import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inVolts
 import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.derived.volts
-import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
-import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.wpilibj.AnalogPotentiometer
 
 class SwerveModuleIOReal(
@@ -37,19 +41,28 @@ class SwerveModuleIOReal(
     ctreAngularMechanismSensor(
       steeringFalcon,
       DrivetrainConstants.STEERING_SENSOR_CPR,
-      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO
+      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO,
+      DrivetrainConstants.STEERING_COMPENSATION_VOLTAGE
     )
   private val driveSensor =
     ctreLinearMechanismSensor(
       driveFalcon,
       DrivetrainConstants.DRIVE_SENSOR_CPR,
       DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO,
-      DrivetrainConstants.WHEEL_DIAMETER
+      DrivetrainConstants.WHEEL_DIAMETER,
+      DrivetrainConstants.DRIVE_COMPENSATION_VOLTAGE
     )
 
   // motor params
   private val steeringConfiguration: TalonFXConfiguration = TalonFXConfiguration()
   private val driveConfiguration: TalonFXConfiguration = TalonFXConfiguration()
+
+  private val driveFeedforward =
+    SimpleMotorFeedforward(
+      DrivetrainConstants.PID.DRIVE_KS,
+      DrivetrainConstants.PID.DRIVE_KV,
+      DrivetrainConstants.PID.DRIVE_KA
+    )
 
   init {
     driveFalcon.configFactoryDefault()
@@ -58,10 +71,14 @@ class SwerveModuleIOReal(
     driveFalcon.clearStickyFaults()
     steeringFalcon.clearStickyFaults()
 
-    steeringConfiguration.slot0.kP = DrivetrainConstants.PID.STEERING_KP
-    steeringConfiguration.slot0.kI = DrivetrainConstants.PID.STEERING_KI
-    steeringConfiguration.slot0.kD = DrivetrainConstants.PID.STEERING_KD
-    steeringConfiguration.slot0.kF = DrivetrainConstants.PID.STEERING_KFF
+    steeringConfiguration.slot0.kP =
+      steeringSensor.proportionalPositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KP)
+    steeringConfiguration.slot0.kI =
+      steeringSensor.integralPositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KI)
+    steeringConfiguration.slot0.kD =
+      steeringSensor.derivativePositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
+    steeringConfiguration.slot0.kF =
+      steeringSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.STEERING_KFF)
     steeringConfiguration.motionCruiseVelocity =
       steeringSensor.velocityToRawUnits(DrivetrainConstants.STEERING_VEL_MAX)
     steeringConfiguration.motionAcceleration =
@@ -79,9 +96,12 @@ class SwerveModuleIOReal(
       0, steeringSensor.positionToRawUnits(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR)
     )
 
-    driveConfiguration.slot0.kP = DrivetrainConstants.PID.DRIVE_KP
-    driveConfiguration.slot0.kI = DrivetrainConstants.PID.DRIVE_KI
-    driveConfiguration.slot0.kD = DrivetrainConstants.PID.DRIVE_KD
+    driveConfiguration.slot0.kP =
+      driveSensor.proportionalVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KP)
+    driveConfiguration.slot0.kI =
+      driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
+    driveConfiguration.slot0.kD =
+      driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
     driveConfiguration.slot0.kF = DrivetrainConstants.PID.DRIVE_KFF
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
@@ -136,16 +156,7 @@ class SwerveModuleIOReal(
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
-    val driveFeedforward =
-      SimpleMotorFeedforward(
-        DrivetrainConstants.PID.DRIVE_KS.inVolts,
-        DrivetrainConstants.PID.DRIVE_KV.value,
-        DrivetrainConstants.PID.DRIVE_KA.value
-      )
-    val feedforward =
-      driveFeedforward.calculate(speed.inMetersPerSecond, acceleration.inMetersPerSecondPerSecond)
-        .volts
-
+    val feedforward = driveFeedforward.calculate(speed, acceleration)
     driveFalcon.set(
       ControlMode.Velocity,
       driveSensor.velocityToRawUnits(speed),
@@ -159,10 +170,10 @@ class SwerveModuleIOReal(
    * Open Loop Control using PercentOutput control on a Falcon
    *
    * @param steering: Desired angle
-   * @param power: Desired power that drive motors will be set to: [-1,1]
+   * @param speed: Desired speed
    */
-  override fun setOpenLoop(steering: Angle, power: Double) {
-    driveFalcon.set(ControlMode.PercentOutput, power)
+  override fun setOpenLoop(steering: Angle, speed: LinearVelocity) {
+    driveFalcon.set(ControlMode.PercentOutput, speed / DrivetrainConstants.DRIVE_SETPOINT_MAX)
     setSteeringSetpoint(steering)
   }
 
@@ -186,16 +197,24 @@ class SwerveModuleIOReal(
     driveFalcon.selectedSensorPosition = 0.0
   }
 
-  override fun configureDrivePID(kP: Double, kI: Double, kD: Double) {
-    driveFalcon.config_kP(0, kP)
-    driveFalcon.config_kI(0, kI)
-    driveFalcon.config_kD(0, kD)
+  override fun configureDrivePID(
+    kP: ProportionalGain<Velocity<Meter>, Volt>,
+    kI: IntegralGain<Velocity<Meter>, Volt>,
+    kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {
+    driveFalcon.config_kP(0, driveSensor.proportionalVelocityGainToRawUnits(kP))
+    driveFalcon.config_kI(0, driveSensor.integralVelocityGainToRawUnits(kI))
+    driveFalcon.config_kD(0, driveSensor.derivativeVelocityGainToRawUnits(kD))
   }
 
-  override fun configureSteeringPID(kP: Double, kI: Double, kD: Double) {
-    steeringFalcon.config_kP(0, kP)
-    steeringFalcon.config_kI(0, kI)
-    steeringFalcon.config_kD(0, kD)
+  override fun configureSteeringPID(
+    kP: ProportionalGain<Radian, Volt>,
+    kI: IntegralGain<Radian, Volt>,
+    kD: DerivativeGain<Radian, Volt>
+  ) {
+    steeringFalcon.config_kP(0, steeringSensor.proportionalPositionGainToRawUnits(kP))
+    steeringFalcon.config_kI(0, steeringSensor.integralPositionGainToRawUnits(kI))
+    steeringFalcon.config_kD(0, steeringSensor.derivativePositionGainToRawUnits(kD))
   }
 
   override fun configureSteeringMotionMagic(

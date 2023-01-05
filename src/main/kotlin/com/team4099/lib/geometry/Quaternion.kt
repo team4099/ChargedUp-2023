@@ -10,14 +10,12 @@ import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.numbers.N3
 
-data class Quaternion(val m_r: Angle, val m_v: Vector<N3>) {
-  val w: Angle = m_r
+data class Quaternion(val w: Angle, val v: Vector<N3>) {
+  val x: Length = v[0, 0].meters
 
-  val x: Length = m_v[0, 0].meters
+  val y: Length = v[1, 0].meters
 
-  val y: Length = m_v[1, 0].meters
-
-  val z: Length = m_v[2, 0].meters
+  val z: Length = v[2, 0].meters
 
   val quaternion: QuaternionWPILIB =
     QuaternionWPILIB(w.inRadians, x.inMeters, y.inMeters, z.inMeters)
@@ -28,7 +26,9 @@ data class Quaternion(val m_r: Angle, val m_v: Vector<N3>) {
 
   constructor(w: Angle, x: Double, y: Double, z: Double) : this(w, VecBuilder.fill(x, y, z))
 
-  constructor(m_q: QuaternionWPILIB) : this(m_q.w.radians, VecBuilder.fill(m_q.x, m_q.y, m_q.z))
+  constructor(
+    quaternion: QuaternionWPILIB
+  ) : this(quaternion.w.radians, VecBuilder.fill(quaternion.x, quaternion.y, quaternion.z))
 
   operator fun times(other: Quaternion): Quaternion {
     return Quaternion(quaternion * other.quaternion)
@@ -38,14 +38,14 @@ data class Quaternion(val m_r: Angle, val m_v: Vector<N3>) {
     if (this === other) return true
     if (other !is Quaternion) return false
 
-    if ((m_r * other.m_r.inRadians + m_v.dot(other.m_v).radians).absoluteValue.value < 1.0 - 1E-9)
+    if ((w * other.w.inRadians + v.dot(other.v).radians).absoluteValue.value < 1.0 - 1E-9)
       return false
 
     return true
   }
 
   fun inverse(): Quaternion {
-    return Quaternion(m_r, -m_v[0, 0], -m_v[1, 0], -m_v[2, 0])
+    return Quaternion(w, -v[0, 0], -v[1, 0], -v[2, 0])
   }
 
   fun normalize(): Quaternion {

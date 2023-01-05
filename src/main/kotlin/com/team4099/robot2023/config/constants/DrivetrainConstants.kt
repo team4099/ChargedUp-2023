@@ -7,13 +7,21 @@ import com.team4099.lib.units.base.inches
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
 import com.team4099.lib.units.derived.degrees
+import com.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
+import com.team4099.lib.units.derived.perDegree
+import com.team4099.lib.units.derived.perDegreePerSecond
+import com.team4099.lib.units.derived.perDegreeSeconds
+import com.team4099.lib.units.derived.perRadianPerSecond
 import com.team4099.lib.units.derived.radians
+import com.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import com.team4099.lib.units.derived.volts
 import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.perSecond
 import kotlin.math.sqrt
 
 object DrivetrainConstants {
+  const val MINIMIZE_SKEW = true
+
   const val WHEEL_COUNT = 4
   val WHEEL_DIAMETER = 3.785.inches
   val DRIVETRAIN_LENGTH = 22.750.inches
@@ -62,27 +70,32 @@ object DrivetrainConstants {
   val BACK_RIGHT_MODULE_ZERO = 4.608515.radians
   val BACK_LEFT_MODULE_ZERO = 5.204072.radians
 
-  object PID {
-    const val AUTO_POS_KP = 2.0
-    const val AUTO_POS_KI = 0.0
-    const val AUTO_POS_KD = 0.75
+  val STEERING_COMPENSATION_VOLTAGE = 10.volts
+  val DRIVE_COMPENSATION_VOLTAGE = 12.volts
 
-    const val AUTO_THETA_PID_KP = 7.6
-    const val AUTO_THETA_PID_KI = 0.0
-    const val AUTO_THETA_PID_KD = 0.0
+  object PID {
+    val AUTO_POS_KP = 2.0.meters.perSecond / 1.0.meters
+    val AUTO_POS_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+    val AUTO_POS_KD =
+      (0.75.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+
+    val AUTO_THETA_PID_KP = 7.6.degrees.perSecond / 1.degrees
+    val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
+    val AUTO_THETA_PID_KD =
+      (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
 
-    const val STEERING_KP = 0.125
-    const val STEERING_KI = 0.0
-    const val STEERING_KD = 0.0
+    val STEERING_KP = 8.043569323.volts / 45.degrees
+    val STEERING_KI = 0.0.volts.perDegreeSeconds
+    val STEERING_KD = 0.0.volts.perDegreePerSecond
 
-    const val STEERING_KFF = 0.0 // 0.0375
+    val STEERING_KFF = 0.0.volts.perRadianPerSecond // 0.0375
 
-    const val DRIVE_KP = 0.050046
-    const val DRIVE_KI = 0.0
-    const val DRIVE_KD = 0.0
+    val DRIVE_KP = 2.6829.volts / 1.meters.perSecond
+    val DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
+    val DRIVE_KD = 0.0.volts / 1.meters.perSecond.perSecond
     const val DRIVE_KFF = 0.0
 
     val DRIVE_KS = 0.23677.volts
@@ -92,12 +105,12 @@ object DrivetrainConstants {
     val SIM_DRIVE_KS = 0.116970.volts
     val SIM_DRIVE_KV = 0.133240.volts / 1.0.meters.perSecond
 
-    val SIM_DRIVE_KP = 0.9
-    val SIM_DRIVE_KI = 0.0
-    val SIM_DRIVE_KD = 0.0
+    val SIM_DRIVE_KP = 0.9.volts / 1.meters.perSecond
+    val SIM_DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
+    val SIM_DRIVE_KD = 0.0.volts / 1.meters.perSecond.perSecond
 
-    val SIM_STEERING_KP = 23.0
-    val SIM_STEERING_KI = 0.0
-    val SIM_STEERING_KD = 0.0
+    val SIM_STEERING_KP = 0.4.volts.perDegree
+    val SIM_STEERING_KI = 0.0.volts.perDegreeSeconds
+    val SIM_STEERING_KD = 0.0.volts.perDegreePerSecond
   }
 }

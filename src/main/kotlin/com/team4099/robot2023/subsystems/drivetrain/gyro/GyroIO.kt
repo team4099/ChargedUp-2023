@@ -14,7 +14,9 @@ interface GyroIO {
     var gyroYaw = 0.0.radians
     var gyroPitch = 0.0.radians
     var gyroRoll = 0.0.radians
-    var gyroVelocity = 0.0.radians.perSecond
+    var gyroYawRate = 0.0.radians.perSecond
+    var gyroPitchRate = 0.0.radians.perSecond
+    var gyroRollRate = 0.0.radians.perSecond
 
     var gyroConnected = false
 
@@ -22,16 +24,24 @@ interface GyroIO {
       table?.put("gyroYawAngleDegrees", gyroYaw.inDegrees)
       table?.put("gyroPitchAngleDegrees", gyroPitch.inDegrees)
       table?.put("gyroRollAngleDegrees", gyroRoll.inDegrees)
-      table?.put("gyroVelocityDegreesPerSecond", gyroVelocity.inDegreesPerSecond)
+      table?.put("gyroYawRateDegreesPerSecond", gyroYawRate.inDegreesPerSecond)
+      table?.put("gyroPitchRateDegreesPerSecond", gyroPitchRate.inDegreesPerSecond)
+      table?.put("gyroRollRateDegreesPerSecond", gyroRollRate.inDegreesPerSecond)
       table?.put("gyroConnected", gyroConnected)
     }
 
     override fun fromLog(table: LogTable?) {
-      table?.getDouble("gyroAngleDegrees", gyroYaw.inDegrees)?.let { gyroYaw = it.degrees }
+      table?.getDouble("gyroYawAngleDegrees", gyroYaw.inDegrees)?.let { gyroYaw = it.degrees }
       table?.getDouble("gyroPitchDegrees", gyroPitch.inDegrees)?.let { gyroPitch = it.degrees }
       table?.getDouble("gyroRollDegrees", gyroRoll.inDegrees)?.let { gyroRoll = it.degrees }
-      table?.getDouble("gyroVelocityDegreesPerSecond", gyroVelocity.inDegreesPerSecond)?.let {
-        gyroVelocity = it.degrees.perSecond
+      table?.getDouble("gyroYawRateDegreesPerSecond", gyroYawRate.inDegreesPerSecond)?.let {
+        gyroYawRate = it.degrees.perSecond
+      }
+      table?.getDouble("gyroPitchRateDegreesPerSecond", gyroPitchRate.inDegreesPerSecond)?.let {
+        gyroPitchRate = it.degrees.perSecond
+      }
+      table?.getDouble("gyroRollRateDegreesPerSecond", gyroRollRate.inDegreesPerSecond)?.let {
+        gyroRollRate = it.degrees.perSecond
       }
       table?.getBoolean("gyroConnected", gyroConnected)?.let { gyroConnected = it }
     }

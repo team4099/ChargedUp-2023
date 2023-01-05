@@ -1,30 +1,42 @@
 package com.team4099.robot2023.commands.drivetrain
 
+import com.team4099.lib.controller.PIDController
+import com.team4099.lib.controller.ProfiledPIDController
+import com.team4099.lib.controller.TrapezoidProfile
 import com.team4099.lib.hal.Clock
-import com.team4099.lib.logging.TunableNumber
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.pathfollow.Trajectory
-import com.team4099.lib.units.base.inMeters
+import com.team4099.lib.units.Velocity
+import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.base.seconds
+import com.team4099.lib.units.derived.Radian
 import com.team4099.lib.units.derived.cos
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inDegrees
+import com.team4099.lib.units.derived.inDegreesPerSecondPerDegree
+import com.team4099.lib.units.derived.inDegreesPerSecondPerDegreeSeconds
+import com.team4099.lib.units.derived.inDegreesPerSecondPerDegreesPerSecond
+import com.team4099.lib.units.derived.inMetersPerSecondPerMeter
+import com.team4099.lib.units.derived.inMetersPerSecondPerMeterSecond
+import com.team4099.lib.units.derived.inMetersPerSecondPerMetersPerSecond
 import com.team4099.lib.units.derived.inRadians
+import com.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
+import com.team4099.lib.units.derived.perDegree
+import com.team4099.lib.units.derived.perDegreePerSecond
+import com.team4099.lib.units.derived.perDegreeSeconds
+import com.team4099.lib.units.derived.perMeter
+import com.team4099.lib.units.derived.perMeterSeconds
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.sin
 import com.team4099.lib.units.inDegreesPerSecond
-import com.team4099.lib.units.inDegreesPerSecondPerSecond
 import com.team4099.lib.units.inMetersPerSecond
 import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.lib.units.inRadiansPerSecond
-import com.team4099.lib.units.inRadiansPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.controller.ProfiledPIDController
-import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import kotlin.math.PI
@@ -34,49 +46,78 @@ class DrivePathCommand(
   private val trajectory: Trajectory,
   val resetPose: Boolean = false
 ) : CommandBase() {
-  private val xPID: PIDController
-  private val yPID: PIDController
+  private val xPID: PIDController<Meter, Velocity<Meter>>
+  private val yPID: PIDController<Meter, Velocity<Meter>>
 
-  private val thetaPID: ProfiledPIDController
+  private val thetaPID: ProfiledPIDController<Radian, Velocity<Radian>>
 
   private var trajCurTime = 0.0.seconds
   private var trajStartTime = 0.0.seconds
 
-  val thetakP = TunableNumber("Pathfollow/thetakP", DrivetrainConstants.PID.AUTO_THETA_PID_KP)
-  val thetakI = TunableNumber("Pathfollow/thetakI", DrivetrainConstants.PID.AUTO_THETA_PID_KI)
-  val thetakD = TunableNumber("Pathfollow/thetakD", DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+  val thetakP =
+    LoggedTunableValue(
+      "Pathfollow/thetakP",
+      DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+      Pair({ it.inDegreesPerSecondPerDegree }, { it.degrees.perSecond.perDegree })
+    )
+  val thetakI =
+    LoggedTunableValue(
+      "Pathfollow/thetakI",
+      DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+      Pair(
+        { it.inDegreesPerSecondPerDegreeSeconds }, { it.degrees.perSecond.perDegreeSeconds }
+      )
+    )
+  val thetakD =
+    LoggedTunableValue(
+      "Pathfollow/thetakD",
+      DrivetrainConstants.PID.AUTO_THETA_PID_KD,
+      Pair(
+        { it.inDegreesPerSecondPerDegreesPerSecond },
+        { it.degrees.perSecond.perDegreePerSecond }
+      )
+    )
 
   val thetaMaxVel =
-    TunableNumber(
-      "Pathfollow/thetaMaxVel", DrivetrainConstants.PID.MAX_AUTO_ANGULAR_VEL.inDegreesPerSecond
-    )
+    LoggedTunableValue("Pathfollow/thetaMaxVel", DrivetrainConstants.PID.MAX_AUTO_ANGULAR_VEL)
   val thetaMaxAccel =
-    TunableNumber(
-      "Pathfollow/thetaMaxAccel",
-      DrivetrainConstants.PID.MAX_AUTO_ANGULAR_ACCEL.inDegreesPerSecondPerSecond
-    )
+    LoggedTunableValue("Pathfollow/thetaMaxAccel", DrivetrainConstants.PID.MAX_AUTO_ANGULAR_ACCEL)
 
-  val poskP = TunableNumber("Pathfollow/poskP", DrivetrainConstants.PID.AUTO_POS_KP)
-  val poskI = TunableNumber("Pathfollow/poskI", DrivetrainConstants.PID.AUTO_POS_KI)
-  val poskD = TunableNumber("Pathfollow/poskD", DrivetrainConstants.PID.AUTO_POS_KD)
+  val poskP =
+    LoggedTunableValue(
+      "Pathfollow/poskP",
+      DrivetrainConstants.PID.AUTO_POS_KP,
+      Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
+    )
+  val poskI =
+    LoggedTunableValue(
+      "Pathfollow/poskI",
+      DrivetrainConstants.PID.AUTO_POS_KI,
+      Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+    )
+  val poskD =
+    LoggedTunableValue(
+      "Pathfollow/poskD",
+      DrivetrainConstants.PID.AUTO_POS_KD,
+      Pair(
+        { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
+      )
+    )
 
   init {
     addRequirements(drivetrain)
 
-    xPID = PIDController(poskP.get(), poskD.get(), poskI.get())
-    yPID = PIDController(poskP.get(), poskD.get(), poskI.get())
+    xPID = PIDController(poskP.get(), poskI.get(), poskD.get())
+    yPID = PIDController(poskP.get(), poskI.get(), poskD.get())
     thetaPID =
       ProfiledPIDController(
         thetakP.get(),
         thetakI.get(),
         thetakD.get(),
-        TrapezoidProfile.Constraints(
-          thetaMaxVel.get().degrees.perSecond.inRadiansPerSecond,
-          thetaMaxAccel.get().degrees.perSecond.perSecond.inRadiansPerSecondPerSecond
-        )
+        TrapezoidProfile.Constraints(thetaMaxVel.get(), thetaMaxAccel.get())
       )
 
-    thetaPID.enableContinuousInput(-PI, PI)
+    thetaPID.enableContinuousInput(-PI.radians, PI.radians)
   }
 
   override fun initialize() {
@@ -84,7 +125,7 @@ class DrivePathCommand(
       drivetrain.odometryPose = trajectory.startingPose
     }
     trajStartTime = Clock.fpgaTime + trajectory.startTime
-    thetaPID.reset(drivetrain.odometryPose.theta.inRadians)
+    thetaPID.reset(drivetrain.odometryPose.rotation)
     xPID.reset()
     yPID.reset()
   }
@@ -96,24 +137,13 @@ class DrivePathCommand(
     val yFF = desiredState.linearVelocity * desiredState.curvature.sin
     val thetaFeedback =
       thetaPID.calculate(
-        drivetrain.odometryPose.theta.inRadians,
-        TrapezoidProfile.State(
-          desiredState.pose.theta.inRadians,
-          desiredState.angularVelocity.inRadiansPerSecond
-        )
+        drivetrain.odometryPose.rotation,
+        TrapezoidProfile.State(desiredState.pose.rotation, desiredState.angularVelocity)
       )
-        .radians
-        .perSecond
 
     // Calculate feedback velocities (based on position error).
-    val xFeedback =
-      xPID.calculate(drivetrain.odometryPose.x.inMeters, desiredState.pose.x.inMeters)
-        .meters
-        .perSecond
-    val yFeedback =
-      yPID.calculate(drivetrain.odometryPose.y.inMeters, desiredState.pose.y.inMeters)
-        .meters
-        .perSecond
+    val xFeedback = xPID.calculate(drivetrain.odometryPose.x, desiredState.pose.x)
+    val yFeedback = yPID.calculate(drivetrain.odometryPose.y, desiredState.pose.y)
 
     val xAccel = desiredState.linearAcceleration * desiredState.curvature.cos
     val yAccel = desiredState.linearAcceleration * desiredState.curvature.sin
@@ -139,9 +169,11 @@ class DrivePathCommand(
       .recordOutput("Pathfollow/yFeedbackMetersPerSec", yFeedback.inMetersPerSecond)
 
     Logger.getInstance()
-      .recordOutput("Pathfollow/thetaPIDPositionErrorRadians", thetaPID.positionError)
+      .recordOutput("Pathfollow/thetaPIDPositionErrorRadians", thetaPID.error.inRadians)
     Logger.getInstance()
-      .recordOutput("Pathfollow/thetaPIDVelocityErrorRadians", thetaPID.velocityError)
+      .recordOutput(
+        "Pathfollow/thetaPIDVelocityErrorRadians", thetaPID.errorDerivative.inRadiansPerSecond
+      )
 
     Logger.getInstance()
       .recordOutput(
@@ -155,7 +187,7 @@ class DrivePathCommand(
     Logger.getInstance().recordOutput("Pathfollow/Start Time", trajStartTime.inSeconds)
     Logger.getInstance().recordOutput("Pathfollow/Current Time", trajCurTime.inSeconds)
     Logger.getInstance()
-      .recordOutput("Pathfollow/Desired Angle in Degrees", desiredState.pose.theta.inDegrees)
+      .recordOutput("Pathfollow/Desired Angle in Degrees", desiredState.pose.rotation.inDegrees)
     Logger.getInstance()
       .recordOutput(
         "Pathfollow/Desired Angular Velocity in Degrees",
@@ -164,30 +196,25 @@ class DrivePathCommand(
 
     Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", true)
 
-    if (thetakP.hasChanged()) thetaPID.p = thetakP.get()
-    if (thetakI.hasChanged()) thetaPID.i = thetakI.get()
-    if (thetakD.hasChanged()) thetaPID.d = thetakD.get()
+    if (thetakP.hasChanged()) thetaPID.proportionalGain = thetakP.get()
+    if (thetakI.hasChanged()) thetaPID.integralGain = thetakI.get()
+    if (thetakD.hasChanged()) thetaPID.derivativeGain = thetakD.get()
 
     if (poskP.hasChanged()) {
-      xPID.p = poskP.get()
-      yPID.p = poskP.get()
+      xPID.proportionalGain = poskP.get()
+      yPID.proportionalGain = poskP.get()
     }
     if (poskI.hasChanged()) {
-      xPID.i = poskI.get()
-      yPID.i = poskI.get()
+      xPID.integralGain = poskI.get()
+      yPID.integralGain = poskI.get()
     }
     if (poskD.hasChanged()) {
-      xPID.d = poskD.get()
-      yPID.d = poskD.get()
+      xPID.derivativeGain = poskD.get()
+      yPID.derivativeGain = poskD.get()
     }
 
     if (thetaMaxAccel.hasChanged() || thetaMaxVel.hasChanged()) {
-      thetaPID.setConstraints(
-        TrapezoidProfile.Constraints(
-          thetaMaxVel.get().degrees.perSecond.inRadiansPerSecond,
-          thetaMaxAccel.get().degrees.perSecond.perSecond.inRadiansPerSecondPerSecond
-        )
-      )
+      thetaPID.setConstraints(TrapezoidProfile.Constraints(thetaMaxVel.get(), thetaMaxAccel.get()))
     }
   }
 

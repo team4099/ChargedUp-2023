@@ -4,6 +4,8 @@ import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
+import com.team4099.lib.units.Velocity
+import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.inAmperes
@@ -11,6 +13,11 @@ import com.team4099.lib.units.base.inCelsius
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.DerivativeGain
+import com.team4099.lib.units.derived.IntegralGain
+import com.team4099.lib.units.derived.ProportionalGain
+import com.team4099.lib.units.derived.Radian
+import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inVolts
@@ -110,7 +117,7 @@ interface SwerveModuleIO {
 
   fun setSteeringSetpoint(angle: Angle) {}
   fun setClosedLoop(steering: Angle, speed: LinearVelocity, acceleration: LinearAcceleration) {}
-  fun setOpenLoop(steering: Angle, speed: Double) {}
+  fun setOpenLoop(steering: Angle, speed: LinearVelocity) {}
 
   fun resetModuleZero() {}
   fun zeroSteering() {}
@@ -118,7 +125,15 @@ interface SwerveModuleIO {
 
   fun setBrakeMode(brake: Boolean) {}
 
-  fun configureDrivePID(kP: Double, kI: Double, kD: Double) {}
-  fun configureSteeringPID(kP: Double, kI: Double, kD: Double) {}
+  fun configureDrivePID(
+    kP: ProportionalGain<Velocity<Meter>, Volt>,
+    kI: IntegralGain<Velocity<Meter>, Volt>,
+    kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {}
+  fun configureSteeringPID(
+    kP: ProportionalGain<Radian, Volt>,
+    kI: IntegralGain<Radian, Volt>,
+    kD: DerivativeGain<Radian, Volt>
+  ) {}
   fun configureSteeringMotionMagic(maxVel: AngularVelocity, maxAccel: AngularAcceleration) {}
 }
