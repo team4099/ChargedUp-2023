@@ -110,6 +110,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
       if (RobotBase.isReal()) {
         zeroGyroYaw(odometryPose.rotation)
+      } else {
+        undriftedPose = odometryPose
       }
     }
 
@@ -191,7 +193,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       if (Constants.Tuning.SIMULATE_DRIFT) {
         undriftedPose = undriftedPose.exp(Twist2d(positionDeltaTwist))
 
-        odometryPose =
+        swerveDriveOdometry.resetPosition(
+          gyroInputs.gyroYaw.inRotation2ds,
+          swerveModules.map { it.modulePosition }.toTypedArray(),
           odometryPose.exp(
             Twist2d(
               positionDeltaTwist.dx.meters * 1.05,
@@ -199,6 +203,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
               positionDeltaTwist.dtheta.radians
             )
           )
+            .pose2d
+        )
 
         drift = undriftedPose.minus(odometryPose)
 
