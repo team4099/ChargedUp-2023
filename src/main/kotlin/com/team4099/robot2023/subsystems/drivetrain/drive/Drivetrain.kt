@@ -23,16 +23,25 @@ import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
+import com.team4099.robot2023.util.Alert
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 
 class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemBase() {
+  val gyroNotConnectedAlert =
+    Alert(
+      "Gyro is not connected, field relative driving will be significantly worse.",
+      Alert.AlertType.ERROR
+    )
+
   val gyroInputs = GyroIO.GyroIOInputs()
   val swerveModules = swerveModuleIOs.getSwerveModules()
+  var gyroYawOffset = 0.0.radians
 
   init {
     // Wheel speeds
@@ -82,7 +91,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     SwerveDriveOdometry(
       swerveDriveKinematics,
       gyroInputs.gyroYaw.inRotation2ds,
-      swerveModules.map { it.modulePosition }.toTypedArray()
+      swerveModules.map { it.modulePosition }.toTypedArray(),
     )
 
   var setPointStates =
@@ -98,7 +107,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         swerveModules.map { it.modulePosition }.toTypedArray(),
         value.pose2d
       )
-      zeroGyroYaw(odometryPose.rotation)
+
+      if (RobotBase.isReal()) {
+        zeroGyroYaw(odometryPose.rotation)
+      } else {
+        undriftedPose = odometryPose
+      }
     }
 
   var undriftedPose: Pose2d = Pose2d()
@@ -110,7 +124,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   var lastModulePositions = mutableListOf(0.0.meters, 0.0.meters, 0.0.meters, 0.0.meters)
 
   override fun periodic() {
+    gyroNotConnectedAlert.set(!gyroInputs.gyroConnected)
     gyroIO.updateInputs(gyroInputs)
+
     swerveModules.forEach { it.periodic() }
 
     // updating odometry every loop cycle
@@ -177,7 +193,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       if (Constants.Tuning.SIMULATE_DRIFT) {
         undriftedPose = undriftedPose.exp(Twist2d(positionDeltaTwist))
 
-        odometryPose =
+        swerveDriveOdometry.resetPosition(
+          gyroInputs.gyroYaw.inRotation2ds,
+          swerveModules.map { it.modulePosition }.toTypedArray(),
           odometryPose.exp(
             Twist2d(
               positionDeltaTwist.dx.meters * 1.05,
@@ -185,6 +203,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
               positionDeltaTwist.dtheta.radians
             )
           )
+            .pose2d
+        )
 
         drift = undriftedPose.minus(odometryPose)
 
@@ -193,7 +213,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         odometryPose = odometryPose.exp(Twist2d(positionDeltaTwist))
       }
 
-      gyroInputs.gyroYaw = odometryPose.rotation
+      gyroInputs.gyroYaw = odometryPose.rotation + gyroYawOffset
     } else {
       odometryPose =
         Pose2d(
@@ -346,11 +366,15 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
    */
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
-    swerveDriveOdometry.resetPosition(
-      toAngle.inRotation2ds,
-      swerveModules.map { it.modulePosition }.toTypedArray(),
-      odometryPose.pose2d
-    )
+    if (gyroInputs.gyroConnected) {
+      swerveDriveOdometry.resetPosition(
+        toAngle.inRotation2ds,
+        swerveModules.map { it.modulePosition }.toTypedArray(),
+        odometryPose.pose2d
+      )
+    } else {
+      gyroYawOffset = toAngle - undriftedPose.rotation
+    }
   }
 
   fun zeroGyroPitch(toAngle: Angle = 0.0.degrees) {

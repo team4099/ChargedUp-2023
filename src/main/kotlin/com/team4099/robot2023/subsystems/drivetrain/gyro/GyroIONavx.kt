@@ -64,7 +64,7 @@ object GyroIONavx : GyroIO {
 
   override fun updateInputs(inputs: GyroIO.GyroIOInputs) {
     inputs.gyroYaw = gyroYaw
-    inputs.gyroVelocity = gyroYawRate
+    inputs.gyroYawRate = gyroYawRate
     inputs.gyroPitch = gyroPitch
     inputs.gyroRoll = gyroRoll
 

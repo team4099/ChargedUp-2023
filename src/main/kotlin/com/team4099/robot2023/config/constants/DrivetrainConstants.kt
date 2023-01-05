@@ -87,13 +87,13 @@ object DrivetrainConstants {
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
 
-    val STEERING_KP = 0.002.volts.perDegree
+    val STEERING_KP = 8.043569323.volts / 45.degrees
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
 
     val STEERING_KFF = 0.0.volts.perRadianPerSecond // 0.0375
 
-    val DRIVE_KP = 0.050046.volts / 1.meters.perSecond
+    val DRIVE_KP = 2.6829.volts / 1.meters.perSecond
     val DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
     val DRIVE_KD = 0.0.volts / 1.meters.perSecond.perSecond
     const val DRIVE_KFF = 0.0
