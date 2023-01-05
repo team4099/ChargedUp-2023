@@ -1,7 +1,6 @@
 package com.team4099.lib.pathfollow
 
 import com.team4099.lib.geometry.Pose2d
-import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Translation2d
 import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.derived.Angle
@@ -83,9 +82,9 @@ class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
 
     val controlVectors =
       SplineHelper.getCubicControlVectorsFromWaypoints(
-        startingPose.copy(m_rotation = Rotation2d(startHeading)).pose2d,
+        startingPose.copy(rotation = startHeading).pose2d,
         waypointTranslation2ds,
-        endingPose.copy(m_rotation = Rotation2d(endHeading)).pose2d
+        endingPose.copy(rotation = endHeading).pose2d
       )
 
     // Create a list of splines

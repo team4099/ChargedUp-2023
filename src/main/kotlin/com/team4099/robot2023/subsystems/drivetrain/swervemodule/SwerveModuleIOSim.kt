@@ -1,28 +1,37 @@
 package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 
+import com.team4099.lib.controller.PIDController
+import com.team4099.lib.controller.SimpleMotorFeedforward
 import com.team4099.lib.units.AngularAcceleration
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearAcceleration
 import com.team4099.lib.units.LinearVelocity
+import com.team4099.lib.units.Velocity
+import com.team4099.lib.units.base.Meter
 import com.team4099.lib.units.base.amps
 import com.team4099.lib.units.base.celsius
 import com.team4099.lib.units.base.inAmperes
 import com.team4099.lib.units.base.inSeconds
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.Angle
+import com.team4099.lib.units.derived.DerivativeGain
+import com.team4099.lib.units.derived.ElectricalPotential
+import com.team4099.lib.units.derived.IntegralGain
+import com.team4099.lib.units.derived.ProportionalGain
+import com.team4099.lib.units.derived.Radian
+import com.team4099.lib.units.derived.Volt
 import com.team4099.lib.units.derived.inRadians
 import com.team4099.lib.units.derived.inRotations
 import com.team4099.lib.units.derived.inVolts
+import com.team4099.lib.units.derived.inVoltsPerDegreePerSecond
+import com.team4099.lib.units.derived.inVoltsPerDegreeSeconds
+import com.team4099.lib.units.derived.inVoltsPerDegrees
 import com.team4099.lib.units.derived.radians
 import com.team4099.lib.units.derived.volts
-import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.inMetersPerSecondPerSecond
 import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.math.MathUtil
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -49,11 +58,11 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
       DrivetrainConstants.PID.SIM_DRIVE_KP,
       DrivetrainConstants.PID.SIM_DRIVE_KI,
       DrivetrainConstants.PID.SIM_DRIVE_KD,
-      Constants.Universal.LOOP_PERIOD_TIME.inSeconds
+      Constants.Universal.LOOP_PERIOD_TIME
     )
   private val driveFeedForward =
     SimpleMotorFeedforward(
-      DrivetrainConstants.PID.SIM_DRIVE_KS.inVolts, DrivetrainConstants.PID.SIM_DRIVE_KV.value
+      DrivetrainConstants.PID.SIM_DRIVE_KS, DrivetrainConstants.PID.SIM_DRIVE_KV
     )
 
   private val steeringFeedback =
@@ -61,12 +70,12 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
       DrivetrainConstants.PID.SIM_STEERING_KP,
       DrivetrainConstants.PID.SIM_STEERING_KI,
       DrivetrainConstants.PID.SIM_STEERING_KD,
-      Constants.Universal.LOOP_PERIOD_TIME.inSeconds
+      Constants.Universal.LOOP_PERIOD_TIME
     )
 
   init {
-    steeringFeedback.enableContinuousInput(-Math.PI, Math.PI)
-    steeringFeedback.setTolerance(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR.inRadians)
+    steeringFeedback.enableContinuousInput(-Math.PI.radians, Math.PI.radians)
+    steeringFeedback.errorTolerance = DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {
@@ -128,30 +137,31 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
         inputs.driveSupplyCurrent.inAmperes + inputs.steeringSupplyCurrent.inAmperes
       )
     )
-
-    // updating pid every loop cycle bc for some reason it doesn't stay like this otherwise
-    driveFeedback.p = 0.9
-    steeringFeedback.p = 23.0
   }
 
   // helper functions to clamp all inputs and set sim motor voltages properly
-  private fun setDriveVoltage(volts: Double) {
-    val driveAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0)
+  private fun setDriveVoltage(volts: ElectricalPotential) {
+    val driveAppliedVolts = MathUtil.clamp(volts.inVolts, -12.0, 12.0)
     driveMotorSim.setInputVoltage(driveAppliedVolts)
   }
 
-  private fun setSteeringVoltage(volts: Double) {
-    val turnAppliedVolts = MathUtil.clamp(volts, -12.0, 12.0)
+  private fun setSteeringVoltage(volts: ElectricalPotential) {
+    val turnAppliedVolts = MathUtil.clamp(volts.inVolts, -12.0, 12.0)
     steerMotorSim.setInputVoltage(turnAppliedVolts)
   }
 
   override fun setSteeringSetpoint(angle: Angle) {
-    val feedback = steeringFeedback.calculate(turnAbsolutePosition.inRadians, angle.inRadians).volts
+    val feedback = steeringFeedback.calculate(turnAbsolutePosition, angle)
     Logger.getInstance().recordOutput("Drivetrain/PID/steeringFeedback", feedback.inVolts)
-    Logger.getInstance().recordOutput("Drivetrain/PID/kP", steeringFeedback.p)
-    Logger.getInstance().recordOutput("Drivetrain/PID/kI", steeringFeedback.i)
-    Logger.getInstance().recordOutput("Drivetrain/PID/kD", steeringFeedback.d)
-    setSteeringVoltage(feedback.inVolts)
+    Logger.getInstance()
+      .recordOutput("Drivetrain/PID/kP", steeringFeedback.proportionalGain.inVoltsPerDegrees)
+    Logger.getInstance()
+      .recordOutput("Drivetrain/PID/kI", steeringFeedback.integralGain.inVoltsPerDegreeSeconds)
+    Logger.getInstance()
+      .recordOutput(
+        "Drivetrain/PID/kD", steeringFeedback.derivativeGain.inVoltsPerDegreePerSecond
+      )
+    setSteeringVoltage(feedback)
   }
 
   override fun setClosedLoop(
@@ -159,20 +169,16 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
-    val feedforward =
-      driveFeedForward.calculate(speed.inMetersPerSecond, acceleration.inMetersPerSecondPerSecond)
-        .volts
-
-    setDriveVoltage(
-      feedforward.inVolts +
-        driveFeedback.calculate(driveVelocity.inMetersPerSecond, speed.inMetersPerSecond)
-    )
+    val feedforward = driveFeedForward.calculate(speed, acceleration)
+    setDriveVoltage(feedforward + driveFeedback.calculate(driveVelocity, speed))
 
     setSteeringSetpoint(steering)
   }
 
-  override fun setOpenLoop(steering: Angle, power: Double) {
-    setDriveVoltage(RoboRioSim.getVInVoltage() * power)
+  override fun setOpenLoop(steering: Angle, speed: LinearVelocity) {
+    setDriveVoltage(
+      RoboRioSim.getVInVoltage().volts * (speed / DrivetrainConstants.DRIVE_SETPOINT_MAX)
+    )
     setSteeringSetpoint(steering)
   }
 
@@ -188,11 +194,19 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     turnAbsolutePosition = 0.0.radians
   }
 
-  override fun configureDrivePID(kP: Double, kI: Double, kD: Double) {
+  override fun configureDrivePID(
+    kP: ProportionalGain<Velocity<Meter>, Volt>,
+    kI: IntegralGain<Velocity<Meter>, Volt>,
+    kD: DerivativeGain<Velocity<Meter>, Volt>
+  ) {
     driveFeedback.setPID(kP, kI, kD)
   }
 
-  override fun configureSteeringPID(kP: Double, kI: Double, kD: Double) {
+  override fun configureSteeringPID(
+    kP: ProportionalGain<Radian, Volt>,
+    kI: IntegralGain<Radian, Volt>,
+    kD: DerivativeGain<Radian, Volt>
+  ) {
     steeringFeedback.setPID(kP, kI, kD)
   }
 

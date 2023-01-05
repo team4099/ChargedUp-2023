@@ -1,6 +1,5 @@
 package com.team4099.geometry
 
-import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Rotation3d
 import com.team4099.lib.units.derived.degrees
 import com.team4099.lib.units.derived.inRadians
@@ -93,7 +92,7 @@ internal class Rotation3dTest {
 
     // 180 degree rotation of x-axes
     val rot6 = Rotation3d(xAxis, xAxis.times(-1.0))
-    val q6 = rot6.m_q
+    val q6 = rot6.quaternion
     assertEquals(0.0, q6.w.value)
     assertEquals(
       0.0, q6.x.value * xAxis[0, 0] + q6.y.value * xAxis[1, 0] + q6.z.value * xAxis[2, 0]
@@ -101,7 +100,7 @@ internal class Rotation3dTest {
 
     // 180 degree rotation of y-axes
     val rot7 = Rotation3d(yAxis, yAxis.times(-1.0))
-    val q7 = rot7.m_q
+    val q7 = rot7.quaternion
     assertEquals(0.0, q7.w.inRadians)
     assertEquals(
       0.0, q7.x.value * yAxis[0, 0] + q7.y.value * yAxis[1, 0] + q7.z.value * yAxis[2, 0]
@@ -109,7 +108,7 @@ internal class Rotation3dTest {
 
     // 180 degree rotation of z-axes
     val rot8 = Rotation3d(zAxis, zAxis.times(-1.0))
-    val q8 = rot8.m_q
+    val q8 = rot8.quaternion
     assertEquals(0.0, q8.w.value)
     assertEquals(
       0.0, q8.x.value * zAxis[0, 0] + q8.y.value * zAxis[1, 0] + q8.z.value * zAxis[2, 0]
@@ -276,8 +275,8 @@ internal class Rotation3dTest {
   @Test
   fun testToRotation2d() {
     val rotation = Rotation3d(20.0.degrees, 30.0.degrees, 40.0.degrees)
-    val expected = Rotation2d(40.degrees)
-    assertEquals(expected, rotation.toRotation2d())
+    val expected = 40.degrees
+    assertEquals(expected.value, rotation.toAngle().value, 1E-9)
   }
 
   @Test

@@ -17,8 +17,8 @@ class Transform3dTest {
     val one = Transform3d()
     val two = Transform3d(Translation3d(), Rotation3d())
     assertAll(
-      { assertEquals(one.m_translation, two.m_translation) },
-      { assertEquals(one.m_rotation, two.m_rotation) }
+      { assertEquals(one.translation, two.translation) },
+      { assertEquals(one.rotation, two.rotation) }
     )
   }
 

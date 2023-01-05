@@ -5,18 +5,12 @@ import com.team4099.lib.units.base.inMeters
 import com.team4099.lib.units.base.meters
 import com.team4099.lib.units.derived.radians
 
-data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) {
-  val translation: Translation3d = m_translation
+data class Pose3d(val translation: Translation3d, val rotation: Rotation3d) {
+  val x = translation.x
+  val y = translation.y
+  val z = translation.z
 
-  val x: Length = m_translation.x
-
-  val y: Length = m_translation.y
-
-  val z: Length = m_translation.z
-
-  val rotation3d: Rotation3d = m_rotation
-
-  val pose3d: Pose3dWPILIB = Pose3dWPILIB(x.inMeters, y.inMeters, z.inMeters, rotation3d.rotation3d)
+  val pose3d: Pose3dWPILIB = Pose3dWPILIB(x.inMeters, y.inMeters, z.inMeters, rotation.rotation3d)
 
   constructor() : this(Translation3d(), Rotation3d())
 
@@ -31,7 +25,7 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
     pose: Pose2d
   ) : this(
     Translation3d(pose.x, pose.y, 0.0.meters),
-    Rotation3d(0.0.radians, 0.0.radians, pose.rotation.theta)
+    Rotation3d(0.0.radians, 0.0.radians, pose.rotation)
   )
 
   constructor(
@@ -44,11 +38,11 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
 
   operator fun minus(other: Pose3d): Transform3d {
     val pose: Pose3d = relativeTo(other)
-    return Transform3d(pose.translation, pose.rotation3d)
+    return Transform3d(pose.translation, pose.rotation)
   }
 
   operator fun times(scalar: Double): Pose3d {
-    return Pose3d(m_translation * scalar, m_rotation * scalar)
+    return Pose3d(translation * scalar, rotation * scalar)
   }
 
   operator fun div(scalar: Double): Pose3d {
@@ -63,21 +57,18 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
     if ((y - other.y).absoluteValue.value > 1E-9) return false
     if ((z - other.z).absoluteValue.value > 1E-9) return false
 
-    if (rotation3d != other.rotation3d) return false
+    if (rotation != other.rotation) return false
 
     return true
   }
 
   fun transformBy(other: Transform3d): Pose3d {
-    return Pose3d(
-      m_translation.plus(other.translation3d.rotateBy(m_rotation)),
-      other.rotation3d.plus(m_rotation)
-    )
+    return Pose3d(translation + other.translation.rotateBy(rotation), other.rotation + rotation)
   }
 
   fun relativeTo(other: Pose3d): Pose3d {
     val transform = Transform3d(other, this)
-    return Pose3d(transform.translation3d, transform.rotation3d)
+    return Pose3d(transform.translation, transform.rotation)
   }
 
   fun exp(twist: Twist3d): Pose3d {
@@ -89,6 +80,6 @@ data class Pose3d(val m_translation: Translation3d, val m_rotation: Rotation3d) 
   }
 
   fun toPose2d(): Pose2d {
-    return Pose2d(m_translation.toTranslation2d(), m_rotation.toRotation2d())
+    return Pose2d(translation.toTranslation2d(), rotation.toAngle())
   }
 }

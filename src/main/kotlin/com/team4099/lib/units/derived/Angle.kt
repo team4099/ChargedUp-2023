@@ -1,5 +1,6 @@
 package com.team4099.lib.units.derived
 
+import com.team4099.lib.geometry.Rotation2dWPILIB
 import com.team4099.lib.units.AngularVelocity
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.UnitKey
@@ -14,7 +15,13 @@ object Radian : UnitKey
 
 internal const val RADIANS_PER_DEGREES = (2 * Math.PI) / 360
 
+internal const val RADIANS_PER_ROTATION = (2 * Math.PI)
+
 typealias Angle = Value<Radian>
+
+fun Angle(x: Double, y: Double): Angle {
+  return Rotation2dWPILIB(x, y).angle
+}
 
 val Double.radians: Angle
   get() = Angle(this)

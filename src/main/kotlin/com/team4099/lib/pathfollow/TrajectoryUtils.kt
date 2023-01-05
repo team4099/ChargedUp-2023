@@ -2,7 +2,6 @@ package com.team4099.lib.pathfollow
 
 import com.pathplanner.lib.PathPlannerTrajectory
 import com.team4099.lib.geometry.Pose2d
-import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Translation2d
 import com.team4099.lib.units.LinearVelocity
 import com.team4099.lib.units.base.meters
@@ -38,20 +37,20 @@ fun trajectoryFromPath(
     wpilibStates.mapIndexed { index, state ->
       var headingTarget =
         if (index == 0) {
-          path.startingPose.theta
+          path.startingPose.rotation
         } else if (index == wpilibStates.size - 1) {
-          path.endingPose.theta
+          path.endingPose.rotation
         } else {
           val tailMap = path.headingPointMap.tailMap(index)
           if (tailMap.size == 0) {
-            path.endingPose.theta
+            path.endingPose.rotation
           } else {
             path.headingPointMap[tailMap.firstKey()]
           }
         }
 
       if (headingTarget == null) {
-        headingTarget = path.endingPose.theta
+        headingTarget = path.endingPose.rotation
       }
         /*
          #TO DO
@@ -63,7 +62,7 @@ fun trajectoryFromPath(
         */
       TrajectoryState(
         state.timeSeconds.seconds,
-        Pose2d(Translation2d(state.poseMeters.translation), Rotation2d(headingTarget)),
+        Pose2d(Translation2d(state.poseMeters.translation), headingTarget),
         state.poseMeters.rotation.angle,
         state.velocityMetersPerSecond.meters.perSecond,
         state.accelerationMetersPerSecondSq.meters.perSecond.perSecond
@@ -79,10 +78,7 @@ fun trajectoryFromPathPlanner(pathPlannerTrajectory: PathPlannerTrajectory): Tra
       state as PathPlannerTrajectory.PathPlannerState
       TrajectoryState(
         state.timeSeconds.seconds,
-        Pose2d(
-          Translation2d(state.poseMeters.translation),
-          Rotation2d(state.holonomicRotation.angle)
-        ),
+        Pose2d(Translation2d(state.poseMeters.translation), state.holonomicRotation.angle),
         state.poseMeters.rotation.angle,
         state.velocityMetersPerSecond.meters.perSecond,
         state.accelerationMetersPerSecondSq.meters.perSecond.perSecond,

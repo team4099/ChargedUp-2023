@@ -2,7 +2,6 @@ package com.team4099.geometry
 
 import com.team4099.lib.geometry.Pose2d
 import com.team4099.lib.geometry.Pose3d
-import com.team4099.lib.geometry.Rotation2d
 import com.team4099.lib.geometry.Rotation3d
 import com.team4099.lib.geometry.Transform3d
 import com.team4099.lib.geometry.Translation3d
@@ -21,9 +20,9 @@ class Pose3dTest {
 
   @Test
   fun testInit() {
-    val pose2d = Pose2d(0.0.meters, 0.0.meters, Rotation2d(45.degrees))
+    val pose2d = Pose2d(0.0.meters, 0.0.meters, 45.degrees)
     val translation3d = Translation3d(pose2d.x, pose2d.y, 0.0.meters)
-    val rotation3d = Rotation3d(0.0.radians, 0.0.radians, pose2d.rotation.theta)
+    val rotation3d = Rotation3d(0.0.radians, 0.0.radians, pose2d.rotation)
     assertEquals(Pose3d(pose2d), Pose3d(translation3d, rotation3d))
   }
 
@@ -64,19 +63,13 @@ class Pose3dTest {
 
     assertAll(
       {
-        assertEquals(
-          finalPose.m_rotation.x.inDegrees, initialPose.m_rotation.x.inDegrees, kEpsilon
-        )
+        assertEquals(finalPose.rotation.x.inDegrees, initialPose.rotation.x.inDegrees, kEpsilon)
       },
       {
-        assertEquals(
-          finalPose.m_rotation.y.inDegrees, initialPose.m_rotation.y.inDegrees, kEpsilon
-        )
+        assertEquals(finalPose.rotation.y.inDegrees, initialPose.rotation.y.inDegrees, kEpsilon)
       },
       {
-        assertEquals(
-          finalPose.m_rotation.z.inDegrees, initialPose.m_rotation.z.inDegrees, kEpsilon
-        )
+        assertEquals(finalPose.rotation.z.inDegrees, initialPose.rotation.z.inDegrees, kEpsilon)
       }
     )
   }
@@ -93,9 +86,9 @@ class Pose3dTest {
     val transformed = initial.plus(transformation)
 
     assertAll(
-      { assertEquals(1.0 + 5.0 / Math.sqrt(2.0), transformed.m_translation.x.value, kEpsilon) },
-      { assertEquals(2.0 + 5.0 / Math.sqrt(2.0), transformed.m_translation.y.value, kEpsilon) },
-      { assertEquals(50.0, transformed.m_rotation.z.inDegrees, kEpsilon) }
+      { assertEquals(1.0 + 5.0 / Math.sqrt(2.0), transformed.translation.x.value, kEpsilon) },
+      { assertEquals(2.0 + 5.0 / Math.sqrt(2.0), transformed.translation.y.value, kEpsilon) },
+      { assertEquals(50.0, transformed.rotation.z.inDegrees, kEpsilon) }
     )
   }
 
@@ -110,10 +103,10 @@ class Pose3dTest {
 
     assertAll(
       {
-        assertEquals(5.0 * Math.sqrt(2.0), finalRelativeToInitial.m_translation.x.value, kEpsilon)
+        assertEquals(5.0 * Math.sqrt(2.0), finalRelativeToInitial.translation.x.value, kEpsilon)
       },
-      { assertEquals(0.0, finalRelativeToInitial.m_translation.y.value, kEpsilon) },
-      { assertEquals(0.0, finalRelativeToInitial.m_translation.z.value, kEpsilon) }
+      { assertEquals(0.0, finalRelativeToInitial.translation.y.value, kEpsilon) },
+      { assertEquals(0.0, finalRelativeToInitial.translation.z.value, kEpsilon) }
     )
   }
 
@@ -147,7 +140,7 @@ class Pose3dTest {
     assertAll(
       { assertEquals(5.0 * Math.sqrt(2.0), transform.x.value, kEpsilon) },
       { assertEquals(0.0, transform.y.value, kEpsilon) },
-      { assertEquals(0.0, transform.m_rotation.z.inDegrees, kEpsilon) }
+      { assertEquals(0.0, transform.rotation.z.inDegrees, kEpsilon) }
     )
   }
 
@@ -176,7 +169,7 @@ class Pose3dTest {
         3.0.meters,
         Rotation3d(20.0.degrees, 30.0.degrees, 40.0.degrees)
       )
-    val expected = Pose2d(1.0.meters, 2.0.meters, Rotation2d(40.0.degrees))
+    val expected = Pose2d(1.0.meters, 2.0.meters, 40.0.degrees)
 
     assertEquals(expected, pose.toPose2d())
   }
