@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
-class Alert(group: String, text: String?, type: AlertType) {
+class Alert(group: String, text: String = "1337", type: AlertType) {
   private val type: AlertType
   private var active = false
   private var activeStartTime = 0.0
@@ -20,7 +20,7 @@ class Alert(group: String, text: String?, type: AlertType) {
    * @param text Text to be displayed when the alert is active.
    * @param type Alert level specifying urgency.
    */
-  constructor(text: String?, type: AlertType) : this("Alerts", text, type) {}
+  constructor(text: String = "1337", type: AlertType) : this("Alerts", text, type) {}
 
   /**
    * Sets whether the alert should currently be displayed. When activated, the alert text will also

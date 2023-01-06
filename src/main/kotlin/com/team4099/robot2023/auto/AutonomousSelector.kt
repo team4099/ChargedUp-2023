@@ -8,14 +8,15 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
 
 object AutonomousSelector {
   //  private var orientationChooser: SendableChooser<Angle> = SendableChooser()
-  private var autonomousModeChooser: SendableChooser<AutonomousMode> = SendableChooser()
+  private var autonomousModeChooser: LoggedDashboardChooser<AutonomousMode> =
+    LoggedDashboardChooser("AutonomousMode")
   private var waitBeforeCommandSlider: GenericEntry
   private var secondaryWaitInAuto: GenericEntry
 
@@ -54,7 +55,7 @@ object AutonomousSelector {
 
   fun getCommand(drivetrain: Drivetrain): CommandBase {
 
-    val mode = autonomousModeChooser.selected
+    val mode = autonomousModeChooser.get()
     //    println("${waitTime().inSeconds} wait command")
     when (mode) {
       AutonomousMode.TEST_AUTO_PATH ->
