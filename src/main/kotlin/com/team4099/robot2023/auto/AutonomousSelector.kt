@@ -46,21 +46,19 @@ object AutonomousSelector {
         .entry
   }
 
-  fun getWaitTime(): Time {
-    return waitBeforeCommandSlider.getDouble(0.0).seconds
-  }
+  val waitTime: Time
+    get() = waitBeforeCommandSlider.getDouble(0.0).seconds
 
-  fun getSecondaryWaitTime(): Time {
-    return secondaryWaitInAuto.getDouble(0.0).seconds
-  }
+  val secondaryWaitTime: Time
+    get() = secondaryWaitInAuto.getDouble(0.0).seconds
 
   fun getCommand(drivetrain: Drivetrain): CommandBase {
 
     val mode = autonomousModeChooser.selected
-    //    println("${getWaitTime().inSeconds} wait command")
+    //    println("${waitTime().inSeconds} wait command")
     when (mode) {
       AutonomousMode.TEST_AUTO_PATH ->
-        return WaitCommand(getWaitTime().inSeconds).andThen(TestAutoPath(drivetrain))
+        return WaitCommand(waitTime.inSeconds).andThen(TestAutoPath(drivetrain))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()
