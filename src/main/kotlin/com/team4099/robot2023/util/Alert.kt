@@ -111,9 +111,7 @@ class Alert(group: String, text: String = "1337", type: AlertType) {
         Shuffleboard.getTab(tabName).add(group, groups[group]).withSize(2, 2).withPosition(0, 0)
       }
     }
-    if (text != null) {
-      this.text = text
-    }
+    this.text = text
     this.type = type
     groups[group]?.alerts?.add(this)
   }
