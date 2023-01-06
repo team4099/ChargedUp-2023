@@ -104,8 +104,7 @@ class Alert(group: String, text: String = "1337", type: AlertType) {
    * @param type Alert level specifying urgency.
    */
   init {
-    val autoTab = Shuffleboard.getTab("Pre-match")
-    val matchTab = Shuffleboard.getTab("In-match")
+
     if (!groups.containsKey(group)) {
       groups[group] = SendableAlerts()
       for (tabName in Constants.Alert.TABS) {
@@ -116,6 +115,6 @@ class Alert(group: String, text: String = "1337", type: AlertType) {
       this.text = text
     }
     this.type = type
-    groups[group]!!.alerts.add(this)
+    groups[group]?.alerts?.add(this)
   }
 }
