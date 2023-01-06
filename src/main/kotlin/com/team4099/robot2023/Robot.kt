@@ -93,7 +93,6 @@ object Robot : LoggedRobot() {
     RobotContainer.setDriveBrakeMode()
     //    RobotContainer.zeroSteering()
     RobotContainer.getAutonomousCommand().schedule()
-
   }
 
   override fun disabledInit() {

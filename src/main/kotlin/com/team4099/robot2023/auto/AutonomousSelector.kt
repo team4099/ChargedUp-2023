@@ -6,7 +6,6 @@ import com.team4099.lib.units.base.seconds
 import com.team4099.robot2023.auto.mode.TestAutoPath
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import edu.wpi.first.networktables.GenericEntry
-import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
@@ -30,13 +29,14 @@ object AutonomousSelector {
 
     autonomousModeChooser.addOption("Test", AutonomousMode.TEST_AUTO_PATH)
 
-
     autoTab.add("Mode", autonomousModeChooser).withSize(5, 2).withPosition(3, 0)
     waitBeforeCommandSlider =
       autoTab
-        .add("Wait Time before Running Auto",  0)
-        .withSize(3, 2).withPosition(0, 2)
-        .withWidget(BuiltInWidgets.kTextView).entry
+        .add("Wait Time before Running Auto", 0)
+        .withSize(3, 2)
+        .withPosition(0, 2)
+        .withWidget(BuiltInWidgets.kTextView)
+        .entry
     secondaryWaitInAuto =
       autoTab
         .add("Secondary Wait Time During Auto Path", 0)
@@ -54,9 +54,7 @@ object AutonomousSelector {
     return secondaryWaitInAuto.getDouble(0.0).seconds
   }
 
-  fun getCommand(
-    drivetrain: Drivetrain
-  ): CommandBase {
+  fun getCommand(drivetrain: Drivetrain): CommandBase {
 
     val mode = autonomousModeChooser.selected
     //    println("${getWaitTime().inSeconds} wait command")

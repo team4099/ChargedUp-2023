@@ -70,10 +70,5 @@ object RobotContainer {
   //      drivetrain, intake, feeder, shooter, telescopingClimber, pivotClimber
   //    )
 
-  fun getAutonomousCommand() =
-    AutonomousSelector.getCommand(
-      drivetrain
-    )
+  fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
 }
-
-

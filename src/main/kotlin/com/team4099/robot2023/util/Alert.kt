@@ -1,14 +1,11 @@
 package com.team4099.robot2023.util
 
-import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.config.constants.Constants
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 class Alert(group: String, text: String?, type: AlertType) {
   private val type: AlertType
@@ -66,9 +63,6 @@ class Alert(group: String, text: String?, type: AlertType) {
         "warnings", { getStrings(AlertType.WARNING).toTypedArray() }, null
       )
       builder.addStringArrayProperty("infos", { getStrings(AlertType.INFO).toTypedArray() }, null)
-
-
-
     }
   }
 
@@ -103,7 +97,7 @@ class Alert(group: String, text: String?, type: AlertType) {
   /**
    * Creates a new Alert. If this is the first to be instantiated in its group, the appropriate
    *
-   *  entries will be added to NetworkTables.
+   * entries will be added to NetworkTables.
    *
    * @param group Group identifier, also used as NetworkTables title
    * @param text Text to be displayed when the alert is active.
@@ -114,19 +108,14 @@ class Alert(group: String, text: String?, type: AlertType) {
     val matchTab = Shuffleboard.getTab("In-match")
     if (!groups.containsKey(group)) {
       groups[group] = SendableAlerts()
-      for (tabName in Constants.Alert.TABS){
-        Shuffleboard.getTab(tabName)
-          .add(group, groups[group])
-          .withSize(2, 2)
-          .withPosition(0, 0)
+      for (tabName in Constants.Alert.TABS) {
+        Shuffleboard.getTab(tabName).add(group, groups[group]).withSize(2, 2).withPosition(0, 0)
       }
-
     }
     if (text != null) {
       this.text = text
     }
     this.type = type
     groups[group]!!.alerts.add(this)
-
   }
 }
