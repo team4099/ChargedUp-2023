@@ -1,6 +1,7 @@
 package com.team4099.robot2023
 
 import com.team4099.lib.smoothDeadband
+import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -68,4 +69,6 @@ object RobotContainer {
   //    AutonomousSelector.getCommand(
   //      drivetrain, intake, feeder, shooter, telescopingClimber, pivotClimber
   //    )
+
+  fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
 }

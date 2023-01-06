@@ -1,12 +1,13 @@
 package com.team4099.robot2023.util
 
+import com.team4099.robot2023.config.constants.Constants
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 
-class Alert(group: String, text: String?, type: AlertType) {
+class Alert(group: String, text: String = "1337", type: AlertType) {
   private val type: AlertType
   private var active = false
   private var activeStartTime = 0.0
@@ -19,7 +20,7 @@ class Alert(group: String, text: String?, type: AlertType) {
    * @param text Text to be displayed when the alert is active.
    * @param type Alert level specifying urgency.
    */
-  constructor(text: String?, type: AlertType) : this("Alerts", text, type) {}
+  constructor(text: String = "1337", type: AlertType) : this("Alerts", text, type) {}
 
   /**
    * Sets whether the alert should currently be displayed. When activated, the alert text will also
@@ -95,6 +96,7 @@ class Alert(group: String, text: String?, type: AlertType) {
 
   /**
    * Creates a new Alert. If this is the first to be instantiated in its group, the appropriate
+   *
    * entries will be added to NetworkTables.
    *
    * @param group Group identifier, also used as NetworkTables title
@@ -102,14 +104,15 @@ class Alert(group: String, text: String?, type: AlertType) {
    * @param type Alert level specifying urgency.
    */
   init {
+
     if (!groups.containsKey(group)) {
       groups[group] = SendableAlerts()
-      SmartDashboard.putData(group, groups[group])
+      for (tabName in Constants.Alert.TABS) {
+        Shuffleboard.getTab(tabName).add(group, groups[group]).withSize(2, 2).withPosition(0, 0)
+      }
     }
-    if (text != null) {
-      this.text = text
-    }
+    this.text = text
     this.type = type
-    groups[group]!!.alerts.add(this)
+    groups[group]?.alerts?.add(this)
   }
 }

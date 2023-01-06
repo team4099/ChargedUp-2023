@@ -61,4 +61,8 @@ object Constants {
   object Gyro {
     const val PIGEON_2_ID = 1337
   }
+
+  object Alert {
+    val TABS = arrayOf("Pre-match", "In-match")
+  }
 }

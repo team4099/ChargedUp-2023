@@ -1,5 +1,7 @@
 package com.team4099.robot2023
 
+import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
@@ -80,6 +82,8 @@ object Robot : LoggedRobot() {
 
     // init robot container too
     RobotContainer
+    AutonomousSelector
+    PathStore
     // RobotContainer.zeroSensors() UNCOMMENT THIS PLS
     RobotContainer.mapDefaultCommands()
   }
@@ -88,11 +92,11 @@ object Robot : LoggedRobot() {
     // autonomousCommand.schedule()
     RobotContainer.setDriveBrakeMode()
     //    RobotContainer.zeroSteering()
-    //    RobotContainer.getAutonomousCommand().schedule()
+    RobotContainer.getAutonomousCommand().schedule()
   }
 
   override fun disabledInit() {
-    // RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.setDriveBrakeMode()
     // autonomousCommand.cancel()
   }
@@ -124,6 +128,6 @@ object Robot : LoggedRobot() {
 
   override fun testInit() {
     RobotContainer.mapTestControls()
-    // RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.getAutonomousCommand().cancel()
   }
 }
