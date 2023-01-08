@@ -3,16 +3,16 @@ package com.team4099.robot2023.subsystems.drivetrain.gyro
 import com.ctre.phoenix.ErrorCode
 import com.ctre.phoenix.sensors.Pigeon2
 import com.ctre.phoenix.sensors.Pigeon2Configuration
-import com.team4099.lib.units.AngularVelocity
-import com.team4099.lib.units.derived.Angle
-import com.team4099.lib.units.derived.degrees
-import com.team4099.lib.units.derived.inDegrees
-import com.team4099.lib.units.derived.inRadians
-import com.team4099.lib.units.inDegreesPerSecond
-import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.GyroConstants
+import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRadians
+import org.team4099.lib.units.inDegreesPerSecond
+import org.team4099.lib.units.perSecond
 import kotlin.math.IEEErem
 
 object GyroIOPigeon2 : GyroIO {

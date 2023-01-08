@@ -1,10 +1,10 @@
 package com.team4099.lib.pathfollow
 
-import com.team4099.lib.units.AngularAcceleration
-import com.team4099.lib.units.AngularVelocity
-import com.team4099.lib.units.LinearAcceleration
-import com.team4099.lib.units.LinearVelocity
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint
+import org.team4099.lib.units.AngularAcceleration
+import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.LinearAcceleration
+import org.team4099.lib.units.LinearVelocity
 
 data class TrajectoryConfig(
   val maxLinearVelocity: LinearVelocity,

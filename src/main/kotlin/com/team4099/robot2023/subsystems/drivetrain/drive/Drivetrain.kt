@@ -1,36 +1,36 @@
 package com.team4099.robot2023.subsystems.drivetrain.drive
 
-import com.team4099.lib.geometry.Pose2d
-import com.team4099.lib.geometry.Transform2d
-import com.team4099.lib.geometry.Translation2d
-import com.team4099.lib.geometry.Twist2d
-import com.team4099.lib.kinematics.ChassisAccels
-import com.team4099.lib.kinematics.ChassisSpeeds
-import com.team4099.lib.units.AngularAcceleration
-import com.team4099.lib.units.AngularVelocity
-import com.team4099.lib.units.LinearAcceleration
-import com.team4099.lib.units.LinearVelocity
-import com.team4099.lib.units.base.feet
-import com.team4099.lib.units.base.inMeters
-import com.team4099.lib.units.base.meters
-import com.team4099.lib.units.derived.Angle
-import com.team4099.lib.units.derived.degrees
-import com.team4099.lib.units.derived.inRadians
-import com.team4099.lib.units.derived.inRotation2ds
-import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.inMetersPerSecond
-import com.team4099.lib.units.perSecond
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.util.Alert
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Transform2d
+import org.team4099.lib.geometry.Translation2d
+import org.team4099.lib.geometry.Twist2d
+import org.team4099.lib.kinematics.ChassisAccels
+import org.team4099.lib.kinematics.ChassisSpeeds
+import org.team4099.lib.units.AngularAcceleration
+import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.LinearAcceleration
+import org.team4099.lib.units.LinearVelocity
+import org.team4099.lib.units.base.feet
+import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inRadians
+import org.team4099.lib.units.derived.inRotation2ds
+import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.inMetersPerSecond
+import org.team4099.lib.units.perSecond
 
 class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemBase() {
   val gyroNotConnectedAlert =
@@ -87,11 +87,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       backRightWheelLocation.translation2d
     )
 
-  var swerveDriveOdometry =
-    SwerveDriveOdometry(
+  var swerveDrivePoseEstimator =
+    SwerveDrivePoseEstimator(
       swerveDriveKinematics,
       gyroInputs.gyroYaw.inRotation2ds,
       swerveModules.map { it.modulePosition }.toTypedArray(),
+      Pose2d().pose2d // TODO initialize this with the robot's actual starting pose
     )
 
   var setPointStates =
@@ -100,9 +101,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     )
 
   var odometryPose: Pose2d
-    get() = Pose2d(swerveDriveOdometry.poseMeters)
+    get() = Pose2d(swerveDrivePoseEstimator.estimatedPosition)
     set(value) {
-      swerveDriveOdometry.resetPosition(
+      swerveDrivePoseEstimator.resetPosition(
         gyroInputs.gyroYaw.inRotation2ds,
         swerveModules.map { it.modulePosition }.toTypedArray(),
         value.pose2d
@@ -193,7 +194,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       if (Constants.Tuning.SIMULATE_DRIFT) {
         undriftedPose = undriftedPose.exp(Twist2d(positionDeltaTwist))
 
-        swerveDriveOdometry.resetPosition(
+        swerveDrivePoseEstimator.resetPosition(
           gyroInputs.gyroYaw.inRotation2ds,
           swerveModules.map { it.modulePosition }.toTypedArray(),
           odometryPose.exp(
@@ -217,7 +218,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     } else {
       odometryPose =
         Pose2d(
-          swerveDriveOdometry.update(
+          swerveDrivePoseEstimator.update(
             gyroInputs.gyroYaw.inRotation2ds,
             swerveModules.map { it.modulePosition }.toTypedArray()
           )
@@ -367,7 +368,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
     if (gyroInputs.gyroConnected) {
-      swerveDriveOdometry.resetPosition(
+      swerveDrivePoseEstimator.resetPosition(
         toAngle.inRotation2ds,
         swerveModules.map { it.modulePosition }.toTypedArray(),
         odometryPose.pose2d

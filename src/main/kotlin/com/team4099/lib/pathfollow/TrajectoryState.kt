@@ -1,13 +1,13 @@
 package com.team4099.lib.pathfollow
 
-import com.team4099.lib.geometry.Pose2d
-import com.team4099.lib.units.AngularVelocity
-import com.team4099.lib.units.LinearAcceleration
-import com.team4099.lib.units.LinearVelocity
-import com.team4099.lib.units.base.Time
-import com.team4099.lib.units.derived.Angle
-import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.perSecond
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.LinearAcceleration
+import org.team4099.lib.units.LinearVelocity
+import org.team4099.lib.units.base.Time
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.perSecond
 
 data class TrajectoryState(
   val timestamp: Time,

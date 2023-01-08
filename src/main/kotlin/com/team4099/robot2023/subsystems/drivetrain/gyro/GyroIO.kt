@@ -1,13 +1,13 @@
 package com.team4099.robot2023.subsystems.drivetrain.gyro
 
-import com.team4099.lib.units.derived.Angle
-import com.team4099.lib.units.derived.degrees
-import com.team4099.lib.units.derived.inDegrees
-import com.team4099.lib.units.derived.radians
-import com.team4099.lib.units.inDegreesPerSecond
-import com.team4099.lib.units.perSecond
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.inDegreesPerSecond
+import org.team4099.lib.units.perSecond
 
 interface GyroIO {
   class GyroIOInputs : LoggableInputs {

@@ -1,7 +1,7 @@
 package com.team4099.lib.logging
 
-import com.team4099.lib.units.UnitKey
-import com.team4099.lib.units.Value
+import org.team4099.lib.units.UnitKey
+import org.team4099.lib.units.Value
 
 /**
  * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or

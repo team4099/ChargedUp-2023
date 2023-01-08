@@ -1,7 +1,7 @@
 package com.team4099.robot2023.config.constants
 
-import com.team4099.lib.units.base.seconds
-import com.team4099.lib.units.milli
+import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.milli
 
 object Constants {
   object Universal {

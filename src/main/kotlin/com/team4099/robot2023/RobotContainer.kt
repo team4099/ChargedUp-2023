@@ -1,6 +1,5 @@
 package com.team4099.robot2023
 
-import com.team4099.lib.smoothDeadband
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
@@ -11,6 +10,7 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
+import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
   private val drivetrain: Drivetrain

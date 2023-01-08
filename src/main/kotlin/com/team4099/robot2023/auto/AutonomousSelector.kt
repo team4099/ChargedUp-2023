@@ -1,8 +1,5 @@
 package com.team4099.robot2023.auto
 
-import com.team4099.lib.units.base.Time
-import com.team4099.lib.units.base.inSeconds
-import com.team4099.lib.units.base.seconds
 import com.team4099.robot2023.auto.mode.TestAutoPath
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import edu.wpi.first.networktables.GenericEntry
@@ -12,6 +9,9 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
+import org.team4099.lib.units.base.Time
+import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.seconds
 
 object AutonomousSelector {
   //  private var orientationChooser: SendableChooser<Angle> = SendableChooser()
