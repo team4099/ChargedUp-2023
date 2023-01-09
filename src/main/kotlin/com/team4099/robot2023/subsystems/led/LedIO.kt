@@ -18,4 +18,6 @@ interface LedIO {
   }
 
   fun setState(newState: LedConstants.LEDMode) {}
+
+  fun updateInputs(inputs: LedIOInputs) {}
 }
