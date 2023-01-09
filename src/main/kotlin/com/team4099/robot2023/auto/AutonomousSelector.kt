@@ -30,7 +30,7 @@ object AutonomousSelector {
 
     autonomousModeChooser.addOption("Test", AutonomousMode.TEST_AUTO_PATH)
 
-    autoTab.add("Mode", autonomousModeChooser).withSize(5, 2).withPosition(3, 0)
+    autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(5, 2).withPosition(3, 0)
     waitBeforeCommandSlider =
       autoTab
         .add("Wait Time before Running Auto", 0)

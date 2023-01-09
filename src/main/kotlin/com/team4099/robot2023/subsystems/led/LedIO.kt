@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 
 interface LedIO {
-  class LedIOInputs: LoggableInputs {
+  class LedIOInputs : LoggableInputs {
     var ledState = LedConstants.LEDMode.IDLE.name
 
     override fun toLog(table: LogTable?) {
@@ -13,9 +13,11 @@ interface LedIO {
     }
 
     override fun fromLog(table: LogTable?) {
-      table?.getString("ledState", ledState).let {ledState = it}
+      table?.getString("ledState", ledState)?.let { ledState = it }
     }
   }
 
-  fun setState(newState: LedConstants.LEDMode){}
+  fun setState(newState: LedConstants.LEDMode) {}
+
+  fun updateInputs(inputs: LedIOInputs) {}
 }
