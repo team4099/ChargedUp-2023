@@ -61,6 +61,10 @@ object Constants {
     const val PIGEON_2_ID = 1337
   }
 
+  object Intake {
+    const val INTAKE_MOTOR = 0
+  }
+
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
   }
