@@ -32,4 +32,3 @@ object LedIOBlinken : LedIO {
     ledController.setMode(state)
   }
 }
-

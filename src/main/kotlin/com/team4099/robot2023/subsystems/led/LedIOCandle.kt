@@ -1,6 +1,5 @@
 package com.team4099.robot2023.subsystems.led
 
-<<<<<<< HEAD
 import com.ctre.phoenix.led.CANdle
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.LedConstants.CandleMode
