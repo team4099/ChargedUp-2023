@@ -79,10 +79,23 @@ object DrivetrainConstants {
     val AUTO_POS_KD =
       (0.75.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
 
+    val AUTO_THETA_ALLOWED_ERROR = 3.degrees
+
     val AUTO_THETA_PID_KP = 7.6.degrees.perSecond / 1.degrees
     val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val AUTO_THETA_PID_KD =
       (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+
+    val SIM_AUTO_THETA_PID_KP = 7.degrees.perSecond / 1.degrees
+    val SIM_AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
+    val SIM_AUTO_THETA_PID_KD =
+      (0.5.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+
+    val AUTO_LEVEL_KP = 2.0.meters.perSecond / 1.0.degrees // tune this
+    val AUTO_LEVEL_KI = 2.0.meters.perSecond / (1.0.degrees * 1.seconds) // tune this
+    val AUTO_LEVEL_KD = 2.0.meters.perSecond / (1.0.degrees.perSecond) // tune this
+    val AUTO_LEVEL_MAX_VEL_SETPOINT = 5.degrees.perSecond
+    val AUTO_LEVEL_MAX_ACCEL_SETPOINT = 3.degrees.perSecond.perSecond
 
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond

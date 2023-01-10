@@ -21,7 +21,7 @@ object Constants {
 
   object Tuning {
 
-    val TUNING_MODE = false
+    val TUNING_MODE = true
     val SIMULATE_DRIFT = true
 
     enum class RobotType {
