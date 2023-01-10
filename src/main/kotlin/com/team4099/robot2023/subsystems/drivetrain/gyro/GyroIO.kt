@@ -12,7 +12,7 @@ import org.team4099.lib.units.perSecond
 interface GyroIO {
   class GyroIOInputs : LoggableInputs {
     var gyroYaw = 0.0.radians
-    var gyroPitch = 0.0.radians
+    var gyroPitch = -3.degrees
     var gyroRoll = 0.0.radians
     var gyroYawRate = 0.0.radians.perSecond
     var gyroPitchRate = 0.0.radians.perSecond

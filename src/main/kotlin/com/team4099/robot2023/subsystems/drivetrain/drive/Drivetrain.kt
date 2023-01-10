@@ -1,5 +1,6 @@
 package com.team4099.robot2023.subsystems.drivetrain.drive
 
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
@@ -12,6 +13,8 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Twist2d
@@ -26,6 +29,7 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
@@ -124,6 +128,10 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   var lastModulePositions = mutableListOf(0.0.meters, 0.0.meters, 0.0.meters, 0.0.meters)
 
+  var fieldVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+
+  var robotVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+
   override fun periodic() {
     gyroNotConnectedAlert.set(!gyroInputs.gyroConnected)
     gyroIO.updateInputs(gyroInputs)
@@ -144,16 +152,19 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     }
     val chassisState: ChassisSpeeds =
       ChassisSpeeds(swerveDriveKinematics.toChassisSpeeds(*measuredStates))
-    val fieldVelocity =
+    val fieldVelCalculated =
       Translation2d(
         chassisState.vx.inMetersPerSecond.meters, chassisState.vy.inMetersPerSecond.meters
       )
         .rotateBy(odometryPose.rotation) // we don't use this but it's there if you want it ig
 
+    robotVelocity = Pair(chassisState.vx, chassisState.vy)
+    fieldVelocity = Pair(fieldVelCalculated.x.perSecond, fieldVelCalculated.y.perSecond)
+
     Logger.getInstance()
-      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.x.inMeters)
+      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.first.inMetersPerSecond)
     Logger.getInstance()
-      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.y.inMeters)
+      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.second.inMetersPerSecond)
 
     Logger.getInstance().processInputs("Drivetrain/Gyro", gyroInputs)
     Logger.getInstance().recordOutput("Drivetrain/ModuleStates", *measuredStates)
@@ -165,6 +176,17 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         doubleArrayOf(
           odometryPose.x.inMeters, odometryPose.y.inMeters, odometryPose.rotation.inRadians
         )
+      )
+    Logger.getInstance()
+      .recordOutput(
+        "Odometry/pose3d",
+        Pose3d(
+          odometryPose.x,
+          odometryPose.y,
+          1.0.meters,
+          Rotation3d(gyroInputs.gyroRoll, gyroInputs.gyroPitch, gyroInputs.gyroYaw)
+        )
+          .pose3d
       )
     Logger.getInstance()
       .recordOutput(

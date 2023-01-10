@@ -25,4 +25,6 @@ object ControlBoard {
     get() = driver.leftShoulderButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
+
+  val autoLevel = Trigger { driver.aButton }
 }
