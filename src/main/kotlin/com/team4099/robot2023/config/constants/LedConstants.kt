@@ -17,6 +17,13 @@ class LedConstants {
 
   enum class CandleMode(val animation: Animation?, val r: Int, val g: Int, val b: Int) {
     IDLE(null, 0, 0, 0),
-    ALERT(StrobeAnimation(255, 0, 0), 0, 0, 0)
+    ALERT(StrobeAnimation(255, 0, 0), 0, 0, 0),
+    ITEM(null, 0, 0, 0),
+    NOT_LEVELED(null, 0, 0, 0),
+    OUTTAKE(null, 0, 0, 0),
+
+    AUTO(null, 0, 0, 0),
+    TELEOP(null, 0, 0, 0),
+    DISABLED(null, 0, 0, 0)
   }
 }
