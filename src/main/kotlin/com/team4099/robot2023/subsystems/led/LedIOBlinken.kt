@@ -5,7 +5,7 @@ import com.team4099.robot2023.config.constants.LedConstants.BlinkenMode
 import com.team4099.robot2023.config.constants.LedConstants.LEDMode
 import org.team4099.lib.drivers.BlinkinLedDriver
 
-class LedIOBlinken : LedIO {
+object LedIOBlinken : LedIO {
   private val ledController = BlinkinLedDriver(Constants.Led.LED_BLINKEN_ID)
   private var lastLedState: LEDMode = LEDMode.IDLE
 

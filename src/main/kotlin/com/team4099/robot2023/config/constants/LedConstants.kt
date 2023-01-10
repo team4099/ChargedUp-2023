@@ -7,7 +7,14 @@ import org.team4099.lib.drivers.BlinkinLedDriver as Blinkin
 class LedConstants {
   enum class LEDMode {
     IDLE,
-    ALERT
+    ALERT,
+    ITEM,
+    NOT_LEVELED,
+    OUTTAKE,
+
+    AUTO,
+    TELEOP,
+    DISABLED
   }
 
   enum class BlinkenMode(val blinkenMode: Blinkin.BlinkinLedMode) {

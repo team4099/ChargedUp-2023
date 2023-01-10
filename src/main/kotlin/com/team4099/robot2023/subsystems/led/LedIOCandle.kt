@@ -18,6 +18,7 @@ object LedIOCandle : LedIO{
     when(newState) {
       LEDMode.IDLE -> setCANdleState(CandleMode.IDLE)
       LEDMode.ALERT -> setCANdleState(CandleMode.ALERT)
+      LEDMode.ITEM -> setCANdleState(CandleMode.ITEM)
     }
   }
 
