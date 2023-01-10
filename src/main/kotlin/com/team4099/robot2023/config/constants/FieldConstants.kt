@@ -1,5 +1,6 @@
 package com.team4099.robot2023.config.constants
 
+import com.team4099.apriltag.AprilTag
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.geometry.Pose2d
@@ -28,50 +29,59 @@ object FieldConstants {
   val tapeWidth = 2.0.inches
 
   // AprilTag locations (do not flip for red alliance)
-  val aprilTags: Map<Int, Pose3d> =
-    java.util.Map.of<Int, Pose3d>(
-      1,
-      Pose3d(
-        (610.77).inches,
-        (42.19).inches,
-        (18.22).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+  val aprilTags: List<AprilTag> =
+    listOf(
+      AprilTag(
+        1,
+        Pose3d(
+          (610.77).inches,
+          (42.19).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      2,
-      Pose3d(
-        (610.77).inches,
-        (108.19).inches,
-        (18.22).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+      AprilTag(
+        2,
+        Pose3d(
+          (610.77).inches,
+          (108.19).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      3,
-      Pose3d(
-        (610.77).inches,
-        (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
-        (18.22).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+      AprilTag(
+        3,
+        Pose3d(
+          (610.77).inches,
+          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      4,
-      Pose3d(
-        (636.96).inches,
-        (265.74).inches,
-        (27.38).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+      AprilTag(
+        4,
+        Pose3d(
+          (636.96).inches,
+          (265.74).inches,
+          (27.38).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      5,
-      Pose3d((14.25).inches, (265.74).inches, (27.38).inches, Rotation3d()),
-      6,
-      Pose3d(
-        (40.45).inches,
-        (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
-        (18.22).inches,
-        Rotation3d()
+      AprilTag(5, Pose3d((14.25).inches, (265.74).inches, (27.38).inches, Rotation3d())),
+      AprilTag(
+        6,
+        Pose3d(
+          (40.45).inches,
+          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (18.22).inches,
+          Rotation3d()
+        )
       ),
-      7,
-      Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d()),
-      8,
-      Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d())
+      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
+      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
     )
+
+  val wpilibAprilTags = aprilTags.map { it.apriltagWpilib }
 
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By
