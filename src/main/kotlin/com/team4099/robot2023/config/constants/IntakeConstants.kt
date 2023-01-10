@@ -1,5 +1,6 @@
 package com.team4099.robot2023.config.constants
 
+import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.seconds
 
 object IntakeConstants {
@@ -16,7 +17,10 @@ object IntakeConstants {
   // waiting for deisgn
   const val GEAR_RATIO = 0
 
-  enum class IntakeState(val speed: Double) {
+  val INTAKE_CURRENT_THRESHOLD = 15.amps
+  val OUTAKE_CURRENT_THRESHOLD = 20.amps
+
+  enum class GrabberState(val speed: Double) {
     // TODO: 1/9/23
     // figure out why IDLE speed is -0.1 for rapid react
 
