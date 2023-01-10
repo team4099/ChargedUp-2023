@@ -11,10 +11,10 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
 
   var lastIntakeRunTime = Clock.fpgaTime
 
-  var grabberState = IntakeConstants.GrabberState.IDLE
+  var rollerState = IntakeConstants.RollerState.IDLE
     set(state) {
-      io.setGrabberPower(state.speed)
-      if (state == IntakeConstants.GrabberState.IN) {
+      io.setRollerPower(state.speed)
+      if (state == IntakeConstants.RollerState.IN) {
         lastIntakeRunTime = Clock.fpgaTime
       }
       field = state
@@ -22,16 +22,16 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
 
   val intakingGamePiece: Boolean
     get() {
-      return inputs.grabberStatorCurrent >= IntakeConstants.INTAKE_CURRENT_THRESHOLD &&
-        grabberState == IntakeConstants.GrabberState.IN &&
+      return inputs.rollerStatorCurrent >= IntakeConstants.INTAKE_CURRENT_THRESHOLD &&
+        rollerState == IntakeConstants.RollerState.IN &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
         IntakeConstants.INTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
   val outtakingGamePiece: Boolean
     get() {
-      return inputs.grabberStatorCurrent >= IntakeConstants.OUTAKE_CURRENT_THRESHOLD &&
-        grabberState == IntakeConstants.GrabberState.OUT &&
+      return inputs.rollerStatorCurrent >= IntakeConstants.OUTAKE_CURRENT_THRESHOLD &&
+        rollerState == IntakeConstants.RollerState.OUT &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
         IntakeConstants.OUTTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
@@ -40,7 +40,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
 
   init {
     // setter isn't called on initialization
-    grabberState = grabberState
+    rollerState = rollerState
   }
 
   override fun periodic() {
@@ -51,7 +51,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
     }
 
     Logger.getInstance().processInputs("Intake", inputs)
-    Logger.getInstance().recordOutput("Intake/rollerState", grabberState.name)
+    Logger.getInstance().recordOutput("Intake/rollerState", rollerState.name)
     Logger.getInstance().recordOutput("Intake/intakingBall", intakingGamePiece)
     Logger.getInstance().recordOutput("Intake/outtakingBall", outtakingGamePiece)
     Logger.getInstance().recordOutput("Intake/extendTime", lastIntakeRunTime.inSeconds)

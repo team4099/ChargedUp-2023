@@ -28,19 +28,19 @@ object IntakeIONeo : IntakeIO {
     intakeSparkMax.setOpenLoopRampRate(IntakeConstants.RAMP_RATE)
   }
 
-  override fun setGrabberPower(percentOutput: Double) {
+  override fun setRollerPower(percentOutput: Double) {
     intakeSparkMax.set(percentOutput)
   }
 
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
-    inputs.grabberPosition = intakeSensor.position
-    inputs.grabberVelocity = intakeSensor.velocity
-    inputs.grabberStatorCurrent = intakeSparkMax.outputCurrent.amps
+    inputs.rollerPosition = intakeSensor.position
+    inputs.rollerVelocity = intakeSensor.velocity
+    inputs.rollerStatorCurrent = intakeSparkMax.outputCurrent.amps
     // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
     // AppliedVoltage = percentOutput * BatteryVoltage
     // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.grabberSupplyCurrent = inputs.grabberStatorCurrent * intakeSparkMax.appliedOutput
-    inputs.grabberTempCelcius = intakeSparkMax.motorTemperature.celsius
+    inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * intakeSparkMax.appliedOutput
+    inputs.rollerTempCelcius = intakeSparkMax.motorTemperature.celsius
   }
 }
