@@ -19,7 +19,6 @@ import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.Logger
-
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.volts
 
