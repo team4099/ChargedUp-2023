@@ -4,6 +4,7 @@ import com.ctre.phoenix.led.CANdle
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.LedConstants.CandleMode
 import com.team4099.robot2023.config.constants.LedConstants.LEDMode
+import kotlin.math.abs
 
 object LedIOCandle : LedIO {
 
@@ -18,7 +19,8 @@ object LedIOCandle : LedIO {
     lastState = newState
     when (newState) {
       LEDMode.ITEM -> setCANdleState(CandleMode.ITEM)
-      LEDMode.NOT_LEVELED -> setCANdleState(CandleMode.NOT_LEVELED)
+      LEDMode.POS_LEVELED -> setCANdleState(CandleMode.POS_LEVELED)
+      LEDMode.NEG_LEVELED -> setCANdleState(CandleMode.NEG_LEVELED)
       LEDMode.OUTTAKE -> setCANdleState(CandleMode.OUTTAKE)
       LEDMode.AUTO -> setCANdleState(CandleMode.AUTO)
       LEDMode.TELEOP -> setCANdleState(CandleMode.TELEOP)
@@ -32,5 +34,6 @@ object LedIOCandle : LedIO {
     } else {
       ledController.animate(state.animation)
     }
+
   }
 }
