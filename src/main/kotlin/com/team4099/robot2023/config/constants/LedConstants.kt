@@ -11,7 +11,6 @@ class LedConstants {
     ITEM,
     NOT_LEVELED,
     OUTTAKE,
-
     AUTO,
     TELEOP,
     DISABLED
@@ -19,7 +18,13 @@ class LedConstants {
 
   enum class BlinkenMode(val blinkenMode: Blinkin.BlinkinLedMode) {
     IDLE(Blinkin.BlinkinLedMode.SOLID_ORANGE),
-    ALERT(Blinkin.BlinkinLedMode.SOLID_DARK_RED)
+    ALERT(Blinkin.BlinkinLedMode.SOLID_DARK_RED),
+    ITEM(Blinkin.BlinkinLedMode.SOLID_AQUA),
+    NOT_LEVELED(Blinkin.BlinkinLedMode.SOLID_AQUA),
+    OUTTAKE(Blinkin.BlinkinLedMode.SOLID_AQUA),
+    AUTO(Blinkin.BlinkinLedMode.SOLID_AQUA),
+    TELEOP(Blinkin.BlinkinLedMode.SOLID_AQUA),
+    DISABLED(Blinkin.BlinkinLedMode.SOLID_AQUA)
   }
 
   enum class CandleMode(val animation: Animation?, val r: Int, val g: Int, val b: Int) {
@@ -28,7 +33,6 @@ class LedConstants {
     ITEM(null, 0, 0, 0),
     NOT_LEVELED(null, 0, 0, 0),
     OUTTAKE(null, 0, 0, 0),
-
     AUTO(null, 0, 0, 0),
     TELEOP(null, 0, 0, 0),
     DISABLED(null, 0, 0, 0)

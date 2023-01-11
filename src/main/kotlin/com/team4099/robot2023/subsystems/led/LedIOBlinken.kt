@@ -15,13 +15,19 @@ object LedIOBlinken : LedIO {
 
   override fun setState(newState: LEDMode) {
     lastLedState = newState
-    when(newState){
+    when (newState) {
       LEDMode.IDLE -> setBlinken(BlinkenMode.IDLE.blinkenMode)
       LEDMode.ALERT -> setBlinken(BlinkenMode.ALERT.blinkenMode)
+      LEDMode.ITEM -> setBlinken(BlinkenMode.ITEM.blinkenMode)
+      LEDMode.NOT_LEVELED -> setBlinken(BlinkenMode.NOT_LEVELED.blinkenMode)
+      LEDMode.OUTTAKE -> setBlinken(BlinkenMode.OUTTAKE.blinkenMode)
+      LEDMode.AUTO -> setBlinken(BlinkenMode.AUTO.blinkenMode)
+      LEDMode.TELEOP -> setBlinken(BlinkenMode.TELEOP.blinkenMode)
+      LEDMode.DISABLED -> setBlinken(BlinkenMode.DISABLED.blinkenMode)
     }
   }
 
-  private fun setBlinken(state: BlinkinLedDriver.BlinkinLedMode){
+  private fun setBlinken(state: BlinkinLedDriver.BlinkinLedMode) {
     ledController.setMode(state)
   }
 }
