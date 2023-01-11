@@ -9,8 +9,8 @@ plugins {
 	id "org.jetbrains.kotlinx.kover" version "0.4.2"
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 def TEAM = 4099
 // do not change main class (does not run without it being Main
