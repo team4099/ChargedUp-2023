@@ -11,7 +11,6 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
-import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
 
@@ -22,7 +21,7 @@ object RobotContainer {
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
-      drivetrain = Drivetrain(GyroIONavx, DrivetrainIOReal)
+      drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
       //      vision = Vision(VisionIOSim)
     } else {
       // Simulation implementations

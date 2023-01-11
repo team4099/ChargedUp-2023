@@ -134,10 +134,10 @@ class SwerveModuleIOFalcon(
     inputs.steeringStatorCurrent = steeringFalcon.statorCurrent.amps
     inputs.steeringSupplyCurrent = steeringFalcon.statorCurrent.amps
 
-    inputs.drivePosition = -driveSensor.position
+    inputs.drivePosition = driveSensor.position
     inputs.steeringPosition = steeringSensor.position
 
-    inputs.driveVelocity = -driveSensor.velocity
+    inputs.driveVelocity = driveSensor.velocity
     inputs.steeringVelocity = steeringSensor.velocity
 
     inputs.driveTemp = driveFalcon.temperature.celsius
