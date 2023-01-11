@@ -87,4 +87,10 @@ interface ElevatorIO {
 
   fun updateInputs(inputs: ElevatorInputs) {}
 
+  fun setOpenLoop(percentOutput: Double) {}
+
+  fun setPosition(height: Length) {}
+
+  fun configPID(kP: Double, kI: Double, kD: Double) {}
+
 }

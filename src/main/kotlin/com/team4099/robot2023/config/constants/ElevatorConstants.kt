@@ -7,9 +7,23 @@ import com.team4099.robot2023.config.constants.FieldConstants.Grids.midCubeZ
 import com.team4099.robot2023.config.constants.FieldConstants.LoadingZone.doubleSubstationShelfZ
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.perSecond
 
 object ElevatorConstants {
+
+  const val KP = 0.0
+  const val KI = 0.0
+  const val KD = 0.0
+  const val KFF = 0.0
+
+  val ELEVATOR_KS = 1.0.volts
+  val ELEVATOR_KG = 1.0.volts
+  val ELEVATOR_KV = 1.0.volts / 1.0.meters.perSecond
+  val ELEVATOR_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
+
   val ELEVATOR_MAX_EXTENSION = 50.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
   // TODO(Check height with design)
@@ -58,5 +72,8 @@ object ElevatorConstants {
     HIGH_CONE_SCORE(DesiredElevatorStates.HIGH_CONE_SCORE),
     BETWEEN_HIGH_CONE_AND_MAX_HEIGHT(DesiredElevatorStates.DUMMY),
     MAX_HEIGHT(DesiredElevatorStates.MAX_HEIGHT),
+    DUMMY(DesiredElevatorStates.DUMMY)
   }
+
+  val elevatorTolerance = 1.inches
 }
