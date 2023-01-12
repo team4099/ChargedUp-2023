@@ -15,6 +15,13 @@ import org.team4099.lib.units.perSecond
 
 object ElevatorConstants {
 
+  const val SENSOR_CPR = 42
+  const val GEAR_RATIO = 1.0
+  const val LEFT_MOTOR_INVERTED = true
+  const val RIGHT_MOTOR_INVERTED = false
+
+  val RAMP_RATE = 0.5
+
   val REAL_KP = 1.0.volts / 1.meters
   val REAL_KI = 0.0.volts / (1.meters * 1.seconds)
   val REAL_KD = 0.0.volts / (1.meters.perSecond)
@@ -28,6 +35,10 @@ object ElevatorConstants {
   val ELEVATOR_KV = 1.0.volts / 1.0.meters.perSecond
   val ELEVATOR_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
 
+  val VOLTAGE_COMPENSATION = 10.volts
+  val SUPPLY_CURRENT_LIMIT = 12
+
+  val SPOOL_RADIUS = 1.inches
   val MAX_VELOCITY = 35.inches.perSecond
   val MAX_ACCELERATION = 60.inches.perSecond.perSecond
 

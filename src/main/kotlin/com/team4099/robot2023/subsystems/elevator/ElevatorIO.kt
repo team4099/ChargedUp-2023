@@ -30,6 +30,9 @@ interface ElevatorIO {
     var leaderAppliedVoltage = 0.volts
     var followerAppliedVoltage = 0.volts
 
+    var leaderOutputVoltage = 0.volts
+    var followerOutputVoltage = 0.volts
+
     var leaderSupplyCurrent = 0.0.amps
     var leaderStatorCurrent = 0.0.amps
 
@@ -43,6 +46,8 @@ interface ElevatorIO {
       table?.put("elevatorPositionRad", elevatorPosition.inInches)
       table?.put("elevatorVelocityRadPerSec", elevatorVelocity.inInchesPerSecond)
       table?.put("elevatorAppliedVolts", leaderAppliedVoltage.inVolts)
+      table?.put("elevatorAppliedVolts", followerOutputVoltage.inVolts)
+      table?.put("elevatorAppliedVolts", leaderOutputVoltage.inVolts)
       table?.put("elevatorAppliedVolts", followerAppliedVoltage.inVolts)
       table?.put("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)
       table?.put("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)
@@ -66,6 +71,9 @@ interface ElevatorIO {
       table?.getDouble("elevatorLeaderAppliedVolts", leaderAppliedVoltage.inVolts)?.let {
         leaderAppliedVoltage = it.volts
       }
+      table?.getDouble("elevatorLeaderOutputVolts", leaderAppliedVoltage.inVolts)?.let {
+        leaderAppliedVoltage = it.volts
+      }
       table?.getDouble("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)?.let {
         leaderStatorCurrent = it.amps
       }
@@ -78,6 +86,9 @@ interface ElevatorIO {
 
       table?.getDouble("elevatorFollowerAppliedVolts", followerAppliedVoltage.inVolts)?.let {
         followerAppliedVoltage = it.volts
+      }
+      table?.getDouble("elevatorLeaderOutputVolts", leaderAppliedVoltage.inVolts)?.let {
+        leaderAppliedVoltage = it.volts
       }
       table?.getDouble("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)?.let {
         followerStatorCurrent = it.amps
