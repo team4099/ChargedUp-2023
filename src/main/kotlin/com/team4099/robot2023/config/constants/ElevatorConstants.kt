@@ -8,16 +8,20 @@ import com.team4099.robot2023.config.constants.FieldConstants.LoadingZone.double
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 object ElevatorConstants {
 
-  const val KP = 0.0
-  const val KI = 0.0
-  const val KD = 0.0
-  const val KFF = 0.0
+  val REAL_KP = 1.0.volts / 1.meters
+  val REAL_KI = 0.0.volts / (1.meters * 1.seconds)
+  val REAL_KD = 0.0.volts / (1.meters.perSecond)
+
+  val SIM_KP = 0.0.volts / 1.meters
+  val SIM_KI = 0.0.volts / (1.meters * 1.seconds)
+  val SIM_KD = 0.0.volts / (1.meters.perSecond)
 
   val ELEVATOR_KS = 1.0.volts
   val ELEVATOR_KG = 1.0.volts
