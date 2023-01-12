@@ -1,11 +1,20 @@
 package com.team4099.robot2023.subsystems.elevator
 
-import com.team4099.lib.logging.TunableNumber
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.inVoltsPerMeter
+import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
+import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import org.team4099.lib.units.derived.perMeter
+import org.team4099.lib.units.derived.perMeterSeconds
+import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.perSecond
 
 class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val inputs = ElevatorIO.ElevatorInputs()
@@ -17,9 +26,16 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       ElevatorConstants.ELEVATOR_KA
     )
 
-  private val kP = TunableNumber("Elevator/kP", ElevatorConstants.KP)
-  private val kI = TunableNumber("Elevator/kI", ElevatorConstants.KI)
-  private val kD = TunableNumber("Elevator/kD", ElevatorConstants.KD)
+  private val kP =
+    LoggedTunableValue("Elevator/kP", Pair({ it.inVoltsPerMeter }, { it.volts.perMeter }))
+  private val kI =
+    LoggedTunableValue(
+      "Elevator/kI", Pair({ it.inVoltsPerMeterSeconds }, { it.volts.perMeterSeconds })
+    )
+  private val kD =
+    LoggedTunableValue(
+      "Elevator/kD", Pair({ it.inVoltsPerMeterPerSecond }, { it.volts / 1.0.meters.perSecond })
+    )
 
   val forwardLimitReached: Boolean
     get() = inputs.elevatorPosition > ElevatorConstants.ELEVATOR_MAX_EXTENSION
@@ -41,7 +57,17 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       return ElevatorConstants.ActualElevatorStates.BETWEEN_TWO_STATES
     }
 
-  init {}
+  init {
+    if (RobotBase.isReal()) {
+      kP.initDefault(ElevatorConstants.REAL_KP)
+      kI.initDefault(ElevatorConstants.REAL_KI)
+      kD.initDefault(ElevatorConstants.REAL_KD)
+    } else {
+      kP.initDefault(ElevatorConstants.SIM_KP)
+      kI.initDefault(ElevatorConstants.SIM_KI)
+      kD.initDefault(ElevatorConstants.SIM_KD)
+    }
+  }
 
   override fun periodic() {
     io.updateInputs(inputs)

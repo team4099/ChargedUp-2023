@@ -3,12 +3,17 @@ package com.team4099.robot2023.subsystems.elevator
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.derived.DerivativeGain
+import org.team4099.lib.units.derived.IntegralGain
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
@@ -86,5 +91,9 @@ interface ElevatorIO {
 
   fun setPosition(height: Length) {}
 
-  fun configPID(kP: Double, kI: Double, kD: Double) {}
+  fun configPID(
+    kP: ProportionalGain<Meter, Volt>,
+    kI: IntegralGain<Meter, Volt>,
+    kD: DerivativeGain<Meter, Volt>
+  ) {}
 }
