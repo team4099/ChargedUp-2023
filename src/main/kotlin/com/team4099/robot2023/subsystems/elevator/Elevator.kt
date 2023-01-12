@@ -82,6 +82,8 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       kI.initDefault(ElevatorConstants.SIM_KI)
       kD.initDefault(ElevatorConstants.SIM_KD)
     }
+
+    io.configPID(kP.get(), kI.get(), kD.get())
   }
 
   override fun periodic() {
@@ -114,7 +116,6 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     var feedforward = elevatorFeedForward.calculate(setpoint.velocity, elevatorAccel)
 
     io.setPosition(setpoint.position, feedforward)
-
     Logger.getInstance().recordOutput("targetPosition", setpoint.position.inMeters)
     Logger.getInstance()
       .recordOutput("elevatorAcceleration", elevatorAccel.inMetersPerSecondPerSecond)
