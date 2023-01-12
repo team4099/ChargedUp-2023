@@ -4,7 +4,6 @@ import com.ctre.phoenix.led.CANdle
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.LedConstants.CandleMode
 import com.team4099.robot2023.config.constants.LedConstants.LEDMode
-import kotlin.math.abs
 
 object LedIOCandle : LedIO {
 
@@ -34,6 +33,5 @@ object LedIOCandle : LedIO {
     } else {
       ledController.animate(state.animation)
     }
-
   }
 }

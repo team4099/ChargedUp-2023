@@ -53,6 +53,5 @@ class LedConstants {
     AUTO(Color8Bit(Color.kAqua)),
     TELEOP(Color8Bit(Color.kAqua)),
     DISABLED(Color8Bit(Color.kAqua))
-
   }
 }
