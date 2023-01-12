@@ -33,7 +33,9 @@ object IntakeConstants {
     // figure out why IDLE speed is -0.1 for rapid react
 
     IDLE(0.0),
-    IN(0.9),
-    OUT(-1.0)
+    CONE_IN(0.8),
+    CUBE_IN(0.9),
+    CONE_OUT(-0.8),
+    CUBE_OUT(-0.9)
   }
 }
