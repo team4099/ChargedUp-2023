@@ -16,7 +16,7 @@ object ControlBoard {
     get() = -driver.leftXAxis
 
   val forward: Double
-    get() = driver.leftYAxis
+    get() = -driver.leftYAxis
 
   val turn: Double
     get() = driver.rightXAxis
