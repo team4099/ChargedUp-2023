@@ -66,7 +66,10 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   override fun execute() {
     Logger.getInstance().recordOutput("ActiveCommands/AutoLevelCommand", true)
 
-    var pitchFeedback = pitchPID.calculate(drivetrain.gyroInputs.gyroPitch, 0.0.degrees)
+    var pitchFeedback =
+      pitchPID.calculate(
+        drivetrain.gyroInputs.gyroPitch, DrivetrainConstants.DOCKING_PITCH_SETPOINT
+      )
 
     if (drivetrain.odometryPose.rotation.absoluteValue > 90.degrees) {
       pitchFeedback = -pitchFeedback
@@ -76,7 +79,10 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       0.0.radians.perSecond, Pair(pitchFeedback, 0.0.meters.perSecond), fieldOriented = true
     )
 
-    Logger.getInstance().recordOutput("AutoLevel/DesiredPitchDegrees", 0.0)
+    Logger.getInstance()
+      .recordOutput(
+        "AutoLevel/DesiredPitchDegrees", DrivetrainConstants.DOCKING_PITCH_SETPOINT.inDegrees
+      )
     Logger.getInstance()
       .recordOutput("AutoLevel/CurrentPitchDegrees", drivetrain.gyroInputs.gyroPitch.inDegrees)
     Logger.getInstance()
@@ -84,7 +90,10 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   }
 
   override fun isFinished(): Boolean {
-    return false
+    //  TODO use fpga clock to see if this condition has been satisified for a certain amount of
+    // time
+    return (drivetrain.gyroInputs.gyroPitch - DrivetrainConstants.DOCKING_PITCH_SETPOINT)
+      .absoluteValue < DrivetrainConstants.DOCKING_PITCH_TOLERANCE
   }
 
   override fun end(interrupted: Boolean) {
