@@ -32,8 +32,8 @@ object RobotContainer {
   fun mapDefaultCommands() {
     drivetrain.defaultCommand =
       TeleopDriveCommand(
-        { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
         { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+        { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
         { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
         { ControlBoard.robotOriented },
         drivetrain
