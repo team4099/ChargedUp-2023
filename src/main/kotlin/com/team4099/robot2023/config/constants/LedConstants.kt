@@ -2,6 +2,8 @@ package com.team4099.robot2023.config.constants
 
 import com.ctre.phoenix.led.Animation
 import com.ctre.phoenix.led.StrobeAnimation
+import edu.wpi.first.wpilibj.util.Color
+import edu.wpi.first.wpilibj.util.Color8Bit
 import org.team4099.lib.drivers.BlinkinLedDriver as Blinkin
 
 class LedConstants {
@@ -39,5 +41,18 @@ class LedConstants {
     AUTO(null, 0, 0, 0),
     TELEOP(null, 0, 0, 0),
     DISABLED(null, 0, 0, 0)
+  }
+
+  enum class SimMode(val color: Color8Bit) {
+    IDLE(Color8Bit(Color.kOrange)),
+    ALERT(Color8Bit(Color.kDarkRed)),
+    ITEM(Color8Bit(Color.kAqua)),
+    POS_LEVELED(Color8Bit(Color.kAqua)),
+    NEG_LEVELED(Color8Bit(Color.kAqua)),
+    OUTTAKE(Color8Bit(Color.kAqua)),
+    AUTO(Color8Bit(Color.kAqua)),
+    TELEOP(Color8Bit(Color.kAqua)),
+    DISABLED(Color8Bit(Color.kAqua))
+
   }
 }
