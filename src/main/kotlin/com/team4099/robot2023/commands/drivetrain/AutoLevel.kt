@@ -66,7 +66,11 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   override fun execute() {
     Logger.getInstance().recordOutput("ActiveCommands/AutoLevelCommand", true)
 
-    val pitchFeedback = pitchPID.calculate(drivetrain.gyroInputs.gyroPitch, 0.0.degrees)
+    var pitchFeedback = pitchPID.calculate(drivetrain.gyroInputs.gyroPitch, 0.0.degrees)
+
+    if (drivetrain.odometryPose.rotation.absoluteValue > 90.degrees) {
+      pitchFeedback = -pitchFeedback
+    }
 
     drivetrain.setOpenLoop(
       0.0.radians.perSecond, Pair(pitchFeedback, 0.0.meters.perSecond), fieldOriented = true
