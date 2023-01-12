@@ -52,28 +52,23 @@ object ElevatorConstants {
   // assuming that cone drop height is more than the cube drop height
   enum class ActualElevatorStates(val correspondingDesiredState: DesiredElevatorStates) {
     MIN_HEIGHT(DesiredElevatorStates.MIN_HEIGHT),
-    BETWEEN_MIN_AND_GROUND_INTAKE(DesiredElevatorStates.DUMMY),
     GROUND_INTAKE(DesiredElevatorStates.GROUND_INTAKE),
-    BETWEEN_GROUND_INTAKE_AND_LOW_CUBE(DesiredElevatorStates.DUMMY),
     LOW_CUBE_SCORE(DesiredElevatorStates.LOW_CUBE_SCORE),
-    BETWEEN_LOW_CUBE_AND_LOW_CONE(DesiredElevatorStates.DUMMY),
     LOW_CONE_SCORE(DesiredElevatorStates.LOW_CONE_SCORE),
-    BETWEEN_LOW_CONE_AND_MID_CUBE(DesiredElevatorStates.DUMMY),
     MID_CUBE_SCORE(DesiredElevatorStates.MID_CUBE_SCORE),
-    BETWEEN_MID_CUBE_AND_MID_CONE(DesiredElevatorStates.DUMMY),
     MID_CONE_SCORE(DesiredElevatorStates.MID_CONE_SCORE),
-    BETWEEN_MID_CONE_AND_CUBE_SHELF_INTAKE(DesiredElevatorStates.DUMMY),
     CUBE_SHELF_INTAKE(DesiredElevatorStates.CUBE_SHELF_INTAKE),
-    BETWEEN_CUBE_SHELF_INTAKE_AND_CONE_SHELF_INTAKE(DesiredElevatorStates.DUMMY),
     CONE_SHELF_INTAKE(DesiredElevatorStates.CONE_SHELF_INTAKE),
-    BETWEEN_CONE_SHELF_INTAKE_AND_HIGH_CUBE(DesiredElevatorStates.DUMMY),
     HIGH_CUBE_SCORE(DesiredElevatorStates.HIGH_CUBE_SCORE),
-    BETWEEN_HIGH_CUBE_AND_HIGH_CONE(DesiredElevatorStates.DUMMY),
     HIGH_CONE_SCORE(DesiredElevatorStates.HIGH_CONE_SCORE),
-    BETWEEN_HIGH_CONE_AND_MAX_HEIGHT(DesiredElevatorStates.DUMMY),
     MAX_HEIGHT(DesiredElevatorStates.MAX_HEIGHT),
-    DUMMY(DesiredElevatorStates.DUMMY)
+    BETWEEN_TWO_STATES(DesiredElevatorStates.DUMMY);
+
+    companion object {
+      fun fromDesiredState(desiredState: DesiredElevatorStates) =
+        ActualElevatorStates.values().first { it.correspondingDesiredState == desiredState }
+    }
   }
 
-  val elevatorTolerance = 1.inches
+  val ELEVATOR_TOLERANCE = 0.5.inches
 }
