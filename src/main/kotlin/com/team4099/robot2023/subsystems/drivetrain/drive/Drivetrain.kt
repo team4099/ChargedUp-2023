@@ -3,6 +3,7 @@ package com.team4099.robot2023.subsystems.drivetrain.drive
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.util.Alert
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
@@ -170,13 +171,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     Logger.getInstance().recordOutput("Drivetrain/ModuleStates", *measuredStates)
     Logger.getInstance().recordOutput("Drivetrain/SetPointStates", *setPointStates.toTypedArray())
 
-    Logger.getInstance()
-      .recordOutput(
-        "Odometry/pose",
-        doubleArrayOf(
-          odometryPose.x.inMeters, odometryPose.y.inMeters, odometryPose.rotation.inRadians
-        )
-      )
+    Logger.getInstance().recordOutput(VisionConstants.POSE_TOPIC_NAME, odometryPose.pose2d)
     Logger.getInstance()
       .recordOutput(
         "Odometry/pose3d",

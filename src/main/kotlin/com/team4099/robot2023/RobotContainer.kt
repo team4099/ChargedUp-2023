@@ -11,21 +11,24 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
+import com.team4099.robot2023.subsystems.vision.Vision
+import com.team4099.robot2023.subsystems.vision.VisionIO
+import com.team4099.robot2023.subsystems.vision.VisionIOSim
 import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
   private val drivetrain: Drivetrain
-  //  private val vision: Vision
+  private val vision: Vision
 
   init {
     if (Constants.Universal.ROBOT_MODE == Constants.Tuning.RobotType.REAL) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
-      //      vision = Vision(VisionIOSim)
+      vision = Vision(object : VisionIO {})
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
-      //      vision = Vision(VisionIOSim)
+      vision = Vision(VisionIOSim)
     }
   }
 
