@@ -27,6 +27,9 @@ object DrivetrainConstants {
   val DRIVETRAIN_LENGTH = 22.750.inches
   val DRIVETRAIN_WIDTH = 22.750.inches
 
+  val DOCKING_PITCH_SETPOINT = 0.0.degrees
+  val DOCKING_PITCH_TOLERANCE = 2.5.degrees
+
   val DRIVE_SETPOINT_MAX = 15.feet.perSecond
   val TURN_SETPOINT_MAX =
     (DRIVE_SETPOINT_MAX.inMetersPerSecond / DRIVETRAIN_LENGTH.inMeters / 2 * sqrt(2.0))
