@@ -1,7 +1,7 @@
 import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 
 plugins {
-	id "idea"
+	id "java"
 	id "org.jetbrains.kotlin.jvm" version "1.6.10"
 	id "edu.wpi.first.GradleRIO" version "2023.2.1"
 	id "com.diffplug.spotless" version "6.3.0"
@@ -137,9 +137,20 @@ wrapper {
 	gradleVersion = '7.3.3'
 }
 
+// Configure jar and deploy tasks
+deployArtifact.jarTask = jar
+wpi.java.configureExecutableTasks(jar)
+wpi.java.configureTestTasks(test)
+
+// Configure string concat to always inline compile
+tasks.withType(JavaCompile) {
+	options.compilerArgs.add "-XDstringConcat=inline"
+}
+
 compileKotlin {
 	kotlinOptions {
 		freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+		jvmTarget="17"
 	}
 }
 
