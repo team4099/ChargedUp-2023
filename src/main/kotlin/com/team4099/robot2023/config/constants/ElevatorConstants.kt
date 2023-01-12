@@ -28,6 +28,9 @@ object ElevatorConstants {
   val ELEVATOR_KV = 1.0.volts / 1.0.meters.perSecond
   val ELEVATOR_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
 
+  val MAX_VELOCITY = 35.inches.perSecond
+  val MAX_ACCELERATION = 60.inches.perSecond.perSecond
+
   val ELEVATOR_MAX_EXTENSION = 50.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
   // TODO(Check height with design)
@@ -39,7 +42,7 @@ object ElevatorConstants {
   val INTAKE_CONE_SHELF_OFFSET = 0.0.inches
 
   enum class DesiredElevatorStates(val height: Length) {
-    MIN_HEIGHT(0.0.inches),
+    MIN_HEIGHT(ELEVATOR_MAX_RETRACTION),
     GROUND_INTAKE(1.inches),
     LOW_CUBE_SCORE(CUBE_DROP_HEIGHT),
     LOW_CONE_SCORE(CONE_DROP_HEIGHT),
@@ -49,7 +52,7 @@ object ElevatorConstants {
     CONE_SHELF_INTAKE(doubleSubstationShelfZ + INTAKE_CONE_SHELF_OFFSET),
     HIGH_CUBE_SCORE(highCubeZ + CUBE_DROP_HEIGHT),
     HIGH_CONE_SCORE(highConeZ + CONE_DROP_HEIGHT),
-    MAX_HEIGHT(50.0.inches),
+    MAX_HEIGHT(ELEVATOR_MAX_EXTENSION),
     DUMMY(-Double.NEGATIVE_INFINITY.inches)
   }
 

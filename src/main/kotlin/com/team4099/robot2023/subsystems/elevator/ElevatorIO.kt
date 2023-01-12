@@ -11,6 +11,7 @@ import org.team4099.lib.units.base.inCelsius
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.DerivativeGain
+import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
@@ -89,7 +90,9 @@ interface ElevatorIO {
 
   fun setOpenLoop(percentOutput: Double) {}
 
-  fun setPosition(height: Length) {}
+  fun setPosition(height: Length, feedForward: ElectricalPotential) {}
+
+  fun zeroEncoder() {}
 
   fun configPID(
     kP: ProportionalGain<Meter, Volt>,
