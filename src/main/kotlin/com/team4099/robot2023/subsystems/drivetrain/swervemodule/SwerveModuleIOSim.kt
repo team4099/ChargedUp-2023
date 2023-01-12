@@ -112,6 +112,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     driveVelocity =
       (DrivetrainConstants.WHEEL_DIAMETER / 2 * driveMotorSim.angularVelocityRadPerSec).perSecond
     inputs.driveVelocity = driveVelocity
+    inputs.steeringVelocity = steerMotorSim.angularVelocityRadPerSec.radians.perSecond
 
     inputs.driveAppliedVoltage = (-1337).volts
     inputs.driveSupplyCurrent = driveMotorSim.currentDrawAmps.amps
