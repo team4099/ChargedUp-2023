@@ -110,6 +110,7 @@ object ElevatorIONeo : ElevatorIO {
     leaderPIDController.setFF(feedforward.inVolts)
     followerPIDController.setFF(feedforward.inVolts)
 
+    // should this be in elevator.kt
     val position = height / ElevatorConstants.ELEVATOR_ANGLE.sin
 
     leaderPIDController.setReference(position.inMeters, CANSparkMax.ControlType.kPosition)
