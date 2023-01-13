@@ -43,9 +43,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     )
 
   val forwardLimitReached: Boolean
-    get() = inputs.elevatorPosition > ElevatorConstants.ELEVATOR_MAX_EXTENSION
+    get() = inputs.elevatorPosition >= ElevatorConstants.ELEVATOR_MAX_EXTENSION
   val reverseLimitReached: Boolean
-    get() = inputs.elevatorPosition < ElevatorConstants.ELEVATOR_MAX_RETRACTION
+    get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION
 
   var desiredState = ElevatorConstants.DesiredElevatorStates.MIN_HEIGHT
 
@@ -97,9 +97,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   }
 
   fun setOpenLoop(percentOutput: Double) {
-    io.setOpenLoop(percentOutput)
-
-    if ((forwardLimitReached || reverseLimitReached) && percentOutput != 0.0) {
+    if (forwardLimitReached || reverseLimitReached) {
       io.setOpenLoop(0.0)
     } else {
       io.setOpenLoop(percentOutput)
@@ -111,11 +109,13 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
     val elevatorAccel =
       ((setpoint.velocity - elevatorSetpoint.velocity) / (Constants.Universal.LOOP_PERIOD_TIME))
+
     elevatorSetpoint = setpoint
 
     var feedforward = elevatorFeedForward.calculate(setpoint.velocity, elevatorAccel)
 
     io.setPosition(setpoint.position, feedforward)
+
     Logger.getInstance().recordOutput("targetPosition", setpoint.position.inMeters)
     Logger.getInstance()
       .recordOutput("elevatorAcceleration", elevatorAccel.inMetersPerSecondPerSecond)

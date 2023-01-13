@@ -18,7 +18,6 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
-import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 import kotlin.math.sin
 
@@ -66,7 +65,7 @@ object ElevatorIONeo : ElevatorIO {
 
     // TODO(figure out if we need this)
     leaderSparkMax.setOpenLoopRampRate(ElevatorConstants.RAMP_RATE)
-    leaderSparkMax.setOpenLoopRampRate(ElevatorConstants.RAMP_RATE)
+    followerSparkMax.setOpenLoopRampRate(ElevatorConstants.RAMP_RATE)
 
     followerSparkMax.follow(leaderSparkMax)
   }
@@ -77,23 +76,24 @@ object ElevatorIONeo : ElevatorIO {
 
     inputs.elevatorVelocity = leaderSensor.velocity
 
+    inputs.leaderAppliedOutput = leaderSparkMax.appliedOutput
+
     inputs.leaderStatorCurrent = leaderSparkMax.outputCurrent.amps
 
-    // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
+    // BatteryVoltage * SupplyCurrent = percentOutput * BatteryVoltage * StatorCurrent
     // AppliedVoltage = percentOutput * BatteryVoltage
-    // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
+    // SupplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
+
     inputs.leaderSupplyCurrent = inputs.leaderStatorCurrent * leaderSparkMax.appliedOutput
 
-    inputs.leaderOutputVoltage = leaderSparkMax.appliedOutput.volts
-
     inputs.leaderTempCelcius = leaderSparkMax.motorTemperature.celsius
+
+    inputs.followerAppliedOutput = followerSparkMax.appliedOutput
 
     inputs.followerStatorCurrent = followerSparkMax.outputCurrent.amps
 
     inputs.followerSupplyCurrent = inputs.followerStatorCurrent * followerSparkMax.appliedOutput
-
-    inputs.followerOutputVoltage = followerSparkMax.appliedOutput.volts
 
     inputs.followerTempCelcius = followerSparkMax.motorTemperature.celsius
   }
@@ -109,12 +109,12 @@ object ElevatorIONeo : ElevatorIO {
 
     val position = height / sin(ElevatorConstants.ELEVATOR_ANGLE.inRadians)
 
-    leaderSparkMax.pidController.setReference(position.inMeters, CANSparkMax.ControlType.kPosition)
+    leaderPIDController.setReference(position.inMeters, CANSparkMax.ControlType.kPosition)
   }
 
-  override fun zeroLeftEncoder() {
+  override fun zeroEncoder() {
     leaderSparkMax.encoder.position = 0.0
-    leaderSparkMax.encoder.position = 0.0
+    followerSparkMax.encoder.position = 0.0
   }
 
   override fun configPID(

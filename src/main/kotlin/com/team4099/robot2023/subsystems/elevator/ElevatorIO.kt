@@ -15,8 +15,6 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.perSecond
 
@@ -26,11 +24,9 @@ interface ElevatorIO {
     var elevatorPosition = 0.0.inches
     var elevatorVelocity = 0.0.inches.perSecond
 
-    var leaderAppliedVoltage = 0.volts
-    var followerAppliedVoltage = 0.volts
-
-    var leaderOutputVoltage = 0.volts
-    var followerOutputVoltage = 0.volts
+    // TODO(check if we need to log follower)
+    var leaderAppliedOutput = 0.0
+    var followerAppliedOutput = 0.0
 
     var leaderSupplyCurrent = 0.0.amps
     var leaderStatorCurrent = 0.0.amps
@@ -44,10 +40,8 @@ interface ElevatorIO {
     override fun toLog(table: LogTable) {
       table?.put("elevatorPositionRad", elevatorPosition.inInches)
       table?.put("elevatorVelocityRadPerSec", elevatorVelocity.inInchesPerSecond)
-      table?.put("elevatorAppliedVolts", leaderAppliedVoltage.inVolts)
-      table?.put("elevatorAppliedVolts", followerOutputVoltage.inVolts)
-      table?.put("elevatorAppliedVolts", leaderOutputVoltage.inVolts)
-      table?.put("elevatorAppliedVolts", followerAppliedVoltage.inVolts)
+      table?.put("elevatorAppliedVolts", leaderAppliedOutput)
+      table?.put("elevatorAppliedVolts", followerAppliedOutput)
       table?.put("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)
       table?.put("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)
       table?.put("elevatorLeaderCurrentAmps", leaderSupplyCurrent.inAmperes)
@@ -63,11 +57,8 @@ interface ElevatorIO {
       table?.getDouble("elevatorVelocityRadPerSec", elevatorVelocity.inInchesPerSecond)?.let {
         elevatorVelocity = it.inches.perSecond
       }
-      table?.getDouble("elevatorLeaderAppliedVolts", leaderAppliedVoltage.inVolts)?.let {
-        leaderAppliedVoltage = it.volts
-      }
-      table?.getDouble("elevatorLeaderOutputVolts", leaderAppliedVoltage.inVolts)?.let {
-        leaderAppliedVoltage = it.volts
+      table?.getDouble("elevatorLeaderAppliedVolts", leaderAppliedOutput)?.let {
+        leaderAppliedOutput = it
       }
       table?.getDouble("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)?.let {
         leaderStatorCurrent = it.amps
@@ -79,11 +70,8 @@ interface ElevatorIO {
         leaderTempCelcius = it.celsius
       }
 
-      table?.getDouble("elevatorFollowerAppliedVolts", followerAppliedVoltage.inVolts)?.let {
-        followerAppliedVoltage = it.volts
-      }
-      table?.getDouble("elevatorLeaderOutputVolts", leaderAppliedVoltage.inVolts)?.let {
-        leaderAppliedVoltage = it.volts
+      table?.getDouble("elevatorFollowerAppliedVolts", followerAppliedOutput)?.let {
+        followerAppliedOutput = it
       }
       table?.getDouble("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)?.let {
         followerStatorCurrent = it.amps
