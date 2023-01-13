@@ -7,7 +7,7 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.inSeconds
 
 class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
-  val inputs = ManipulatorIO.IntakeIOInputs()
+  val inputs = ManipulatorIO.ManipulatorIOInputs()
 
   var lastIntakeRunTime = Clock.fpgaTime
 
