@@ -90,7 +90,7 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       .recordOutput("AutoLevel/CorrectionVelocity", pitchFeedback.inMetersPerSecond)
   }
 
-  var balanceTime = Clock.fpgaTime
+  var lastTimeSinceUnbalanced = Clock.fpgaTime
 
   override fun isFinished(): Boolean {
 
@@ -99,10 +99,10 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
         .absoluteValue < DrivetrainConstants.DOCKING_PITCH_TOLERANCE
 
     if (!balanced) {
-      balanceTime = Clock.fpgaTime
+      lastTimeSinceUnbalanced = Clock.fpgaTime
     }
 
-    return (Clock.fpgaTime - balanceTime > DrivetrainConstants.DOCKING_TIME_TOLERANCE)
+    return (Clock.fpgaTime - lastTimeSinceUnbalanced > DrivetrainConstants.DOCKING_TIME_THRESHOLD)
   }
 
   override fun end(interrupted: Boolean) {
