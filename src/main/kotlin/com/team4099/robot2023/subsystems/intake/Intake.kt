@@ -8,17 +8,6 @@ import org.littletonrobotics.junction.Logger
 class Intake(val io: IntakeIO) : SubsystemBase() {
   val inputs = IntakeIO.IntakeIOInputs()
 
-  var lastIntakeRunTime = Clock.fpgaTime
-
-  var rollerState = IntakeConstants.ROLLER_STATE.IDLE
-    set(state) {
-      io.setRollerPower(state.power)
-      if (state == IntakeConstants.ROLLER_STATE.INTAKE) {
-        lastIntakeRunTime = Clock.fpgaTime
-      }
-      field = state
-    }
-
   init {}
 
   override fun periodic() {
