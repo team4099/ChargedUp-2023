@@ -8,13 +8,11 @@ import com.team4099.lib.utils.sim.SimVisionSystem
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.photonvision.targeting.PhotonPipelineResult
 
 object VisionIOSim : VisionIO {
-  val pose = Pose3d(Pose2d())
 
   val layout: AprilTagFieldLayout =
     AprilTagFieldLayout(
@@ -24,7 +22,7 @@ object VisionIOSim : VisionIO {
   val ntInstance = NetworkTableInstance.getDefault()
   val dtPoseArraySub =
     ntInstance
-      .getDoubleArrayTopic("RealOutputs/" + VisionConstants.POSE_TOPIC_NAME)
+      .getDoubleArrayTopic("/AdvantageKit/RealOutputs/" + VisionConstants.POSE_TOPIC_NAME)
       .getEntry(doubleArrayOf(0.0, 0.0, 0.0))
 
   val frontCamera = PhotonCamera(ntInstance, VisionConstants.FRONT_CAMERA_NAME)

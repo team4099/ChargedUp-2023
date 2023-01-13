@@ -86,6 +86,9 @@ class Vision(val io: VisionIO) : SubsystemBase() {
     altPoses = altCurPoses
 
     Logger.getInstance()
-      .recordOutput("Vision/VisibleTags", *bestPoses.map { it.pose2d }.toTypedArray())
+      .recordOutput("Vision/VisibleTags", *knownTags.map { it.pose.pose3d }.toTypedArray())
+
+    Logger.getInstance()
+      .recordOutput("Vision/bestPoses", *bestPoses.map { it.pose2d }.toTypedArray())
   }
 }
