@@ -1,20 +1,22 @@
-package com.team4099.robot2023.subsystems.intake
+package com.team4099.robot2023.subsystems.manipulator
 
 import com.team4099.lib.hal.Clock
-import com.team4099.robot2023.config.constants.IntakeConstants
+import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.inSeconds
 
-class Intake(val io: IntakeIO) : SubsystemBase() {
-  val inputs = IntakeIO.IntakeIOInputs()
+class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
+  val inputs = ManipulatorIO.IntakeIOInputs()
 
   var lastIntakeRunTime = Clock.fpgaTime
 
-  var rollerState = IntakeConstants.RollerState.IDLE
+  var rollerState = ManipulatorConstants.RollerState.IDLE
     set(state) {
       io.setRollerPower(state.speed)
-      if (state == IntakeConstants.RollerState.IN) {
+      if (state == ManipulatorConstants.RollerState.CONE_IN ||
+        state == ManipulatorConstants.RollerState.CUBE_IN
+      ) {
         lastIntakeRunTime = Clock.fpgaTime
       }
       field = state
@@ -22,18 +24,24 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
 
   val intakingGamePiece: Boolean
     get() {
-      return inputs.rollerStatorCurrent >= IntakeConstants.INTAKE_CURRENT_THRESHOLD &&
-        rollerState == IntakeConstants.RollerState.IN &&
+      return inputs.rollerStatorCurrent >= ManipulatorConstants.INTAKE_CURRENT_THRESHOLD &&
+        (
+          rollerState == ManipulatorConstants.RollerState.CONE_IN ||
+            rollerState == ManipulatorConstants.RollerState.CONE_IN
+          ) &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
-        IntakeConstants.INTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+        ManipulatorConstants.INTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
   val outtakingGamePiece: Boolean
     get() {
-      return inputs.rollerStatorCurrent >= IntakeConstants.OUTAKE_CURRENT_THRESHOLD &&
-        rollerState == IntakeConstants.RollerState.OUT &&
+      return inputs.rollerStatorCurrent >= ManipulatorConstants.OUTAKE_CURRENT_THRESHOLD &&
+        (
+          rollerState == ManipulatorConstants.RollerState.CONE_OUT ||
+            rollerState == ManipulatorConstants.RollerState.CUBE_OUT
+          ) &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
-        IntakeConstants.OUTTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+        ManipulatorConstants.OUTTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
   var lastIntakeSpikeTime = Clock.fpgaTime

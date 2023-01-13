@@ -1,18 +1,18 @@
 package com.team4099.robot2022.commands.intake
 
-import com.team4099.robot2023.config.constants.IntakeConstants
-import com.team4099.robot2023.subsystems.intake.Intake
+import com.team4099.robot2023.config.constants.ManipulatorConstants
+import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 
-class IntakeConeCommand(val intake: Intake) : CommandBase() {
+class IntakeConeCommand(val manipulator: Manipulator) : CommandBase() {
   init {
-    addRequirements(intake)
+    addRequirements(manipulator)
   }
 
   override fun initialize() {
 
-    intake.rollerState = IntakeConstants.RollerState.CONE_IN
+    manipulator.rollerState = ManipulatorConstants.RollerState.CONE_IN
   }
 
   override fun execute() {
@@ -20,7 +20,7 @@ class IntakeConeCommand(val intake: Intake) : CommandBase() {
   }
 
   override fun end(interrupted: Boolean) {
-    intake.rollerState = IntakeConstants.RollerState.IDLE
+    manipulator.rollerState = ManipulatorConstants.RollerState.IDLE
   }
 
   override fun isFinished(): Boolean {
