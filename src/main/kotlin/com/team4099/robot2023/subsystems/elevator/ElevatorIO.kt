@@ -52,10 +52,7 @@ interface ElevatorIO {
     }
 
     override fun fromLog(table: LogTable) {
-<<<<<<< HEAD
-      TODO("Not yet implemented")
 
-=======
       table?.getDouble("elevatorPositionRad", elevatorPosition.inInches)?.let {
         elevatorPosition = it.inches
       }

@@ -1,0 +1,29 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Pre-match/Mode": "String Chooser",
+      "/SmartDashboard/Arm Sim": "Mechanism2d",
+      "/SmartDashboard/AutonomousMode": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
+    "createNonCanonical": true,
+    "properties": true,
+    "special": true,
+    "transitory": {
+      "SmartDashboard": {
+        "TunableNumbers": {
+          "Intake": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
+    }
+  }
+}

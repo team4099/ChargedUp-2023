@@ -1,0 +1,171 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00000001314c744b, pid=2553, tid=259
+#
+# JRE version: Java(TM) SE Runtime Environment (17.0.1+12) (build 17.0.1+12-LTS-39)
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (17.0.1+12-LTS-39, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, bsd-amd64)
+# Problematic frame:
+# C  [libhalsim_gui.dylib+0x1e44b]  _ZNSt3__110__function6__funcIZN9halsimgui19NetworkTablesSimGui10InitializeEvE3$_0NS_9allocatorIS4_EEFvvEEclEv+0xb
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Djava.library.path=/Users/matth/Documents/GitHub/ChargedUp-2023/build/jni/release -Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant /Users/matth/Documents/GitHub/ChargedUp-2023/build/libs/ChargedUp-2023.jar
+
+Host: "MacBookAir10,1" x86_64 (EMULATED) 2400 MHz, 8 cores, 16G, Darwin 21.6.0, macOS 12.5 (21G72)
+Time: Sun Jan 29 18:16:57 2023 EST elapsed time: 328.337109 seconds (0d 0h 5m 28s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007fdc3a811a00):  JavaThread "main" [_thread_in_native, id=259, stack(0x0000000304178000,0x0000000304978000)]
+
+Stack: [0x0000000304178000,0x0000000304978000],  sp=0x0000000304974960,  free space=8178k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libhalsim_gui.dylib+0x1e44b]  _ZNSt3__110__function6__funcIZN9halsimgui19NetworkTablesSimGui10InitializeEvE3$_0NS_9allocatorIS4_EEFvvEEclEv+0xb
+C  [libhalsim_gui.dylib+0x87d35]  _ZN3wpi3gui17CommonRenderFrameEv+0x75
+C  [libhalsim_gui.dylib+0x9b516]  _ZN3wpi3gui19PlatformRenderFrameEv+0x326
+C  [libhalsim_gui.dylib+0x87c37]  _ZN3wpi3gui4MainEv+0x107
+C  [libhalsim_gui.dylib+0x1dbf9]  _ZZ20HALSIM_InitExtensionEN3$_28__invokeEPv+0x9
+j  edu.wpi.first.hal.HAL.runMain()V+0
+j  edu.wpi.first.wpilibj.RobotBase.startRobot(Ljava/util/function/Supplier;)V+83
+j  com.team4099.robot2023.Main$Companion.main([Ljava/lang/String;)V+11
+j  com.team4099.robot2023.Main.main([Ljava/lang/String;)V+4
+v  ~StubRoutines::call_stub
+V  [libjvm.dylib+0x502a21]  _ZN9JavaCalls11call_helperEP9JavaValueRK12methodHandleP17JavaCallArgumentsP10JavaThread+0x2a1
+V  [libjvm.dylib+0x564412]  _ZL17jni_invoke_staticP7JNIEnv_P9JavaValueP8_jobject11JNICallTypeP10_jmethodIDP18JNI_ArgumentPusherP10JavaThread+0x152
+V  [libjvm.dylib+0x5677d3]  jni_CallStaticVoidMethod+0x183
+C  [libjli.dylib+0x50bf]  JavaMain+0x9bf
+C  [libjli.dylib+0x7a5c]  __JVMInit_block_invoke+0x4c
+C  [Foundation+0x41ae1]  __NSBLOCKOPERATION_IS_CALLING_OUT_TO_A_BLOCK__+0x7
+C  [Foundation+0x419d9]  -[NSBlockOperation main]+0x62
+C  [Foundation+0x4196f]  __NSOPERATION_IS_INVOKING_MAIN__+0x11
+C  [Foundation+0x40bdb]  -[NSOperation start]+0x311
+C  [Foundation+0x814f7]  __NSThreadPerformPerform+0xb3
+C  [CoreFoundation+0x7f37a]  __CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__+0x11
+C  [CoreFoundation+0x7f2e2]  __CFRunLoopDoSource0+0xb4
+C  [CoreFoundation+0x7f060]  __CFRunLoopDoSources0+0xf2
+C  [CoreFoundation+0x7da70]  __CFRunLoopRun+0x37c
+C  [CoreFoundation+0x7d034]  CFRunLoopRunSpecific+0x232
+C  [libjli.dylib+0x70b2]  CreateExecutionEnvironment+0x182
+C  [libjli.dylib+0x2c15]  JLI_Launch+0x585
+C  [java+0x3c09]  main+0x189
+C  0x00000002004b352e
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  edu.wpi.first.hal.HAL.runMain()V+0
+j  edu.wpi.first.wpilibj.RobotBase.startRobot(Ljava/util/function/Supplier;)V+83
+j  com.team4099.robot2023.Main$Companion.main([Ljava/lang/String;)V+11
+j  com.team4099.robot2023.Main.main([Ljava/lang/String;)V+4
+v  ~StubRoutines::call_stub
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 1 (SEGV_MAPERR), si_addr: 0x0000000000000000
+
+Register to memory mapping:
+
+RAX=0x000000013189b608: _ZTVNSt3__110__function6__funcIZN9halsimgui19NetworkTablesSimGui10InitializeEvE3$_0NS_9allocatorIS4_EEFvvEEE+0x10 in /Users/matth/Documents/GitHub/ChargedUp-2023/build/jni/release/libhalsim_gui.dylib at 0x00000001314a9000
+RBX=0x0000000000000004 is an unknown value
+RCX=0x00007fdc3b00a380 points into unknown readable memory: 0x00000001318998e8 | e8 98 89 31 01 00 00 00
+RDX=0x0000000000000005 is an unknown value
+RSP=0x0000000304974960 is pointing into the stack for thread: 0x00007fdc3a811a00
+RBP=0x0000000304974960 is pointing into the stack for thread: 0x00007fdc3a811a00
+RSI=0x0 is NULL
+RDI=0x0 is NULL
+R8 =0x0000000000000587 is an unknown value
+R9 =0xffffffff00000000 is an unknown value
+R10=0x000000013018bfd0: _ZZN3hal4init23InitializeDriverStationEvE2ds+0x18 in /Users/matth/Documents/GitHub/ChargedUp-2023/build/jni/release/libwpiHal.dylib at 0x00000001300fe000
+R11=0x0 is NULL
+R12=0x00007ff80987f300: objc_release+0 in /usr/lib/libobjc.A.dylib at 0x00007ff809876000
+R13=0x0000600001f40480 points into unknown readable memory: 0x021dfff84b440265 | 65 02 44 4b f8 ff 1d 02
+R14=0xaaaaaaaaaaaaaaab is an unknown value
+R15=0x00000000000000e0 is an unknown value
+
+
+Registers:
+RAX=0x000000013189b608, RBX=0x0000000000000004, RCX=0x00007fdc3b00a380, RDX=0x0000000000000005
+RSP=0x0000000304974960, RBP=0x0000000304974960, RSI=0x0000000000000000, RDI=0x0000000000000000
+R8 =0x0000000000000587, R9 =0xffffffff00000000, R10=0x000000013018bfd0, R11=0x0000000000000000
+R12=0x00007ff80987f300, R13=0x0000600001f40480, R14=0xaaaaaaaaaaaaaaab, R15=0x00000000000000e0
+RIP=0x00000001314c744b, EFLAGS=0x0000000000000202, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x0000000304974960)
+0x0000000304974960:   0000000304974990 0000000131530d35
+0x0000000304974970:   031dfff84b72d321 00007fdc3b0d4610
+0x0000000304974980:   0000600000e32df0 0000600000385320
+0x0000000304974990:   0000000304974a50 0000000131544516
+0x00000003049749a0:   3fdcccccc0000000 3fe19999a0000000
+0x00000003049749b0:   3fe3333340000000 3ff0000000000000
+0x00000003049749c0:   3fdcccccc0000000 3fe19999a0000000
+0x00000003049749d0:   3fe3333340000000 3ff0000000000000
+0x00000003049749e0:   3fdcccccc0000000 3fe19999a0000000
+0x00000003049749f0:   3fe3333340000000 3ff0000000000000
+0x0000000304974a00:   0000000000000000 00007fdc4b8091e8
+0x0000000304974a10:   0000600001f40480 00000ad60000079a
+0x0000000304974a20:   00007fdc3b0d4610 00007fdc3a87b608
+0x0000000304974a30:   0000000000000000 000000012e00df88
+0x0000000304974a40:   0000000304974a66 0000000000000000
+0x0000000304974a50:   0000000304974a80 0000000131530c37
+0x0000000304974a60:   00000001099657e0 000000012e00df88
+0x0000000304974a70:   0000000304974b08 00007fdc3a811a00
+0x0000000304974a80:   0000000304974a90 00000001314c6bf9
+0x0000000304974a90:   0000000304974af0 00000001139e5365
+0x0000000304974aa0:   00000001139e50b6 0000000304974aa8
+0x0000000304974ab0:   000000012e00df88 0000000304974b08
+0x0000000304974ac0:   000000012e00f260 0000000000000000
+0x0000000304974ad0:   0000000706600000 000000012e00df88
+0x0000000304974ae0:   0000000000000000 0000000304974b10
+0x0000000304974af0:   0000000304974b58 00000001139e142b
+0x0000000304974b00:   0000000706600000 00000001139e2f18
+0x0000000304974b10:   0000000304974b10 000000012e007de3
+0x0000000304974b20:   0000000304974b80 000000012e00cb78
+0x0000000304974b30:   0000000000000000 0000000706600078
+0x0000000304974b40:   000000012e00bf20 0000000304974b10
+0x0000000304974b50:   0000000304974b80 0000000304974bd0 
+
+Instructions: (pc=0x00000001314c744b)
+0x00000001314c734b:   fb 75 0e 48 8b 07 ff 50 20 4c 89 f7 e8 fc 45 31
+0x00000001314c735b:   00 48 85 ff 74 06 48 8b 07 ff 50 28 4c 89 f7 e8
+0x00000001314c736b:   e9 45 31 00 49 89 c6 48 89 df e8 da 49 31 00 4c
+0x00000001314c737b:   89 f7 e8 d6 45 31 00 66 2e 0f 1f 84 00 00 00 00
+0x00000001314c738b:   00 0f 1f 40 00 55 48 89 e5 48 8b 3d fd 24 3e 00
+0x00000001314c739b:   48 85 ff 74 0c 48 8d 35 a9 6d 3a 00 e8 44 ce 04
+0x00000001314c73ab:   00 48 8b 3d ed 24 3e 00 48 85 ff 74 0d 48 8d 35
+0x00000001314c73bb:   a4 6d 3a 00 5d e9 2b ce 04 00 5d c3 66 0f 1f 84
+0x00000001314c73cb:   00 00 00 00 00 55 48 89 e5 5d c3 66 2e 0f 1f 84
+0x00000001314c73db:   00 00 00 00 00 55 48 89 e5 5d e9 6a 49 31 00 66
+0x00000001314c73eb:   0f 1f 44 00 00 55 48 89 e5 bf 10 00 00 00 e8 5c
+0x00000001314c73fb:   49 31 00 48 8d 0d 03 42 3d 00 48 89 08 5d c3 66
+0x00000001314c740b:   0f 1f 44 00 00 55 48 89 e5 48 8d 05 ed 41 3d 00
+0x00000001314c741b:   48 89 06 5d c3 55 48 89 e5 5d c3 66 2e 0f 1f 84
+0x00000001314c742b:   00 00 00 00 00 55 48 89 e5 5d e9 1a 49 31 00 66
+0x00000001314c743b:   0f 1f 44 00 00 55 48 89 e5 48 8b 3d 45 24 3e 00
+0x00000001314c744b:   48 8b 07 5d ff 60 10 66 2e 0f 1f 84 00 00 00 00
+0x00000001314c745b:   00 0f 1f 40 00 55 48 89 e5 48 8d 0d 4e f8 31 00
+0x00000001314c746b:   48 83 c7 08 31 c0 48 39 4e 08 48 0f 44 c7 5d c3
+0x00000001314c747b:   0f 1f 44 00 00 55 48 89 e5 48 8d 05 dd 41 3d 00
+0x00000001314c748b:   5d c3 0f 1f 00 55 48 89 e5 5d c3 66 2e 0f 1f 84
+0x00000001314c749b:   00 00 00 00 00 55 48 89 e5 5d e9 aa 48 31 00 66
+0x00000001314c74ab:   0f 1f 44 00 00 55 48 89 e5 bf 10 00 00 00 e8 9c
+0x00000001314c74bb:   48 31 00 48 8d 0d c3 41 3d 00 48 89 08 5d c3 66
+0x00000001314c74cb:   0f 1f 44 00 00 55 48 89 e5 48 8d 05 ad 41 3d 00
+0x00000001314c74db:   48 89 06 5d c3 55 48 89 e5 5d c3 66 2e 0f 1f 84
+0x00000001314c74eb:   00 00 00 00 00 55 48 89 e5 5d e9 5a 48 31 00 66
+0x00000001314c74fb:   0f 1f 44 00 00 55 48 89 e5 48 8b 3d 8d 23 3e 00
+0x00000001314c750b:   5d e9 4f c9 04 00 66 2e 0f 1f 84 00 00 00 00 00
+0x00000001314c751b:   0f 1f 44 00 00 55 48 89 e5 48 8d 0d 2c f8 31 00
+0x00000001314c752b:   48 83 c7 08 31 c0 48 39 4e 08 48 0f 44 c7 5d c3
+0x00000001314c753b:   0f 1f 44 00 00 55 48 89 e5 48 8d 05 9d 41 3d 00 
+
+
+Stack slot to memory mapping:
+stack at sp + 0 slots: 0x0000000304974990 is pointing into the stack for thread: 0x00007fdc3a811a00
+stack at sp + 1 slots: 0x0000000131530d35: _ZN3wpi3gui17CommonRenderFrameEv+0x75 in /Users/matth/Documents/GitHub/ChargedUp-2023/build/jni/release/libhalsim_gui.dylib at 0x00000001314a9000
+stack at sp + 2 slots: 0x031dfff84b72d321 is an unknown value
