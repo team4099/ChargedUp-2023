@@ -4,7 +4,7 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.volts
 
-object IntakeConstants {
+object ManipulatorConstants {
   // TODO: 1/9/23
   // make sure constants are their actual values
   val RAMP_RATE = 0.5

@@ -1,4 +1,4 @@
-package com.team4099.robot2023.subsystems.intake
+package com.team4099.robot2023.subsystems.manipulator
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
@@ -14,8 +14,8 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.perSecond
 
-interface IntakeIO {
-  class IntakeIOInputs : LoggableInputs {
+interface ManipulatorIO {
+  class ManipulatorIOInputs : LoggableInputs {
 
     var rollerPosition = 0.degrees
     var rollerVelocity = 0.degrees.perSecond
@@ -57,7 +57,7 @@ interface IntakeIO {
     }
   }
 
-  fun updateInputs(inputs: IntakeIOInputs) {}
+  fun updateInputs(inputs: ManipulatorIOInputs) {}
 
   fun setRollerPower(percentOutPut: Double) {}
 }
