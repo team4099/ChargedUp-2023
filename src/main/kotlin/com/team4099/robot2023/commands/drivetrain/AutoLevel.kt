@@ -1,5 +1,6 @@
 package com.team4099.robot2023.commands.drivetrain
 
+import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
@@ -89,11 +90,19 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       .recordOutput("AutoLevel/CorrectionVelocity", pitchFeedback.inMetersPerSecond)
   }
 
+  var balanceTime = Clock.fpgaTime
+
   override fun isFinished(): Boolean {
-    //  TODO use fpga clock to see if this condition has been satisified for a certain amount of
-    // time
-    return (drivetrain.gyroInputs.gyroPitch - DrivetrainConstants.DOCKING_PITCH_SETPOINT)
-      .absoluteValue < DrivetrainConstants.DOCKING_PITCH_TOLERANCE
+
+    var balanced =
+      (drivetrain.gyroInputs.gyroPitch - DrivetrainConstants.DOCKING_PITCH_SETPOINT)
+        .absoluteValue < DrivetrainConstants.DOCKING_PITCH_TOLERANCE
+
+    if (!balanced) {
+      balanceTime = Clock.fpgaTime
+    }
+
+    return (Clock.fpgaTime - balanceTime > DrivetrainConstants.DOCKING_TIME_TOLERANCE)
   }
 
   override fun end(interrupted: Boolean) {
