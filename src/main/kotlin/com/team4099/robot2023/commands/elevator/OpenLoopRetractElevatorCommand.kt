@@ -5,7 +5,7 @@ import com.team4099.robot2023.subsystems.elevator.Elevator
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 
-class openLoopExtendElevatorCommand(val elevator: Elevator) : CommandBase() {
+class OpenLoopRetractElevatorCommand(val elevator: Elevator) : CommandBase() {
   init {
     addRequirements(elevator)
   }
@@ -15,8 +15,8 @@ class openLoopExtendElevatorCommand(val elevator: Elevator) : CommandBase() {
   }
 
   override fun execute() {
-    elevator.setOpenLoop(1.0)
-    Logger.getInstance().recordOutput("ActiveCommands/OpenLoopExtendElevatorCommand", true)
+    elevator.setOpenLoop(-1.0)
+    Logger.getInstance().recordOutput("ActiveCommands/OpenLoopRetractElevatorCommand", true)
   }
   override fun isFinished(): Boolean {
     return false

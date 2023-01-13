@@ -2,29 +2,31 @@ package com.team4099.robot2023.subsystems.elevator
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
+import com.revrobotics.SparkMaxPIDController
+import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
-import kotlin.math.sin
 
 object ElevatorIONeo : ElevatorIO {
 
-  // TODO(update motor ID's)
-  private val leaderSparkMax = CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless)
+  private val leaderSparkMax =
+    CANSparkMax(Constants.Elevator.LEADER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
   private val leaderSensor =
     sparkMaxLinearMechanismSensor(
@@ -34,7 +36,8 @@ object ElevatorIONeo : ElevatorIO {
       ElevatorConstants.VOLTAGE_COMPENSATION
     )
 
-  private val followerSparkMax = CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless)
+  private val followerSparkMax =
+    CANSparkMax(Constants.Elevator.FOLLOWER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
   private val followerSensor =
     sparkMaxLinearMechanismSensor(
@@ -44,8 +47,8 @@ object ElevatorIONeo : ElevatorIO {
       ElevatorConstants.VOLTAGE_COMPENSATION
     )
 
-  val leaderPIDController = leaderSparkMax.pidController
-  val followerPIDController = followerSparkMax.pidController
+  private val leaderPIDController: SparkMaxPIDController = leaderSparkMax.pidController
+  private val followerPIDController: SparkMaxPIDController = followerSparkMax.pidController
 
   init {
     leaderSparkMax.restoreFactoryDefaults()
@@ -60,12 +63,12 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.inverted = ElevatorConstants.LEFT_MOTOR_INVERTED
     followerSparkMax.inverted = ElevatorConstants.RIGHT_MOTOR_INVERTED
 
-    leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.SUPPLY_CURRENT_LIMIT)
-    followerSparkMax.setSmartCurrentLimit(ElevatorConstants.SUPPLY_CURRENT_LIMIT)
+    leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
+    followerSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
 
     // TODO(figure out if we need this)
-    leaderSparkMax.setOpenLoopRampRate(ElevatorConstants.RAMP_RATE)
-    followerSparkMax.setOpenLoopRampRate(ElevatorConstants.RAMP_RATE)
+    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE
+    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE
 
     followerSparkMax.follow(leaderSparkMax)
   }
@@ -107,7 +110,7 @@ object ElevatorIONeo : ElevatorIO {
     leaderPIDController.setFF(feedforward.inVolts)
     followerPIDController.setFF(feedforward.inVolts)
 
-    val position = height / sin(ElevatorConstants.ELEVATOR_ANGLE.inRadians)
+    val position = height / ElevatorConstants.ELEVATOR_ANGLE.sin
 
     leaderPIDController.setReference(position.inMeters, CANSparkMax.ControlType.kPosition)
   }
@@ -123,12 +126,12 @@ object ElevatorIONeo : ElevatorIO {
     kD: DerivativeGain<Meter, Volt>
   ) {
 
-    leaderPIDController.setP(kP.inVoltsPerMeter)
-    leaderPIDController.setI(kI.inVoltsPerMeterSeconds)
-    leaderPIDController.setD(kD.inVoltsPerMeterPerSecond)
+    leaderPIDController.p = kP.inVoltsPerMeter
+    leaderPIDController.i = kI.inVoltsPerMeterSeconds
+    leaderPIDController.d = kD.inVoltsPerMeterPerSecond
 
-    followerPIDController.setP(kP.inVoltsPerMeter)
-    followerPIDController.setI(kI.inVoltsPerMeterSeconds)
-    followerPIDController.setD(kD.inVoltsPerMeterPerSecond)
+    followerPIDController.p = kP.inVoltsPerMeter
+    followerPIDController.i = kI.inVoltsPerMeterSeconds
+    followerPIDController.d = kD.inVoltsPerMeterPerSecond
   }
 }
