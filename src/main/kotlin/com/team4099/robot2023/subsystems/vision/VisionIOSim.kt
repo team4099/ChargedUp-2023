@@ -7,13 +7,15 @@ import com.team4099.lib.utils.sim.PhotonCameraSim
 import com.team4099.lib.utils.sim.SimVisionSystem
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Pose3d
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.photonvision.targeting.PhotonPipelineResult
-import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.derived.radians
 
 object VisionIOSim : VisionIO {
+  val pose = Pose3d(Pose2d())
+
   val layout: AprilTagFieldLayout =
     AprilTagFieldLayout(
       FieldConstants.aprilTags, FieldConstants.fieldLength, FieldConstants.fieldWidth
@@ -47,7 +49,7 @@ object VisionIOSim : VisionIO {
 
   override fun updateInputs(inputs: VisionIO.VisionInputs) {
     val dtPoseArr = dtPoseArraySub.get()
-    visionSim.update(Pose2d(dtPoseArr[0].meters, dtPoseArr[1].meters, dtPoseArr[2].radians).pose2d)
+    visionSim.update(Pose2d(dtPoseArr[0], dtPoseArr[1], Rotation2d(dtPoseArr[2])))
     inputs.photonResults = cameras.map { it.latestResult }
   }
 }
