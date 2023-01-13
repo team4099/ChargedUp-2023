@@ -1,12 +1,36 @@
 package com.team4099.robot2023.subsystems.elevator
 
+import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.ElevatorConstants
+import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.wpilibj.simulation.BatterySim
+import edu.wpi.first.wpilibj.simulation.ElevatorSim
+import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj.util.Color8Bit
+import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.base.inKilograms
+import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.perSecond
 
 object ElevatorIOSim : ElevatorIO {
+  val elevatorSim: ElevatorSim =
+    ElevatorSim(
+      DCMotor.getNEO(2),
+      ElevatorConstants.GEAR_RATIO,
+      ElevatorConstants.CARRIAGE_MASS.inKilograms,
+      ElevatorConstants.SPOOL_RADIUS.inMeters,
+      ElevatorConstants.ELEVATOR_MAX_RETRACTION.inMeters,
+      ElevatorConstants.ELEVATOR_MAX_EXTENSION.inMeters,
+      true
+    )
+
   init {
     // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
 
@@ -41,5 +65,28 @@ object ElevatorIOSim : ElevatorIO {
     SmartDashboard.putData("Arm Sim", m_mech2d)
   }
 
-  override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {}
+  override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
+    elevatorSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
+
+    inputs.elevatorPosition = elevatorSim.positionMeters.meters
+    inputs.elevatorVelocity = elevatorSim.velocityMetersPerSecond.meters.perSecond
+
+    inputs.leaderTempCelcius = 0.0.celsius
+    inputs.leaderStatorCurrent = elevatorSim.currentDrawAmps.amps / 2
+    inputs.leaderSupplyCurrent = 0.0.amps
+    inputs.leaderAppliedOutput = 0.0
+
+    inputs.followerTempCelcius = 0.0.celsius
+    inputs.followerStatorCurrent = elevatorSim.currentDrawAmps.amps / 2
+    inputs.followerSupplyCurrent = 0.0.amps
+    inputs.followerAppliedOutput = 0.0
+
+    RoboRioSim.setVInVoltage(
+      BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.currentDrawAmps)
+    )
+  }
+
+  override fun setOpenLoop(percentOutput: Double) {
+    elevatorSim.setInputVoltage(RoboRioSim.getVInVoltage() * percentOutput)
+  }
 }

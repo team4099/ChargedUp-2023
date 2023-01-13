@@ -7,11 +7,13 @@ import com.team4099.robot2023.config.constants.FieldConstants.Grids.midCubeZ
 import com.team4099.robot2023.config.constants.FieldConstants.LoadingZone.doubleSubstationShelfZ
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perSecond
 
 object ElevatorConstants {
@@ -19,6 +21,7 @@ object ElevatorConstants {
   const val SENSOR_CPR = 42
   // TODO(Check ratio with design)
   const val GEAR_RATIO = 1.0
+  val CARRIAGE_MASS = 1.0.kilo.grams
   // TODO(Check height with design)
   const val LEFT_MOTOR_INVERTED = true
   const val RIGHT_MOTOR_INVERTED = false
