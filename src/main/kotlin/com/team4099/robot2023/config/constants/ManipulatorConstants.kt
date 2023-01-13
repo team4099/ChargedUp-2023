@@ -14,7 +14,7 @@ object ManipulatorConstants {
   val OUTTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.9.seconds
   val WAIT_FOR_STATE_TO_CHANGE = 0.8.seconds
 
-  val INTAKE_MOTOR_INVERTED = false
+  val MOTOR_INVERTED = false
 
   // TODO(figure out what current limit should be)
   const val SUPPLY_CURRENT_LIMIT = 25
