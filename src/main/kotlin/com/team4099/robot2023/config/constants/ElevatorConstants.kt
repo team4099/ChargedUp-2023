@@ -6,6 +6,7 @@ import com.team4099.robot2023.config.constants.FieldConstants.Grids.midConeZ
 import com.team4099.robot2023.config.constants.FieldConstants.Grids.midCubeZ
 import com.team4099.robot2023.config.constants.FieldConstants.LoadingZone.doubleSubstationShelfZ
 import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
@@ -37,9 +38,8 @@ object ElevatorConstants {
   val ELEVATOR_KV = 1.0.volts / 1.0.meters.perSecond
   val ELEVATOR_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
 
-  // TODO(do we need this)
-  val VOLTAGE_COMPENSATION = 10.volts
-  val SUPPLY_CURRENT_LIMIT = 12
+  val VOLTAGE_COMPENSATION = 12.volts
+  val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit
 
   // TODO(Check spool radius with design)
   val SPOOL_RADIUS = 1.inches

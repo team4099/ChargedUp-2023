@@ -103,7 +103,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       io.setOpenLoop(percentOutput)
     }
 
-    Logger.getInstance().recordOutput("percentOutput", percentOutput)
+    Logger.getInstance().recordOutput("Elevator/percentOutput", percentOutput)
   }
 
   fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
@@ -116,10 +116,10 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     io.setPosition(setpoint.position, feedforward)
 
-    Logger.getInstance().recordOutput("targetPosition", setpoint.position.inMeters)
+    Logger.getInstance().recordOutput("Elevator/targetPosition", setpoint.position.inMeters)
     Logger.getInstance()
-      .recordOutput("elevatorAcceleration", elevatorAccel.inMetersPerSecondPerSecond)
-    Logger.getInstance().recordOutput("elevatorFeedFoward", feedforward.inVolts)
+      .recordOutput("Elevator/elevatorAcceleration", elevatorAccel.inMetersPerSecondPerSecond)
+    Logger.getInstance().recordOutput("Elevator/elevatorFeedFoward", feedforward.inVolts)
   }
 
   fun zeroEncoder() {
