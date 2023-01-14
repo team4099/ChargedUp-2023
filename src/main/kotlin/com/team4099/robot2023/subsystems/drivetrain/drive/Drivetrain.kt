@@ -199,6 +199,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       // the updated heading of the robot based on the output of what we've commanded (in real life
       // we can just read the heading from the gyro)
       val measuredStatesDifference = arrayOfNulls<SwerveModulePosition>(4)
+
       for (i in 0 until 4) {
         measuredStatesDifference[i] =
           SwerveModulePosition(
@@ -207,17 +208,35 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
           )
         lastModulePositions[i] = swerveModules[i].inputs.drivePosition
       }
+
       val positionDeltaTwist = swerveDriveKinematics.toTwist2d(*measuredStatesDifference)
+
       if (Constants.Tuning.SIMULATE_DRIFT) {
-        undriftedPose = undriftedPose.exp(Twist2d(positionDeltaTwist))
+        // reversing the drift to store the ground to truth pose
+        val undriftedStates = arrayOfNulls<SwerveModulePosition>(4)
+        for (i in 0 until 4) {
+          undriftedStates[i] =
+            SwerveModulePosition(
+              (
+                measuredStatesDifference[i]!!.distanceMeters.meters -
+                  swerveModules[i].inputs.loopCycleDrift
+                )
+                .inMeters,
+              measuredStatesDifference[i]!!.angle
+            )
+        }
+
+        val positionDeltaTwistWithoutDrift = swerveDriveKinematics.toTwist2d(*undriftedStates)
+
+        undriftedPose = undriftedPose.exp(Twist2d(positionDeltaTwistWithoutDrift))
 
         swerveDrivePoseEstimator.resetPosition(
           gyroInputs.gyroYaw.inRotation2ds,
           swerveModules.map { it.modulePosition }.toTypedArray(),
           odometryPose.exp(
             Twist2d(
-              positionDeltaTwist.dx.meters * 1.05,
-              positionDeltaTwist.dy.meters * 1.05,
+              positionDeltaTwist.dx.meters,
+              positionDeltaTwist.dy.meters,
               positionDeltaTwist.dtheta.radians
             )
           )
