@@ -28,7 +28,7 @@ class SetStateElevatorCommand(val elevator: Elevator) : CommandBase() {
     elevatorProfile =
       TrapezoidProfile(
         elevator.elevatorConstraints,
-        TrapezoidProfile.State(elevator.desiredState.height, 0.0.meters / 1.0.seconds),
+        TrapezoidProfile.State(elevator.desiredPosition, 0.0.meters / 1.0.seconds),
         TrapezoidProfile.State(
           elevator.inputs.elevatorPosition, elevator.inputs.elevatorVelocity
         )
@@ -38,7 +38,7 @@ class SetStateElevatorCommand(val elevator: Elevator) : CommandBase() {
   }
 
   override fun execute() {
-    elevator.setHeight(elevatorProfile.calculate((Clock.fpgaTime - startTime)))
+    elevator.setPosition(elevatorProfile.calculate((Clock.fpgaTime - startTime)))
 
     Logger.getInstance().recordOutput("ActiveCommands/OpenLoopRetractElevatorCommand", true)
   }

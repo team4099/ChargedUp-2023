@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
@@ -49,6 +50,11 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION
 
   var desiredState = ElevatorConstants.DesiredElevatorStates.MIN_HEIGHT
+
+  val desiredPosition: Length
+    get() {
+      return desiredState.height / ElevatorConstants.ELEVATOR_ANGLE.sin
+    }
 
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
@@ -107,7 +113,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Elevator/percentOutput", percentOutput)
   }
 
-  fun setHeight(setpoint: TrapezoidProfile.State<Meter>) {
+  fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
     val elevatorAccel =
       ((setpoint.velocity - elevatorSetpoint.velocity) / (Constants.Universal.LOOP_PERIOD_TIME))
 
@@ -115,12 +121,10 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     var feedforward = elevatorFeedForward.calculate(setpoint.velocity, elevatorAccel)
 
-    val position = setpoint.position / ElevatorConstants.ELEVATOR_ANGLE.sin
+    io.setPosition(setpoint.position, feedforward)
 
-    io.setPosition(position, feedforward)
-
-    Logger.getInstance().recordOutput("Elevator/targetHeight", setpoint.position.inMeters)
-    Logger.getInstance().recordOutput("Elevator/targetPosition", position.inMeters)
+    Logger.getInstance().recordOutput("Elevator/targetHeight", desiredState.height.inMeters)
+    Logger.getInstance().recordOutput("Elevator/targetPosition", setpoint.position.inMeters)
     Logger.getInstance()
       .recordOutput("Elevator/elevatorAcceleration", elevatorAccel.inMetersPerSecondPerSecond)
     Logger.getInstance().recordOutput("Elevator/elevatorFeedFoward", feedforward.inVolts)
