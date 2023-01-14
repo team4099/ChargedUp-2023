@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj.util.Color8Bit
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 
@@ -38,6 +41,11 @@ object ManipulatorIOSim : ManipulatorIO {
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
     inputs.rollerVelocity = manipulatorMotor.angularVelocityRPM.radians.perSecond
     inputs.rollerSupplyCurrent = manipulatorMotor.currentDrawAmps.amps
+
+    inputs.rollerPosition = 0.degrees
+    inputs.rollerAppliedVoltage = 0.volts
+    inputs.rollerStatorCurrent = 0.amps
+    inputs.rollerTempCelcius = 0.0.celsius
   }
 
   fun setMechanismNodePosition(scale: Double){
