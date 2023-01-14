@@ -27,7 +27,6 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
@@ -108,9 +107,8 @@ object ElevatorIOSim : ElevatorIO {
     elevatorSim.setInputVoltage(RoboRioSim.getVInVoltage() * percentOutput)
   }
 
-  override fun setPosition(height: Length, feedForward: ElectricalPotential) {
+  override fun setPosition(position: Length, feedForward: ElectricalPotential) {
     val ff = MathUtil.clamp(feedForward.inVolts, -12.0, 12.0).volts
-    val position = height / ElevatorConstants.ELEVATOR_ANGLE.sin
     val feedback = elevatorController.calculate(elevatorSim.positionMeters.meters, position)
     elevatorSim.setInputVoltage((ff + feedback).inVolts)
   }
