@@ -2,10 +2,10 @@ package com.team4099.robot2023.subsystems.elevator
 
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import com.team4099.robot2023.util.ElevatorSim
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
-import edu.wpi.first.wpilibj.simulation.ElevatorSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
@@ -17,8 +17,6 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
-import org.team4099.lib.units.base.inKilograms
-import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.DerivativeGain
@@ -35,11 +33,12 @@ object ElevatorIOSim : ElevatorIO {
     ElevatorSim(
       DCMotor.getNEO(2),
       ElevatorConstants.GEAR_RATIO,
-      ElevatorConstants.CARRIAGE_MASS.inKilograms,
-      ElevatorConstants.SPOOL_RADIUS.inMeters,
-      ElevatorConstants.ELEVATOR_MAX_RETRACTION.inMeters,
-      ElevatorConstants.ELEVATOR_MAX_EXTENSION.inMeters,
-      true
+      ElevatorConstants.CARRIAGE_MASS,
+      ElevatorConstants.SPOOL_RADIUS,
+      ElevatorConstants.ELEVATOR_MAX_RETRACTION,
+      ElevatorConstants.ELEVATOR_MAX_EXTENSION,
+      true,
+      ElevatorConstants.ELEVATOR_ANGLE
     )
 
   val elevatorController =

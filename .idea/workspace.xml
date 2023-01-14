@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="09f1d821-b4d8-4d75-bab3-7df1f8c4e3e8" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/RobotContainer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/RobotContainer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/commands/elevator/OpenLoopExtendElevatorCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/commands/elevator/OpenLoopExtendElevatorCommand.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/commands/elevator/OpenLoopRetractElevatorCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/commands/elevator/OpenLoopRetractElevatorCommand.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIO.kt" afterDir="false" />
+    <list default="true" id="09f1d821-b4d8-4d75-bab3-7df1f8c4e3e8" name="Changes" comment="fix merge">
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIOSim.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIOSim.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/util/ElevatorSim.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/util/ElevatorSim.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,6 +86,10 @@
       </map>
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix merge" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix merge" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

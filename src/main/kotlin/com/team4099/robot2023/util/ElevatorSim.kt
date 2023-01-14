@@ -23,7 +23,7 @@ class ElevatorSim(
   private val minHeightMeters: Length,
   private val maxHeightMeters: Length,
   private val angleElevation: Angle = 90.0.degrees,
-  private val simulateGravity: Boolean,
+  private val simulateGravity: Boolean
 ) :
   ElevatorSim(
     gearbox,
