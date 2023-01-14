@@ -17,6 +17,7 @@ import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
 import org.team4099.lib.units.derived.perMeter
 import org.team4099.lib.units.derived.perMeterSeconds
+import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.perSecond
@@ -106,7 +107,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Elevator/percentOutput", percentOutput)
   }
 
-  fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
+  fun setHeight(setpoint: TrapezoidProfile.State<Meter>) {
     val elevatorAccel =
       ((setpoint.velocity - elevatorSetpoint.velocity) / (Constants.Universal.LOOP_PERIOD_TIME))
 
@@ -114,9 +115,12 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     var feedforward = elevatorFeedForward.calculate(setpoint.velocity, elevatorAccel)
 
-    io.setPosition(setpoint.position, feedforward)
+    val position = setpoint.position / ElevatorConstants.ELEVATOR_ANGLE.sin
 
-    Logger.getInstance().recordOutput("Elevator/targetPosition", setpoint.position.inMeters)
+    io.setPosition(position, feedforward)
+
+    Logger.getInstance().recordOutput("Elevator/targetHeight", setpoint.position.inMeters)
+    Logger.getInstance().recordOutput("Elevator/targetPosition", position.inMeters)
     Logger.getInstance()
       .recordOutput("Elevator/elevatorAcceleration", elevatorAccel.inMetersPerSecondPerSecond)
     Logger.getInstance().recordOutput("Elevator/elevatorFeedFoward", feedforward.inVolts)

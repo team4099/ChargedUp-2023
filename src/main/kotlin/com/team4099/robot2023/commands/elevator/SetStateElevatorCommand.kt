@@ -38,7 +38,7 @@ class SetStateElevatorCommand(val elevator: Elevator) : CommandBase() {
   }
 
   override fun execute() {
-    elevator.setPosition(elevatorProfile.calculate((Clock.fpgaTime - startTime)))
+    elevator.setHeight(elevatorProfile.calculate((Clock.fpgaTime - startTime)))
 
     Logger.getInstance().recordOutput("ActiveCommands/OpenLoopRetractElevatorCommand", true)
   }

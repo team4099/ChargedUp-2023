@@ -20,7 +20,6 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
-import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 
 object ElevatorIONeo : ElevatorIO {
@@ -105,13 +104,10 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.set(percentOutput)
   }
 
-  override fun setPosition(height: Length, feedforward: ElectricalPotential) {
+  override fun setPosition(position: Length, feedforward: ElectricalPotential) {
 
     leaderPIDController.setFF(feedforward.inVolts)
     followerPIDController.setFF(feedforward.inVolts)
-
-    // should this be in elevator.kt
-    val position = height / ElevatorConstants.ELEVATOR_ANGLE.sin
 
     leaderPIDController.setReference(position.inMeters, CANSparkMax.ControlType.kPosition)
   }
