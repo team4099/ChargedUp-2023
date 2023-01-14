@@ -16,7 +16,7 @@ import org.team4099.lib.units.perSecond
 
 interface ManipulatorIO {
   class ManipulatorIOInputs : LoggableInputs {
-
+    // TODO(Evaluate inputs. Pos, Vel may not be needed)
     var rollerPosition = 0.degrees
     var rollerVelocity = 0.degrees.perSecond
     var rollerAppliedVoltage = 0.volts
@@ -59,5 +59,5 @@ interface ManipulatorIO {
 
   fun updateInputs(inputs: ManipulatorIOInputs) {}
 
-  fun setRollerPower(percentOutPut: Double) {}
+  fun setRollerPower(percentOutput: Double) {}
 }
