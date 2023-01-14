@@ -198,6 +198,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       // we have to calculate
       // the updated heading of the robot based on the output of what we've commanded (in real life
       // we can just read the heading from the gyro)
+
       val measuredStatesDifference = arrayOfNulls<SwerveModulePosition>(4)
 
       for (i in 0 until 4) {
@@ -209,10 +210,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         lastModulePositions[i] = swerveModules[i].inputs.drivePosition
       }
 
-      val positionDeltaTwist = swerveDriveKinematics.toTwist2d(*measuredStatesDifference)
+      gyroInputs.gyroYaw =
+        odometryPose.exp(Twist2d(swerveDriveKinematics.toTwist2d(*measuredStatesDifference)))
+        .rotation + gyroYawOffset
 
+      // reversing the drift to store the ground to truth pose
       if (Constants.Tuning.SIMULATE_DRIFT) {
-        // reversing the drift to store the ground to truth pose
         val undriftedStates = arrayOfNulls<SwerveModulePosition>(4)
         for (i in 0 until 4) {
           undriftedStates[i] =
@@ -230,35 +233,27 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
         undriftedPose = undriftedPose.exp(Twist2d(positionDeltaTwistWithoutDrift))
 
-        swerveDrivePoseEstimator.resetPosition(
-          gyroInputs.gyroYaw.inRotation2ds,
-          swerveModules.map { it.modulePosition }.toTypedArray(),
-          odometryPose.exp(
-            Twist2d(
-              positionDeltaTwist.dx.meters,
-              positionDeltaTwist.dy.meters,
-              positionDeltaTwist.dtheta.radians
-            )
-          )
-            .pose2d
-        )
-
         drift = undriftedPose.minus(odometryPose)
 
-        Logger.getInstance().recordOutput("Odometry/undriftedPose", undriftedPose.pose2d)
-      } else {
-        odometryPose = odometryPose.exp(Twist2d(positionDeltaTwist))
+        Logger.getInstance().recordOutput(VisionConstants.SIM_POSE_TOPIC_NAME, undriftedPose.pose2d)
       }
 
-      gyroInputs.gyroYaw = odometryPose.rotation + gyroYawOffset
-    } else {
-      odometryPose =
-        Pose2d(
-          swerveDrivePoseEstimator.update(
-            gyroInputs.gyroYaw.inRotation2ds,
-            swerveModules.map { it.modulePosition }.toTypedArray()
-          )
-        )
+      swerveDrivePoseEstimator.update(
+        gyroInputs
+          .gyroYaw
+          .inRotation2ds, // switch to undriftedPose.rotation.inRotation2ds to test convergence
+        // for now
+        swerveModules.map { it.modulePosition }.toTypedArray()
+      )
+
+      //
+      // //      odometryPose = odometryPose.exp(Twist2d(positionDeltaTwist))
+      //      gyroInputs.gyroYaw = odometryPose.rotation + gyroYawOffset
+      //
+      //      swerveDrivePoseEstimator.update(
+      //            gyroInputs.gyroYaw.inRotation2ds,
+      //            swerveModules.map { it.modulePosition }.toTypedArray()
+      //      )
     }
   }
 

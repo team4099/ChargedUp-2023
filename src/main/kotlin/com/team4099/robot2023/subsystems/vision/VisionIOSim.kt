@@ -22,7 +22,7 @@ object VisionIOSim : VisionIO {
   val ntInstance = NetworkTableInstance.getDefault()
   val dtPoseArraySub =
     ntInstance
-      .getDoubleArrayTopic("/AdvantageKit/RealOutputs/" + VisionConstants.POSE_TOPIC_NAME)
+      .getDoubleArrayTopic("/AdvantageKit/RealOutputs/" + VisionConstants.SIM_POSE_TOPIC_NAME)
       .getEntry(doubleArrayOf(0.0, 0.0, 0.0))
 
   val frontCamera = PhotonCamera(ntInstance, VisionConstants.FRONT_CAMERA_NAME)

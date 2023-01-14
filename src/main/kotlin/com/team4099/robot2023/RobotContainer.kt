@@ -14,7 +14,10 @@ import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.VisionIO
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.Time
+import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -41,7 +44,13 @@ object RobotContainer {
         { ControlBoard.robotOriented },
         drivetrain
       )
-    //    PivotClimber.defaultCommand = PivotIdleCommand()
+  }
+
+  val measurementsWithTimestamps
+    get() = vision.bestPoses.zip(vision.timestamps)
+
+  fun addVisionMeasurement(visionPose: Pose2d, timestamp: Time) {
+    drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(visionPose.pose2d, timestamp.inSeconds)
   }
 
   fun zeroSteering() {

@@ -23,6 +23,7 @@ object Constants {
 
     val TUNING_MODE = true
     val SIMULATE_DRIFT = true
+    val DRIFT_CONSTANT = 0.001
 
     enum class RobotType {
       REAL,
