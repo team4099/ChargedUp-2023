@@ -5,7 +5,7 @@ import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 
-class ReverseCubeCommand(val manipulator: Manipulator) : CommandBase() {
+class OutttakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
   init {
     addRequirements(manipulator)
   }

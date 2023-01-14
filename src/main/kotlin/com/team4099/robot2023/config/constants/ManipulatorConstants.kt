@@ -33,8 +33,7 @@ object ManipulatorConstants {
 
   enum class RollerState(val speed: Double) {
     // TODO: 1/9/23
-    // figure out why IDLE speed is -0.1 for rapid react
-
+    // figure out if idle should be 0.1 or -0.1 or smth
     IDLE(0.0),
     CONE_IN(0.8),
     CUBE_IN(0.9),

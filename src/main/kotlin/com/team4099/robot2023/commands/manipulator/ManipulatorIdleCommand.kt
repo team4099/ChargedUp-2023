@@ -5,24 +5,18 @@ import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 
-class ReverseConeCommand(val manipulator: Manipulator) : CommandBase() {
+class ManipulatorIdleCommand(val manipulator: Manipulator) : CommandBase() {
   init {
     addRequirements(manipulator)
   }
 
   override fun initialize() {
-
-    manipulator.rollerState = ManipulatorConstants.RollerState.CONE_OUT
-  }
-
-  override fun execute() {
-    Logger.getInstance().recordOutput("ActiveCommands/ReverseConeCommand", true)
-  }
-
-  override fun end(interrupted: Boolean) {
     manipulator.rollerState = ManipulatorConstants.RollerState.IDLE
   }
 
+  override fun execute() {
+    Logger.getInstance().recordOutput("ActiveCommands/IntakeIdleCommand", true)
+  }
   override fun isFinished(): Boolean {
     return false
   }
