@@ -28,6 +28,9 @@ object ManipulatorConstants {
   // TODO(figure out what voltage compensation should be)
   val VOLTAGE_COMPENSATION = 10.0.volts
 
+  // TODO(What is the inertial value)
+  val MOMENT_INERTIA = 0.0045
+
   enum class RollerState(val speed: Double) {
     // TODO: 1/9/23
     // figure out why IDLE speed is -0.1 for rapid react
