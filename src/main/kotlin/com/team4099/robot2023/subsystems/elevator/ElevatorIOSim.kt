@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.elevator
 
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.ElevatorSim
@@ -11,12 +12,22 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj.util.Color8Bit
+import org.team4099.lib.controller.PIDController
+import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.DerivativeGain
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.IntegralGain
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 object ElevatorIOSim : ElevatorIO {
@@ -31,7 +42,13 @@ object ElevatorIOSim : ElevatorIO {
       true
     )
 
+  val elevatorController =
+    PIDController<Meter, Volt>(
+      ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD
+    )
+
   init {
+
     // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
 
     // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
@@ -88,5 +105,23 @@ object ElevatorIOSim : ElevatorIO {
 
   override fun setOpenLoop(percentOutput: Double) {
     elevatorSim.setInputVoltage(RoboRioSim.getVInVoltage() * percentOutput)
+  }
+
+  override fun setPosition(height: Length, feedForward: ElectricalPotential) {
+    val ff = MathUtil.clamp(feedForward.inVolts, -12.0, 12.0).volts
+    val feedback = elevatorController.calculate(elevatorSim.positionMeters.meters, height)
+    elevatorSim.setInputVoltage((ff + feedback).inVolts)
+  }
+
+  override fun zeroEncoder() {
+    println("don't work right now")
+  }
+
+  override fun configPID(
+    kP: ProportionalGain<Meter, Volt>,
+    kI: IntegralGain<Meter, Volt>,
+    kD: DerivativeGain<Meter, Volt>
+  ) {
+    elevatorController.setPID(kP, kI, kD)
   }
 }
