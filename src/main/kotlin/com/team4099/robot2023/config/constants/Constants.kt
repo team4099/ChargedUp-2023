@@ -23,6 +23,7 @@ object Constants {
 
     const val TUNING_MODE = false
     const val SIMULATE_DRIFT = true
+    const val DRIFT_CONSTANT = 0.001
 
     enum class SimType {
       SIM,

@@ -11,6 +11,7 @@ import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.TargetCorner
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.seconds
 
 class Vision(val io: VisionIO) : SubsystemBase() {
@@ -27,6 +28,8 @@ class Vision(val io: VisionIO) : SubsystemBase() {
   var bestPoses = mutableListOf<Pose2d>()
   var altPoses = mutableListOf<Pose2d>()
 
+  var timestamps = mutableListOf<Time>()
+
   var previousResults = MutableList(VisionConstants.NUM_OF_CAMERAS) { PhotonPipelineResult() }
 
   override fun periodic() {
@@ -36,6 +39,7 @@ class Vision(val io: VisionIO) : SubsystemBase() {
     val knownTags = mutableListOf<AprilTag>()
     val bestCurPoses = mutableListOf<Pose2d>()
     val altCurPoses = mutableListOf<Pose2d>()
+    var resultTimeStamps = mutableListOf<Time>()
 
     // each result corresponds to a camera
     for (resultIndex in 0 until inputs.photonResults.size) {
@@ -48,6 +52,8 @@ class Vision(val io: VisionIO) : SubsystemBase() {
       }
 
       for (target in inputs.photonResults[resultIndex].targets) {
+        resultTimeStamps.add(inputs.photonResults[resultIndex].timestampSeconds.seconds)
+
         corners.addAll(target.corners)
 
         val tagPose = layout.getTagPose(target.fiducialId)
@@ -84,6 +90,7 @@ class Vision(val io: VisionIO) : SubsystemBase() {
     knownAprilTags = knownTags
     bestPoses = bestCurPoses
     altPoses = altCurPoses
+    timestamps = resultTimeStamps
 
     Logger.getInstance()
       .recordOutput("Vision/VisibleTags", *knownTags.map { it.pose.pose3d }.toTypedArray())

@@ -106,7 +106,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     var loopCycleDrift = 0.0.meters
     if (Constants.Tuning.SIMULATE_DRIFT && driveVelocity > 2.0.meters.perSecond) {
       loopCycleDrift =
-        (Random.nextDouble() * 0.0005)
+        (Random.nextDouble() * Constants.Tuning.DRIFT_CONSTANT)
           .meters // 0.0005 is just a nice number that ended up working out for drift
     }
 
