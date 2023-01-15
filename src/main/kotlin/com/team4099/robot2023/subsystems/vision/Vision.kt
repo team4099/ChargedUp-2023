@@ -13,6 +13,7 @@ import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.seconds
+import kotlin.math.absoluteValue
 
 class Vision(val io: VisionIO) : SubsystemBase() {
   val inputs = VisionIO.VisionInputs()
@@ -29,6 +30,8 @@ class Vision(val io: VisionIO) : SubsystemBase() {
   var altPoses = mutableListOf<Pose2d>()
 
   var timestamps = mutableListOf<Time>()
+
+  var stdevs = mutableListOf<Triple<Double, Double, Double>>()
 
   var previousResults = MutableList(VisionConstants.NUM_OF_CAMERAS) { PhotonPipelineResult() }
 
@@ -52,6 +55,14 @@ class Vision(val io: VisionIO) : SubsystemBase() {
       }
 
       for (target in inputs.photonResults[resultIndex].targets) {
+        stdevs.add(
+          Triple(
+            1 / (0.01 * target.area) + (target.yaw - 90).absoluteValue / 90,
+            1 / (0.01 * target.area) + (target.yaw - 90).absoluteValue / 90,
+            (target.yaw - 90).absoluteValue / 100
+          )
+        )
+
         resultTimeStamps.add(inputs.photonResults[resultIndex].timestampSeconds.seconds)
 
         corners.addAll(target.corners)

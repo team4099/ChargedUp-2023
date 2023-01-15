@@ -107,7 +107,9 @@ object Robot : LoggedRobot() {
 
   override fun robotPeriodic() {
     for (measurement in RobotContainer.measurementsWithTimestamps) {
-      RobotContainer.addVisionMeasurement(measurement.first, measurement.second)
+      RobotContainer.addVisionMeasurement(
+        measurement.first.first, measurement.first.second, measurement.second
+      )
     }
 
     // begin scheduling all commands
