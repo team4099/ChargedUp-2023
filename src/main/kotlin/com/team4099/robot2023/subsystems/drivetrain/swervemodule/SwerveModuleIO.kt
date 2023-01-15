@@ -51,7 +51,7 @@ interface SwerveModuleIO {
     var potentiometerOutputRaw = 0.0
     var potentiometerOutputRadians = 0.0.radians
 
-    var loopCycleDrift = 0.0.meters
+    var drift = 0.0.meters
 
     override fun toLog(table: LogTable?) {
       table?.put("driveAppliedVoltage", driveAppliedVoltage.inVolts)
@@ -68,7 +68,7 @@ interface SwerveModuleIO {
       table?.put("steeringTempCelcius", steeringTemp.inCelsius)
       table?.put("potentiometerOutputRaw", potentiometerOutputRaw)
       table?.put("potentiometerOutputRadians", potentiometerOutputRadians.inRadians)
-      table?.put("driftPositionMeters", loopCycleDrift.inMeters)
+      table?.put("driftPositionMeters", drift.inMeters)
     }
 
     override fun fromLog(table: LogTable?) {
@@ -111,9 +111,7 @@ interface SwerveModuleIO {
       table?.getDouble("potentiometerOutputRaw", potentiometerOutputRadians.inRadians)?.let {
         potentiometerOutputRadians = it.radians
       }
-      table?.getDouble("driftPositionMeters", loopCycleDrift.inMeters)?.let {
-        loopCycleDrift = it.meters
-      }
+      table?.getDouble("driftPositionMeters", drift.inMeters)?.let { drift = it.meters }
     }
   }
 
