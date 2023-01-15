@@ -29,15 +29,15 @@ class LedCommand(val led: Led, val drivetrain: Drivetrain) : CommandBase() {
       }
     } else {
       led.state =
-      when {
-        // elevator is equal to height1, height2, or height3
-        false -> LedConstants.LEDMode.OUTTAKE
-        // if holding item
-        false -> LedConstants.LEDMode.ITEM
-        Robot.isAutonomous -> LedConstants.LEDMode.AUTO
-        Robot.isDisabled -> LedConstants.LEDMode.DISABLED
-        else -> LedConstants.LEDMode.TELEOP
-      }
+        when {
+          // elevator is equal to height1, height2, or height3
+          false -> LedConstants.LEDMode.OUTTAKE
+          // if holding item
+          false -> LedConstants.LEDMode.ITEM
+          Robot.isAutonomous -> LedConstants.LEDMode.AUTO
+          Robot.isDisabled -> LedConstants.LEDMode.DISABLED
+          else -> LedConstants.LEDMode.TELEOP
+        }
     }
   }
 }
