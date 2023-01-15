@@ -31,7 +31,6 @@ class SetStateElevatorCommand(val elevator: Elevator) : CommandBase() {
   }
 
   override fun execute() {
-    elevator.setPosition()
     Logger.getInstance().recordOutput("ActiveCommands/OpenLoopRetractElevatorCommand", true)
   }
   override fun isFinished(): Boolean {

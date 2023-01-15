@@ -5,6 +5,7 @@ import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
@@ -126,9 +127,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Elevator/percentOutput", percentOutput)
   }
 
-  fun setPosition() {
-    val setpoint = elevatorDesiredProfile.calculate(Clock.fpgaTime - startTime)
-
+  fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
     val elevatorAccel =
       ((setpoint.velocity - elevatorSetpoint.velocity) / (Constants.Universal.LOOP_PERIOD_TIME))
 
@@ -147,5 +146,49 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
   fun zeroEncoder() {
     io.zeroEncoder()
+  }
+
+  /**
+   * Inline command to set the elevator to a desired position.
+   *
+   * @param position The desired position of the elevator in its frame of reference.
+   *
+   * @return A command that runs the elevator's setPosition function until the profile is finished
+   * running.
+   */
+  fun setElevatorPosition(position: Length): Command {
+
+    // Constructing our elevator profile in here because its internal values are dependent on the
+    // position we want to set the elevator to
+    val elevatorProfile =
+      TrapezoidProfile(
+        elevatorConstraints,
+        TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
+        TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
+      )
+
+    // Obtaining a start time for this command so that we can pass it into our profile. This is done
+    // here because we need the startTime to represent the time at which the profile began.
+    val startTime = Clock.fpgaTime
+
+    // Creates a command that runs continuously until the profile is finished. The run function
+    // accepts a lambda which indicates what we want to run every iteration.
+    return run {
+      setPosition(
+        elevatorProfile.calculate(
+          Clock.fpgaTime -
+            startTime
+        )
+      ) // Every loop cycle we have a different profile state we're
+      // calculating. Hence, we want to pass in a different Trapezoidal
+      // Profile State into the setPosition function.
+    }
+      .until { // The following lambda creates a race condition that stops the command we created
+        // above when the passed in condition is true. In our case it's checking when
+        // elevatorProfile is finished based on elapsed time.
+        elevatorProfile.isFinished(
+          (Clock.fpgaTime - startTime)
+        ) // This is the race condition we're passing in.
+      }
   }
 }
