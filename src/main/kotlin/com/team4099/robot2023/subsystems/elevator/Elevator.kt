@@ -62,11 +62,11 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   // actual positions. If not, return that it's between two positions.
   val currentState: ElevatorConstants.ActualElevatorStates
     get() {
-      for (desiredState in ElevatorConstants.DesiredElevatorStates.values()) {
-        if ((desiredState.height - inputs.elevatorPosition).absoluteValue <=
+      for (state in ElevatorConstants.DesiredElevatorStates.values()) {
+        if ((state.height - inputs.elevatorPosition).absoluteValue <=
           ElevatorConstants.ELEVATOR_TOLERANCE
         ) {
-          return ElevatorConstants.ActualElevatorStates.fromDesiredState(desiredState)
+          return ElevatorConstants.ActualElevatorStates.fromDesiredState(state)
         }
       }
       // TODO figure out if we'll ever need to know if we're between two states
