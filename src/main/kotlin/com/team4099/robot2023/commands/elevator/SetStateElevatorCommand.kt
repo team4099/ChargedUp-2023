@@ -7,14 +7,10 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Meter
-import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.base.seconds
 
 class SetStateElevatorCommand(val elevator: Elevator) : CommandBase() {
 
   lateinit var elevatorProfile: TrapezoidProfile<Meter>
-
-  var startTime = Clock.fpgaTime
 
   init {
     addRequirements(elevator)
@@ -25,24 +21,20 @@ class SetStateElevatorCommand(val elevator: Elevator) : CommandBase() {
   }
 
   override fun initialize() {
-    elevatorProfile =
-      TrapezoidProfile(
-        elevator.elevatorConstraints,
-        TrapezoidProfile.State(elevator.desiredPosition, 0.0.meters / 1.0.seconds),
-        TrapezoidProfile.State(
-          elevator.inputs.elevatorPosition, elevator.inputs.elevatorVelocity
-        )
+    // might be necessary if we change constraints in other command
+    elevator.elevatorConstraints =
+      TrapezoidProfile.Constraints(
+        ElevatorConstants.MAX_VELOCITY, ElevatorConstants.MAX_ACCELERATION
       )
 
-    startTime = Clock.fpgaTime
+    elevator.startTime = Clock.fpgaTime
   }
 
   override fun execute() {
-    elevator.setPosition(elevatorProfile.calculate((Clock.fpgaTime - startTime)))
-
+    elevator.setPosition()
     Logger.getInstance().recordOutput("ActiveCommands/OpenLoopRetractElevatorCommand", true)
   }
   override fun isFinished(): Boolean {
-    return elevatorProfile.isFinished((Clock.fpgaTime - startTime))
+    return elevatorProfile.isFinished((Clock.fpgaTime - elevator.startTime))
   }
 }
