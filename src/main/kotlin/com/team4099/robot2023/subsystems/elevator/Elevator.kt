@@ -1,5 +1,6 @@
 package com.team4099.robot2023.subsystems.elevator
 
+import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
@@ -12,6 +13,7 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
@@ -79,6 +81,17 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   var elevatorSetpoint: TrapezoidProfile.State<Meter> =
     TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
 
+  val elevatorDesiredProfile: TrapezoidProfile<Meter>
+    get() {
+      return TrapezoidProfile(
+        elevatorConstraints,
+        TrapezoidProfile.State(desiredPosition, 0.0.meters / 1.0.seconds),
+        TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
+      )
+    }
+
+  var startTime = Clock.fpgaTime
+
   init {
     if (RobotBase.isReal()) {
       kP.initDefault(ElevatorConstants.REAL_KP)
@@ -113,7 +126,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Elevator/percentOutput", percentOutput)
   }
 
-  fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
+  fun setPosition() {
+    val setpoint = elevatorDesiredProfile.calculate(Clock.fpgaTime - startTime)
+
     val elevatorAccel =
       ((setpoint.velocity - elevatorSetpoint.velocity) / (Constants.Universal.LOOP_PERIOD_TIME))
 
