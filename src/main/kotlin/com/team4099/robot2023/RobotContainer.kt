@@ -67,7 +67,10 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
-
+    ControlBoard.runElevatorToHighNode.whileActiveContinuous(
+      elevator.setElevatorPosition(FieldConstants.Grids.highConeZ)
+    )
+    //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
   }

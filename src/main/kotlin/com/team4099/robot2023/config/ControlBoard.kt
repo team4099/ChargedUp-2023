@@ -27,8 +27,11 @@ object ControlBoard {
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
 
   val runElevatorToHighNode = Trigger { operator.aButton }
+<<<<<<< HEAD
 
   val openLoopExtend = Trigger { operator.bButton }
 
   val openLoopRetract = Trigger { operator.xButton }
+=======
+>>>>>>> b4b8218 (elevator set position inline command example)
 }
