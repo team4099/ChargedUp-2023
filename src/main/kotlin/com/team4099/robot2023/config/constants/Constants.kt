@@ -62,8 +62,8 @@ object Constants {
     const val PIGEON_2_ID = 1337
   }
 
-  object Intake {
-    const val INTAKE_MOTOR = 0
+  object Manipulator {
+    const val INTAKE_MOTOR_ID = 0
   }
 
   object Alert {
