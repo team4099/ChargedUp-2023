@@ -15,11 +15,6 @@ class LedCommand(val led: Led, val drivetrain: Drivetrain) : CommandBase() {
   }
 
   override fun execute() {
-    /* led.state =
-        when (Robot.isDisabled) {
-          LedConstants.LEDMode.DISABLED
-        }
-    */
 
     if (kotlin.math.abs(drivetrain.gyroInputs.gyroPitch.inDegrees) > 2.5) {
       if (drivetrain.gyroInputs.gyroPitch.inDegrees > 2.5) {
@@ -35,8 +30,9 @@ class LedCommand(val led: Led, val drivetrain: Drivetrain) : CommandBase() {
           // if holding item
           false -> LedConstants.LEDMode.ITEM
           Robot.isAutonomous -> LedConstants.LEDMode.AUTO
+          Robot.isTeleop -> LedConstants.LEDMode.TELEOP
           Robot.isDisabled -> LedConstants.LEDMode.DISABLED
-          else -> LedConstants.LEDMode.TELEOP
+          else -> LedConstants.LEDMode.IDLE
         }
     }
   }

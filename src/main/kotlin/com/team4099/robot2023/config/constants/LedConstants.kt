@@ -9,7 +9,6 @@ import org.team4099.lib.drivers.BlinkinLedDriver as Blinkin
 class LedConstants {
   enum class LEDMode {
     IDLE,
-    ALERT,
     ITEM,
     POS_LEVELED,
     NEG_LEVELED,
