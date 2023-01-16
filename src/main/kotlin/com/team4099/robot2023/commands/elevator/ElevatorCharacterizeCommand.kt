@@ -18,7 +18,7 @@ class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
 
   var hasMoved = false
 
-  var appliedVolts = 2.3.volts
+  var appliedVolts = ElevatorConstants.ELEVATOR_KG
   var step = 0.001
 
   override fun execute() {
