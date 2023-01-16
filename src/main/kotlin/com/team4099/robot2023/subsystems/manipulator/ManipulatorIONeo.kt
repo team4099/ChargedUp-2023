@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.manipulator
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
+import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -9,7 +10,8 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 
 object ManipulatorIONeo : ManipulatorIO {
-  private val manipulatorSparkMax = CANSparkMax(0, CANSparkMaxLowLevel.MotorType.kBrushless)
+  private val manipulatorSparkMax =
+    CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
   private val manipulatorSensor =
     sparkMaxAngularMechanismSensor(
       manipulatorSparkMax,
