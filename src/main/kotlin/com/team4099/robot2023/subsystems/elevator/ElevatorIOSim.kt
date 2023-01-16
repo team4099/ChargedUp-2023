@@ -88,13 +88,13 @@ object ElevatorIOSim : ElevatorIO {
     inputs.elevatorVelocity = elevatorSim.velocityMetersPerSecond.meters.perSecond
 
     inputs.leaderTempCelcius = 0.0.celsius
-    inputs.leaderStatorCurrent = elevatorSim.currentDrawAmps.amps / 2
-    inputs.leaderSupplyCurrent = 0.0.amps
+    inputs.leaderStatorCurrent = 0.0.amps
+    inputs.leaderSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
     inputs.leaderAppliedOutput = 0.0
 
     inputs.followerTempCelcius = 0.0.celsius
-    inputs.followerStatorCurrent = elevatorSim.currentDrawAmps.amps / 2
-    inputs.followerSupplyCurrent = 0.0.amps
+    inputs.followerStatorCurrent = 0.0.amps
+    inputs.followerSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
     inputs.followerAppliedOutput = 0.0
 
     RoboRioSim.setVInVoltage(
