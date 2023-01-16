@@ -12,10 +12,8 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
-import kotlin.math.sin
 
 object ElevatorConstants {
 
@@ -38,10 +36,10 @@ object ElevatorConstants {
   val SIM_KD = 0.05.volts / (1.meters.perSecond)
 
   // TODO(Check height with design)
-  val ELEVATOR_ANGLE = 45.degrees
+  val ELEVATOR_ANGLE = 51.687235.degrees
 
-  val ELEVATOR_KS = 0.5205.volts // TODO tune
-  val ELEVATOR_KG = 2.57.volts * sin(ELEVATOR_ANGLE.inRadians)
+  val ELEVATOR_KS = 0.584.volts // TODO tune
+  val ELEVATOR_KG = 2.01.volts
   val ELEVATOR_KV = 1.81.volts / 1.0.meters.perSecond
   val ELEVATOR_KA = 0.26.volts / 1.0.meters.perSecond.perSecond
 
