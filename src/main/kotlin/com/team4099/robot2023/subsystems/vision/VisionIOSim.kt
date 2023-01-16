@@ -39,7 +39,7 @@ object VisionIOSim : VisionIO {
 
     visionSim.addCamera(
       PhotonCameraSim(frontCamera, CameraProperties.PI4_PICAM2_480p),
-      VisionConstants.SIM_CAMERA_TRANSFORMS[0].transform3d
+      VisionConstants.CAMERA_TRANSFORMS[0].transform3d
     )
 
     visionSim.addVisionTargets(layout.apriltagFieldLayoutWPILIB)

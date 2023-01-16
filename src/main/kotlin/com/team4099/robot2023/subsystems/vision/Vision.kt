@@ -4,7 +4,6 @@ import com.team4099.apriltag.AprilTag
 import com.team4099.apriltag.AprilTagFieldLayout
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
-import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.photonvision.targeting.PhotonPipelineResult
@@ -75,12 +74,7 @@ class Vision(val io: VisionIO) : SubsystemBase() {
         val camToAlt = Transform3d(target.alternateCameraToTarget)
 
         // getting robot to camera
-        val robotToCam: Transform3d
-        if (RobotBase.isReal()) {
-          robotToCam = VisionConstants.REAL_CAMERA_TRANSFORMS[resultIndex]
-        } else {
-          robotToCam = VisionConstants.SIM_CAMERA_TRANSFORMS[resultIndex]
-        }
+        val robotToCam: Transform3d = VisionConstants.CAMERA_TRANSFORMS[resultIndex]
 
         // getting poses
         val bestPose =
