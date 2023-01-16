@@ -82,17 +82,6 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   var elevatorSetpoint: TrapezoidProfile.State<Meter> =
     TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
 
-  val elevatorDesiredProfile: TrapezoidProfile<Meter>
-    get() {
-      return TrapezoidProfile(
-        elevatorConstraints,
-        TrapezoidProfile.State(desiredPosition, 0.0.meters / 1.0.seconds),
-        TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
-      )
-    }
-
-  var startTime = Clock.fpgaTime
-
   init {
     if (RobotBase.isReal()) {
       kP.initDefault(ElevatorConstants.REAL_KP)
@@ -118,7 +107,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   }
 
   fun setOpenLoop(percentOutput: Double) {
-    if (forwardLimitReached || reverseLimitReached) {
+    if ((forwardLimitReached && percentOutput > 0) || (reverseLimitReached && percentOutput < 0)) {
       io.setOpenLoop(0.0)
     } else {
       io.setOpenLoop(percentOutput)
@@ -190,5 +179,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
           (Clock.fpgaTime - startTime)
         ) // This is the race condition we're passing in.
       }
+  }
+
+  fun openLoopControl(percentOutput: Double): Command {
+    return run { setOpenLoop(percentOutput) }.finallyDo { setOpenLoop(0.0) }
   }
 }

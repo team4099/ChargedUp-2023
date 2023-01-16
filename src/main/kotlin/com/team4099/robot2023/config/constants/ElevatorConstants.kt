@@ -20,8 +20,8 @@ object ElevatorConstants {
 
   const val SENSOR_CPR = 42
   // TODO(Check ratio with design)
-  const val GEAR_RATIO = 1.0
-  val CARRIAGE_MASS = 1.0.kilo.grams
+  const val GEAR_RATIO = (12.0 / 32.0)
+  val CARRIAGE_MASS = 3.0.kilo.grams
   // TODO(Check height with design)
   const val LEFT_MOTOR_INVERTED = true
   const val RIGHT_MOTOR_INVERTED = false
@@ -32,20 +32,20 @@ object ElevatorConstants {
   val REAL_KI = 0.0.volts / (1.meters * 1.seconds)
   val REAL_KD = 0.0.volts / (1.meters.perSecond)
 
-  val SIM_KP = 0.0.volts / 1.meters
+  val SIM_KP = 2.0.volts / 1.meters
   val SIM_KI = 0.0.volts / (1.meters * 1.seconds)
-  val SIM_KD = 0.0.volts / (1.meters.perSecond)
+  val SIM_KD = 0.5.volts / (1.meters.perSecond)
 
-  val ELEVATOR_KS = 1.0.volts
-  val ELEVATOR_KG = 1.0.volts
-  val ELEVATOR_KV = 1.0.volts / 1.0.meters.perSecond
-  val ELEVATOR_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
+  val ELEVATOR_KS = 1.0.volts // TODO tune
+  val ELEVATOR_KG = 2.57.volts
+  val ELEVATOR_KV = 1.81.volts / 1.0.meters.perSecond
+  val ELEVATOR_KA = 0.26.volts / 1.0.meters.perSecond.perSecond
 
   val VOLTAGE_COMPENSATION = 12.volts
   val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit
 
   // TODO(Check spool radius with design)
-  val SPOOL_RADIUS = 1.inches
+  val SPOOL_RADIUS = 1.128.inches
 
   val MAX_VELOCITY = 35.inches.perSecond
   val MAX_ACCELERATION = 60.inches.perSecond.perSecond
