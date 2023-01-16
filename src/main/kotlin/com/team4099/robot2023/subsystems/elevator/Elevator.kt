@@ -137,6 +137,14 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     io.zeroEncoder()
   }
 
+  fun holdElevatorPosition(): Command {
+    return run {
+      io.setPosition(
+        inputs.elevatorPosition, elevatorFeedForward.calculate(0.0001.meters.perSecond)
+      )
+    }
+  }
+
   /**
    * Inline command to set the elevator to a desired position.
    *

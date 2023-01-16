@@ -7,21 +7,22 @@ import com.team4099.robot2023.config.constants.FieldConstants.Grids.midCubeZ
 import com.team4099.robot2023.config.constants.FieldConstants.LoadingZone.doubleSubstationShelfZ
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
-import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perSecond
+import kotlin.math.sin
 
 object ElevatorConstants {
 
   const val SENSOR_CPR = 42
   // TODO(Check ratio with design)
-  const val GEAR_RATIO = (12.0 / 32.0)
-  val CARRIAGE_MASS = 3.0.kilo.grams
+  const val GEAR_RATIO = (32.0 / 12.0)
+  val CARRIAGE_MASS = 30.pounds
   // TODO(Check height with design)
   const val LEFT_MOTOR_INVERTED = true
   const val RIGHT_MOTOR_INVERTED = false
@@ -32,12 +33,15 @@ object ElevatorConstants {
   val REAL_KI = 0.0.volts / (1.meters * 1.seconds)
   val REAL_KD = 0.0.volts / (1.meters.perSecond)
 
-  val SIM_KP = 2.0.volts / 1.meters
+  val SIM_KP = 1.0.volts / 1.meters
   val SIM_KI = 0.0.volts / (1.meters * 1.seconds)
-  val SIM_KD = 0.5.volts / (1.meters.perSecond)
+  val SIM_KD = 0.05.volts / (1.meters.perSecond)
 
-  val ELEVATOR_KS = 1.0.volts // TODO tune
-  val ELEVATOR_KG = 2.57.volts
+  // TODO(Check height with design)
+  val ELEVATOR_ANGLE = 45.degrees
+
+  val ELEVATOR_KS = 0.5205.volts // TODO tune
+  val ELEVATOR_KG = 2.57.volts * sin(ELEVATOR_ANGLE.inRadians)
   val ELEVATOR_KV = 1.81.volts / 1.0.meters.perSecond
   val ELEVATOR_KA = 0.26.volts / 1.0.meters.perSecond.perSecond
 
@@ -47,15 +51,12 @@ object ElevatorConstants {
   // TODO(Check spool radius with design)
   val SPOOL_RADIUS = 1.128.inches
 
-  val MAX_VELOCITY = 35.inches.perSecond
-  val MAX_ACCELERATION = 60.inches.perSecond.perSecond
+  val MAX_VELOCITY = 10.inches.perSecond
+  val MAX_ACCELERATION = 2.inches.perSecond.perSecond
 
   // TODO(Check height with design)
   val ELEVATOR_MAX_EXTENSION = 50.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
-
-  // TODO(Check height with design)
-  val ELEVATOR_ANGLE = 45.degrees
 
   // TODO(do tests to figure out what these values should be, get from mech?)
   val CUBE_DROP_HEIGHT = 0.0.inches

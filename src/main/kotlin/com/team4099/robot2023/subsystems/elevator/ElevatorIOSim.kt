@@ -100,7 +100,6 @@ object ElevatorIOSim : ElevatorIO {
   }
 
   override fun setOpenLoop(percentOutput: Double) {
-    println(percentOutput)
     elevatorSim.setInputVoltage(RoboRioSim.getVInVoltage() * percentOutput)
   }
 

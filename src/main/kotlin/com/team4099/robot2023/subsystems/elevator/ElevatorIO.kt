@@ -25,7 +25,6 @@ interface ElevatorIO {
     var elevatorPosition = 0.0.inches
     var elevatorVelocity = 0.0.inches.perSecond
 
-    // TODO(check if we need to log follower)
     var leaderAppliedOutput = 0.0
     var followerAppliedOutput = 0.0
 
@@ -39,8 +38,8 @@ interface ElevatorIO {
     var followerTempCelcius = 0.0.celsius
 
     override fun toLog(table: LogTable) {
-      table?.put("elevatorPositionRad", elevatorPosition.inInches)
-      table?.put("elevatorVelocityRadPerSec", elevatorVelocity.inInchesPerSecond)
+      table?.put("elevatorPositionInches", elevatorPosition.inInches)
+      table?.put("elevatorVelocityInchesPerSec", elevatorVelocity.inInchesPerSecond)
       table?.put("elevatorAppliedVolts", leaderAppliedOutput)
       table?.put("elevatorAppliedVolts", followerAppliedOutput)
       table?.put("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)
@@ -52,11 +51,10 @@ interface ElevatorIO {
     }
 
     override fun fromLog(table: LogTable) {
-
-      table?.getDouble("elevatorPositionRad", elevatorPosition.inInches)?.let {
+      table?.getDouble("elevatorPositionInches", elevatorPosition.inInches)?.let {
         elevatorPosition = it.inches
       }
-      table?.getDouble("elevatorVelocityRadPerSec", elevatorVelocity.inInchesPerSecond)?.let {
+      table?.getDouble("elevatorVelocityInchesPerSec", elevatorVelocity.inInchesPerSecond)?.let {
         elevatorVelocity = it.inches.perSecond
       }
       table?.getDouble("elevatorLeaderAppliedVolts", leaderAppliedOutput)?.let {
@@ -68,7 +66,7 @@ interface ElevatorIO {
       table?.getDouble("elevatorLeaderSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)?.let {
         leaderSupplyCurrent = it.amps
       }
-      table?.getDouble("elevatorLeadertempCelcius", leaderTempCelcius.inCelsius)?.let {
+      table?.getDouble("elevatorLeaderTempCelcius", leaderTempCelcius.inCelsius)?.let {
         leaderTempCelcius = it.celsius
       }
 
@@ -81,7 +79,7 @@ interface ElevatorIO {
       table?.getDouble("elevatorFollowerSupplyCurrentAmps", followerSupplyCurrent.inAmperes)?.let {
         followerSupplyCurrent = it.amps
       }
-      table?.getDouble("elevatorFollowertempCelcius", followerTempCelcius.inCelsius)?.let {
+      table?.getDouble("elevatorFollowerTempCelcius", followerTempCelcius.inCelsius)?.let {
         followerTempCelcius = it.celsius
       }
     }
