@@ -37,20 +37,17 @@ object ElevatorIOSim : ElevatorIO {
       ElevatorConstants.SPOOL_RADIUS,
       ElevatorConstants.ELEVATOR_MAX_RETRACTION,
       ElevatorConstants.ELEVATOR_MAX_EXTENSION,
+      ElevatorConstants.ELEVATOR_ANGLE,
       true,
-      ElevatorConstants.ELEVATOR_ANGLE
     )
 
-  val elevatorController =
-    PIDController<Meter, Volt>(
-      ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD
-    )
+  private val elevatorController =
+    PIDController(ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD)
 
   init {
 
     // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
 
-    // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
     val m_mech2d = Mechanism2d(90.0, 90.0)
     val midNodeHome = m_mech2d.getRoot("Mid Node", 27.83, 0.0)
     val MidNode =
@@ -103,6 +100,7 @@ object ElevatorIOSim : ElevatorIO {
   }
 
   override fun setOpenLoop(percentOutput: Double) {
+    println(percentOutput)
     elevatorSim.setInputVoltage(RoboRioSim.getVInVoltage() * percentOutput)
   }
 

@@ -70,6 +70,8 @@ object RobotContainer {
     ControlBoard.runElevatorToHighNode.whileActiveContinuous(
       elevator.setElevatorPosition(FieldConstants.Grids.highConeZ)
     )
+    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(1.0))
+    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-1.0))
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())

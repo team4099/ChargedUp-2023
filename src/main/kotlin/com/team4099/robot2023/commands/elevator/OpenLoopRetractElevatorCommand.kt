@@ -11,7 +11,7 @@ class OpenLoopRetractElevatorCommand(val elevator: Elevator) : CommandBase() {
   }
 
   override fun initialize() {
-    elevator.desiredState = ElevatorConstants.DesiredElevatorStates.MAX_HEIGHT
+    elevator.desiredState = ElevatorConstants.DesiredElevatorStates.MIN_HEIGHT
   }
 
   override fun execute() {

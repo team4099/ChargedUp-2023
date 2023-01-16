@@ -27,4 +27,8 @@ object ControlBoard {
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
 
   val runElevatorToHighNode = Trigger { operator.aButton }
+
+  val openLoopExtend = Trigger { operator.bButton }
+
+  val openLoopRetract = Trigger { operator.xButton }
 }
