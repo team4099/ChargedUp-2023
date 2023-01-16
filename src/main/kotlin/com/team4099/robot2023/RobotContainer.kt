@@ -46,6 +46,7 @@ object RobotContainer {
         { ControlBoard.robotOriented },
         drivetrain
       )
+    elevator.defaultCommand = elevator.holdElevatorPosition()
     //    PivotClimber.defaultCommand = PivotIdleCommand()
   }
 
@@ -68,7 +69,7 @@ object RobotContainer {
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
     ControlBoard.runElevatorToHighNode.whileActiveContinuous(
-      elevator.setElevatorPosition(FieldConstants.Grids.highConeZ)
+      elevator.setElevatorPosition(FieldConstants.Grids.midConeZ)
     )
     ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(1.0))
     ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-1.0))
