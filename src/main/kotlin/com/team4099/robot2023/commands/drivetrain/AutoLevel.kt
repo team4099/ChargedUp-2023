@@ -67,7 +67,8 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
     get() {
       var feedback =
         gyroPID.calculate(gyroAngle, DrivetrainConstants.DOCKING_GYRO_SETPOINT) *
-          alignmentAngle.sign
+          (alignmentAngle + 0.1.degrees).sign
+      // 0.1 so sign of 0 degrees returns 1
 
       return when (alignmentAngle.absoluteValue.inDegrees % 180.0) {
         0.0 -> Pair(feedback, 0.0.meters.perSecond)
