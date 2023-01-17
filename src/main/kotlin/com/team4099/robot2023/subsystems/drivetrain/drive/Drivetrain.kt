@@ -43,6 +43,16 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   val swerveModules = swerveModuleIOs.getSwerveModules()
   var gyroYawOffset = 0.0.radians
 
+  val closestAlignmentAngle: Angle
+    get() {
+      for (angle in -180..90 step 90) {
+        if ((odometryPose.rotation - angle.degrees).absoluteValue <= 45.degrees) {
+          return angle.degrees
+        }
+      }
+      return 0.0.degrees
+    }
+
   init {
     // Wheel speeds
     zeroSteering()
