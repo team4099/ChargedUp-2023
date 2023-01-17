@@ -18,8 +18,8 @@ object LedIOCandle : LedIO {
     lastState = newState
     when (newState) {
       LEDMode.ITEM -> setCANdleState(CandleMode.ITEM)
-      LEDMode.POS_LEVELED -> setCANdleState(CandleMode.POS_LEVELED)
-      LEDMode.NEG_LEVELED -> setCANdleState(CandleMode.NEG_LEVELED)
+      LEDMode.FORWARD_TO_LEVEL -> setCANdleState(CandleMode.FORWARD_TO_LEVEL)
+      LEDMode.BACKWARD_TO_LEVEL -> setCANdleState(CandleMode.BACKWARD_TO_LEVEL)
       LEDMode.OUTTAKE -> setCANdleState(CandleMode.OUTTAKE)
       LEDMode.AUTO -> setCANdleState(CandleMode.AUTO)
       LEDMode.TELEOP -> setCANdleState(CandleMode.TELEOP)

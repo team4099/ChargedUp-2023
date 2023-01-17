@@ -17,10 +17,9 @@ object LedIOBlinken : LedIO {
     lastLedState = newState
     when (newState) {
       LEDMode.IDLE -> setBlinken(BlinkenMode.IDLE.blinkenMode)
-      LEDMode.ALERT -> setBlinken(BlinkenMode.ALERT.blinkenMode)
       LEDMode.ITEM -> setBlinken(BlinkenMode.ITEM.blinkenMode)
-      LEDMode.POS_LEVELED -> setBlinken(BlinkenMode.POS_LEVELED.blinkenMode)
-      LEDMode.NEG_LEVELED -> setBlinken(BlinkenMode.NEG_LEVELED.blinkenMode)
+      LEDMode.FORWARD_TO_LEVEL -> setBlinken(BlinkenMode.FORWARD_TO_LEVEL.blinkenMode)
+      LEDMode.BACKWARD_TO_LEVEL -> setBlinken(BlinkenMode.BACKWARD_TO_LEVEL.blinkenMode)
       LEDMode.OUTTAKE -> setBlinken(BlinkenMode.OUTTAKE.blinkenMode)
       LEDMode.AUTO -> setBlinken(BlinkenMode.AUTO.blinkenMode)
       LEDMode.TELEOP -> setBlinken(BlinkenMode.TELEOP.blinkenMode)

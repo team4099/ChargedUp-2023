@@ -43,8 +43,8 @@ class LedConstants {
   enum class SimMode(val color: Color8Bit) {
     IDLE(Color8Bit(Color.kOrange)),
     ITEM(Color8Bit(Color.kAqua)),
-    POS_LEVELED(Color8Bit(Color.kAqua)),
-    NEG_LEVELED(Color8Bit(Color.kAqua)),
+    FORWARD_TO_LEVEL(Color8Bit(Color.kAqua)),
+    BACKWARD_TO_LEVEL(Color8Bit(Color.kAqua)),
     OUTTAKE(Color8Bit(Color.kAqua)),
     AUTO(Color8Bit(Color.kAqua)),
     TELEOP(Color8Bit(Color.kAqua)),

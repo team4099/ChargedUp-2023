@@ -19,10 +19,9 @@ object LedIOSim : LedIO {
 
     when (state) {
       LEDMode.IDLE -> setWidget(SimMode.IDLE)
-      LEDMode.ALERT -> setWidget(SimMode.ALERT)
       LEDMode.ITEM -> setWidget(SimMode.ITEM)
-      LEDMode.POS_LEVELED -> setWidget(SimMode.POS_LEVELED)
-      LEDMode.NEG_LEVELED -> setWidget(SimMode.NEG_LEVELED)
+      LEDMode.FORWARD_TO_LEVEL -> setWidget(SimMode.FORWARD_TO_LEVEL)
+      LEDMode.BACKWARD_TO_LEVEL -> setWidget(SimMode.BACKWARD_TO_LEVEL)
       LEDMode.OUTTAKE -> setWidget(SimMode.OUTTAKE)
       LEDMode.AUTO -> setWidget(SimMode.AUTO)
       LEDMode.TELEOP -> setWidget(SimMode.TELEOP)
