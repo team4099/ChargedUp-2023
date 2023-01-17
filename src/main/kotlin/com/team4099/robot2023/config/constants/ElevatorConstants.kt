@@ -31,9 +31,9 @@ object ElevatorConstants {
   val REAL_KI = 0.0.volts / (1.meters * 1.seconds)
   val REAL_KD = 0.0.volts / (1.meters.perSecond)
 
-  val SIM_KP = 0.16.volts / 1.inches
+  val SIM_KP = 1.5.volts / 1.inches
   val SIM_KI = 0.0.volts / (1.inches * 1.seconds)
-  val SIM_KD = 0.02.volts / (1.inches.perSecond)
+  val SIM_KD = 0.2.volts / (1.inches.perSecond)
 
   // TODO(Check height with design)
   val ELEVATOR_ANGLE = 51.687235.degrees
@@ -46,11 +46,10 @@ object ElevatorConstants {
   val VOLTAGE_COMPENSATION = 12.volts
   val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit
 
-  // TODO(Check spool radius with design)
   val SPOOL_RADIUS = 1.128.inches
 
-  val MAX_VELOCITY = 10.inches.perSecond
-  val MAX_ACCELERATION = 2.inches.perSecond.perSecond
+  val MAX_VELOCITY = 20.inches.perSecond // TODO increase this pls
+  val MAX_ACCELERATION = 10.inches.perSecond.perSecond
 
   // TODO(Check height with design)
   val ELEVATOR_MAX_EXTENSION = 50.0.inches

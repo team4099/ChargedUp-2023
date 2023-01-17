@@ -21,7 +21,6 @@ import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
 import org.team4099.lib.units.derived.perMeter
 import org.team4099.lib.units.derived.perMeterSeconds
-import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
@@ -54,11 +53,6 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION
 
   var desiredState = ElevatorConstants.DesiredElevatorStates.MIN_HEIGHT
-
-  val desiredPosition: Length
-    get() {
-      return desiredState.height / ElevatorConstants.ELEVATOR_ANGLE.sin
-    }
 
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
@@ -158,7 +152,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     // Constructing our elevator profile in here because its internal values are dependent on the
     // position we want to set the elevator to
-    val elevatorProfile =
+    var elevatorProfile =
       TrapezoidProfile(
         elevatorConstraints,
         TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
@@ -167,7 +161,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     // Obtaining a start time for this command so that we can pass it into our profile. This is done
     // here because we need the startTime to represent the time at which the profile began.
-    val startTime = Clock.fpgaTime
+    var startTime = Clock.fpgaTime
 
     // Creates a command that runs continuously until the profile is finished. The run function
     // accepts a lambda which indicates what we want to run every iteration.
@@ -181,6 +175,18 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       // calculating. Hence, we want to pass in a different Trapezoidal
       // Profile State into the setPosition function.
     }
+      .beforeStarting(
+        {
+          startTime = Clock.fpgaTime
+          elevatorProfile =
+            TrapezoidProfile(
+              elevatorConstraints,
+              TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
+              TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
+            )
+        },
+        this
+      )
       .until { // The following lambda creates a race condition that stops the command we created
         // above when the passed in condition is true. In our case it's checking when
         // elevatorProfile is finished based on elapsed time.
