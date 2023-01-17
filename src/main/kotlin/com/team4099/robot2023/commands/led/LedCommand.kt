@@ -26,12 +26,14 @@ class LedCommand(val led: Led, val drivetrain: Drivetrain) : CommandBase() {
 
   override fun execute() {
 
-    // TODO change this to be positive feedback required( driving forwards releative to field) vs
-    // negative feedback cause gyro depends on direction orientation of drivetrain
-    if (gyroAngle > 2.5.degrees) {
-      led.state = LedConstants.LEDMode.POS_LEVELED
-    } else if (gyroAngle < -2.5.degrees) {
-      led.state = LedConstants.LEDMode.NEG_LEVELED
+    // leds signify which direciton, forwards/backwards(field orriented) the robot should move to be
+    // leveled
+    if (gyroAngle.absoluteValue > 2.5.degrees) {
+      if (drivetrain.closestAlignmentAngle.sign == -1.0) {
+        led.state = LedConstants.LEDMode.BACKWARD_TO_LEVEL
+      } else {
+        led.state = LedConstants.LEDMode.FORWARD_TO_LEVEL
+      }
     } else {
       led.state =
         when {
