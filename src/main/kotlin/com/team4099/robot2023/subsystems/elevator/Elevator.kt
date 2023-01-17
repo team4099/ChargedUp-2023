@@ -137,6 +137,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       io.setPosition(
         inputs.elevatorPosition, elevatorFeedForward.calculate(0.0001.meters.perSecond)
       )
+      Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
     }
   }
 
@@ -177,6 +178,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       ) // Every loop cycle we have a different profile state we're
       // calculating. Hence, we want to pass in a different Trapezoidal
       // Profile State into the setPosition function.
+      Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", true)
     }
       .beforeStarting(
         {
