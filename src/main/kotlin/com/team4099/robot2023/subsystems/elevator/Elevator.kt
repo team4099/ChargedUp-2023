@@ -148,10 +148,13 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    * @return A command that runs the elevator's setPosition function until the profile is finished
    * running.
    */
-  fun setElevatorPosition(position: Length): Command {
+  fun raiseElevatorHeight(height: Length): Command {
 
     // Constructing our elevator profile in here because its internal values are dependent on the
     // position we want to set the elevator to
+    // val position = height/ElevatorConstants.ELEVATOR_ANGLE.sin
+    val position = height
+
     var elevatorProfile =
       TrapezoidProfile(
         elevatorConstraints,
