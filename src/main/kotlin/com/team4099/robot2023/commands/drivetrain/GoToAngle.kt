@@ -10,6 +10,7 @@ import org.team4099.lib.controller.ProfiledPIDController
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
@@ -53,6 +54,8 @@ class GoToAngle(val drivetrain: Drivetrain) : CommandBase() {
   val thetaMaxAccel =
     LoggedTunableValue("Pathfollow/thetaMaxAccel", DrivetrainConstants.PID.MAX_AUTO_ANGULAR_ACCEL)
 
+  var desiredAngle: Angle = 0.0.degrees
+
   init {
     addRequirements(drivetrain)
 
@@ -78,12 +81,11 @@ class GoToAngle(val drivetrain: Drivetrain) : CommandBase() {
 
   override fun initialize() {
     thetaPID.reset(drivetrain.odometryPose.rotation)
+
+    desiredAngle = drivetrain.closestAlignmentAngle
   }
 
   override fun execute() {
-    val desiredAngle =
-      if (drivetrain.odometryPose.rotation.absoluteValue <= 90.degrees) 0.0.degrees
-      else 180.degrees
 
     Logger.getInstance().recordOutput("ActiveCommands/AutoLevelCommand", true)
 
@@ -101,9 +103,6 @@ class GoToAngle(val drivetrain: Drivetrain) : CommandBase() {
   }
 
   override fun isFinished(): Boolean {
-    val desiredAngle =
-      if (drivetrain.odometryPose.rotation.absoluteValue <= 90.degrees) 0.0.degrees
-      else 180.degrees
 
     return (drivetrain.odometryPose.rotation - desiredAngle).absoluteValue <
       DrivetrainConstants.PID.AUTO_THETA_ALLOWED_ERROR

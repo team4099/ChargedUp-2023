@@ -27,8 +27,8 @@ object DrivetrainConstants {
   val DRIVETRAIN_LENGTH = 22.750.inches
   val DRIVETRAIN_WIDTH = 22.750.inches
 
-  val DOCKING_PITCH_SETPOINT = 0.0.degrees
-  val DOCKING_PITCH_TOLERANCE = 2.5.degrees
+  val DOCKING_GYRO_SETPOINT = 0.0.degrees
+  val DOCKING_GYRO_TOLERANCE = 2.5.degrees
   val DOCKING_TIME_THRESHOLD = 1.0.seconds
 
   val DRIVE_SETPOINT_MAX = 15.feet.perSecond

@@ -8,9 +8,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ProfiledPIDController
 import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.units.Fraction
+import org.team4099.lib.units.Value
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.Second
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
@@ -19,7 +23,18 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 
 class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
-  private val pitchPID: ProfiledPIDController<Radian, Velocity<Meter>>
+  private val gyroPID: ProfiledPIDController<Radian, Velocity<Meter>>
+
+  var alignmentAngle = 0.0.degrees
+
+  val gyroAngle: Angle
+    get() {
+      return when (alignmentAngle.absoluteValue.inDegrees % 180.0) {
+        0.0 -> drivetrain.gyroInputs.gyroPitch
+        90.0 -> drivetrain.gyroInputs.gyroRoll
+        else -> 0.0.degrees
+      }
+    }
 
   // TODO update falconutils to allow degrees / mps as a pid controller
   val levelkP =
@@ -48,46 +63,54 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       "Drivetrain/AutoLevel/maxAccel", DrivetrainConstants.PID.AUTO_LEVEL_MAX_ACCEL_SETPOINT
     )
 
+  val gyroFeedback: Pair<Value<Fraction<Meter, Second>>, Value<Fraction<Meter, Second>>>
+    get() {
+      var feedback =
+        gyroPID.calculate(gyroAngle, DrivetrainConstants.DOCKING_GYRO_SETPOINT) *
+          alignmentAngle.sign
+
+      return when (alignmentAngle.absoluteValue.inDegrees % 180.0) {
+        0.0 -> Pair(feedback, 0.0.meters.perSecond)
+        90.0 -> Pair(0.0.meters.perSecond, feedback)
+        else -> Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+      }
+    }
+
   init {
     addRequirements(drivetrain)
 
-    pitchPID =
+    // TODO(might want sperate pid controller for pitch vs roll)
+
+    gyroPID =
       ProfiledPIDController(
         levelkP.get(),
         levelkI.get(),
         levelkD.get(),
         TrapezoidProfile.Constraints(maxVelocity.get(), maxAccel.get())
       )
+
+    alignmentAngle = drivetrain.closestAlignmentAngle
   }
 
   override fun initialize() {
-    pitchPID.reset(drivetrain.gyroInputs.gyroPitch) // maybe do first for x?
+    gyroPID.reset(gyroAngle) // maybe do first for x?
   }
 
   override fun execute() {
     Logger.getInstance().recordOutput("ActiveCommands/AutoLevelCommand", true)
 
-    var pitchFeedback =
-      pitchPID.calculate(
-        drivetrain.gyroInputs.gyroPitch, DrivetrainConstants.DOCKING_PITCH_SETPOINT
-      )
-
-    if (drivetrain.odometryPose.rotation.absoluteValue > 90.degrees) {
-      pitchFeedback = -pitchFeedback
-    }
-
-    drivetrain.setOpenLoop(
-      0.0.radians.perSecond, Pair(pitchFeedback, 0.0.meters.perSecond), fieldOriented = true
-    )
+    drivetrain.setOpenLoop(0.0.radians.perSecond, gyroFeedback, fieldOriented = true)
 
     Logger.getInstance()
       .recordOutput(
-        "AutoLevel/DesiredPitchDegrees", DrivetrainConstants.DOCKING_PITCH_SETPOINT.inDegrees
+        "AutoLevel/DesiredPitchDegrees", DrivetrainConstants.DOCKING_GYRO_SETPOINT.inDegrees
       )
     Logger.getInstance()
       .recordOutput("AutoLevel/CurrentPitchDegrees", drivetrain.gyroInputs.gyroPitch.inDegrees)
     Logger.getInstance()
-      .recordOutput("AutoLevel/CorrectionVelocity", pitchFeedback.inMetersPerSecond)
+      .recordOutput("AutoLevel/CorrectionVelocityX", gyroFeedback.first.inMetersPerSecond)
+    Logger.getInstance()
+      .recordOutput("AutoLevel/CorrectionVelocityY", gyroFeedback.second.inMetersPerSecond)
   }
 
   var lastTimeSinceUnbalanced = Clock.fpgaTime
@@ -95,8 +118,8 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   override fun isFinished(): Boolean {
 
     var balanced =
-      (drivetrain.gyroInputs.gyroPitch - DrivetrainConstants.DOCKING_PITCH_SETPOINT)
-        .absoluteValue < DrivetrainConstants.DOCKING_PITCH_TOLERANCE
+      (gyroAngle - DrivetrainConstants.DOCKING_GYRO_SETPOINT).absoluteValue <
+        DrivetrainConstants.DOCKING_GYRO_TOLERANCE
 
     if (!balanced) {
       lastTimeSinceUnbalanced = Clock.fpgaTime
