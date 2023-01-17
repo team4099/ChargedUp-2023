@@ -12,7 +12,7 @@ import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
-import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.inVolts
@@ -23,7 +23,8 @@ import org.team4099.lib.units.derived.perMeter
 import org.team4099.lib.units.derived.perMeterSeconds
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inMetersPerSecondPerSecond
+import org.team4099.lib.units.inInchesPerSecond
+import org.team4099.lib.units.inInchesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 
 class Elevator(val io: ElevatorIO) : SubsystemBase() {
@@ -126,10 +127,10 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     io.setPosition(setpoint.position, feedforward)
 
-    Logger.getInstance().recordOutput("Elevator/targetHeight", desiredState.height.inMeters)
-    Logger.getInstance().recordOutput("Elevator/targetPosition", setpoint.position.inMeters)
+    Logger.getInstance().recordOutput("Elevator/targetPosition", setpoint.position.inInches)
+    Logger.getInstance().recordOutput("Elevator/targetVel", setpoint.velocity.inInchesPerSecond)
     Logger.getInstance()
-      .recordOutput("Elevator/elevatorAcceleration", elevatorAccel.inMetersPerSecondPerSecond)
+      .recordOutput("Elevator/elevatorAcceleration", elevatorAccel.inInchesPerSecondPerSecond)
     Logger.getInstance().recordOutput("Elevator/elevatorFeedFoward", feedforward.inVolts)
   }
 

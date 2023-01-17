@@ -3,9 +3,9 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
-import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -68,7 +68,9 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
-    ControlBoard.runElevatorToHighNode.whileActiveContinuous(ElevatorCharacterizeCommand(elevator))
+    ControlBoard.runElevatorToHighNode.whileActiveContinuous(
+      elevator.setElevatorPosition(FieldConstants.Grids.midConeZ)
+    )
     ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(1.0))
     ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-1.0))
     //
