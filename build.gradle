@@ -67,7 +67,6 @@ configurations.all {
 dependencies {
 	implementation wpi.java.deps.wpilib()
 	implementation wpi.java.vendor.java()
-	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
 
 	roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
 	roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
@@ -86,6 +85,7 @@ dependencies {
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 
 	implementation 'com.github.team4099:FalconUtils:1.0.6'
+	implementation 'com.google.code.gson:gson:2.10.1'
 
 	// We need to add the Kotlin stdlib in order to use most Kotlin language features.
 	// compile "org.jetbrains.kotlin:kotlin-stdlib"

@@ -1,5 +1,7 @@
 package com.team4099.robot2023.subsystems.vision
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
@@ -11,8 +13,14 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.radians
 
 object VisionIOLimelight : VisionIO {
+  private val jsonType = object : TypeToken<HashMap<String, HashMap<String, Any>>>() {}.type
 
   val limelightTable = NetworkTableInstance.getDefault().getTable("limelight")
+  val limelightJson =
+    Gson()
+      .fromJson<HashMap<String, HashMap<String, Any>>>(
+        limelightTable.getStringTopic("json").getEntry("[]").toString(), jsonType
+      )
   val hasTargetSub = limelightTable.getDoubleTopic("tv").getEntry(0.0)
   val yawSub = limelightTable.getDoubleTopic("tx").getEntry(0.0)
   val pitchSub = limelightTable.getDoubleTopic("ty").getEntry(0.0)
@@ -33,25 +41,22 @@ object VisionIOLimelight : VisionIO {
       .getEntry(doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 
   override fun updateInputs(inputs: VisionIO.VisionInputs) {
-    inputs.photonResults =
-      listOf(
-        PhotonPipelineResult(
-          latencySub.get() + 11,
-          listOf<PhotonTrackedTarget>(
-            PhotonTrackedTarget(
-              yawSub.get(),
-              pitchSub.get(),
-              areaSub.get(),
-              skewSub.get(),
-              idSub.get().toInt(),
-              transformArrayToTransform(camtranSub.get()).transform3d,
-              transformArrayToTransform(camtranSub.get()).transform3d,
-              0.0,
-              coordinateArraytoTargetCorners(cornerCoordinates.get())
-            )
-          )
+    val fiducials = limelightJson["Results"]?.get("Fiducial") as List<HashMap<String, Any>>
+    val trackedTargets =
+      fiducials.map {
+        PhotonTrackedTarget(
+          it["tx"].toString().toDouble(),
+          it["ty"].toString().toDouble(),
+          it["ta"].toString().toDouble(),
+          limelightJson["Results"]?.get("ts").toString().toDouble(),
+          it["fID"].toString().toInt(),
+          transformArrayToTransform(camtranSub.get()).transform3d,
+          transformArrayToTransform(camtranSub.get()).transform3d,
+          0.0,
+          coordinateArraytoTargetCorners(cornerCoordinates.get())
         )
-      )
+      }
+    inputs.photonResults = listOf(PhotonPipelineResult(latencySub.get() + 11, trackedTargets))
   }
 
   fun transformArrayToTransform(array: DoubleArray): Transform3d {
