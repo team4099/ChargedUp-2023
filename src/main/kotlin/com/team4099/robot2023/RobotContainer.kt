@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.Logger
 import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.VisionIO
+import com.team4099.robot2023.subsystems.vision.VisionIOLimelight
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
 import edu.wpi.first.math.VecBuilder
 import org.team4099.lib.geometry.Pose2d
@@ -32,7 +32,7 @@ object RobotContainer {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
-      vision = Vision(object : VisionIO {})
+      vision = Vision(VisionIOLimelight)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
