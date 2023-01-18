@@ -16,11 +16,7 @@ object VisionIOLimelight : VisionIO {
   private val jsonType = object : TypeToken<HashMap<String, HashMap<String, Any>>>() {}.type
 
   val limelightTable = NetworkTableInstance.getDefault().getTable("limelight")
-  val limelightJson =
-    Gson()
-      .fromJson<HashMap<String, HashMap<String, Any>>>(
-        limelightTable.getStringTopic("json").getEntry("[]").toString(), jsonType
-      )
+  val limelightJsonSub = limelightTable.getStringTopic("json").getEntry("[]")
   val hasTargetSub = limelightTable.getDoubleTopic("tv").getEntry(0.0)
   val yawSub = limelightTable.getDoubleTopic("tx").getEntry(0.0)
   val pitchSub = limelightTable.getDoubleTopic("ty").getEntry(0.0)
@@ -41,7 +37,13 @@ object VisionIOLimelight : VisionIO {
       .getEntry(doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 
   override fun updateInputs(inputs: VisionIO.VisionInputs) {
-    val fiducials = limelightJson["Results"]?.get("Fiducial") as List<HashMap<String, Any>>
+    val limelightJson =
+      Gson().fromJson<HashMap<String, HashMap<String, Any>>>(limelightJsonSub.get(), jsonType)
+    val results = limelightJson["Results"]
+    val fiducials: List<HashMap<String, Any>> =
+      (results?.get("Fiducial") ?: listOf<HashMap<String, Any>>()) as List<HashMap<String, Any>>
+    println(fiducials)
+
     val trackedTargets =
       fiducials.map {
         PhotonTrackedTarget(

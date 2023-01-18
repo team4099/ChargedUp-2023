@@ -12,7 +12,7 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.VisionIO
+import com.team4099.robot2023.subsystems.vision.VisionIOLimelight
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
 import edu.wpi.first.math.VecBuilder
 import org.team4099.lib.geometry.Pose2d
@@ -28,7 +28,7 @@ object RobotContainer {
     if (Constants.Universal.ROBOT_MODE == Constants.Tuning.RobotType.REAL) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
-      vision = Vision(object : VisionIO {})
+      vision = Vision(VisionIOLimelight)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
