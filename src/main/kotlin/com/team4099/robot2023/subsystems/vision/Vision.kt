@@ -45,13 +45,6 @@ class Vision(val io: VisionIO) : SubsystemBase() {
 
     // each result corresponds to a camera
     for (resultIndex in 0 until inputs.photonResults.size) {
-      //      if (inputs.photonResults[resultIndex].timestampSeconds.seconds ==
-      //        previousResults[resultIndex].timestampSeconds.seconds
-      //      ) {
-      //        continue
-      //      } else {
-      //        previousResults[resultIndex] = inputs.photonResults[resultIndex]
-      //      }
 
       for (target in inputs.photonResults[resultIndex].targets) {
         stdevs.add(

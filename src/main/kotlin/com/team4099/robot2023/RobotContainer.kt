@@ -18,6 +18,7 @@ import org.littletonrobotics.junction.Logger
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.VisionIOLimelight
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
+import edu.wpi.first.math.VecBuilder
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.Time
@@ -56,12 +57,14 @@ object RobotContainer {
   fun addVisionMeasurement(
     visionPose: Pose2d,
     timestamp: Time,
-    //    visionStdevs: Triple<Double, Double, Double>
+    //        visionStdevs: Triple<Double, Double, Double>
   ) {
     drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(
       visionPose.pose2d,
       timestamp.inSeconds,
-      //      VecBuilder.fill(visionStdevs.first, visionStdevs.second, visionStdevs.third)
+      VecBuilder.fill(
+        0.1, 0.1, 1.0
+      ) // TODO figure out an actual formula for stdev to make convergence speedy
     )
   }
 
