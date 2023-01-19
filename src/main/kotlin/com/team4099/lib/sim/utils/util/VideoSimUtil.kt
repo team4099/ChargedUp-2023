@@ -1,10 +1,9 @@
-package com.team4099.lib.utils.util
+package com.team4099.lib.sim.utils.util
 
 import org.opencv.core.Mat
 import java.util.HashMap
 import edu.wpi.first.cscore.CvSource
-import com.team4099.lib.utils.estimation.CameraProperties
-import com.team4099.lib.utils.util.VideoSimUtil
+import com.team4099.lib.sim.utils.estimation.CameraProperties
 import org.opencv.imgcodecs.Imgcodecs
 import kotlin.jvm.JvmOverloads
 import org.opencv.core.MatOfPoint2f
@@ -12,7 +11,6 @@ import org.opencv.imgproc.Imgproc
 import org.opencv.core.Scalar
 import org.opencv.core.CvType
 import java.util.Arrays
-import java.util.function.ToDoubleFunction
 import org.opencv.core.MatOfPoint
 import edu.wpi.first.cscore.CameraServerCvJNI
 import org.opencv.core.Core

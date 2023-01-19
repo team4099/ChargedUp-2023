@@ -21,18 +21,15 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.team4099.lib.utils.sim
+package com.team4099.lib.sim.utils.sim
 
-import com.team4099.lib.vision.LogUtil.toPoseArray3d
-import com.team4099.lib.utils.sim.PhotonCameraSim
+import com.team4099.lib.sim.vision.LogUtil.toPoseArray3d
 import java.util.HashMap
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import java.util.HashSet
-import java.util.function.BiConsumer
 import java.util.stream.Collectors
-import com.team4099.lib.vision.LogUtil
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Pose3d
@@ -40,9 +37,6 @@ import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj.Timer
-import java.util.Optional
-import org.photonvision.targeting.PhotonPipelineResult
-import org.photonvision.targeting.PhotonTrackedTarget
 import java.util.ArrayList
 import java.util.List
 import java.util.function.Consumer

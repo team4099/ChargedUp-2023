@@ -1,4 +1,4 @@
-package com.team4099.lib.utils.estimation
+package com.team4099.lib.sim.utils.estimation
 
 import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.math.numbers.N5
@@ -6,16 +6,13 @@ import edu.wpi.first.math.numbers.N1
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.Nat
-import com.team4099.lib.utils.estimation.CameraProperties
 import org.photonvision.targeting.PhotonTrackedTarget
 import org.photonvision.targeting.TargetCorner
-import com.team4099.lib.utils.estimation.OpenCVHelp
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.geometry.Rotation3d
-import org.opencv.core.RotatedRect
-import java.util.*
 import java.util.stream.Collectors
+import kotlin.random.Random
 
 /**
  * Calibration and performance values for this camera.
@@ -35,7 +32,7 @@ import java.util.stream.Collectors
  * account for network latency and the latency reported will always be perfect.
  */
 class CameraProperties {
-  private val rand = Random()
+  private val rand = Random.nextDouble()
 
   // calibration
   var resWidth = 0
@@ -285,7 +282,7 @@ class CameraProperties {
     return if (avgErrorPx == 0.0 && errorStdDevPx == 0.0) points else points.stream()
       .map { p: TargetCorner ->
         // error pixels in random direction
-        val error = rand.nextGaussian() * errorStdDevPx + avgErrorPx
+        val error = Random.nextGaussian() * errorStdDevPx + avgErrorPx
         val errorAngle = -Math.PI + (Math.PI + Math.PI) * rand.nextDouble()
         TargetCorner(
           p.x + error * Math.cos(errorAngle),

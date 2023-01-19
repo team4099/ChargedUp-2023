@@ -1,4 +1,4 @@
-package com.team4099.lib.vision
+package com.team4099.lib.sim.vision
 
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Pose3d

@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.team4099.lib.utils.sim
+package com.team4099.lib.sim.utils.sim
 
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.networktables.NetworkTable

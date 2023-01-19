@@ -1,7 +1,8 @@
-package com.team4099.robot2023.subsystems.vision
+package com.team4099.robot2023.subsystems.vision.camera
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.team4099.robot2023.subsystems.vision.VisionIO
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
