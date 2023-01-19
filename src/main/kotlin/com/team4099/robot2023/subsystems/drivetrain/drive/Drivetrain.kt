@@ -234,7 +234,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   private fun updateOdometry() {
     // reversing the drift to store the ground truth pose
-    if (Constants.Tuning.SIMULATE_DRIFT) {
+    if (!(RobotBase.isReal()) && Constants.Tuning.SIMULATE_DRIFT) {
       val undriftedModules = arrayOfNulls<SwerveModulePosition>(4)
       for (i in 0 until 4) {
         undriftedModules[i] =

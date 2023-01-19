@@ -38,7 +38,7 @@ object VisionIOSim : VisionIO {
     // todo add multiple cameras
 
     visionSim.addCamera(
-      PhotonCameraSim(frontCamera, CameraProperties.PI4_PICAM2_480p),
+      PhotonCameraSim(frontCamera, CameraProperties.LL2_1280_720p),
       VisionConstants.CAMERA_TRANSFORMS[0].transform3d
     )
 

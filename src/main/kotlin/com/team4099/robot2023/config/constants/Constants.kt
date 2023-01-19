@@ -5,7 +5,7 @@ import org.team4099.lib.units.milli
 
 object Constants {
   object Universal {
-    val ROBOT_MODE = Tuning.RobotType.REAL
+    val ROBOT_MODE = Tuning.RobotType.SIM
 
     const val CTRE_CONFIG_TIMEOUT = 0
     const val EPSILON = 1E-9
