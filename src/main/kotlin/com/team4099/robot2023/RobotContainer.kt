@@ -14,7 +14,6 @@ import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.VisionIOLimelight
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
-import edu.wpi.first.math.VecBuilder
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.Time
@@ -53,12 +52,12 @@ object RobotContainer {
   fun addVisionMeasurement(
     visionPose: Pose2d,
     timestamp: Time,
-    visionStdevs: Triple<Double, Double, Double>
+    //    visionStdevs: Triple<Double, Double, Double>
   ) {
     drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(
       visionPose.pose2d,
       timestamp.inSeconds,
-      VecBuilder.fill(visionStdevs.first, visionStdevs.second, visionStdevs.third)
+      //      VecBuilder.fill(visionStdevs.first, visionStdevs.second, visionStdevs.third)
     )
   }
 
