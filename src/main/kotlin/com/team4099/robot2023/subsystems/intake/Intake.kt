@@ -13,7 +13,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
   var rollerState = IntakeConstants.ROLLER_STATE.IDLE
     set(state) {
       io.setRollerPower(state.power)
-      if (state == IntakeConstants.ROLLER_STATE.INTAKE){
+      if (state == IntakeConstants.ROLLER_STATE.INTAKE) {
         lastIntakeRunTime = Clock.fpgaTime
       }
       field = state

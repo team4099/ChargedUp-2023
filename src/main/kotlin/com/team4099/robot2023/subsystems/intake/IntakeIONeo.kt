@@ -9,13 +9,15 @@ import edu.wpi.first.wpilibj.CounterBase
 import edu.wpi.first.wpilibj.Encoder
 import org.team4099.lib.units.derived.inVolts
 
-
 object IntakeIONeo : IntakeIO {
 
-  private val rollerMotor = CANSparkMax(Constants.Intake.ROLLER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
+  private val rollerMotor =
+    CANSparkMax(Constants.Intake.ROLLER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
-  private val leaderArmMotor = CANSparkMax(Constants.Intake.LEADER_ARM_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless)
-  private val followerArmMotor = CANSparkMax(Constants.Intake.FOLLOWER_ARM_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless)
+  private val leaderArmMotor =
+    CANSparkMax(Constants.Intake.LEADER_ARM_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless)
+  private val followerArmMotor =
+    CANSparkMax(Constants.Intake.FOLLOWER_ARM_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless)
 
   private val leaderArmEncoder = leaderArmMotor.getEncoder()
   private val followerArmEncoder = leaderArmMotor.getEncoder()
@@ -23,11 +25,12 @@ object IntakeIONeo : IntakeIO {
   private val throughBoreEncoder = Encoder(0, 1, true, CounterBase.EncodingType.k4X)
 
   // TODO (Make Sure Encoder increases as arm extends)
-  val currentRelativePosition = (throughBoreEncoder.get() - IntakeConstants.INTAKE_ZERO)/IntakeConstants.ENCODER_COUNTS*IntakeConstants.INTAKE_SENSOR_RATIO
+  val currentRelativePosition =
+    (throughBoreEncoder.get() - IntakeConstants.INTAKE_ZERO) / IntakeConstants.ENCODER_COUNTS *
+      IntakeConstants.INTAKE_SENSOR_RATIO
 
   private val leaderPIDController: SparkMaxPIDController = leaderArmMotor.pidController
   private val followerPIDController: SparkMaxPIDController = followerArmMotor.pidController
-
 
   init {
     leaderArmMotor.restoreFactoryDefaults()
@@ -45,10 +48,7 @@ object IntakeIONeo : IntakeIO {
     followerArmMotor.follow(leaderArmMotor)
   }
 
-  override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
+  override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {}
 
-  }
-
-  override fun setRollerPower(outputPower: Double) {
-  }
+  override fun setRollerPower(outputPower: Double) {}
 }
