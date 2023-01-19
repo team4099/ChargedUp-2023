@@ -18,24 +18,10 @@ object VisionIOLimelight : VisionIO {
 
   val limelightTable = NetworkTableInstance.getDefault().getTable("limelight")
   val limelightJsonSub = limelightTable.getStringTopic("json").getEntry("[]")
-  val hasTargetSub = limelightTable.getDoubleTopic("tv").getEntry(0.0)
-  val yawSub = limelightTable.getDoubleTopic("tx").getEntry(0.0)
-  val pitchSub = limelightTable.getDoubleTopic("ty").getEntry(0.0)
   val latencySub =
     limelightTable
       .getDoubleTopic("tl")
       .getEntry(0.0) // add at least 11 ms for image capture latency
-  val areaSub = limelightTable.getDoubleTopic("ta").getEntry(0.0)
-  val skewSub = limelightTable.getDoubleTopic("ts").getEntry(0.0)
-  val idSub = limelightTable.getDoubleTopic("tid").getEntry(-1.0)
-  val camtranSub =
-    limelightTable
-      .getDoubleArrayTopic("botpose")
-      .getEntry(doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
-  val cornerCoordinates =
-    limelightTable
-      .getDoubleArrayTopic("tcornxy")
-      .getEntry(doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
 
   override fun updateInputs(inputs: VisionIO.VisionInputs) {
     val limelightJson =
@@ -50,10 +36,10 @@ object VisionIOLimelight : VisionIO {
           it["tx"].toString().toDouble(),
           it["ty"].toString().toDouble(),
           it["ta"].toString().toDouble(),
-          0.0, // unused lol
+          0.0, // unused
           it["fID"].toString().toDouble().toInt(),
-          transformArrayToTransform(stringToDoubleArray(it["t6t_rs"].toString())).transform3d,
-          transformArrayToTransform(stringToDoubleArray(it["t6t_rs"].toString())).transform3d,
+          targetSpaceArrayToTransform(stringToDoubleArray(it["t6t_rs"].toString())).transform3d,
+          targetSpaceArrayToTransform(stringToDoubleArray(it["t6t_rs"].toString())).transform3d,
           0.0,
           coordinateArraytoTargetCorners(ptsToDoubleArray(it["pts"].toString()))
         )
@@ -61,9 +47,10 @@ object VisionIOLimelight : VisionIO {
     inputs.photonResults = listOf(PhotonPipelineResult(latencySub.get() + 11, trackedTargets))
   }
 
-  fun transformArrayToTransform(array: Array<Double>): Transform3d {
+  fun targetSpaceArrayToTransform(array: Array<Double>): Transform3d {
+    // https://docs.limelightvision.io/en/latest/coordinate_systems_fiducials.html#target-space
     return Transform3d(
-      Translation3d(array[0].meters, array[1].meters, array[2].meters),
+      Translation3d(array[2].meters, array[0].meters, -array[1].meters),
       Rotation3d(array[3].degrees, array[4].degrees, array[5].degrees)
     )
   }
@@ -77,11 +64,11 @@ object VisionIOLimelight : VisionIO {
     )
   }
 
-  fun stringToDoubleArray(string: String): Array<Double> {
+  private fun stringToDoubleArray(string: String): Array<Double> {
     return string.substring(1, string.length - 1).split(",").map { it.toDouble() }.toTypedArray()
   }
 
-  fun ptsToDoubleArray(string: String): Array<Double> {
+  private fun ptsToDoubleArray(string: String): Array<Double> {
     return stringToDoubleArray(
       string.substring(1, string.length - 1).replace("[", "").replace("]", "")
     )
