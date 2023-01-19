@@ -4,7 +4,6 @@ import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
-import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
 import org.team4099.lib.units.derived.Angle
@@ -59,43 +58,39 @@ interface IntakeIO {
       table?.put("groundIntakeRollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
 
       table?.put("groundIntakeRollerTempCelcius", rollerTempCelcius.inCelsius)
-
     }
 
     override fun fromLog(table: LogTable?) {
       table?.getDouble("groundIntakePositionDegrees", leaderArmPosition.inDegrees)?.let {
         leaderArmPosition = it.degrees
       }
-      table?.getDouble("groundIntakeVelocityDegreesPerSec", leaderArmVelocity.inDegreesPerSecond)?.let {
-        leaderArmVelocity = it.degrees.perSecond
-      }
+      table?.getDouble("groundIntakeVelocityDegreesPerSec", leaderArmVelocity.inDegreesPerSecond)
+        ?.let { leaderArmVelocity = it.degrees.perSecond }
       table?.getDouble("groundIntakeLeaderArmAppliedOutput", leaderArmAppliedOutput)?.let {
         leaderArmAppliedOutput = it
       }
       table?.getDouble("groundIntakeFollowerArmAppliedOutput", followerArmAppliedOutput)?.let {
         followerArmAppliedOutput = it
       }
-      table?.getDouble("groundIntakeLeaderArmSupplyCurrentAmps", leaderArmSupplyCurrent.inAmperes)?.let {
-        leaderArmSupplyCurrent = it.amps
-      }
-      table?.getDouble("groundIntakeFollowerArmSupplyCurrentAmps", followerArmSupplyCurrent.inAmperes)?.let {
-        followerArmSupplyCurrent = it.amps
-      }
-      table?.getDouble("groundIntakeLeaderArmStatorCurrentAmps", leaderArmStatorCurrent.inAmperes)?.let {
-        leaderArmStatorCurrent = it.amps
-      }
-      table?.getDouble("groundIntakeFollowerArmStatorCurrentAmps", followerArmStatorCurrent.inAmperes)?.let {
-        followerArmStatorCurrent = it.amps
-      }
+      table?.getDouble("groundIntakeLeaderArmSupplyCurrentAmps", leaderArmSupplyCurrent.inAmperes)
+        ?.let { leaderArmSupplyCurrent = it.amps }
+      table?.getDouble(
+        "groundIntakeFollowerArmSupplyCurrentAmps", followerArmSupplyCurrent.inAmperes
+      )
+        ?.let { followerArmSupplyCurrent = it.amps }
+      table?.getDouble("groundIntakeLeaderArmStatorCurrentAmps", leaderArmStatorCurrent.inAmperes)
+        ?.let { leaderArmStatorCurrent = it.amps }
+      table?.getDouble(
+        "groundIntakeFollowerArmStatorCurrentAmps", followerArmStatorCurrent.inAmperes
+      )
+        ?.let { followerArmStatorCurrent = it.amps }
       table?.getDouble("groundIntakeLeaderTempCelcius", leaderTempCelcius.inCelsius)?.let {
         leaderTempCelcius = it.celsius
       }
       table?.getDouble("groundIntakeFollowerTempCelcius", followerTempCelcius.inCelsius)?.let {
         followerTempCelcius = it.celsius
       }
-      table?.getDouble("groundIntakeRollerApplied", rollerApplied)?.let {
-        rollerApplied = it
-      }
+      table?.getDouble("groundIntakeRollerApplied", rollerApplied)?.let { rollerApplied = it }
       table?.getDouble("groundIntakeRollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let {
         rollerSupplyCurrent = it.amps
       }
@@ -113,6 +108,4 @@ interface IntakeIO {
   fun setRollerPower(outputPower: Double) {}
 
   fun setArmPosition(armPosition: Angle) {}
-
-
 }
