@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package com.team4099.lib.utils.sim
+package com.team4099.lib.sim.utils.sim
 
-import com.team4099.lib.utils.estimation.TargetModel
+import com.team4099.lib.sim.utils.estimation.TargetModel
 import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Translation3d
 import kotlin.jvm.JvmOverloads

@@ -1,7 +1,6 @@
-package com.team4099.lib.vision
+package com.team4099.lib.sim.vision
 
 import kotlin.jvm.JvmOverloads
-import com.team4099.lib.vision.RotTrlTransform3d
 import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d

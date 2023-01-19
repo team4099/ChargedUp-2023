@@ -21,13 +21,13 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-package com.team4099.lib.utils.sim
+package com.team4099.lib.sim.utils.sim
 
-import com.team4099.lib.utils.util.VideoSimUtil.updateVideoProp
-import com.team4099.lib.utils.util.VideoSimUtil.warp16h5TagImage
-import com.team4099.lib.utils.util.VideoSimUtil.drawTagDetection
+import com.team4099.lib.sim.utils.util.VideoSimUtil.updateVideoProp
+import com.team4099.lib.sim.utils.util.VideoSimUtil.warp16h5TagImage
+import com.team4099.lib.sim.utils.util.VideoSimUtil.drawTagDetection
 import kotlin.jvm.JvmOverloads
-import com.team4099.lib.utils.estimation.CameraProperties
+import com.team4099.lib.sim.utils.estimation.CameraProperties
 import edu.wpi.first.networktables.NetworkTableEntry
 import org.photonvision.PhotonTargetSortMode
 import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer
@@ -36,28 +36,25 @@ import edu.wpi.first.cscore.CvSource
 import org.opencv.core.Mat
 import edu.wpi.first.cscore.CameraServerCvJNI
 import java.lang.RuntimeException
-import com.team4099.lib.utils.util.CameraTargetRelation
+import com.team4099.lib.sim.utils.util.CameraTargetRelation
 import org.photonvision.targeting.TargetCorner
 import java.util.Optional
 import org.photonvision.targeting.PhotonPipelineResult
 import org.photonvision.targeting.PhotonTrackedTarget
 import java.util.TreeMap
-import com.team4099.lib.utils.util.VideoSimUtil
 import org.opencv.core.CvType
-import com.team4099.lib.utils.estimation.OpenCVHelp
-import com.team4099.lib.utils.estimation.VisionEstimation.PNPResults
+import com.team4099.lib.sim.utils.estimation.OpenCVHelp
+import com.team4099.lib.sim.utils.estimation.VisionEstimation.PNPResults
 import edu.wpi.first.cscore.VideoSource.ConnectionStrategy
 import org.opencv.imgproc.Imgproc
 import edu.wpi.first.math.geometry.Rotation2d
 import java.util.stream.Collectors
-import com.team4099.lib.utils.sim.PhotonCameraSim
 import edu.wpi.first.cameraserver.CameraServer
 import edu.wpi.first.cscore.VideoMode.PixelFormat
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.Pair
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.networktables.NetworkTable
 import edu.wpi.first.wpilibj.Timer
 import org.opencv.core.Size
 import org.photonvision.PhotonVersion

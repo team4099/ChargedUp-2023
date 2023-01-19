@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.Logger
 import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.VisionIOLimelight
-import com.team4099.robot2023.subsystems.vision.VisionIOSim
+import com.team4099.robot2023.subsystems.vision.camera.VisionIOLimelight
+import com.team4099.robot2023.subsystems.vision.camera.VisionIOSim
 import edu.wpi.first.math.VecBuilder
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband

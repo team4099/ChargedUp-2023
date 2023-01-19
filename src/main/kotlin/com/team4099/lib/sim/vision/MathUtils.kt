@@ -1,6 +1,5 @@
-package com.team4099.lib.vision
+package com.team4099.lib.sim.vision
 
-import com.team4099.lib.vision.MathUtils
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.geometry.Rotation2d
@@ -12,7 +11,6 @@ import edu.wpi.first.math.Vector
 import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Translation3d
-import edu.wpi.first.math.numbers.N1
 
 object MathUtils {
   fun calcAvg(vararg values: Pose3d): Pose3d {
