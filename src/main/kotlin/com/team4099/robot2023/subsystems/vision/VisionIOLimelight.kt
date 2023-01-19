@@ -10,7 +10,7 @@ import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.degrees
 import kotlin.collections.HashMap
 
 object VisionIOLimelight : VisionIO {
@@ -52,8 +52,8 @@ object VisionIOLimelight : VisionIO {
           it["ta"].toString().toDouble(),
           0.0, // unused lol
           it["fID"].toString().toDouble().toInt(),
-          transformArrayToTransform(stringToDoubleArray(it["t6c_ts"].toString())).transform3d,
-          transformArrayToTransform(stringToDoubleArray(it["t6c_ts"].toString())).transform3d,
+          transformArrayToTransform(stringToDoubleArray(it["t6t_rs"].toString())).transform3d,
+          transformArrayToTransform(stringToDoubleArray(it["t6t_rs"].toString())).transform3d,
           0.0,
           coordinateArraytoTargetCorners(ptsToDoubleArray(it["pts"].toString()))
         )
@@ -64,7 +64,7 @@ object VisionIOLimelight : VisionIO {
   fun transformArrayToTransform(array: Array<Double>): Transform3d {
     return Transform3d(
       Translation3d(array[0].meters, array[1].meters, array[2].meters),
-      Rotation3d(array[3].radians, array[4].radians, array[5].radians)
+      Rotation3d(array[3].degrees, array[4].degrees, array[5].degrees)
     )
   }
 
