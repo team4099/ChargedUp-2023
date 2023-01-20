@@ -1,6 +1,7 @@
 package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.volts
 
@@ -28,6 +29,7 @@ object ManipulatorConstants {
   // TODO(figure out what voltage compensation should be)
   val VOLTAGE_COMPENSATION = 10.0.volts
 
+  val SPOOL_RADIUS = 1.0.inches
   // TODO(What is the inertial value)
   val MOMENT_INERTIA = 0.0045
 
