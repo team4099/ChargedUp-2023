@@ -64,6 +64,7 @@ object Constants {
 
   object Manipulator {
     const val INTAKE_MOTOR_ID = 0
+    const val ARM_MOTOR_ID = 0
   }
 
   object Alert {
