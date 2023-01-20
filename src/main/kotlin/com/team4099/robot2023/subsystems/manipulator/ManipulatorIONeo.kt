@@ -2,11 +2,22 @@ package com.team4099.robot2023.subsystems.manipulator
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
+import com.revrobotics.SparkMaxPIDController
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.derived.DerivativeGain
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.IntegralGain
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.inVoltsPerMeter
+import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
+import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 
@@ -28,6 +39,7 @@ object ManipulatorIONeo : ManipulatorIO {
       ManipulatorConstants.ARM_SPOOL_RADIUS * 2,
       ManipulatorConstants.ARM_VOLTAGE_COMPENSATION
     )
+  private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
 
   init {
     intakeSparkMax.restoreFactoryDefaults()
@@ -66,5 +78,26 @@ object ManipulatorIONeo : ManipulatorIO {
     // percentOutput * statorCurrent
     inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * intakeSparkMax.appliedOutput
     inputs.rollerTempCelcius = intakeSparkMax.motorTemperature.celsius
+  }
+  override fun setOpenLoop(percentOutput: Double) {
+    armSparkMax.set(percentOutput)
+  }
+
+  override fun setPosition(position: Length, feedforward: ElectricalPotential) {
+    armPIDController.setFF(feedforward.inVolts)
+  }
+
+  override fun zeroEncoder() {
+    armSparkMax.encoder.position = 0.0
+  }
+
+  override fun configPID(
+    kP: ProportionalGain<Meter, Volt>,
+    kI: IntegralGain<Meter, Volt>,
+    kD: DerivativeGain<Meter, Volt>
+  ) {
+    armPIDController.p = kP.inVoltsPerMeter
+    armPIDController.i = kI.inVoltsPerMeterSeconds
+    armPIDController.d = kD.inVoltsPerMeterPerSecond
   }
 }
