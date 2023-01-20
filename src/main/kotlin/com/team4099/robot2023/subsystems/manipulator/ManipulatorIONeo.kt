@@ -16,17 +16,17 @@ object ManipulatorIONeo : ManipulatorIO {
   private val intakeSensor =
     sparkMaxAngularMechanismSensor(
       intakeSparkMax,
-      ManipulatorConstants.GEAR_RATIO,
-      ManipulatorConstants.VOLTAGE_COMPENSATION
+      ManipulatorConstants.INTAKE_GEAR_RATIO,
+      ManipulatorConstants.INTAKE_VOLTAGE_COMPENSATION
     )
   private val armSparkMax =
     CANSparkMax(Constants.Manipulator.ARM_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
   private val armSensor =
     sparkMaxLinearMechanismSensor(
       armSparkMax,
-      ManipulatorConstants.GEAR_RATIO,
-      ManipulatorConstants.SPOOL_RADIUS * 2,
-      ManipulatorConstants.VOLTAGE_COMPENSATION
+      ManipulatorConstants.ARM_GEAR_RATIO,
+      ManipulatorConstants.ARM_SPOOL_RADIUS * 2,
+      ManipulatorConstants.ARM_VOLTAGE_COMPENSATION
     )
 
   init {
@@ -36,18 +36,20 @@ object ManipulatorIONeo : ManipulatorIO {
     armSparkMax.clearFaults()
 
     // TODO(check if this is right)
-    intakeSparkMax.enableVoltageCompensation(ManipulatorConstants.VOLTAGE_COMPENSATION.inVolts)
-    intakeSparkMax.setSmartCurrentLimit(ManipulatorConstants.SUPPLY_CURRENT_LIMIT)
+    intakeSparkMax.enableVoltageCompensation(
+      ManipulatorConstants.INTAKE_VOLTAGE_COMPENSATION.inVolts
+    )
+    intakeSparkMax.setSmartCurrentLimit(ManipulatorConstants.INTAKE_SUPPLY_CURRENT_LIMIT)
     intakeSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
-    intakeSparkMax.inverted = ManipulatorConstants.MOTOR_INVERTED
+    intakeSparkMax.inverted = ManipulatorConstants.INTAKE_MOTOR_INVERTED
     intakeSparkMax.burnFlash()
-    intakeSparkMax.openLoopRampRate = ManipulatorConstants.RAMP_RATE
+    intakeSparkMax.openLoopRampRate = ManipulatorConstants.INTAKE_RAMP_RATE
 
-    armSparkMax.enableVoltageCompensation(ManipulatorConstants.VOLTAGE_COMPENSATION.inVolts)
-    armSparkMax.setSmartCurrentLimit(ManipulatorConstants.SUPPLY_CURRENT_LIMIT)
-    armSparkMax.inverted = ManipulatorConstants.MOTOR_INVERTED
+    armSparkMax.enableVoltageCompensation(ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts)
+    armSparkMax.setSmartCurrentLimit(ManipulatorConstants.ARM_SUPPLY_CURRENT_LIMIT)
+    armSparkMax.inverted = ManipulatorConstants.ARM_MOTOR_INVERTED
     armSparkMax.burnFlash()
-    armSparkMax.openLoopRampRate = ManipulatorConstants.RAMP_RATE
+    armSparkMax.openLoopRampRate = ManipulatorConstants.ARM_RAMP_RATE
   }
 
   override fun setRollerPower(percentOutput: Double) {

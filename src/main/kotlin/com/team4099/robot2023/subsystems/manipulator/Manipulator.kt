@@ -1,13 +1,37 @@
 package com.team4099.robot2023.subsystems.manipulator
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.derived.inVoltsPerMeter
+import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
+import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import org.team4099.lib.units.derived.perMeter
+import org.team4099.lib.units.derived.perMeterPerSecond
+import org.team4099.lib.units.derived.perMeterSeconds
+import org.team4099.lib.units.derived.volts
 
 class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   val inputs = ManipulatorIO.ManipulatorIOInputs()
+  // placement feedforward
+  val armFeedforward =
+    SimpleMotorFeedforward(
+      ManipulatorConstants.ARM_KS, ManipulatorConstants.ARM_KV, ManipulatorConstants.ARM_KA
+    )
+  private val kP =
+    LoggedTunableValue("Manipulator/kP", Pair({ it.inVoltsPerMeter }, { it.volts.perMeter }))
+  private val kI =
+    LoggedTunableValue(
+      "Manipulator/kP", Pair({ it.inVoltsPerMeterSeconds }, { it.volts.perMeterSeconds })
+    )
+  private val kD =
+    LoggedTunableValue(
+      "Manipulator/kP", Pair({ it.inVoltsPerMeterPerSecond }, { it.volts.perMeterPerSecond })
+    )
 
   var lastIntakeRunTime = Clock.fpgaTime
 
