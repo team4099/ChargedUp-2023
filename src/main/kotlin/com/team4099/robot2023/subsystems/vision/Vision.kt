@@ -28,16 +28,10 @@ class Vision(cameras: VisionIO) : SubsystemBase() {
     val cameraVisionMeasurements = mutableListOf<VisionMeasurement>()
     for (camera in cameras) {
       for (detectedTag in 0 until camera.detectedAprilTagIds.size) {
-        val tagPose = layout.getTagPose(camera.detectedAprilTagIds[detectedTag])
         cameraVisionMeasurements.add(
           VisionMeasurement(
             timestamp = camera.timestamp,
-            visionPose =
-            tagPose
-              .transformBy(camera.bestTransforms[detectedTag].inverse())
-              .transformBy(camera.io.transformToRobot.inverse())
-              .toPose2d(), // length of known apriltags will always be equal to
-            // bestTransforms
+            visionPose = camera.bestPoses[detectedTag],
             stdev = camera.stdevs[detectedTag]
           )
         )

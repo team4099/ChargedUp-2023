@@ -1,8 +1,10 @@
 package com.team4099.robot2023.subsystems.vision.camera
 
+import com.team4099.apriltag.AprilTagFieldLayout
 import com.team4099.lib.vision.TargetCorner
+import com.team4099.robot2023.config.constants.FieldConstants
 import edu.wpi.first.wpilibj2.command.SubsystemBase
-import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
@@ -12,10 +14,15 @@ import kotlin.math.absoluteValue
 class Camera(val io: CameraIO) : SubsystemBase() {
   val inputs = CameraIO.CameraInputs()
 
+  val layout: AprilTagFieldLayout =
+    AprilTagFieldLayout(
+      FieldConstants.aprilTags, FieldConstants.fieldLength, FieldConstants.fieldWidth
+    )
+
   var detectedAprilTagIds = mutableListOf<Int>()
 
-  var bestTransforms = mutableListOf<Transform3d>()
-  var altTransforms = mutableListOf<Transform3d>()
+  var bestPoses = mutableListOf<Pose2d>()
+  var altPoses = mutableListOf<Pose2d>()
 
   var timestamp: Time = 0.0.seconds
 
@@ -26,8 +33,8 @@ class Camera(val io: CameraIO) : SubsystemBase() {
 
     val corners = mutableListOf<TargetCorner>()
     val knownTags = mutableListOf<Int>()
-    val bestTransformResult = mutableListOf<Transform3d>()
-    val altTransformResult = mutableListOf<Transform3d>()
+    val bestPoseResult = mutableListOf<Pose2d>()
+    val altPoseResult = mutableListOf<Pose2d>()
     val resultTimeStamp: Time = inputs.visionResult.timestamp
 
     for (target in inputs.visionResult.targets) {
@@ -42,17 +49,29 @@ class Camera(val io: CameraIO) : SubsystemBase() {
 
       corners.addAll(target.targetCorners)
 
+      val tagPose = layout.getTagPose(target.fiducialID)
+
       // getting transforms
       val camToBest = target.bestTransform
       val camToAlt = target.altTransform
 
-      bestTransformResult.add(camToBest)
-      altTransformResult.add(camToAlt)
+      bestPoseResult.add(
+        tagPose
+          .transformBy(camToBest.inverse())
+          .transformBy(io.transformToRobot.inverse())
+          .toPose2d()
+      )
+      altPoseResult.add(
+        tagPose
+          .transformBy(camToAlt.inverse())
+          .transformBy(io.transformToRobot.inverse())
+          .toPose2d()
+      )
     }
 
     detectedAprilTagIds = knownTags
-    bestTransforms = bestTransformResult
-    altTransforms = altTransformResult
+    bestPoses = bestPoseResult
+    altPoses = altPoses
     timestamp = resultTimeStamp
   }
 }
