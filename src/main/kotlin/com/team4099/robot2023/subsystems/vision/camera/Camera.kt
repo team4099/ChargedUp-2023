@@ -5,13 +5,12 @@ import com.team4099.apriltag.AprilTagFieldLayout
 import com.team4099.robot2023.config.constants.FieldConstants
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.photonvision.targeting.TargetCorner
-import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.seconds
 import kotlin.math.absoluteValue
 
-class Camera(val io: CameraIO): SubsystemBase() {
+class Camera(val io: CameraIO) : SubsystemBase() {
   val inputs = CameraIO.CameraInputs()
 
   val layout: AprilTagFieldLayout =

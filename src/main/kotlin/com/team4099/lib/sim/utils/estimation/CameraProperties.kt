@@ -12,7 +12,7 @@ import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.geometry.Rotation3d
 import java.util.stream.Collectors
-import kotlin.random.Random
+import java.util.*
 
 /**
  * Calibration and performance values for this camera.
@@ -32,7 +32,7 @@ import kotlin.random.Random
  * account for network latency and the latency reported will always be perfect.
  */
 class CameraProperties {
-  private val rand = Random.nextDouble()
+  private val rand = Random()
 
   // calibration
   var resWidth = 0
@@ -282,7 +282,7 @@ class CameraProperties {
     return if (avgErrorPx == 0.0 && errorStdDevPx == 0.0) points else points.stream()
       .map { p: TargetCorner ->
         // error pixels in random direction
-        val error = Random.nextGaussian() * errorStdDevPx + avgErrorPx
+        val error = Random().nextGaussian() * errorStdDevPx + avgErrorPx
         val errorAngle = -Math.PI + (Math.PI + Math.PI) * rand.nextDouble()
         TargetCorner(
           p.x + error * Math.cos(errorAngle),

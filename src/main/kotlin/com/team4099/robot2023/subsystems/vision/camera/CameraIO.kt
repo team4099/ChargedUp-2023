@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.inputs.LoggableInputs
 import org.photonvision.targeting.PhotonPipelineResult
 
 interface CameraIO {
-  class CameraInputs: LoggableInputs{
+  class CameraInputs : LoggableInputs {
     val photonResult = PhotonPipelineResult()
 
     override fun toLog(table: LogTable?) {
@@ -15,7 +15,6 @@ interface CameraIO {
     override fun fromLog(table: LogTable?) {
       TODO("Not yet implemented")
     }
-
   }
 
   fun updateInputs(inputs: CameraInputs) {}
