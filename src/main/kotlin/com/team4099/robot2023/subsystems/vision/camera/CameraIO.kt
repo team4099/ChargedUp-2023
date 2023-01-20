@@ -1,21 +1,27 @@
 package com.team4099.robot2023.subsystems.vision.camera
 
+import com.team4099.lib.vision.VisionResult
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
-import org.photonvision.targeting.PhotonPipelineResult
+import org.team4099.lib.geometry.Transform3d
 
 interface CameraIO {
   class CameraInputs : LoggableInputs {
-    val photonResult = PhotonPipelineResult()
+    var visionResult = VisionResult()
+    var hasTargets = false
 
     override fun toLog(table: LogTable?) {
-      TODO("Not yet implemented")
+      table?.put("hasTargets", hasTargets)
     }
 
     override fun fromLog(table: LogTable?) {
-      TODO("Not yet implemented")
+      table?.getBoolean("hasTargets", hasTargets)?.let { hasTargets = it }
     }
   }
 
   fun updateInputs(inputs: CameraInputs) {}
+
+  val cameraName: String
+
+  val transformToRobot: Transform3d
 }

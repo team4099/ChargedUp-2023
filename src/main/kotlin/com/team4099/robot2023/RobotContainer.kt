@@ -1,5 +1,6 @@
 package com.team4099.robot2023
 
+import com.team4099.lib.vision.VisionMeasurement
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.AutoLevel
 import com.team4099.robot2023.commands.drivetrain.GoToAngle
@@ -16,12 +17,10 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.Logger
 import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.camera.VisionIOLimelight
-import com.team4099.robot2023.subsystems.vision.camera.VisionIOSim
+import com.team4099.robot2023.subsystems.vision.VisionIOReal
+import com.team4099.robot2023.subsystems.vision.VisionIOSim
 import edu.wpi.first.math.VecBuilder
-import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
@@ -32,7 +31,7 @@ object RobotContainer {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
-      vision = Vision(VisionIOLimelight)
+      vision = Vision(VisionIOReal)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
@@ -52,16 +51,12 @@ object RobotContainer {
   }
 
   val measurementsWithTimestamps
-    get() = vision.bestPoses.zip(vision.timestamps).zip(vision.stdevs)
+    get() = vision.visionMeasurements
 
-  fun addVisionMeasurement(
-    visionPose: Pose2d,
-    timestamp: Time,
-    //        visionStdevs: Triple<Double, Double, Double>
-  ) {
+  fun addVisionMeasurement(visionMeasurement: VisionMeasurement) {
     drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(
-      visionPose.pose2d,
-      timestamp.inSeconds,
+      visionMeasurement.visionPose.pose2d,
+      visionMeasurement.timestamp.inSeconds,
       VecBuilder.fill(
         0.1, 0.1, 1.0
       ) // TODO figure out an actual formula for stdev to make convergence speedy

@@ -22,7 +22,7 @@ import java.lang.RuntimeException
 import java.util.List
 
 object VideoSimUtil {
-  const val kTagImagesPath = "./src/main/kotlin/com/team4099/lib/utils/sim/apriltag-images/"
+  const val kTagImagesPath = "./src/main/kotlin/com/team4099/lib/sim/utils/sim/apriltag-images/"
   const val kTag16h5ImageName = "tag16_05_00000"
   const val kNumTags16h5 = 30
 
