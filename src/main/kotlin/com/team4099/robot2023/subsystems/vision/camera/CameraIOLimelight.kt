@@ -43,7 +43,7 @@ class CameraIOLimelight(
           it["ty"].toString().toDouble().radians,
           it["ta"].toString().toDouble(),
           it["fID"].toString().toDouble().toInt(),
-          targetSpaceArrayToTransform(stringToDoubleArray(it["t6t_rs"].toString())),
+          targetSpaceArrayToTransform(stringToDoubleArray(it["t6r_ts"].toString())),
           coordinateArraytoTargetCorners(ptsToDoubleArray(it["pts"].toString()))
         )
       }
@@ -62,7 +62,7 @@ class CameraIOLimelight(
     // https://docs.limelightvision.io/en/latest/coordinate_systems_fiducials.html#target-space
     return Transform3d(
       Translation3d(array[2].meters, array[0].meters, -array[1].meters),
-      Rotation3d(array[3].degrees, array[4].degrees, array[5].degrees)
+      Rotation3d(array[3].degrees, array[5].degrees, -array[4].degrees)
     )
   }
 
