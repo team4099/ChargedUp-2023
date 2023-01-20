@@ -6,7 +6,6 @@ import com.team4099.lib.vision.TargetCorner
 import com.team4099.lib.vision.VisionResult
 import com.team4099.lib.vision.VisionTarget
 import edu.wpi.first.networktables.NetworkTableInstance
-import edu.wpi.first.wpilibj.Timer
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
@@ -14,6 +13,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.micro
 import org.team4099.lib.units.milli
 
 class CameraIOLimelight(
@@ -49,10 +49,11 @@ class CameraIOLimelight(
       }
 
     // not sure if we want fpga timestamp here
+    val latencyResult = latencySub.get().milli.seconds + 11.milli.seconds
     inputs.visionResult =
       VisionResult(
-        latencySub.get().milli.seconds + 11.milli.seconds,
-        Timer.getFPGATimestamp().seconds,
+        latencyResult,
+        limelightJsonSub.lastChange.micro.seconds - latencyResult,
         trackedTargets
       )
   }
