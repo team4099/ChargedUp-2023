@@ -7,7 +7,7 @@ import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.degrees
 
 object VisionConstants {
-  const val FRONT_CAMERA_NAME = "thing1"
+  const val FRONT_CAMERA_NAME = "limelight"
   const val BACK_CAMERA_NAME = "thing2"
   const val SIDE_CAMERA_NAME = "thing3"
 
