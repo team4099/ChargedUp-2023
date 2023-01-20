@@ -20,7 +20,7 @@ object IntakeConstants {
     IDLE(0.0)
   }
 
-  val NEO_kP = 0.0.volts / 1.degrees
+  val arm_kP = 0.0.volts / 1.degrees
   val NEO_kI = 0.0.volts / (1.degrees * 1.seconds)
   val NEO_kD = 0.0.volts / (1.degrees.perSecond)
 
