@@ -26,7 +26,6 @@ import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearAcceleration
 import org.team4099.lib.units.LinearVelocity
-import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
@@ -45,7 +44,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     )
 
   val gyroInputs = GyroIO.GyroIOInputs()
-  val swerveModules = swerveModuleIOs.getSwerveModules()
+  val swerveModules = swerveModuleIOs.getSwerveModules() // FL, FR, BL, BR
   var gyroYawOffset = 0.0.radians
 
   val closestAlignmentAngle: Angle
@@ -62,20 +61,6 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     // Wheel speeds
     zeroSteering()
   }
-
-  // FL, FR, BL, BR
-  private val wheelSpeeds =
-    mutableListOf(0.feet.perSecond, 0.feet.perSecond, 0.feet.perSecond, 0.feet.perSecond)
-
-  private val wheelAngles = mutableListOf(0.radians, 0.radians, 0.radians, 0.radians)
-
-  private val wheelAccelerations =
-    mutableListOf(
-      0.feet.perSecond.perSecond,
-      0.feet.perSecond.perSecond,
-      0.feet.perSecond.perSecond,
-      0.feet.perSecond.perSecond
-    )
 
   private val frontLeftWheelLocation =
     Translation2d(
