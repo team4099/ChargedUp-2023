@@ -199,9 +199,27 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
           (Clock.fpgaTime - startTime)
         ) // This is the race condition we're passing in.
       }
+      .finallyDo {
+        Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", false)
+      }
   }
 
   fun openLoopControl(percentOutput: Double): Command {
-    return run { setOpenLoop(percentOutput) }.finallyDo { setOpenLoop(0.0) }
+    return run {
+      setOpenLoop(percentOutput)
+      if (percentOutput > 0) {
+        Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", true)
+      } else {
+        Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", true)
+      }
+    }
+      .finallyDo {
+        setOpenLoop(0.0)
+        if (percentOutput > 0) {
+          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", false)
+        } else {
+          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", false)
+        }
+      }
   }
 }

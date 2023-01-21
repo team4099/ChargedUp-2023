@@ -33,7 +33,7 @@ object ElevatorConstants {
 
   val SIM_KP = 1.5.volts / 1.inches
   val SIM_KI = 0.0.volts / (1.inches * 1.seconds)
-  val SIM_KD = 0.2.volts / (1.inches.perSecond)
+  val SIM_KD = 0.25.volts / (1.inches.perSecond)
 
   // TODO(Check height with design)
   val ELEVATOR_ANGLE = 51.687235.degrees
