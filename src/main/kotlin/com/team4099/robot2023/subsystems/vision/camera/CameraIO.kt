@@ -23,5 +23,5 @@ interface CameraIO {
 
   val cameraName: String
 
-  val transformToRobot: Transform3d
+  val transformToRobot: edu.wpi.first.math.geometry.Transform3d
 }

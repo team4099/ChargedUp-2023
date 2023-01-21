@@ -5,16 +5,11 @@ import com.google.gson.reflect.TypeToken
 import com.team4099.lib.vision.TargetCorner
 import com.team4099.lib.vision.VisionResult
 import com.team4099.lib.vision.VisionTarget
+import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.geometry.Translation3d
+import edu.wpi.first.math.util.Units
 import edu.wpi.first.networktables.NetworkTableInstance
-import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.geometry.Translation3d
-import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.radians
-import org.team4099.lib.units.micro
-import org.team4099.lib.units.milli
 
 class CameraIOLimelight(
   override val transformToRobot: Transform3d,
@@ -39,8 +34,8 @@ class CameraIOLimelight(
     val trackedTargets =
       fiducials.map {
         VisionTarget(
-          it["tx"].toString().toDouble().radians,
-          it["ty"].toString().toDouble().radians,
+          it["tx"].toString().toDouble(),
+          it["ty"].toString().toDouble(),
           it["ta"].toString().toDouble(),
           it["fID"].toString().toDouble().toInt(),
           targetSpaceArrayToTransform(stringToDoubleArray(it["t6r_ts"].toString())),
@@ -49,20 +44,22 @@ class CameraIOLimelight(
       }
 
     // not sure if we want fpga timestamp here
-    val latencyResult = latencySub.get().milli.seconds + 11.milli.seconds
+    val latencyResult = latencySub.get() * 1E-3 + 11 * 1E-3
     inputs.visionResult =
       VisionResult(
-        latencyResult,
-        limelightJsonSub.lastChange.micro.seconds - latencyResult,
-        trackedTargets
+        latencyResult, limelightJsonSub.lastChange * 1E-6 - latencyResult, trackedTargets
       )
   }
 
   private fun targetSpaceArrayToTransform(array: Array<Double>): Transform3d {
     // https://docs.limelightvision.io/en/latest/coordinate_systems_fiducials.html#target-space
     return Transform3d(
-      Translation3d(array[2].meters, array[0].meters, -array[1].meters),
-      Rotation3d(array[3].degrees, array[5].degrees, -array[4].degrees)
+      Translation3d(array[2], array[0], -array[1]),
+      Rotation3d(
+        Units.degreesToRadians(array[3]),
+        Units.degreesToRadians(array[5]),
+        -Units.degreesToRadians(array[4])
+      )
     )
   }
 

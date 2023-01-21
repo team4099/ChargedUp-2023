@@ -10,7 +10,8 @@ object VisionIOReal : VisionIO {
       listOf(
         Camera(
           CameraIOLimelight(
-            VisionConstants.CAMERA_TRANSFORMS[0], VisionConstants.FRONT_CAMERA_NAME
+            VisionConstants.CAMERA_TRANSFORMS[0].transform3d,
+            VisionConstants.FRONT_CAMERA_NAME
           )
         )
       )

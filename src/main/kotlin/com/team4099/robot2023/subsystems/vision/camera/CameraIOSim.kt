@@ -8,21 +8,20 @@ import com.team4099.lib.vision.VisionResult
 import com.team4099.lib.vision.VisionTarget
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
+import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.util.Units
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.apriltag.AprilTagFieldLayout
-import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.milli
 
 class CameraIOSim(override val transformToRobot: Transform3d, override val cameraName: String) :
   CameraIO {
 
   val layout: AprilTagFieldLayout =
     AprilTagFieldLayout(
-      FieldConstants.aprilTags, FieldConstants.fieldLength, FieldConstants.fieldWidth
+      FieldConstants.apriltagsWpilib, Units.inchesToMeters(651.25), Units.inchesToMeters(315.5)
     )
 
   val ntInstance = NetworkTableInstance.getDefault()
@@ -41,7 +40,7 @@ class CameraIOSim(override val transformToRobot: Transform3d, override val camer
       VisionConstants.CAMERA_TRANSFORMS[0].transform3d
     )
 
-    visionSim.addVisionTargets(layout.apriltagFieldLayoutWPILIB)
+    visionSim.addVisionTargets(layout)
   }
 
   override fun updateInputs(inputs: CameraIO.CameraInputs) {
@@ -50,8 +49,8 @@ class CameraIOSim(override val transformToRobot: Transform3d, override val camer
 
     inputs.visionResult =
       VisionResult(
-        photonCameraSim.latestResult.latencyMillis.milli.seconds,
-        photonCameraSim.latestResult.timestampSeconds.seconds,
+        photonCameraSim.latestResult.latencyMillis * 1E-3,
+        photonCameraSim.latestResult.timestampSeconds,
         photonCameraSim.latestResult.targets.map { VisionTarget(it) }
       )
 

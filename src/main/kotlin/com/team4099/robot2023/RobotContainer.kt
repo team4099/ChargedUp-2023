@@ -17,7 +17,6 @@ import com.team4099.robot2023.subsystems.vision.VisionIOReal
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
 import edu.wpi.first.math.VecBuilder
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -51,8 +50,8 @@ object RobotContainer {
 
   fun addVisionMeasurement(visionMeasurement: VisionMeasurement) {
     drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(
-      visionMeasurement.visionPose.pose2d,
-      visionMeasurement.timestamp.inSeconds,
+      visionMeasurement.visionPose,
+      visionMeasurement.timestamp,
       VecBuilder.fill(
         0.1, 0.1, 1.0
       ) // TODO figure out an actual formula for stdev to make convergence speedy

@@ -2,14 +2,11 @@ package com.team4099.robot2023.subsystems.vision.camera
 
 import com.team4099.lib.vision.TargetCorner
 import com.team4099.robot2023.config.constants.FieldConstants
+import edu.wpi.first.apriltag.AprilTagFieldLayout
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.util.Units
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.apriltag.AprilTagFieldLayout
-import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.units.base.Time
-import org.team4099.lib.units.base.inMeters
-import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.inDegrees
 import kotlin.math.absoluteValue
 
 class Camera(val io: CameraIO) : SubsystemBase() {
@@ -17,7 +14,7 @@ class Camera(val io: CameraIO) : SubsystemBase() {
 
   val layout: AprilTagFieldLayout =
     AprilTagFieldLayout(
-      FieldConstants.aprilTags, FieldConstants.fieldLength, FieldConstants.fieldWidth
+      FieldConstants.apriltagsWpilib, Units.inchesToMeters(651.25), Units.inchesToMeters(315.5)
     )
 
   var detectedAprilTagIds = mutableListOf<Int>()
@@ -25,7 +22,7 @@ class Camera(val io: CameraIO) : SubsystemBase() {
   var bestPoses = mutableListOf<Pose2d>()
   var altPoses = mutableListOf<Pose2d>()
 
-  var timestamp: Time = 0.0.seconds
+  var timestamp = 0.0
 
   var stdevs = mutableListOf<Triple<Double, Double, Double>>()
 
@@ -36,15 +33,15 @@ class Camera(val io: CameraIO) : SubsystemBase() {
     val knownTags = mutableListOf<Int>()
     val bestPoseResult = mutableListOf<Pose2d>()
     val altPoseResult = mutableListOf<Pose2d>()
-    val resultTimeStamp: Time = inputs.visionResult.timestamp
+    val resultTimeStamp = inputs.visionResult.timestampSeconds
 
     for (target in inputs.visionResult.targets) {
       stdevs.add(
         Triple(
-          target.bestTransform.x.inMeters / 3 +
-            target.bestTransform.rotation.z.inDegrees.absoluteValue * 5,
-          target.bestTransform.y.inMeters / 3 +
-            target.bestTransform.rotation.z.inDegrees.absoluteValue * 5,
+          Units.radiansToDegrees(target.bestTransform.rotation.x) / 3 +
+            Units.radiansToDegrees(target.bestTransform.rotation.z).absoluteValue * 5,
+          Units.radiansToDegrees(target.bestTransform.rotation.y) / 3 +
+            Units.radiansToDegrees(target.bestTransform.rotation.z).absoluteValue * 5,
           1000.0
           // target.bestTransform.rotation.z.inDegrees.absoluteValue
         )
@@ -61,12 +58,14 @@ class Camera(val io: CameraIO) : SubsystemBase() {
 
       bestPoseResult.add(
         tagPose
+          .get()
           .transformBy(camToBest.inverse())
           .transformBy(io.transformToRobot.inverse())
           .toPose2d()
       )
       altPoseResult.add(
         tagPose
+          .get()
           .transformBy(camToAlt.inverse())
           .transformBy(io.transformToRobot.inverse())
           .toPose2d()
@@ -78,9 +77,7 @@ class Camera(val io: CameraIO) : SubsystemBase() {
     altPoses = altPoseResult
     timestamp = resultTimeStamp
 
-    Logger.getInstance()
-      .recordOutput("/Vision/bestPoses", *(bestPoses.map { it.pose2d }.toTypedArray()))
-    Logger.getInstance()
-      .recordOutput("/Vision/altPoses", *(altPoses.map { it.pose2d }.toTypedArray()))
+    Logger.getInstance().recordOutput("/Vision/bestPoses", *(bestPoses.toTypedArray()))
+    Logger.getInstance().recordOutput("/Vision/altPoses", *(altPoses.toTypedArray()))
   }
 }

@@ -10,7 +10,8 @@ object VisionIOSim : VisionIO {
       listOf(
         Camera(
           CameraIOSim(
-            VisionConstants.CAMERA_TRANSFORMS[0], VisionConstants.FRONT_CAMERA_NAME
+            VisionConstants.CAMERA_TRANSFORMS[0].transform3d,
+            VisionConstants.FRONT_CAMERA_NAME
           )
         )
       )

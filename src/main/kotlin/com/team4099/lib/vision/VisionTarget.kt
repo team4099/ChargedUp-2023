@@ -1,19 +1,17 @@
 package com.team4099.lib.vision
 
+import edu.wpi.first.math.util.Units
 import org.photonvision.targeting.PhotonTrackedTarget
 import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.units.derived.Angle
-import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.radians
 
 data class VisionTarget(
-  val yaw: Angle,
-  val pitch: Angle,
+  val yaw: Double,
+  val pitch: Double,
   val area: Double,
-  val skew: Angle,
+  val skew: Double,
   val fiducialID: Int,
-  val bestTransform: Transform3d,
-  val altTransform: Transform3d,
+  val bestTransform: edu.wpi.first.math.geometry.Transform3d,
+  val altTransform: edu.wpi.first.math.geometry.Transform3d,
   val poseAmbiguity: Double,
   val targetCorners: List<TargetCorner>
 ) {
@@ -21,26 +19,34 @@ data class VisionTarget(
   constructor(
     photonTrackedTarget: PhotonTrackedTarget
   ) : this(
-    photonTrackedTarget.yaw.radians,
-    photonTrackedTarget.pitch.radians,
+    photonTrackedTarget.yaw,
+    photonTrackedTarget.pitch,
     photonTrackedTarget.area,
-    photonTrackedTarget.skew.radians,
+    photonTrackedTarget.skew,
     photonTrackedTarget.fiducialId,
-    Transform3d(photonTrackedTarget.bestCameraToTarget),
-    Transform3d(photonTrackedTarget.alternateCameraToTarget),
+    photonTrackedTarget.bestCameraToTarget,
+    photonTrackedTarget.alternateCameraToTarget,
     photonTrackedTarget.poseAmbiguity,
     photonTrackedTarget.corners.map { TargetCorner(it) }
   )
 
   // limelight constructor
   constructor(
-    yaw: Angle,
-    pitch: Angle,
+    yaw: Double,
+    pitch: Double,
     area: Double,
     fiducialID: Int,
-    transform3d: Transform3d,
+    transform3d: edu.wpi.first.math.geometry.Transform3d,
     targetCorners: List<TargetCorner>
   ) : this(
-    yaw, pitch, area, 0.0.degrees, fiducialID, transform3d, transform3d, 0.0, targetCorners
+    Units.degreesToRadians(yaw),
+    Units.degreesToRadians(pitch),
+    area,
+    0.0,
+    fiducialID,
+    transform3d,
+    transform3d,
+    0.0,
+    targetCorners
   ) {}
 }
