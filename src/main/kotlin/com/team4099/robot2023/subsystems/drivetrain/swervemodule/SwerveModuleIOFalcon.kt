@@ -90,7 +90,7 @@ class SwerveModuleIOFalcon(
     steeringConfiguration.supplyCurrLimit.enable = true
 
     steeringFalcon.setNeutralMode(NeutralMode.Coast)
-    steeringFalcon.inverted = false
+    steeringFalcon.inverted = true
     steeringFalcon.configAllSettings(steeringConfiguration)
     steeringFalcon.configAllowableClosedloopError(
       0, steeringSensor.positionToRawUnits(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR)
