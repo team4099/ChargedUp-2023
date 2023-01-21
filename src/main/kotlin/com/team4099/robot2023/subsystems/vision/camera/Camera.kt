@@ -1,10 +1,10 @@
 package com.team4099.robot2023.subsystems.vision.camera
 
-import com.team4099.apriltag.AprilTagFieldLayout
 import com.team4099.lib.vision.TargetCorner
 import com.team4099.robot2023.config.constants.FieldConstants
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.apriltag.AprilTagFieldLayout
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters

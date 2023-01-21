@@ -1,8 +1,8 @@
 package com.team4099.robot2023.config.constants
 
-import com.team4099.apriltag.AprilTag
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
+import org.team4099.lib.apriltag.AprilTag
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
