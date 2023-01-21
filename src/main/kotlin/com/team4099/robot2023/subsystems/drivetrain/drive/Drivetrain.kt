@@ -6,11 +6,13 @@ import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.util.Alert
 import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.math.Vector
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -57,7 +59,18 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       return 0.0.degrees
     }
 
+  var stateStdDevs: Vector<N3>
+  var visionStdDevs: Vector<N3>
+
   init {
+    if (RobotBase.isReal()) {
+      stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1)
+      visionStdDevs = VecBuilder.fill(1.0, 1.0, 1.0)
+    } else {
+      stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1)
+      visionStdDevs = VecBuilder.fill(2.0, 2.0, 2.5)
+    }
+
     // Wheel speeds
     zeroSteering()
   }
@@ -86,9 +99,6 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       backLeftWheelLocation.translation2d,
       backRightWheelLocation.translation2d
     )
-
-  var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1)
-  var visionStdDevs = VecBuilder.fill(1.0, 1.0, 1.0)
 
   var swerveDrivePoseEstimator =
     SwerveDrivePoseEstimator(
