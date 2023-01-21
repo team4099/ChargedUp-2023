@@ -21,8 +21,10 @@ class Vision(cameras: VisionIO) : SubsystemBase() {
     cameras.forEach { it.periodic() }
 
     val visibleTags: MutableList<Pose3dWPILIB> = mutableListOf()
+    val visibleTagIds: MutableList<Double> = mutableListOf()
     for (camera in cameras) {
       visibleTags += camera.detectedAprilTagIds.map { layout.getTagPose(it).pose3d }
+      visibleTagIds += camera.detectedAprilTagIds.map { it.toDouble() }
     }
 
     val cameraVisionMeasurements = mutableListOf<VisionMeasurement>()
@@ -45,5 +47,7 @@ class Vision(cameras: VisionIO) : SubsystemBase() {
       .recordOutput(
         "Vision/bestPoses", *(visionMeasurements.map { it.visionPose.pose2d }.toTypedArray())
       )
+
+    Logger.getInstance().recordOutput("Vision/visibleTagIDs", visibleTagIds.toDoubleArray())
   }
 }

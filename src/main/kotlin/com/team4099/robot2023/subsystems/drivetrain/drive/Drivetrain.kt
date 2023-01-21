@@ -343,7 +343,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   ) {
     val velSwerveModuleStates: Array<SwerveModuleState>?
     val accelSwerveModuleStates: Array<SwerveModuleState>?
+
     if (fieldOriented) {
+      // Getting velocity and acceleration states from the drive & angular velocity vectors and
+      // drive & angular acceleration vectors (respectively)
+      // This is with respect to the field, meaning all velocity and acceleration vectors are
+      // adjusted to be relative to the field instead of relative to the robot.
       velSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(
           ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -351,6 +356,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
           )
             .chassisSpeedsWPILIB
         )
+
+      // Although this isn't perfect, calculating acceleration states using the same math as
+      // velocity can get us "good enough" accel states to minimize skew
       accelSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(
           ChassisAccels.fromFieldRelativeAccels(
@@ -362,6 +370,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
             .chassisAccelsWPILIB
         )
     } else {
+      // Getting velocity and acceleration states from the drive & angular velocity vectors and
+      // drive & angular acceleration vectors (respectively)
       velSwerveModuleStates =
         swerveDriveKinematics.toSwerveModuleStates(
           ChassisSpeeds(driveVector.first, driveVector.second, angularVelocity)
@@ -374,6 +384,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         )
     }
 
+    // Once we have all of our states obtained for both velocity and acceleration, apply these
+    // states to each swerve module
     for (moduleIndex in 0 until DrivetrainConstants.WHEEL_COUNT) {
       swerveModules[moduleIndex].setPositionClosedLoop(
         velSwerveModuleStates[moduleIndex], accelSwerveModuleStates[moduleIndex]
