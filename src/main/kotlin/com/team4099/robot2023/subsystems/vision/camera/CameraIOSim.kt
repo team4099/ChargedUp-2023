@@ -1,6 +1,5 @@
 package com.team4099.robot2023.subsystems.vision.camera
 
-import com.team4099.apriltag.AprilTagFieldLayout
 import com.team4099.lib.sim.utils.estimation.CameraProperties
 import com.team4099.lib.sim.utils.sim.PhotonCamera
 import com.team4099.lib.sim.utils.sim.PhotonCameraSim
@@ -13,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.apriltag.AprilTagFieldLayout
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
