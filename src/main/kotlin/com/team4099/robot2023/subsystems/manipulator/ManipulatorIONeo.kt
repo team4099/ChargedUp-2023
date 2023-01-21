@@ -71,6 +71,7 @@ object ManipulatorIONeo : ManipulatorIO {
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
     inputs.rollerPosition = intakeSensor.position
     inputs.rollerVelocity = intakeSensor.velocity
+    inputs.rollerAppliedOutput = intakeSparkMax.appliedOutput
     inputs.rollerStatorCurrent = intakeSparkMax.outputCurrent.amps
     // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
     // AppliedVoltage = percentOutput * BatteryVoltage
@@ -78,6 +79,17 @@ object ManipulatorIONeo : ManipulatorIO {
     // percentOutput * statorCurrent
     inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * intakeSparkMax.appliedOutput
     inputs.rollerTempCelcius = intakeSparkMax.motorTemperature.celsius
+
+    inputs.armPosition = armSensor.position
+    inputs.armVelocity = armSensor.velocity
+    inputs.armAppliedOutput = armSparkMax.appliedOutput
+    inputs.armStatorCurrent = armSparkMax.outputCurrent.amps
+    // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
+    // AppliedVoltage = percentOutput * BatteryVoltage
+    // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
+    // percentOutput * statorCurrent
+    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
+    inputs.armTempCelcius = armSparkMax.motorTemperature.celsius
   }
   override fun setOpenLoop(percentOutput: Double) {
     armSparkMax.set(percentOutput)
