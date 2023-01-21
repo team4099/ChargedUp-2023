@@ -138,6 +138,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       )
       Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
     }
+      .finallyDo {
+        Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", false)
+      }
   }
 
   /**
