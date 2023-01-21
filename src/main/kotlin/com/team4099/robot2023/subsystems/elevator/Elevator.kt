@@ -13,14 +13,15 @@ import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.inVoltsPerMeter
-import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
-import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
-import org.team4099.lib.units.derived.perMeter
-import org.team4099.lib.units.derived.perMeterSeconds
+import org.team4099.lib.units.derived.inVoltsPerInch
+import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
+import org.team4099.lib.units.derived.inVoltsPerInchSeconds
+import org.team4099.lib.units.derived.perInch
+import org.team4099.lib.units.derived.perInchSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
@@ -37,14 +38,14 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     )
 
   private val kP =
-    LoggedTunableValue("Elevator/kP", Pair({ it.inVoltsPerMeter }, { it.volts.perMeter }))
+    LoggedTunableValue("Elevator/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
   private val kI =
     LoggedTunableValue(
-      "Elevator/kI", Pair({ it.inVoltsPerMeterSeconds }, { it.volts.perMeterSeconds })
+      "Elevator/kI", Pair({ it.inVoltsPerInchSeconds }, { it.volts.perInchSeconds })
     )
   private val kD =
     LoggedTunableValue(
-      "Elevator/kD", Pair({ it.inVoltsPerMeterPerSecond }, { it.volts / 1.0.meters.perSecond })
+      "Elevator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts / 1.0.inches.perSecond })
     )
 
   val forwardLimitReached: Boolean
@@ -87,8 +88,6 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       kI.initDefault(ElevatorConstants.SIM_KI)
       kD.initDefault(ElevatorConstants.SIM_KD)
     }
-
-    io.configPID(kP.get(), kI.get(), kD.get())
   }
 
   override fun periodic() {
