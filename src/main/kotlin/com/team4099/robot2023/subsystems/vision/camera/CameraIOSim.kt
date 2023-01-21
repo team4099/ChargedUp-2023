@@ -12,6 +12,7 @@ import com.team4099.robot2023.config.constants.VisionConstants
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.networktables.NetworkTableInstance
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
@@ -53,5 +54,8 @@ class CameraIOSim(override val transformToRobot: Transform3d, override val camer
         photonCameraSim.latestResult.timestampSeconds.seconds,
         photonCameraSim.latestResult.targets.map { VisionTarget(it) }
       )
+
+    Logger.getInstance()
+      .recordOutput("/Vision/visionSimPose", visionSim.getRobotPose(0.0).toPose2d())
   }
 }
