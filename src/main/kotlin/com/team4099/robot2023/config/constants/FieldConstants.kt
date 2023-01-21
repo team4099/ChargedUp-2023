@@ -25,7 +25,7 @@ object FieldConstants {
   val tapeWidth = 2.0.inches
 
   val apriltagsWpilib =
-    listOf<edu.wpi.first.apriltag.AprilTag>(
+    listOf(
       edu.wpi.first.apriltag.AprilTag(
         1,
         Pose3d(

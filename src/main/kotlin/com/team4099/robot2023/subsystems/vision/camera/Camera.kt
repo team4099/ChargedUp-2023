@@ -46,30 +46,34 @@ class Camera(val io: CameraIO) : SubsystemBase() {
           // target.bestTransform.rotation.z.inDegrees.absoluteValue
         )
       )
-      knownTags.add(target.fiducialID)
 
-      corners.addAll(target.targetCorners)
+      if (target.fiducialID in FieldConstants.apriltagsWpilib.map { it.ID }){
+        knownTags.add(target.fiducialID)
 
-      val tagPose = layout.getTagPose(target.fiducialID)
+        corners.addAll(target.targetCorners)
 
-      // getting transforms
-      val camToBest = target.bestTransform
-      val camToAlt = target.altTransform
+        val tagPose = layout.getTagPose(target.fiducialID)
 
-      bestPoseResult.add(
-        tagPose
-          .get()
-          .transformBy(camToBest.inverse())
-          .transformBy(io.transformToRobot.inverse())
-          .toPose2d()
-      )
-      altPoseResult.add(
-        tagPose
-          .get()
-          .transformBy(camToAlt.inverse())
-          .transformBy(io.transformToRobot.inverse())
-          .toPose2d()
-      )
+        // getting transforms
+        val camToBest = target.bestTransform
+        val camToAlt = target.altTransform
+
+
+        bestPoseResult.add(
+          tagPose
+            .get()
+            .transformBy(camToBest.inverse())
+            .transformBy(io.transformToRobot.inverse())
+            .toPose2d()
+        )
+        altPoseResult.add(
+          tagPose
+            .get()
+            .transformBy(camToAlt.inverse())
+            .transformBy(io.transformToRobot.inverse())
+            .toPose2d()
+        )
+      }
     }
 
     detectedAprilTagIds = knownTags
