@@ -7,6 +7,7 @@ import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.PowerDistribution
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.LogFileUtil
@@ -34,10 +35,12 @@ object Robot : LoggedRobot() {
     val logger = Logger.getInstance()
     // running replays as fast as possible when replaying. (play in real time when robot is real or
     // sim)
-    setUseTiming(Constants.Universal.ROBOT_MODE != Constants.Tuning.RobotType.REPLAY)
+    setUseTiming(Constants.Universal.SIM_MODE != Constants.Tuning.SimType.REPLAY)
 
     // metadata value (not timed -- just metadata for given log file)
-    logger.recordMetadata("Robot", Constants.Universal.ROBOT_MODE.toString())
+    logger.recordMetadata(
+      "Robot", if (RobotBase.isReal()) "REAL" else Constants.Universal.SIM_MODE.name
+    )
     logger.recordMetadata("Tuning Mode Enabled", Constants.Tuning.TUNING_MODE.toString())
     logger.recordMetadata("ProjectName", MAVEN_NAME)
     logger.recordMetadata("BuildDate", BUILD_DATE)
@@ -49,30 +52,31 @@ object Robot : LoggedRobot() {
       else -> logger.recordMetadata("GitDirty", "Unknown")
     }
 
-    when (Constants.Universal.ROBOT_MODE) {
-      Constants.Tuning.RobotType.REAL -> {
-        // check if folder path exists
-        if (Files.exists(Paths.get(Constants.Universal.LOG_FOLDER))) {
-          // log to USB stick and network for real time data viewing on AdvantageScope
-          logger.addDataReceiver(WPILOGWriter(Constants.Universal.LOG_FOLDER))
-        } else {
-          logFolderAlert.set(true)
-        }
+    if (RobotBase.isReal()) {
+      // check if folder path exists
+      if (Files.exists(Paths.get(Constants.Universal.LOG_FOLDER))) {
+        // log to USB stick and network for real time data viewing on AdvantageScope
+        logger.addDataReceiver(WPILOGWriter(Constants.Universal.LOG_FOLDER))
+      } else {
+        logFolderAlert.set(true)
+      }
 
-        logger.addDataReceiver(NT4Publisher())
-        LoggedPowerDistribution.getInstance(
-          Constants.Universal.POWER_DISTRIBUTION_HUB_ID, PowerDistribution.ModuleType.kRev
-        )
-      }
-      Constants.Tuning.RobotType.SIM -> {
-        logger.addDataReceiver(NT4Publisher())
-        logSimulationAlert.set(true)
-      }
-      Constants.Tuning.RobotType.REPLAY -> {
-        // if in replay mode get file path from command line and read log file
-        val path = LogFileUtil.findReplayLog()
-        logger.setReplaySource(WPILOGReader(path))
-        logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")))
+      logger.addDataReceiver(NT4Publisher())
+      LoggedPowerDistribution.getInstance(
+        Constants.Universal.POWER_DISTRIBUTION_HUB_ID, PowerDistribution.ModuleType.kRev
+      )
+    } else {
+      when (Constants.Universal.SIM_MODE) {
+        Constants.Tuning.SimType.SIM -> {
+          logger.addDataReceiver(NT4Publisher())
+          logSimulationAlert.set(true)
+        }
+        Constants.Tuning.SimType.REPLAY -> {
+          // if in replay mode get file path from command line and read log file
+          val path = LogFileUtil.findReplayLog()
+          logger.setReplaySource(WPILOGReader(path))
+          logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")))
+        }
       }
     }
 

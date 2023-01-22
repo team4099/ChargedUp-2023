@@ -5,7 +5,7 @@ import org.team4099.lib.units.milli
 
 object Constants {
   object Universal {
-    val ROBOT_MODE = Tuning.RobotType.SIM
+    val SIM_MODE = Tuning.SimType.SIM
 
     const val CTRE_CONFIG_TIMEOUT = 0
     const val EPSILON = 1E-9
@@ -24,8 +24,7 @@ object Constants {
     val TUNING_MODE = false
     val SIMULATE_DRIFT = true
 
-    enum class RobotType {
-      REAL,
+    enum class SimType {
       SIM,
       REPLAY
     }
