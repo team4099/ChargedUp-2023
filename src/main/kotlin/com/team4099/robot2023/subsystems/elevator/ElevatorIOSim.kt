@@ -87,20 +87,20 @@ object ElevatorIOSim : ElevatorIO {
     inputs.leaderTempCelcius = 0.0.celsius
     inputs.leaderStatorCurrent = 0.0.amps
     inputs.leaderSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
-    inputs.leaderAppliedOutput = 0.0
+    inputs.leaderAppliedVoltage = 0.0.volts
 
     inputs.followerTempCelcius = 0.0.celsius
     inputs.followerStatorCurrent = 0.0.amps
     inputs.followerSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
-    inputs.followerAppliedOutput = 0.0
+    inputs.followerAppliedVoltage = 0.0.volts
 
     RoboRioSim.setVInVoltage(
       BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.currentDrawAmps)
     )
   }
 
-  override fun setOpenLoop(percentOutput: Double) {
-    elevatorSim.setInputVoltage(RoboRioSim.getVInVoltage() * percentOutput)
+  override fun setOutputVoltage(voltage: ElectricalPotential) {
+    elevatorSim.setInputVoltage(voltage.inVolts)
   }
 
   override fun setPosition(position: Length, feedForward: ElectricalPotential) {

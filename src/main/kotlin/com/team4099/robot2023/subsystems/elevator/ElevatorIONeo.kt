@@ -20,6 +20,7 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 
 object ElevatorIONeo : ElevatorIO {
@@ -78,7 +79,8 @@ object ElevatorIONeo : ElevatorIO {
 
     inputs.elevatorVelocity = leaderSensor.velocity
 
-    inputs.leaderAppliedOutput = leaderSparkMax.appliedOutput
+    // voltage in * percent out
+    inputs.leaderAppliedVoltage = leaderSparkMax.busVoltage.volts * leaderSparkMax.appliedOutput
 
     inputs.leaderStatorCurrent = leaderSparkMax.outputCurrent.amps
 
@@ -91,7 +93,8 @@ object ElevatorIONeo : ElevatorIO {
 
     inputs.leaderTempCelcius = leaderSparkMax.motorTemperature.celsius
 
-    inputs.followerAppliedOutput = followerSparkMax.appliedOutput
+    // voltage in * percent out
+    inputs.followerAppliedVoltage = leaderSparkMax.busVoltage.volts * followerSparkMax.appliedOutput
 
     inputs.followerStatorCurrent = followerSparkMax.outputCurrent.amps
 
@@ -100,8 +103,8 @@ object ElevatorIONeo : ElevatorIO {
     inputs.followerTempCelcius = followerSparkMax.motorTemperature.celsius
   }
 
-  override fun setOpenLoop(percentOutput: Double) {
-    leaderSparkMax.set(percentOutput)
+  override fun setOutputVoltage(voltage: ElectricalPotential) {
+    leaderSparkMax.setVoltage(voltage.inVolts)
   }
 
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {

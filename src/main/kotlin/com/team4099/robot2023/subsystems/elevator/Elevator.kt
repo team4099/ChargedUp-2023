@@ -16,6 +16,7 @@ import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
@@ -100,14 +101,12 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     }
   }
 
-  fun setOpenLoop(percentOutput: Double) {
-    if ((forwardLimitReached && percentOutput > 0) || (reverseLimitReached && percentOutput < 0)) {
-      io.setOpenLoop(0.0)
+  fun setOutputVoltage(voltage: ElectricalPotential) {
+    if (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts) {
+      io.setOutputVoltage(0.volts)
     } else {
-      io.setOpenLoop(percentOutput)
+      io.setOutputVoltage(voltage)
     }
-
-    Logger.getInstance().recordOutput("Elevator/percentOutput", percentOutput)
   }
 
   fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
@@ -118,7 +117,13 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     var feedforward = elevatorFeedForward.calculate(setpoint.velocity, elevatorAccel)
 
-    io.setPosition(setpoint.position, feedforward)
+    if (forwardLimitReached && setpoint.position > inputs.elevatorPosition ||
+      reverseLimitReached && setpoint.position < inputs.elevatorPosition
+    ) {
+      io.setOutputVoltage(0.volts)
+    } else {
+      io.setPosition(setpoint.position, feedforward)
+    }
 
     Logger.getInstance().recordOutput("Elevator/targetPosition", setpoint.position.inInches)
     Logger.getInstance().recordOutput("Elevator/targetVel", setpoint.velocity.inInchesPerSecond)
@@ -133,9 +138,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
   fun holdElevatorPosition(): Command {
     return run {
-      io.setPosition(
-        inputs.elevatorPosition, elevatorFeedForward.calculate(0.0001.meters.perSecond)
-      )
+      io.setOutputVoltage(elevatorFeedForward.calculate(0.0001.meters.perSecond))
       Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
     }
       .finallyDo {
@@ -206,22 +209,25 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       }
   }
 
-  fun openLoopControl(percentOutput: Double): Command {
+  fun openLoopControl(voltage: ElectricalPotential): Command {
     return run {
-      setOpenLoop(percentOutput)
-      if (percentOutput > 0) {
+      setOutputVoltage(voltage)
+      if (voltage > 0.volts) {
         Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", true)
       } else {
         Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", true)
       }
     }
       .finallyDo {
-        setOpenLoop(0.0)
-        if (percentOutput > 0) {
+        setOutputVoltage(0.volts)
+        if (voltage > 0.volts) {
           Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", false)
         } else {
           Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", false)
         }
+      }
+      .until {
+        (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts)
       }
   }
 }

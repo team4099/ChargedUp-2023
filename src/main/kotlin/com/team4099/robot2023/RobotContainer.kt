@@ -5,7 +5,6 @@ import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -18,6 +17,8 @@ import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -68,11 +69,9 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
-    ControlBoard.runElevatorToHighNode.whileTrue(
-      elevator.raiseElevatorHeight(FieldConstants.Grids.midConeZ)
-    )
-    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(1.0))
-    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-1.0))
+    ControlBoard.runElevatorToHighNode.whileTrue(elevator.raiseElevatorHeight(50.inches))
+    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(12.volts))
+    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-12.volts))
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
