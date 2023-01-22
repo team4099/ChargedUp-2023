@@ -24,7 +24,7 @@ object ControlBoard {
   val robotOriented: Boolean
     get() = driver.leftShoulderButton
 
-  val resetGyro = Trigger { driver.startButton && driver.selectButton }
+  val resetGyro = Trigger { driver.bButton } // change back to select and start
 
   val autoLevel = Trigger { driver.aButton }
 }

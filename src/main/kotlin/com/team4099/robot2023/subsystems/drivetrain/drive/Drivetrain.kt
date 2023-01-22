@@ -47,7 +47,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   val gyroInputs = GyroIO.GyroIOInputs()
   val swerveModules = swerveModuleIOs.getSwerveModules() // FL, FR, BL, BR
+
   var gyroYawOffset = 0.0.radians
+  var rawGyroAngle = 0.0.radians
 
   val closestAlignmentAngle: Angle
     get() {
@@ -191,10 +193,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     omegaVelocity = chassisState.omega
     if (!gyroInputs.gyroConnected) {
       gyroInputs.gyroYawRate = omegaVelocity
-      gyroInputs.gyroYaw =
-        gyroInputs.gyroYaw +
-        Constants.Universal.LOOP_PERIOD_TIME * gyroInputs.gyroYawRate +
-        gyroYawOffset
+      rawGyroAngle += Constants.Universal.LOOP_PERIOD_TIME * gyroInputs.gyroYawRate
+      gyroInputs.gyroYaw = rawGyroAngle + gyroYawOffset
     }
 
     Logger.getInstance()
@@ -229,7 +229,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   private fun updateOdometry() {
     // reversing the drift to store the ground truth pose
-    if (!(RobotBase.isReal()) && Constants.Tuning.SIMULATE_DRIFT) {
+    if (RobotBase.isSimulation() && Constants.Tuning.SIMULATE_DRIFT) {
       val undriftedModules = arrayOfNulls<SwerveModulePosition>(4)
       for (i in 0 until 4) {
         undriftedModules[i] =
@@ -407,14 +407,22 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
    */
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
-    if (gyroInputs.gyroConnected) {
-      swerveDrivePoseEstimator.resetPosition(
+    swerveDrivePoseEstimator.resetPosition(
+      toAngle.inRotation2ds,
+      swerveModules.map { it.modulePosition }.toTypedArray(),
+      odometryPose.pose2d
+    )
+
+    if (RobotBase.isSimulation()) {
+      swerveDriveOdometry.resetPosition(
         toAngle.inRotation2ds,
         swerveModules.map { it.modulePosition }.toTypedArray(),
-        odometryPose.pose2d
+        undriftedPose.pose2d
       )
-    } else {
-      gyroYawOffset = toAngle - undriftedPose.rotation
+    }
+
+    if (!(gyroInputs.gyroConnected)) {
+      gyroYawOffset = toAngle - rawGyroAngle
     }
   }
 
