@@ -85,7 +85,6 @@ dependencies {
 
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 
-
 	implementation 'com.github.team4099:FalconUtils:1.1.2'
 
 
