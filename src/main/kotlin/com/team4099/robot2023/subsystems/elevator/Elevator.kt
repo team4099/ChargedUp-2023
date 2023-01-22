@@ -184,6 +184,12 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       // calculating. Hence, we want to pass in a different Trapezoidal
       // Profile State into the setPosition function.
       Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", true)
+      Logger.getInstance()
+        .recordOutput(
+          "/Elevator/isAtSetpoint",
+          (inputs.elevatorPosition - position).absoluteValue <
+            ElevatorConstants.ELEVATOR_TOLERANCE
+        )
     }
       .beforeStarting(
         {
@@ -194,6 +200,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
               TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
               TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
             )
+          Logger.getInstance().recordOutput("/Elevator/isAtSetpoint", false)
         },
         this
       )

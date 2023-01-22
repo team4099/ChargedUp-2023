@@ -48,8 +48,8 @@ object ElevatorConstants {
 
   val SPOOL_RADIUS = 1.128.inches
 
-  val MAX_VELOCITY = 20.inches.perSecond // TODO increase this pls
-  val MAX_ACCELERATION = 10.inches.perSecond.perSecond
+  val MAX_VELOCITY = 40.inches.perSecond // TODO increase this pls
+  val MAX_ACCELERATION = 75.inches.perSecond.perSecond
 
   // TODO(Check height with design)
   val ELEVATOR_MAX_EXTENSION = 50.0.inches
