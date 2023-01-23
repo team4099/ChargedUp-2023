@@ -32,12 +32,12 @@ object IntakeConstants {
   val MAX_ARM_VELOCITY = 60.degrees.perSecond
   val MAX_ARM_ACCELERATION = 100.degrees.perSecond.perSecond
 
-  val ENCODER_COUNTS = 8192
+  val ENCODER_COUNTS = 42
 
   val LEFT_MOTOR_INVERTED = false
   val RIGHT_MOTOR_INVERTED = true
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val MOTOR_COUNTS = 42;
+  val MOTOR_COUNTS = 42
 }
