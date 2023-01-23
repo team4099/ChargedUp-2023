@@ -16,6 +16,10 @@ import edu.wpi.first.wpilibj.RobotBase
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.littletonrobotics.junction.Logger
+
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.volts
 
@@ -35,6 +39,15 @@ object RobotContainer {
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
       elevator = Elevator(ElevatorIOSim)
       //      vision = Vision(VisionIOSim)
+    }
+
+    // Set the scheduler to log events for command initialize, interrupt, finish
+    CommandScheduler.getInstance().onCommandInitialize { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
+    }
+
+    CommandScheduler.getInstance().onCommandFinish { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
   }
 
