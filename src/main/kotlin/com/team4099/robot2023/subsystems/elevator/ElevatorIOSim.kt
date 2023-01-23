@@ -17,6 +17,7 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.DerivativeGain
@@ -41,14 +42,16 @@ object ElevatorIOSim : ElevatorIO {
       true,
     )
 
+  val m_mech2d = Mechanism2d(90.0, 90.0)
+
+  val carriageAttachment = m_mech2d.getRoot("Attachment", 55.0, 0.0)
+
   private val elevatorController =
     PIDController(ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD)
 
   init {
 
     // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
-
-    val m_mech2d = Mechanism2d(90.0, 90.0)
     val midNodeHome = m_mech2d.getRoot("Mid Node", 27.83, 0.0)
     val MidNode =
       midNodeHome.append(
@@ -75,6 +78,22 @@ object ElevatorIOSim : ElevatorIO {
     val m_bumper =
       gridHome.append(MechanismLigament2d("Bumper", 30.5, 0.0, 60.0, Color8Bit(Color.kRed)))
 
+    val elevatorHome = m_mech2d.getRoot("Elevator Home", 55.0, 0.0)
+    val m_elevator =
+      elevatorHome.append(
+        MechanismLigament2d(
+          "Elevator",
+          ElevatorConstants.DesiredElevatorStates.MAX_HEIGHT.height.inInches,
+          90.0,
+          15.0,
+          Color8Bit(Color.kOrange)
+        )
+      )
+
+    carriageAttachment.append(
+      MechanismLigament2d("Carriage", 10.0, 180.0, 10.0, Color8Bit(Color.kBlue))
+    )
+
     SmartDashboard.putData("Arm Sim", m_mech2d)
   }
 
@@ -97,6 +116,10 @@ object ElevatorIOSim : ElevatorIO {
     RoboRioSim.setVInVoltage(
       BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.currentDrawAmps)
     )
+
+    carriageAttachment.setPosition(55.0, inputs.elevatorPosition.inInches)
+
+    SmartDashboard.putData("Arm Sim", m_mech2d)
   }
 
   override fun setOutputVoltage(voltage: ElectricalPotential) {

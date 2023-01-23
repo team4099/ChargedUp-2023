@@ -11,15 +11,13 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.inOutputPerSecond
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.inVoltsPerMeter
-import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
-import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 
@@ -66,9 +64,8 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
     followerSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
 
-    // TODO(figure out if we need this)
-    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE
-    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE
+    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inOutputPerSecond
+    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inOutputPerSecond
 
     followerSparkMax.follow(leaderSparkMax)
   }
@@ -125,13 +122,12 @@ object ElevatorIONeo : ElevatorIO {
     kI: IntegralGain<Meter, Volt>,
     kD: DerivativeGain<Meter, Volt>
   ) {
+    leaderPIDController.p = leaderSensor.proportionalPositionGainToRawUnits(kP)
+    leaderPIDController.i = leaderSensor.integralPositionGainToRawUnits(kI)
+    leaderPIDController.d = leaderSensor.derivativePositionGainToRawUnits(kD)
 
-    leaderPIDController.p = kP.inVoltsPerMeter
-    leaderPIDController.i = kI.inVoltsPerMeterSeconds
-    leaderPIDController.d = kD.inVoltsPerMeterPerSecond
-
-    followerPIDController.p = kP.inVoltsPerMeter
-    followerPIDController.i = kI.inVoltsPerMeterSeconds
-    followerPIDController.d = kD.inVoltsPerMeterPerSecond
+    followerPIDController.p = followerSensor.proportionalPositionGainToRawUnits(kP)
+    followerPIDController.i = followerSensor.integralPositionGainToRawUnits(kI)
+    followerPIDController.d = followerSensor.derivativePositionGainToRawUnits(kD)
   }
 }

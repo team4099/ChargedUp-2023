@@ -9,6 +9,7 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.percent
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
@@ -21,11 +22,9 @@ object ElevatorConstants {
   // TODO(Check ratio with design)
   const val GEAR_RATIO = (32.0 / 12.0)
   val CARRIAGE_MASS = 30.pounds
-  // TODO(Check height with design)
   const val LEFT_MOTOR_INVERTED = true
   const val RIGHT_MOTOR_INVERTED = false
-  // TODO(Check if need this)
-  const val RAMP_RATE = 0.5
+  val RAMP_RATE = 0.5.percent.perSecond
 
   val REAL_KP = 1.0.volts / 1.meters
   val REAL_KI = 0.0.volts / (1.meters * 1.seconds)
@@ -35,10 +34,11 @@ object ElevatorConstants {
   val SIM_KI = 0.0.volts / (1.inches * 1.seconds)
   val SIM_KD = 0.25.volts / (1.inches.perSecond)
 
-  // TODO(Check height with design)
-  val ELEVATOR_ANGLE = 51.687235.degrees
+  val ELEVATOR_ANGLE = 51.68.degrees
 
-  val ELEVATOR_KS = 0.584.volts // TODO tune
+  val SIM_ELEVATOR_KS = 0.584.volts
+  val REAL_ELEVATOR_KS = 0.584.volts // TODO tune
+  val ELEVATOR_KS = 0
   val ELEVATOR_KG = 2.01.volts
   val ELEVATOR_KV = 1.81.volts / 1.0.meters.perSecond
   val ELEVATOR_KA = 0.26.volts / 1.0.meters.perSecond.perSecond
@@ -48,14 +48,14 @@ object ElevatorConstants {
 
   val SPOOL_RADIUS = 1.128.inches
 
-  val MAX_VELOCITY = 40.inches.perSecond // TODO increase this pls
+  val MAX_VELOCITY = 50.inches.perSecond
   val MAX_ACCELERATION = 75.inches.perSecond.perSecond
 
   // TODO(Check height with design)
   val ELEVATOR_MAX_EXTENSION = 50.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
 
-  // TODO(do tests to figure out what these values should be, get from mech?)
+  // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_HEIGHT = 0.0.inches
   val CONE_DROP_HEIGHT = 0.0.inches
   val INTAKE_CUBE_SHELF_OFFSET = 0.0.inches
@@ -63,8 +63,7 @@ object ElevatorConstants {
 
   enum class DesiredElevatorStates(val height: Length) {
     MIN_HEIGHT(ELEVATOR_MAX_RETRACTION),
-    // TODO(Check if elevator can intake from ground with design)
-    GROUND_INTAKE(1.inches),
+    GROUND_INTAKE(0.inches),
     LOW_CUBE_SCORE(CUBE_DROP_HEIGHT),
     LOW_CONE_SCORE(CONE_DROP_HEIGHT),
     MID_CUBE_SCORE(midCubeZ + CUBE_DROP_HEIGHT),

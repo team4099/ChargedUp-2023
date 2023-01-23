@@ -30,9 +30,9 @@ import org.team4099.lib.units.perSecond
 
 class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val inputs = ElevatorIO.ElevatorInputs()
-  val elevatorFeedForward =
+  var elevatorFeedForward =
     ElevatorFeedforward(
-      ElevatorConstants.ELEVATOR_KS,
+      ElevatorConstants.REAL_ELEVATOR_KS,
       ElevatorConstants.ELEVATOR_KG,
       ElevatorConstants.ELEVATOR_KV,
       ElevatorConstants.ELEVATOR_KA
@@ -84,10 +84,26 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       kP.initDefault(ElevatorConstants.REAL_KP)
       kI.initDefault(ElevatorConstants.REAL_KI)
       kD.initDefault(ElevatorConstants.REAL_KD)
+
+      elevatorFeedForward =
+        ElevatorFeedforward(
+          ElevatorConstants.REAL_ELEVATOR_KS,
+          ElevatorConstants.ELEVATOR_KG,
+          ElevatorConstants.ELEVATOR_KV,
+          ElevatorConstants.ELEVATOR_KA
+        )
     } else {
       kP.initDefault(ElevatorConstants.SIM_KP)
       kI.initDefault(ElevatorConstants.SIM_KI)
       kD.initDefault(ElevatorConstants.SIM_KD)
+
+      elevatorFeedForward =
+        ElevatorFeedforward(
+          ElevatorConstants.SIM_ELEVATOR_KS,
+          ElevatorConstants.ELEVATOR_KG,
+          ElevatorConstants.ELEVATOR_KV,
+          ElevatorConstants.ELEVATOR_KA
+        )
     }
   }
 
