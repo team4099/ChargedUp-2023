@@ -1,6 +1,5 @@
 package com.team4099.robot2023.subsystems.elevator
 
-<<<<<<< HEAD
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants

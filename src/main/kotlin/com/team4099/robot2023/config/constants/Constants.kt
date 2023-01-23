@@ -21,7 +21,6 @@ object Constants {
 
   object Tuning {
 
-
     const val TUNING_MODE = false
     const val SIMULATE_DRIFT = true
 
