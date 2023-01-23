@@ -107,5 +107,7 @@ interface IntakeIO {
 
   fun setRollerPower(outputPower: Double) {}
 
+  fun setAngle() {}
+
   fun setArmPosition(armPosition: Angle) {}
 }

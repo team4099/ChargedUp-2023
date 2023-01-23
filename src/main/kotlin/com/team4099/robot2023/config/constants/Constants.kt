@@ -69,4 +69,10 @@ object Constants {
     const val LED_CANDLE_ID = 1
     const val LED_BLINKEN_ID = 1
   }
+
+  object Intake{
+    const val ROLLER_MOTOR_ID = 1
+    const val LEADER_ARM_MOTOR = 1
+    const val FOLLOWER_ARM_MOTOR = 1
+  }
 }

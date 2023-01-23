@@ -38,4 +38,6 @@ object IntakeConstants {
   val RIGHT_MOTOR_INVERTED = true
 
   val VOLTAGE_COMPENSATION = 12.0.volts
+
+  val MOTOR_COUNTS = 42;
 }
