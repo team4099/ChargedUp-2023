@@ -27,7 +27,7 @@ object IntakeIONeo : IntakeIO {
   // TODO (Make Sure Encoder increases as arm extends)
   val currentRelativePosition =
     (throughBoreEncoder.get() - IntakeConstants.INTAKE_ZERO) / IntakeConstants.ENCODER_COUNTS *
-      IntakeConstants.INTAKE_SENSOR_RATIO
+      IntakeConstants.INTAKE_SENSOR_RATIO * IntakeConstants.MOTOR_COUNTS
 
   private val leaderPIDController: SparkMaxPIDController = leaderArmMotor.pidController
   private val followerPIDController: SparkMaxPIDController = followerArmMotor.pidController
@@ -50,5 +50,11 @@ object IntakeIONeo : IntakeIO {
 
   override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {}
 
-  override fun setRollerPower(outputPower: Double) {}
+  override fun setRollerPower(outputPower: Double) {
+    rollerMotor.set(outputPower)
+  }
+
+  override fun setAngle(){
+
+  }
 }

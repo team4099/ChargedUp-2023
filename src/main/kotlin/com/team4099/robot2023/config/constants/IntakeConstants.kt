@@ -39,5 +39,5 @@ object IntakeConstants {
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val MOTOR_COUNTS = 42
+  val MOTOR_COUNTS = 42;
 }
