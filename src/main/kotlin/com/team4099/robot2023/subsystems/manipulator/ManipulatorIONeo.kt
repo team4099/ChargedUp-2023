@@ -70,7 +70,13 @@ object ManipulatorIONeo : ManipulatorIO {
   }
 
   override fun setRollerPower(voltage: ElectricalPotential) {
-    rollerSparkMax.setVoltage(MathUtil.clamp(voltage.inVolts, -Constants.Universal.VOLTAGE_COMPENSATION.inVolts, Constants.Universal.VOLTAGE_COMPENSATION.inVolts))
+    rollerSparkMax.setVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -Constants.Universal.VOLTAGE_COMPENSATION.inVolts,
+        Constants.Universal.VOLTAGE_COMPENSATION.inVolts
+      )
+    )
   }
 
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
@@ -96,8 +102,8 @@ object ManipulatorIONeo : ManipulatorIO {
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
     inputs.armTemp = armSparkMax.motorTemperature.celsius
   }
-  override fun setArmOpenLoop(percentOutput: Double) {
-    armSparkMax.set(percentOutput)
+  override fun setArmVoltage(voltage: ElectricalPotential) {
+    armSparkMax.setVoltage(voltage.inVolts)
   }
 
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {

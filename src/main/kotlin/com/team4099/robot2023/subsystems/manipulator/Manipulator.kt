@@ -68,6 +68,12 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   var lastIntakeSpikeTime = Clock.fpgaTime
 
+  val forwardLimitReached: Boolean
+    get() = inputs.armPosition >= ManipulatorConstants.ARM_MAX_EXTENSION
+
+  val reverseLimitReached: Boolean
+    get() = inputs.armPosition <= ManipulatorConstants.ARM_MAX_RETRACTION
+
   init {
     // setter isn't called on initialization
     rollerState = rollerState
@@ -86,6 +92,14 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   fun setRollerPower(voltage: ElectricalPotential) {
     io.setRollerPower(voltage)
+  }
+
+  fun setArmVoltage(voltage: ElectricalPotential) {
+    if (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts) {
+      io.setArmVoltage(0.volts)
+    } else {
+      io.setArmVoltage(voltage)
+    }
   }
 
   fun setRollerBrakeMode(brake: Boolean) {

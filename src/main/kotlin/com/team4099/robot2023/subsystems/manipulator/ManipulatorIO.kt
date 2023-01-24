@@ -98,7 +98,7 @@ interface ManipulatorIO {
 
   fun setRollerPower(voltage: ElectricalPotential) {}
 
-  fun setArmOpenLoop(percentOutput: Double) {}
+  fun setArmVoltage(voltage: ElectricalPotential) {}
 
   fun setPosition(position: Length, feedforward: ElectricalPotential) {}
 
