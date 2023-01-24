@@ -11,11 +11,11 @@ class ManipulatorIdleCommand(val manipulator: Manipulator) : CommandBase() {
   }
 
   override fun initialize() {
-    manipulator.rollerState = ManipulatorConstants.RollerState.IDLE
+    manipulator.rollerState = ManipulatorConstants.RollerStates.IDLE
   }
 
   override fun execute() {
-    Logger.getInstance().recordOutput("ActiveCommands/IntakeIdleCommand", true)
+    Logger.getInstance().recordOutput("ActiveCommands/ManipulatorIdleCommand", true)
   }
   override fun isFinished(): Boolean {
     return false

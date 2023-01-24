@@ -17,7 +17,9 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
+import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.perSecond
@@ -27,33 +29,33 @@ interface ManipulatorIO {
     // TODO(Evaluate inputs. Pos, Vel may not be needed)
     var rollerPosition = 0.degrees
     var rollerVelocity = 0.degrees.perSecond
-    var rollerAppliedOutput = 0.0
+    var rollerAppliedVoltage = 0.volts
     var rollerStatorCurrent = 0.amps
     var rollerSupplyCurrent = 0.amps
-    var rollerTempCelcius = 0.0.celsius
+    var rollerTemp = 0.0.celsius
 
     var armPosition = 0.0.meters
     var armVelocity = 0.0.meters.perSecond
-    var armAppliedOutput = 0.0
+    var armAppliedVoltage = 0.volts
     var armStatorCurrent = 0.amps
     var armSupplyCurrent = 0.amps
-    var armTempCelcius = 0.0.celsius
+    var armTemp = 0.0.celsius
 
     override fun toLog(table: LogTable?) {
       // TODO: figure out why we did degrees and radians for this
       table?.put("rollerPositionRad", rollerPosition.inRadians)
       table?.put("rollerVelocityRadPerSec", rollerVelocity.inRadiansPerSecond)
-      table?.put("rollerAppliedVolts", rollerAppliedOutput)
+      table?.put("rollerAppliedVolts", rollerAppliedVoltage.inVolts)
       table?.put("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
       table?.put("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
-      table?.put("rollerTempCelsius", rollerTempCelcius.inCelsius)
+      table?.put("rollerTempCelsius", rollerTemp.inCelsius)
 
       table?.put("armPositionMeters", armPosition.inMeters)
       table?.put("armVelocityMetersPerSec", armVelocity.inMetersPerSecond)
-      table?.put("armAppliedVolts", armAppliedOutput)
+      table?.put("armAppliedVolts", armAppliedVoltage.inVolts)
       table?.put("armStatorCurrentAmps", armStatorCurrent.inAmperes)
       table?.put("armSupplyCurrentAmps", armSupplyCurrent.inAmperes)
-      table?.put("armTempCelsius", armTempCelcius.inCelsius)
+      table?.put("armTempCelsius", armTemp.inCelsius)
     }
 
     override fun fromLog(table: LogTable?) {
@@ -64,39 +66,39 @@ interface ManipulatorIO {
       table?.getDouble("rollerVelocityRadPerSec", rollerVelocity.inRadiansPerSecond)?.let {
         rollerVelocity = it.radians.perSecond
       }
-      table?.getDouble("rollerAppliedVolts", rollerAppliedOutput)?.let { rollerAppliedOutput = it }
+      table?.getDouble("rollerAppliedVolts", rollerAppliedVoltage.inVolts)?.let {
+        rollerAppliedVoltage = it.volts
+      }
       table?.getDouble("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)?.let {
         rollerStatorCurrent = it.amps
       }
       table?.getDouble("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let {
         rollerSupplyCurrent = it.amps
       }
-      table?.getDouble("rollerTempCelsius", rollerTempCelcius.inCelsius)?.let {
-        rollerTempCelcius = it.celsius
-      }
+      table?.getDouble("rollerTempCelsius", rollerTemp.inCelsius)?.let { rollerTemp = it.celsius }
 
       table?.getDouble("armPositionMeters", armPosition.inMeters)?.let { armPosition = it.meters }
       table?.getDouble("armVelocityMetersPerSec", armVelocity.inMetersPerSecond)?.let {
         armVelocity = it.meters.perSecond
       }
-      table?.getDouble("armAppliedVolts", armAppliedOutput)?.let { armAppliedOutput = it }
+      table?.getDouble("armAppliedVolts", armAppliedVoltage.inVolts)?.let {
+        armAppliedVoltage = it.volts
+      }
       table?.getDouble("armStatorCurrentAmps", armStatorCurrent.inAmperes)?.let {
         armStatorCurrent = it.amps
       }
       table?.getDouble("armSupplyCurrentAmps", armSupplyCurrent.inAmperes)?.let {
         armSupplyCurrent = it.amps
       }
-      table?.getDouble("armTempCelsius", armTempCelcius.inCelsius)?.let {
-        armTempCelcius = it.celsius
-      }
+      table?.getDouble("armTempCelsius", armTemp.inCelsius)?.let { armTemp = it.celsius }
     }
   }
 
   fun updateInputs(inputs: ManipulatorIOInputs) {}
 
-  fun setRollerPower(percentOutput: Double) {}
+  fun setRollerPower(voltage: ElectricalPotential) {}
 
-  fun setOpenLoop(percentOutput: Double) {}
+  fun setArmOpenLoop(percentOutput: Double) {}
 
   fun setPosition(position: Length, feedforward: ElectricalPotential) {}
 
@@ -107,4 +109,8 @@ interface ManipulatorIO {
     kI: IntegralGain<Meter, Volt>,
     kD: DerivativeGain<Meter, Volt>
   ) {}
+
+  fun setRollerBrakeMode(brake: Boolean) {}
+
+  fun setArmBrakeMode(brake: Boolean) {}
 }

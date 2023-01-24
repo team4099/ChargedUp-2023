@@ -9,26 +9,25 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
-import org.team4099.lib.units.derived.inVoltsPerMeter
-import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
-import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 
 object ManipulatorIONeo : ManipulatorIO {
-  private val intakeSparkMax =
+  private val rollerSparkMax =
     CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
   private val intakeSensor =
     sparkMaxAngularMechanismSensor(
-      intakeSparkMax,
-      ManipulatorConstants.INTAKE_GEAR_RATIO,
-      ManipulatorConstants.INTAKE_VOLTAGE_COMPENSATION
+      rollerSparkMax,
+      ManipulatorConstants.ROLLER_GEAR_RATIO,
+      Constants.Universal.VOLTAGE_COMPENSATION
     )
   private val armSparkMax =
     CANSparkMax(Constants.Manipulator.ARM_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
@@ -37,61 +36,66 @@ object ManipulatorIONeo : ManipulatorIO {
       armSparkMax,
       ManipulatorConstants.ARM_GEAR_RATIO,
       ManipulatorConstants.ARM_SPOOL_RADIUS * 2,
-      ManipulatorConstants.ARM_VOLTAGE_COMPENSATION
+      Constants.Universal.VOLTAGE_COMPENSATION
     )
   private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
 
   init {
-    intakeSparkMax.restoreFactoryDefaults()
-    intakeSparkMax.clearFaults()
+    rollerSparkMax.restoreFactoryDefaults()
+    rollerSparkMax.clearFaults()
     armSparkMax.restoreFactoryDefaults()
     armSparkMax.clearFaults()
 
-    // TODO(check if this is right)
-    intakeSparkMax.enableVoltageCompensation(
-      ManipulatorConstants.INTAKE_VOLTAGE_COMPENSATION.inVolts
+    rollerSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
+    rollerSparkMax.setSmartCurrentLimit(
+      ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
     )
-    intakeSparkMax.setSmartCurrentLimit(ManipulatorConstants.INTAKE_SUPPLY_CURRENT_LIMIT)
-    intakeSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
-    intakeSparkMax.inverted = ManipulatorConstants.INTAKE_MOTOR_INVERTED
-    intakeSparkMax.burnFlash()
-    intakeSparkMax.openLoopRampRate = ManipulatorConstants.INTAKE_RAMP_RATE
+    rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
+    rollerSparkMax.inverted = ManipulatorConstants.ROLLER_MOTOR_INVERTED
+    rollerSparkMax.burnFlash()
+    rollerSparkMax.openLoopRampRate = ManipulatorConstants.ROLLER_RAMP_RATE
 
-    armSparkMax.enableVoltageCompensation(ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts)
-    armSparkMax.setSmartCurrentLimit(ManipulatorConstants.ARM_SUPPLY_CURRENT_LIMIT)
+    rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+
+    armSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
+    armSparkMax.setSmartCurrentLimit(
+      ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
+    )
     armSparkMax.inverted = ManipulatorConstants.ARM_MOTOR_INVERTED
     armSparkMax.burnFlash()
     armSparkMax.openLoopRampRate = ManipulatorConstants.ARM_RAMP_RATE
+
+    armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
   }
 
-  override fun setRollerPower(percentOutput: Double) {
-    intakeSparkMax.set(percentOutput)
+  override fun setRollerPower(voltage: ElectricalPotential) {
+    rollerSparkMax.setVoltage(voltage.inVolts)
   }
 
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
     inputs.rollerPosition = intakeSensor.position
     inputs.rollerVelocity = intakeSensor.velocity
-    inputs.rollerAppliedOutput = intakeSparkMax.appliedOutput
-    inputs.rollerStatorCurrent = intakeSparkMax.outputCurrent.amps
+    inputs.rollerAppliedVoltage = rollerSparkMax.busVoltage.volts * rollerSparkMax.appliedOutput
+    inputs.rollerStatorCurrent = rollerSparkMax.outputCurrent.amps
     // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
     // AppliedVoltage = percentOutput * BatteryVoltage
     // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * intakeSparkMax.appliedOutput
-    inputs.rollerTempCelcius = intakeSparkMax.motorTemperature.celsius
+    inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput
+    inputs.rollerTemp = rollerSparkMax.motorTemperature.celsius
 
     inputs.armPosition = armSensor.position
     inputs.armVelocity = armSensor.velocity
-    inputs.armAppliedOutput = armSparkMax.appliedOutput
+    inputs.armAppliedVoltage = armSparkMax.busVoltage.volts * armSparkMax.appliedOutput
     inputs.armStatorCurrent = armSparkMax.outputCurrent.amps
     // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
     // AppliedVoltage = percentOutput * BatteryVoltage
     // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
-    inputs.armTempCelcius = armSparkMax.motorTemperature.celsius
+    inputs.armTemp = armSparkMax.motorTemperature.celsius
   }
-  override fun setOpenLoop(percentOutput: Double) {
+  override fun setArmOpenLoop(percentOutput: Double) {
     armSparkMax.set(percentOutput)
   }
 
@@ -108,8 +112,25 @@ object ManipulatorIONeo : ManipulatorIO {
     kI: IntegralGain<Meter, Volt>,
     kD: DerivativeGain<Meter, Volt>
   ) {
-    armPIDController.p = kP.inVoltsPerMeter
-    armPIDController.i = kI.inVoltsPerMeterSeconds
-    armPIDController.d = kD.inVoltsPerMeterPerSecond
+
+    armPIDController.p = armSensor.proportionalPositionGainToRawUnits(kP)
+    armPIDController.i = armSensor.integralPositionGainToRawUnits(kI)
+    armPIDController.d = armSensor.derivativePositionGainToRawUnits(kD)
+  }
+
+  override fun setRollerBrakeMode(brake: Boolean) {
+    if (brake) {
+      rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+    } else {
+      rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
+    }
+  }
+
+  override fun setArmBrakeMode(brake: Boolean) {
+    if (brake) {
+      armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+    } else {
+      armSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
+    }
   }
 }

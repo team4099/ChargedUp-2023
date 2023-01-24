@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
@@ -35,34 +36,38 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   var lastIntakeRunTime = Clock.fpgaTime
 
-  var rollerState = ManipulatorConstants.RollerState.IDLE
-    set(state) {
-      io.setRollerPower(state.speed)
-      if (state == ManipulatorConstants.RollerState.CONE_IN ||
-        state == ManipulatorConstants.RollerState.CUBE_IN
-      ) {
-        lastIntakeRunTime = Clock.fpgaTime
+  var rollerState = ManipulatorConstants.RollerStates.IDLE
+    get() {
+      for (state in ManipulatorConstants.RollerStates.values()) {
+        if ((state.voltage - inputs.rollerAppliedVoltage).absoluteValue <=
+          ManipulatorConstants.ROLLER_POWER_TOLERANCE
+        ) {
+          return state
+        }
       }
-      field = state
+      return ManipulatorConstants.RollerStates.DUMMY
     }
 
+  // checks if motor current draw is greater than given threshold and if rollers are intaking
+  // last condition prevnts current spikes caused by starting to run intake from triggering this
   val intakingGamePiece: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.INTAKE_CURRENT_THRESHOLD &&
         (
-          rollerState == ManipulatorConstants.RollerState.CONE_IN ||
-            rollerState == ManipulatorConstants.RollerState.CONE_IN
+          rollerState == ManipulatorConstants.RollerStates.CUBE_IN ||
+            rollerState == ManipulatorConstants.RollerStates.CONE_IN
           ) &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
         ManipulatorConstants.INTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
+  // same thing but outtake
   val outtakingGamePiece: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.OUTAKE_CURRENT_THRESHOLD &&
         (
-          rollerState == ManipulatorConstants.RollerState.CONE_OUT ||
-            rollerState == ManipulatorConstants.RollerState.CUBE_OUT
+          rollerState == ManipulatorConstants.RollerStates.CONE_OUT ||
+            rollerState == ManipulatorConstants.RollerStates.CUBE_OUT
           ) &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
         ManipulatorConstants.OUTTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
@@ -88,5 +93,17 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Intake/outtakingBall", outtakingGamePiece)
     Logger.getInstance().recordOutput("Intake/extendTime", lastIntakeRunTime.inSeconds)
     Logger.getInstance().recordOutput("Intake/extendTime", lastIntakeSpikeTime.inSeconds)
+  }
+
+  fun setRollerPower(voltage: ElectricalPotential) {
+    io.setRollerPower(voltage)
+  }
+
+  fun setRollerBrakeMode(brake: Boolean) {
+    io.setRollerBrakeMode(brake)
+  }
+
+  fun setArmBrakeMode(brake: Boolean) {
+    io.setArmBrakeMode(brake)
   }
 }
