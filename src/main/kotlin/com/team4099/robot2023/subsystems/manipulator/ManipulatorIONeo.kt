@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.SparkMaxPIDController
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import edu.wpi.first.math.MathUtil
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -69,7 +70,7 @@ object ManipulatorIONeo : ManipulatorIO {
   }
 
   override fun setRollerPower(voltage: ElectricalPotential) {
-    rollerSparkMax.setVoltage(voltage.inVolts)
+    rollerSparkMax.setVoltage(MathUtil.clamp(voltage.inVolts, -Constants.Universal.VOLTAGE_COMPENSATION.inVolts, Constants.Universal.VOLTAGE_COMPENSATION.inVolts))
   }
 
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
