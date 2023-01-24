@@ -7,6 +7,10 @@ import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.inDegreesPerSecond
@@ -104,10 +108,13 @@ interface IntakeIO {
   }
 
   fun updateInputs(inputs: IntakeIOInputs) {}
-
   fun setRollerPower(outputPower: Double) {}
-
-  fun setAngle() {}
-
-  fun setArmPosition(armPosition: Angle) {}
+  fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {}
+  fun setArmVoltage(voltage: ElectricalPotential) {}
+  fun configPID(
+    kP: ProportionalGain<Radian, Volt>,
+    kI: ProportionalGain<Radian, Volt>,
+    kD: ProportionalGain<Radian, Volt>
+  ) {}
+  fun zeroEncoder() {}
 }
