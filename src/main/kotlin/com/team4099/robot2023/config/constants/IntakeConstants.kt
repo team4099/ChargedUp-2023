@@ -26,7 +26,7 @@ object IntakeConstants {
 
   val INTAKE_ZERO = 128 // TODO: (Make this fr)
   // From encoder to intake
-  val INTAKE_SENSOR_RATIO = (14.0 / 32.0) // TODO: (I MADE THIS UP. FIX)
+  val INTAKE_SENSOR_GEAR_RATIO = (14.0 / 32.0) // TODO: (I MADE THIS UP. FIX)
   val INTAKE_ARM_GEAR_RATIO = (24.0 / 16.0) // TODO: (I MADE THIS UP. FIX)
 
   val MAX_ARM_VELOCITY = 60.degrees.perSecond
