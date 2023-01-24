@@ -12,15 +12,15 @@ class OutttakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
 
   override fun initialize() {
 
-    manipulator.rollerState = ManipulatorConstants.RollerState.CUBE_OUT
+    manipulator.rollerState = ManipulatorConstants.RollerStates.CUBE_OUT
   }
 
   override fun execute() {
-    Logger.getInstance().recordOutput("ActiveCommands/ReverseCobeCommand", true)
+    Logger.getInstance().recordOutput("ActiveCommands/OuttakeCubeCommand", true)
   }
 
   override fun end(interrupted: Boolean) {
-    manipulator.rollerState = ManipulatorConstants.RollerState.IDLE
+    manipulator.rollerState = ManipulatorConstants.RollerStates.IDLE
   }
 
   override fun isFinished(): Boolean {
