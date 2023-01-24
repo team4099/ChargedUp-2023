@@ -40,7 +40,10 @@ object ManipulatorConstants {
   val CONE_CURRENT_THRESHOLD = 15.amps
   val CUBE_CURRENT_THRESHOLD = 15.amps
 
+  // TODO(check measurements with design)
   val ARM_SPOOL_RADIUS = 1.0.inches
+  val ARM_MAX_EXTENSION = 10.inches
+  val ARM_MAX_RETRACTION = 0.inches
 
   // TODO(What is the inertial value)
   val MOMENT_INERTIA = 0.0045

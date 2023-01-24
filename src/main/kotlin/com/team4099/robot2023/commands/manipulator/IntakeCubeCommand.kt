@@ -9,8 +9,7 @@ class IntakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
     addRequirements(manipulator)
   }
 
-  override fun initialize() {
-  }
+  override fun initialize() {}
 
   override fun execute() {
     manipulator.setRollerPower(ManipulatorConstants.RollerStates.CUBE_IN.voltage)
