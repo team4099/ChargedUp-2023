@@ -3,7 +3,6 @@ package com.team4099.robot2022.commands.intake
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
-import org.littletonrobotics.junction.Logger
 
 class OutttakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
   init {
@@ -15,9 +14,7 @@ class OutttakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
     manipulator.rollerState = ManipulatorConstants.RollerStates.CUBE_OUT
   }
 
-  override fun execute() {
-    Logger.getInstance().recordOutput("ActiveCommands/OuttakeCubeCommand", true)
-  }
+  override fun execute() {}
 
   override fun end(interrupted: Boolean) {
     manipulator.rollerState = ManipulatorConstants.RollerStates.IDLE
