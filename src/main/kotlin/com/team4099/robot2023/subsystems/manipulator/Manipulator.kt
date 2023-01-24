@@ -50,27 +50,20 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   // checks if motor current draw is greater than given threshold and if rollers are intaking
   // last condition prevnts current spikes caused by starting to run intake from triggering this
-  val intakingGamePiece: Boolean
+  val hasCube: Boolean
     get() {
-      return inputs.rollerStatorCurrent >= ManipulatorConstants.INTAKE_CURRENT_THRESHOLD &&
-        (
-          rollerState == ManipulatorConstants.RollerStates.CUBE_IN ||
-            rollerState == ManipulatorConstants.RollerStates.CONE_IN
-          ) &&
+      return inputs.rollerStatorCurrent >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD &&
+        rollerState == ManipulatorConstants.RollerStates.CUBE_IN &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
-        ManipulatorConstants.INTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+        ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
-  // same thing but outtake
-  val outtakingGamePiece: Boolean
+  val hasCone: Boolean
     get() {
-      return inputs.rollerStatorCurrent >= ManipulatorConstants.OUTAKE_CURRENT_THRESHOLD &&
-        (
-          rollerState == ManipulatorConstants.RollerStates.CONE_OUT ||
-            rollerState == ManipulatorConstants.RollerStates.CUBE_OUT
-          ) &&
+      return inputs.rollerStatorCurrent >= ManipulatorConstants.CONE_CURRENT_THRESHOLD &&
+        rollerState == ManipulatorConstants.RollerStates.CONE_IN &&
         (Clock.fpgaTime - lastIntakeRunTime) >=
-        ManipulatorConstants.OUTTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+        ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
   var lastIntakeSpikeTime = Clock.fpgaTime
@@ -83,14 +76,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   override fun periodic() {
     io.updateInputs(inputs)
 
-    if (intakingGamePiece || outtakingGamePiece) {
-      lastIntakeSpikeTime = Clock.fpgaTime
-    }
-
     Logger.getInstance().processInputs("Intake", inputs)
     Logger.getInstance().recordOutput("Intake/rollerState", rollerState.name)
-    Logger.getInstance().recordOutput("Intake/intakingBall", intakingGamePiece)
-    Logger.getInstance().recordOutput("Intake/outtakingBall", outtakingGamePiece)
+    Logger.getInstance().recordOutput("Intake/hasCube", hasCube)
+    Logger.getInstance().recordOutput("Intake/hasCone", hasCone)
     Logger.getInstance().recordOutput("Intake/extendTime", lastIntakeRunTime.inSeconds)
     Logger.getInstance().recordOutput("Intake/extendTime", lastIntakeSpikeTime.inSeconds)
   }

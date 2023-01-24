@@ -22,8 +22,7 @@ object ManipulatorConstants {
   val ROLLER_RAMP_RATE = 0.5
 
   // used to detect intake/outake, values need testing
-  val INTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.75.seconds
-  val OUTTAKING_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.9.seconds
+  val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.75.seconds
   val WAIT_FOR_STATE_TO_CHANGE = 0.8.seconds
 
   val ARM_MOTOR_INVERTED = false
@@ -38,8 +37,8 @@ object ManipulatorConstants {
   const val ARM_GEAR_RATIO = 1.0
   const val ROLLER_GEAR_RATIO = 1.0
 
-  val INTAKE_CURRENT_THRESHOLD = 15.amps
-  val OUTAKE_CURRENT_THRESHOLD = 20.amps
+  val CONE_CURRENT_THRESHOLD = 15.amps
+  val CUBE_CURRENT_THRESHOLD = 15.amps
 
   val ARM_SPOOL_RADIUS = 1.0.inches
 
@@ -53,9 +52,9 @@ object ManipulatorConstants {
     // figure out if idle should be 0.1 or -0.1 or smth
     IDLE(0.0.volts),
     CONE_IN(10.volts),
-    CUBE_IN(12.volts),
+    CUBE_IN(-12.volts),
     CONE_OUT(-10.volts),
-    CUBE_OUT(-12.volts),
+    CUBE_OUT(12.volts),
     DUMMY(-Double.NEGATIVE_INFINITY.volts);
 
     companion object {

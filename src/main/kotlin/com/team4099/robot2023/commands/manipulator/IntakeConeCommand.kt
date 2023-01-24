@@ -21,6 +21,6 @@ class IntakeConeCommand(val manipulator: Manipulator) : CommandBase() {
   }
 
   override fun isFinished(): Boolean {
-    return false
+    return manipulator.hasCone
   }
 }
