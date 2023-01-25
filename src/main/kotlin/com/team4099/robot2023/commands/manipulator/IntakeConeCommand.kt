@@ -9,15 +9,14 @@ class IntakeConeCommand(val manipulator: Manipulator) : CommandBase() {
     addRequirements(manipulator)
   }
 
-  override fun initialize() {
+  override fun initialize() {}
 
-    manipulator.rollerState = ManipulatorConstants.RollerStates.CONE_IN
+  override fun execute() {
+    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CUBE_IN.voltage)
   }
 
-  override fun execute() {}
-
   override fun end(interrupted: Boolean) {
-    manipulator.rollerState = ManipulatorConstants.RollerStates.IDLE
+    manipulator.lastRollerState = manipulator.rollerState
   }
 
   override fun isFinished(): Boolean {

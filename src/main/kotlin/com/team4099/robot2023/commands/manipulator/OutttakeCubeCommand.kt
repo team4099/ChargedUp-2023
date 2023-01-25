@@ -1,5 +1,6 @@
 package com.team4099.robot2022.commands.intake
 
+import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
@@ -10,14 +11,15 @@ class OutttakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
   }
 
   override fun initialize() {
-
-    manipulator.rollerState = ManipulatorConstants.RollerStates.CUBE_OUT
+    manipulator.lastRollerRunTime = Clock.fpgaTime
   }
 
-  override fun execute() {}
+  override fun execute() {
+    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CUBE_OUT.voltage)
+  }
 
   override fun end(interrupted: Boolean) {
-    manipulator.rollerState = ManipulatorConstants.RollerStates.IDLE
+    manipulator.lastRollerState = ManipulatorConstants.RollerStates.NO_SPIN
   }
 
   override fun isFinished(): Boolean {
