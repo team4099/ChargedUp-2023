@@ -44,6 +44,10 @@ object ManipulatorConstants {
   val ARM_SPOOL_RADIUS = 1.0.inches
   val ARM_MAX_EXTENSION = 10.inches
   val ARM_MAX_RETRACTION = 0.inches
+  val ARM_TOLERANCE = 0.25.inches
+
+  val ARM_MAX_VELOCITY = 40.inches.perSecond
+  val ARM_MAX_ACCELERATION = 40.inches.perSecond.perSecond
 
   // TODO(What is the inertial value)
   val MOMENT_INERTIA = 0.0045
