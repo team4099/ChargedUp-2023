@@ -20,7 +20,7 @@ object IntakeConstants {
     IDLE(0.0)
   }
 
-  val arm_kP = 0.0.volts / 1.degrees
+  val NEO_kP = 0.0.volts / 1.degrees
   val NEO_kI = 0.0.volts / (1.degrees * 1.seconds)
   val NEO_kD = 0.0.volts / (1.degrees.perSecond)
 
@@ -40,4 +40,7 @@ object IntakeConstants {
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val MOTOR_COUNTS = 42
+
+  val INTAKE_MAX_ROTATION = 120.degrees
+  val INTAKE_MIN_ROTATION = -1.degrees
 }

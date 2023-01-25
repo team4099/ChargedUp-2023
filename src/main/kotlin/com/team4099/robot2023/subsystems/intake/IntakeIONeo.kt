@@ -66,5 +66,8 @@ object IntakeIONeo : IntakeIO {
     leaderPIDController.setI(kI.inVoltsPerDegrees)
     leaderPIDController.setD(kD.inVoltsPerDegrees)
   }
-  override fun zeroEncoder() {}
+  override fun zeroEncoder() {
+    leaderArmEncoder.setPosition(0.0)
+
+  }
 }
