@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.manipulator
 
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -9,6 +10,7 @@ import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
@@ -17,6 +19,7 @@ import org.team4099.lib.units.derived.perMeter
 import org.team4099.lib.units.derived.perMeterPerSecond
 import org.team4099.lib.units.derived.perMeterSeconds
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.perSecond
 
 class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   val inputs = ManipulatorIO.ManipulatorIOInputs()
@@ -93,6 +96,27 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     TrapezoidProfile.Constraints(
       ManipulatorConstants.ARM_MAX_VELOCITY, ManipulatorConstants.ARM_MAX_ACCELERATION
     )
+
+  var armSetpoint: TrapezoidProfile.State<Meter> =
+    TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+
+  var prevArmSetpoint: TrapezoidProfile.State<Meter> = TrapezoidProfile.State()
+  fun setPosition(setPoint: TrapezoidProfile.State<Meter>) {
+    val armAcceleration =
+      (setPoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
+    prevArmSetpoint = setPoint
+
+    val feedforward = armFeedforward.calculate(setPoint.velocity, armAcceleration)
+
+    if ((forwardLimitReached && setPoint.velocity > 0.meters.perSecond) ||
+      (reverseLimitReached && setPoint.velocity < 0.meters.perSecond)
+    ) {
+      // TODO: hold position func
+      io.setArmVoltage(0.volts)
+    } else {
+      io.setPosition(setPoint.position, feedforward)
+    }
+  }
 
   init {
     // setter isn't called on initialization
