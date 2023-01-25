@@ -4,6 +4,7 @@ import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.volts
@@ -16,6 +17,14 @@ object ManipulatorConstants {
   val ARM_KS = 1.0.volts
   val ARM_KV = 1.0.volts / 1.0.meters.perSecond
   val ARM_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
+
+  val SIM_ARM_KP = 1.0.volts / 1.0.inches
+  val SIM_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
+  val SIM_ARM_KD = 0.0.volts / 1.0.inches.perSecond
+
+  val REAL_ARM_KP = 1.0.volts / 1.0.inches
+  val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
+  val REAL_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
   // make sure constants are their actual values
   val ARM_RAMP_RATE = 0.5
@@ -45,6 +54,7 @@ object ManipulatorConstants {
   val ARM_MAX_EXTENSION = 10.inches
   val ARM_MAX_RETRACTION = 0.inches
   val ARM_TOLERANCE = 0.25.inches
+  val ARM_MASS = 10.0.pounds
 
   val ARM_MAX_VELOCITY = 40.inches.perSecond
   val ARM_MAX_ACCELERATION = 40.inches.perSecond.perSecond
