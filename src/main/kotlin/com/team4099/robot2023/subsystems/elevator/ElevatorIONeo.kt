@@ -49,12 +49,15 @@ object ElevatorIONeo : ElevatorIO {
   private val followerPIDController: SparkMaxPIDController = followerSparkMax.pidController
 
   init {
+
+    // reseting motor
     leaderSparkMax.restoreFactoryDefaults()
     followerSparkMax.restoreFactoryDefaults()
 
     leaderSparkMax.clearFaults()
     followerSparkMax.clearFaults()
 
+    // basic settings
     leaderSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
     followerSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
 
@@ -67,11 +70,11 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inOutputPerSecond
     followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inOutputPerSecond
 
+    // makes follower motor output exact same power as leader
     followerSparkMax.follow(leaderSparkMax)
   }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
-    // TODO(is there any reason to log follower aswell)
     inputs.elevatorPosition = leaderSensor.position
 
     inputs.elevatorVelocity = leaderSensor.velocity
@@ -100,10 +103,23 @@ object ElevatorIONeo : ElevatorIO {
     inputs.followerTempCelcius = followerSparkMax.motorTemperature.celsius
   }
 
+  /**
+   * Sets the voltage of the elevator motors but also checks to make sure elevator doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
     leaderSparkMax.setVoltage(voltage.inVolts)
   }
 
+  /**
+   * Sets the voltage of the elevator motors but also checks to make sure elevator doesn't exceed
+   * limit
+   *
+   * @param position the target position the PID controller will use
+   * @param feedforward change in voltage to account for external forces on the system
+   */
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {
 
     leaderPIDController.setFF(feedforward.inVolts)
@@ -112,11 +128,20 @@ object ElevatorIONeo : ElevatorIO {
     leaderPIDController.setReference(position.inMeters, CANSparkMax.ControlType.kPosition)
   }
 
+  /** set the current encoder position to be the encoders zero value */
   override fun zeroEncoder() {
     leaderSparkMax.encoder.position = 0.0
     followerSparkMax.encoder.position = 0.0
   }
 
+  /**
+   * updates the PID controller values using the sensor measurement for proportional intregral and
+   * derivative gain multiplied by the 3 PID constants
+   *
+   * @param kP a constant which will be used to scale the proportion gain
+   * @param kI a constant which will be used to scale the integral gain
+   * @param kD a constant which will be used to scale the derivative gain
+   */
   override fun configPID(
     kP: ProportionalGain<Meter, Volt>,
     kI: IntegralGain<Meter, Volt>,

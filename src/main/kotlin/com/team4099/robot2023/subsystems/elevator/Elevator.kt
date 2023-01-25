@@ -30,6 +30,8 @@ import org.team4099.lib.units.perSecond
 
 class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val inputs = ElevatorIO.ElevatorInputs()
+
+  // PID and FeedForward Values
   var elevatorFeedForward =
     ElevatorFeedforward(
       ElevatorConstants.REAL_ELEVATOR_KS,
@@ -54,8 +56,6 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val reverseLimitReached: Boolean
     get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION
 
-  var desiredState = ElevatorConstants.DesiredElevatorStates.MIN_HEIGHT
-
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
   val currentState: ElevatorConstants.ActualElevatorStates
@@ -71,6 +71,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       return ElevatorConstants.ActualElevatorStates.BETWEEN_TWO_STATES
     }
 
+  // trapezoidal profile stuff
   var elevatorConstraints: TrapezoidProfile.Constraints<Meter> =
     TrapezoidProfile.Constraints(
       ElevatorConstants.MAX_VELOCITY, ElevatorConstants.MAX_ACCELERATION
@@ -80,7 +81,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
 
   init {
+    // initializing pid constants and changing FF for sim vs real
     if (RobotBase.isReal()) {
+
       kP.initDefault(ElevatorConstants.REAL_KP)
       kI.initDefault(ElevatorConstants.REAL_KI)
       kD.initDefault(ElevatorConstants.REAL_KD)
@@ -117,6 +120,12 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     }
   }
 
+  /**
+   * Sets the voltage of the elevator motors but also checks to make sure elevator doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   fun setOutputVoltage(voltage: ElectricalPotential) {
     if (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts) {
       io.setOutputVoltage(0.volts)
@@ -125,6 +134,12 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     }
   }
 
+  /**
+   * Sets the elevator to a specific position using trapezoidal profile state and feedforward also
+   * has safety for max extension and retractions
+   *
+   * @param voltage the voltage to set the motor to
+   */
   fun setPosition(setpoint: TrapezoidProfile.State<Meter>) {
     val elevatorAccel =
       ((setpoint.velocity - elevatorSetpoint.velocity) / (Constants.Universal.LOOP_PERIOD_TIME))
@@ -148,10 +163,17 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Elevator/elevatorFeedFoward", feedforward.inVolts)
   }
 
+  /** set the current encoder position to be the encoders zero value */
   fun zeroEncoder() {
     io.zeroEncoder()
   }
 
+  /**
+   * Command factory for the elevator idle/hold
+   *
+   * @return Command which keeps elevator at its current position uses small amount of feedforward
+   * to overcome force of gravity
+   */
   fun holdElevatorPosition(): Command {
     return run {
       io.setOutputVoltage(elevatorFeedForward.calculate(0.0001.meters.perSecond))
@@ -232,6 +254,11 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       }
   }
 
+  /**
+   * Command factory for setting elevator motors to desired voltage
+   *
+   * @return Command which sets output voltage of both motors and ends if elevator reachs its limit
+   */
   fun openLoopControl(voltage: ElectricalPotential): Command {
     return run {
       setOutputVoltage(voltage)

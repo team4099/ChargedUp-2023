@@ -8,6 +8,14 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
+/**
+ * This command is used to experimentally determine the kS value for the elevator It prints the
+ * first voltage level that causes the elevator to move
+ *
+ * @property hasMoved used as end condition
+ * @property appliedVolts the current amount of volts being applied to the motors
+ * @property step the increase in volts per iteration
+ */
 class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
   init {
     addRequirements(elevator)
@@ -16,7 +24,7 @@ class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
   var hasMoved = false
 
   var appliedVolts = ElevatorConstants.ELEVATOR_KG
-  var step = 0.001
+  var step = 0.001.volts
 
   override fun execute() {
     elevator.setOutputVoltage(appliedVolts)
@@ -26,7 +34,7 @@ class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
       println(appliedVolts.inVolts - ElevatorConstants.ELEVATOR_KG.inVolts)
     }
 
-    appliedVolts += step.volts
+    appliedVolts += step
   }
 
   override fun isFinished(): Boolean {

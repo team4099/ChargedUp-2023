@@ -89,13 +89,35 @@ interface ElevatorIO {
 
   fun updateInputs(inputs: ElevatorInputs) {}
 
+  /**
+   * Sets the voltage of the elevator motors but also checks to make sure elevator doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   fun setOutputVoltage(voltage: ElectricalPotential) {}
 
-  fun setPosition(height: Length, feedForward: ElectricalPotential) {}
+  /**
+   * Sets the elevator to a specific position using trapezoidal profile state and feedforward also
+   * has safety for max extension and retractions
+   *
+   * @param position to set the elevatorto
+   * @param feedForward represents change in supply voltage to the motors to acount for external
+   * forces acting on the system
+   */
+  fun setPosition(position: Length, feedForward: ElectricalPotential) {}
 
+  /** set the current encoder position to be the encoders zero value */
   fun zeroEncoder() {}
 
 
+  /**
+   * updates the PID values
+   *
+   * @param kP a constant which will be used to scale the proportion gain
+   * @param kI a constant which will be used to scale the integral gain
+   * @param kD a constant which will be used to scale the derivative gain
+   */
   fun configPID(
     kP: ProportionalGain<Meter, Volt>,
     kI: IntegralGain<Meter, Volt>,

@@ -117,25 +117,48 @@ object ElevatorIOSim : ElevatorIO {
       BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.currentDrawAmps)
     )
 
+    // updating carriage attachment based on height of elevator
     carriageAttachment.setPosition(55.0, inputs.elevatorPosition.inInches)
 
     SmartDashboard.putData("Arm Sim", m_mech2d)
   }
 
+  /**
+   * Sets the voltage of the elevator motors but also checks to make sure elevator doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
     elevatorSim.setInputVoltage(voltage.inVolts)
   }
 
+  /**
+   * Sets the voltage of the elevator motors but also checks to make sure elevator doesn't exceed
+   * limit
+   *
+   * @param position the target position the PID controller will use
+   * @param feedforward change in voltage to account for external forces on the system
+   */
   override fun setPosition(position: Length, feedForward: ElectricalPotential) {
     val ff = MathUtil.clamp(feedForward.inVolts, -12.0, 12.0).volts
     val feedback = elevatorController.calculate(elevatorSim.positionMeters.meters, position)
     elevatorSim.setInputVoltage((ff + feedback).inVolts)
   }
 
+  /** set the current encoder position to be the encoders zero value */
   override fun zeroEncoder() {
     println("don't work right now")
   }
 
+  /**
+   * updates the PID controller values using the sensor measurement for proportional intregral and
+   * derivative gain multiplied by the 3 PID constants
+   *
+   * @param kP a constant which will be used to scale the proportion gain
+   * @param kI a constant which will be used to scale the integral gain
+   * @param kD a constant which will be used to scale the derivative gain
+   */
   override fun configPID(
     kP: ProportionalGain<Meter, Volt>,
     kI: IntegralGain<Meter, Volt>,
