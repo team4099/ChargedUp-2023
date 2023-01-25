@@ -6,6 +6,8 @@ import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
+import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.inVoltsPerMeter
@@ -73,6 +75,24 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   val reverseLimitReached: Boolean
     get() = inputs.armPosition <= ManipulatorConstants.ARM_MAX_RETRACTION
+
+  val currentArmState: ManipulatorConstants.ActualArmStates
+    get() {
+      for (state in ManipulatorConstants.DesiredArmStates.values()) {
+        if ((state.position - inputs.armPosition).absoluteValue <=
+          ManipulatorConstants.ARM_TOLERANCE
+        ) {
+          return ManipulatorConstants.ActualArmStates.fromDesiredState(state)
+        }
+      }
+
+      return ManipulatorConstants.ActualArmStates.BETWEEN_TWO_STATES
+    }
+
+  var armConstraints: TrapezoidProfile.Constraints<Meter> =
+    TrapezoidProfile.Constraints(
+      ManipulatorConstants.ARM_MAX_VELOCITY, ManipulatorConstants.ARM_MAX_ACCELERATION
+    )
 
   init {
     // setter isn't called on initialization
