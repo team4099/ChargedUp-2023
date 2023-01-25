@@ -46,7 +46,8 @@ object RobotContainer {
         { ControlBoard.robotOriented },
         drivetrain
       )
-    //    PivotClimber.defaultCommand = PivotIdleCommand()
+
+    manipulator.defaultCommand = manipulator.holdArmPosition()
   }
 
   fun zeroSteering() {

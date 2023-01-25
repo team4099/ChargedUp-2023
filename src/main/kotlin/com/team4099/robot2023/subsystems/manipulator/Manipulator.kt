@@ -156,6 +156,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     io.setArmBrakeMode(brake)
   }
 
+  fun holdArmPosition(): Command {
+    return run { io.setArmVoltage(0.0.volts) }
+  }
+
   fun openLoopControl(voltage: ElectricalPotential): Command {
     return run { setArmVoltage(voltage) }.until {
       forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts
