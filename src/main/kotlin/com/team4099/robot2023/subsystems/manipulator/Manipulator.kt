@@ -41,9 +41,9 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       "Manipulator/kP", Pair({ it.inVoltsPerMeterPerSecond }, { it.volts.perMeterPerSecond })
     )
 
-  var lastIntakeRunTime = Clock.fpgaTime
+  var lastRollerRunTime = Clock.fpgaTime
 
-  var rollerState = ManipulatorConstants.RollerStates.IDLE
+  var rollerState = ManipulatorConstants.RollerStates.NO_SPIN
     get() {
       for (state in ManipulatorConstants.RollerStates.values()) {
         if ((state.voltage - inputs.rollerAppliedVoltage).absoluteValue <=
@@ -55,21 +55,29 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       return ManipulatorConstants.RollerStates.DUMMY
     }
 
+  var lastRollerState = rollerState
+
   // checks if motor current draw is greater than given threshold and if rollers are intaking
   // last condition prevnts current spikes caused by starting to run intake from triggering this
   val hasCube: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD &&
-        rollerState == ManipulatorConstants.RollerStates.CUBE_IN &&
-        (Clock.fpgaTime - lastIntakeRunTime) >=
+        (
+          rollerState == ManipulatorConstants.RollerStates.CUBE_IN ||
+            rollerState == ManipulatorConstants.RollerStates.CUBE_IDLE
+          ) &&
+        (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
   val hasCone: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CONE_CURRENT_THRESHOLD &&
-        rollerState == ManipulatorConstants.RollerStates.CONE_IN &&
-        (Clock.fpgaTime - lastIntakeRunTime) >=
+        (
+          rollerState == ManipulatorConstants.RollerStates.CONE_IN ||
+            rollerState == ManipulatorConstants.RollerStates.CONE_IDLE
+          ) &&
+        (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
@@ -128,12 +136,12 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   override fun periodic() {
     io.updateInputs(inputs)
 
-    Logger.getInstance().processInputs("Intake", inputs)
-    Logger.getInstance().recordOutput("Intake/rollerState", rollerState.name)
-    Logger.getInstance().recordOutput("Intake/hasCube", hasCube)
-    Logger.getInstance().recordOutput("Intake/hasCone", hasCone)
-    Logger.getInstance().recordOutput("Intake/extendTime", lastIntakeRunTime.inSeconds)
-    Logger.getInstance().recordOutput("Intake/extendTime", lastIntakeSpikeTime.inSeconds)
+    Logger.getInstance().processInputs("Manipulator", inputs)
+    Logger.getInstance().recordOutput("Manipulator/rollerState", rollerState.name)
+    Logger.getInstance().recordOutput("Manipulator/hasCube", hasCube)
+    Logger.getInstance().recordOutput("Manipulator/hasCone", hasCone)
+    Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastRollerRunTime.inSeconds)
+    Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastIntakeSpikeTime.inSeconds)
   }
 
   fun setRollerPower(voltage: ElectricalPotential) {

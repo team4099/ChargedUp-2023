@@ -54,14 +54,21 @@ object ManipulatorConstants {
 
   val ROLLER_POWER_TOLERANCE = 0.1.volts
 
+  enum class RollerDirection(val direction: Double) {
+    CONE(1.0),
+    CUBE(-1.0)
+  }
+
   enum class RollerStates(val voltage: ElectricalPotential) {
     // TODO: 1/9/23
     // figure out if idle should be 0.1 or -0.1 or smth
-    IDLE(0.0.volts),
-    CONE_IN(10.volts),
-    CUBE_IN(-12.volts),
-    CONE_OUT(-10.volts),
-    CUBE_OUT(12.volts),
+    NO_SPIN(0.volts),
+    CONE_IDLE(1.volts),
+    CUBE_IDLE(-0.5.volts),
+    CONE_IN(12.volts),
+    CUBE_IN(-10.volts),
+    CONE_OUT(-12.volts),
+    CUBE_OUT(10.volts),
     DUMMY(-Double.NEGATIVE_INFINITY.volts);
 
     companion object {
