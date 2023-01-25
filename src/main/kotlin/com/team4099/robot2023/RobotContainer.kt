@@ -5,26 +5,34 @@ import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
+import com.team4099.robot2023.subsystems.manipulator.Manipulator
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
+  private val manipulator: Manipulator
   //  private val vision: Vision
 
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(GyroIONavx, DrivetrainIOReal)
+      manipulator = Manipulator(ManipulatorIONeo)
       //      vision = Vision(VisionIOSim)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
+      manipulator = Manipulator(ManipulatorIOSim)
       //      vision = Vision(VisionIOSim)
     }
   }
@@ -62,6 +70,13 @@ object RobotContainer {
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
+    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
+    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(
+      manipulator.extendArmPosition(
+        ManipulatorConstants.DesiredArmStates.SHELF_INTAKE_EXTENSION.position
+      )
+    )
   }
 
   fun mapTestControls() {}
