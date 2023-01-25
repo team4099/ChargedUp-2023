@@ -45,6 +45,12 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       field = state
     }
 
+  var armState = IntakeConstants.ARM_STATE.STOWED
+    set(state)
+    {
+      io.setArmPosition(state.position, 0.volts) // Fix volts because volts
+    }
+
   init {}
 
   override fun periodic() {
