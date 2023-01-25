@@ -4,10 +4,12 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
@@ -101,7 +103,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
 
   var prevArmSetpoint: TrapezoidProfile.State<Meter> = TrapezoidProfile.State()
-  fun setPosition(setPoint: TrapezoidProfile.State<Meter>) {
+  fun setArmPosition(setPoint: TrapezoidProfile.State<Meter>) {
     val armAcceleration =
       (setPoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
     prevArmSetpoint = setPoint
@@ -152,5 +154,44 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   fun setArmBrakeMode(brake: Boolean) {
     io.setArmBrakeMode(brake)
+  }
+
+  fun openLoopControl(voltage: ElectricalPotential): Command {
+    return run { setArmVoltage(voltage) }.until {
+      forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts
+    }
+  }
+
+  fun extendArmPosition(position: Length): Command {
+    var armProfile =
+      TrapezoidProfile(
+        armConstraints,
+        TrapezoidProfile.State(position, 0.meters.perSecond),
+        TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+      )
+    var startTime = Clock.fpgaTime
+
+    return run {
+      setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
+      Logger.getInstance()
+        .recordOutput(
+          "/Manipulator/isAtSetpoint",
+          (position - inputs.armPosition).absoluteValue <= ManipulatorConstants.ARM_TOLERANCE
+        )
+    }
+      .beforeStarting(
+        {
+          Logger.getInstance().recordOutput("/Manipulator/isAtSetpoint", false)
+          armProfile =
+            TrapezoidProfile(
+              armConstraints,
+              TrapezoidProfile.State(position, 0.meters.perSecond),
+              TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+            )
+          startTime = Clock.fpgaTime
+        },
+        this
+      )
+      .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
   }
 }

@@ -25,4 +25,10 @@ object ControlBoard {
     get() = driver.leftShoulderButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
+
+  val extendArm = Trigger { operator.aButton }
+
+  val retractArm = Trigger { operator.bButton }
+
+  val setArmPositionToShelfIntake = Trigger { operator.xButton }
 }

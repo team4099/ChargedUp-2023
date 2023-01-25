@@ -24,7 +24,7 @@ import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 object ManipulatorIONeo : ManipulatorIO {
   private val rollerSparkMax =
     CANSparkMax(Constants.Manipulator.INTAKE_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
-  private val intakeSensor =
+  private val rollerSensor =
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
       ManipulatorConstants.ROLLER_GEAR_RATIO,
@@ -80,8 +80,8 @@ object ManipulatorIONeo : ManipulatorIO {
   }
 
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
-    inputs.rollerPosition = intakeSensor.position
-    inputs.rollerVelocity = intakeSensor.velocity
+    inputs.rollerPosition = rollerSensor.position
+    inputs.rollerVelocity = rollerSensor.velocity
     inputs.rollerAppliedVoltage = rollerSparkMax.busVoltage.volts * rollerSparkMax.appliedOutput
     inputs.rollerStatorCurrent = rollerSparkMax.outputCurrent.amps
     // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
@@ -107,7 +107,10 @@ object ManipulatorIONeo : ManipulatorIO {
   }
 
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {
-    armPIDController.setFF(feedforward.inVolts)
+    armPIDController.ff = feedforward.inVolts
+    armPIDController.setReference(
+      armSensor.positionToRawUnits(position), CANSparkMax.ControlType.kSmartMotion
+    )
   }
 
   override fun zeroEncoder() {
