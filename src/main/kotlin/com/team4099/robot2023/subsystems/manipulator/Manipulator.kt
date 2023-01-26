@@ -4,23 +4,36 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.inVoltsPerInch
+import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
+import org.team4099.lib.units.derived.inVoltsPerInchSeconds
 import org.team4099.lib.units.derived.inVoltsPerMeter
 import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
+import org.team4099.lib.units.derived.perInch
+import org.team4099.lib.units.derived.perInchPerSecond
+import org.team4099.lib.units.derived.perInchSeconds
 import org.team4099.lib.units.derived.perMeter
 import org.team4099.lib.units.derived.perMeterPerSecond
 import org.team4099.lib.units.derived.perMeterSeconds
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inInchesPerSecond
+import org.team4099.lib.units.inInchesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 
 class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
@@ -31,14 +44,14 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       ManipulatorConstants.ARM_KS, ManipulatorConstants.ARM_KV, ManipulatorConstants.ARM_KA
     )
   private val kP =
-    LoggedTunableValue("Manipulator/kP", Pair({ it.inVoltsPerMeter }, { it.volts.perMeter }))
+    LoggedTunableValue("Manipulator/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
   private val kI =
     LoggedTunableValue(
-      "Manipulator/kP", Pair({ it.inVoltsPerMeterSeconds }, { it.volts.perMeterSeconds })
+      "Manipulator/kP", Pair({ it.inVoltsPerInchSeconds }, { it.volts.perInchSeconds })
     )
   private val kD =
     LoggedTunableValue(
-      "Manipulator/kP", Pair({ it.inVoltsPerMeterPerSecond }, { it.volts.perMeterPerSecond })
+      "Manipulator/kP", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
   var lastRollerRunTime = Clock.fpgaTime
@@ -118,19 +131,31 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
     val feedforward = armFeedforward.calculate(setPoint.velocity, armAcceleration)
 
-    if ((forwardLimitReached && setPoint.velocity > 0.meters.perSecond) ||
-      (reverseLimitReached && setPoint.velocity < 0.meters.perSecond)
+    if ((forwardLimitReached && setPoint.velocity > 0.inches.perSecond) ||
+      (reverseLimitReached && setPoint.velocity < 0.inches.perSecond)
     ) {
       // TODO: hold position func
       io.setArmVoltage(0.volts)
     } else {
       io.setPosition(setPoint.position, feedforward)
     }
+    Logger.getInstance().recordOutput("Manipulator/armTargetPosition", setPoint.position.inInches)
+    Logger.getInstance().recordOutput("Manipulator/armTargetVelocity", setPoint.velocity.inInchesPerSecond)
+    Logger.getInstance().recordOutput("Manipulator/armAcceleraction", armAcceleration.inInchesPerSecondPerSecond)
+    Logger.getInstance().recordOutput("Manipulator/armFeedForward", feedforward.inVolts)
   }
 
   init {
-    // setter isn't called on initialization
-    rollerState = rollerState
+    if(RobotBase.isReal()){
+      kP.initDefault(ManipulatorConstants.REAL_ARM_KP)
+      kI.initDefault(ManipulatorConstants.REAL_ARM_KI)
+      kD.initDefault(ManipulatorConstants.REAL_ARM_KD)
+    }
+    else{
+      kP.initDefault(ManipulatorConstants.SIM_ARM_KP)
+      kI.initDefault(ManipulatorConstants.SIM_ARM_KI)
+      kD.initDefault(ManipulatorConstants.SIM_ARM_KD)
+    }
   }
 
   override fun periodic() {
@@ -193,6 +218,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     }
       .beforeStarting(
         {
+          startTime = Clock.fpgaTime
           Logger.getInstance().recordOutput("/Manipulator/isAtSetpoint", false)
           armProfile =
             TrapezoidProfile(
@@ -200,7 +226,6 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
               TrapezoidProfile.State(position, 0.meters.perSecond),
               TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
             )
-          startTime = Clock.fpgaTime
         },
         this
       )

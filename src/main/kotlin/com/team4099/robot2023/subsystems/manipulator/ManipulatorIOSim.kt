@@ -5,7 +5,9 @@ import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.util.ElevatorSim
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
+import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d
@@ -77,6 +79,7 @@ object ManipulatorIOSim : ManipulatorIO {
     inputs.armStatorCurrent = armSim.currentDrawAmps.amps
     inputs.armSupplyCurrent = 0.amps
     inputs.armTemp = 0.celsius
+    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armSim.currentDrawAmps))
   }
 
   override fun setRollerPower(voltage: ElectricalPotential) {

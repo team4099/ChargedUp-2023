@@ -14,11 +14,11 @@ object ManipulatorConstants {
   // TODO: 1/9/23
 
   // PID constants
-  val ARM_KS = 1.0.volts
+  val ARM_KS = 0.584.volts
   val ARM_KV = 1.0.volts / 1.0.meters.perSecond
   val ARM_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
 
-  val SIM_ARM_KP = 1.0.volts / 1.0.inches
+  val SIM_ARM_KP = 0.1.volts / 1.0.inches
   val SIM_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val SIM_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
@@ -56,8 +56,8 @@ object ManipulatorConstants {
   val ARM_TOLERANCE = 0.25.inches
   val ARM_MASS = 10.0.pounds
 
-  val ARM_MAX_VELOCITY = 40.inches.perSecond
-  val ARM_MAX_ACCELERATION = 40.inches.perSecond.perSecond
+  val ARM_MAX_VELOCITY = 30.inches.perSecond
+  val ARM_MAX_ACCELERATION = 30.inches.perSecond.perSecond
 
   // TODO(What is the inertial value)
   val MOMENT_INERTIA = 0.0045
