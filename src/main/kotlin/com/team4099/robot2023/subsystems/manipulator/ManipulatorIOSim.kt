@@ -79,7 +79,9 @@ object ManipulatorIOSim : ManipulatorIO {
     inputs.armStatorCurrent = armSim.currentDrawAmps.amps
     inputs.armSupplyCurrent = 0.amps
     inputs.armTemp = 0.celsius
-    RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armSim.currentDrawAmps))
+    RoboRioSim.setVInVoltage(
+      BatterySim.calculateDefaultBatteryLoadedVoltage(armSim.currentDrawAmps)
+    )
   }
 
   override fun setRollerPower(voltage: ElectricalPotential) {

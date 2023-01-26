@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
@@ -22,15 +21,9 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
 import org.team4099.lib.units.derived.inVoltsPerInchSeconds
-import org.team4099.lib.units.derived.inVoltsPerMeter
-import org.team4099.lib.units.derived.inVoltsPerMeterPerSecond
-import org.team4099.lib.units.derived.inVoltsPerMeterSeconds
 import org.team4099.lib.units.derived.perInch
 import org.team4099.lib.units.derived.perInchPerSecond
 import org.team4099.lib.units.derived.perInchSeconds
-import org.team4099.lib.units.derived.perMeter
-import org.team4099.lib.units.derived.perMeterPerSecond
-import org.team4099.lib.units.derived.perMeterSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
@@ -140,18 +133,19 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       io.setPosition(setPoint.position, feedforward)
     }
     Logger.getInstance().recordOutput("Manipulator/armTargetPosition", setPoint.position.inInches)
-    Logger.getInstance().recordOutput("Manipulator/armTargetVelocity", setPoint.velocity.inInchesPerSecond)
-    Logger.getInstance().recordOutput("Manipulator/armAcceleraction", armAcceleration.inInchesPerSecondPerSecond)
+    Logger.getInstance()
+      .recordOutput("Manipulator/armTargetVelocity", setPoint.velocity.inInchesPerSecond)
+    Logger.getInstance()
+      .recordOutput("Manipulator/armAcceleraction", armAcceleration.inInchesPerSecondPerSecond)
     Logger.getInstance().recordOutput("Manipulator/armFeedForward", feedforward.inVolts)
   }
 
   init {
-    if(RobotBase.isReal()){
+    if (RobotBase.isReal()) {
       kP.initDefault(ManipulatorConstants.REAL_ARM_KP)
       kI.initDefault(ManipulatorConstants.REAL_ARM_KI)
       kD.initDefault(ManipulatorConstants.REAL_ARM_KD)
-    }
-    else{
+    } else {
       kP.initDefault(ManipulatorConstants.SIM_ARM_KP)
       kI.initDefault(ManipulatorConstants.SIM_ARM_KI)
       kD.initDefault(ManipulatorConstants.SIM_ARM_KD)

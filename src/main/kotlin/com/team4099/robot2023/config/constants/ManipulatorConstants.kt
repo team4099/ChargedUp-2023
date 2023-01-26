@@ -15,10 +15,10 @@ object ManipulatorConstants {
 
   // PID constants
   val ARM_KS = 0.584.volts
-  val ARM_KV = 1.0.volts / 1.0.meters.perSecond
-  val ARM_KA = 1.0.volts / 1.0.meters.perSecond.perSecond
+  val ARM_KV = 0.16.volts / 1.0.meters.perSecond
+  val ARM_KA = 0.0.volts / 1.0.meters.perSecond.perSecond
 
-  val SIM_ARM_KP = 0.1.volts / 1.0.inches
+  val SIM_ARM_KP = 0.001.volts / 1.0.inches
   val SIM_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val SIM_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
