@@ -8,7 +8,9 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
+import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
@@ -20,6 +22,7 @@ import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.perSecond
@@ -34,8 +37,8 @@ interface ManipulatorIO {
     var rollerSupplyCurrent = 0.amps
     var rollerTemp = 0.0.celsius
 
-    var armPosition = 0.0.meters
-    var armVelocity = 0.0.meters.perSecond
+    var armPosition = 0.0.inches
+    var armVelocity = 0.0.inches.perSecond
     var armAppliedVoltage = 0.volts
     var armStatorCurrent = 0.amps
     var armSupplyCurrent = 0.amps
@@ -50,8 +53,8 @@ interface ManipulatorIO {
       table?.put("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
       table?.put("rollerTempCelsius", rollerTemp.inCelsius)
 
-      table?.put("armPositionMeters", armPosition.inMeters)
-      table?.put("armVelocityMetersPerSec", armVelocity.inMetersPerSecond)
+      table?.put("armPositionInches", armPosition.inInches)
+      table?.put("armVelocityInchesPerSec", armVelocity.inInchesPerSecond)
       table?.put("armAppliedVolts", armAppliedVoltage.inVolts)
       table?.put("armStatorCurrentAmps", armStatorCurrent.inAmperes)
       table?.put("armSupplyCurrentAmps", armSupplyCurrent.inAmperes)
@@ -77,9 +80,9 @@ interface ManipulatorIO {
       }
       table?.getDouble("rollerTempCelsius", rollerTemp.inCelsius)?.let { rollerTemp = it.celsius }
 
-      table?.getDouble("armPositionMeters", armPosition.inMeters)?.let { armPosition = it.meters }
-      table?.getDouble("armVelocityMetersPerSec", armVelocity.inMetersPerSecond)?.let {
-        armVelocity = it.meters.perSecond
+      table?.getDouble("armPositionInches", armPosition.inInches)?.let { armPosition = it.inches }
+      table?.getDouble("armVelocityInchesPerSec", armVelocity.inInchesPerSecond)?.let {
+        armVelocity = it.inches.perSecond
       }
       table?.getDouble("armAppliedVolts", armAppliedVoltage.inVolts)?.let {
         armAppliedVoltage = it.volts
