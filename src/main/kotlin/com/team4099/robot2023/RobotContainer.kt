@@ -1,9 +1,12 @@
 package com.team4099.robot2023
 
+import com.team4099.robot2022.commands.intake.IntakeConeCommand
+import com.team4099.robot2022.commands.intake.IntakeCubeCommand
+import com.team4099.robot2022.commands.intake.ManipulatorIdleCommand
+import com.team4099.robot2022.commands.intake.OuttakeConeCommand
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
-import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
@@ -19,8 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.inches
-import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -84,10 +85,15 @@ object RobotContainer {
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
-    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
-    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
-    ControlBoard.setArmPositionToShelfIntake.whileTrue(manipulator.extendArmPosition(5.inches))
-    ControlBoard.armCharacterization.whileTrue(ArmCharacterizationCommand(manipulator))
+    //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
+    //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
+    //
+    // ControlBoard.setArmPositionToShelfIntake.whileTrue(manipulator.extendArmPosition(5.inches))
+    //    ControlBoard.armCharacterization.whileTrue(ArmCharacterizationCommand(manipulator))
+    ControlBoard.intakeCone.whileTrue(IntakeConeCommand(manipulator))
+    ControlBoard.intakeCube.whileTrue(IntakeCubeCommand(manipulator))
+    ControlBoard.manipulatorIdle.whileTrue(ManipulatorIdleCommand(manipulator))
+    ControlBoard.outtakeCone.whileTrue(OuttakeConeCommand(manipulator))
   }
 
   fun mapTestControls() {}

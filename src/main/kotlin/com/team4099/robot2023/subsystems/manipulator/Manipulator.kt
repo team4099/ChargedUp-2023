@@ -169,6 +169,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   fun setRollerPower(voltage: ElectricalPotential) {
     io.setRollerPower(voltage)
+    Logger.getInstance().recordOutput("Manipulator/targetVoltage", voltage.inVolts)
   }
 
   fun setArmVoltage(voltage: ElectricalPotential) {
