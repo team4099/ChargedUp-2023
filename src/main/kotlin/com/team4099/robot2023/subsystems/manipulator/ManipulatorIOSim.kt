@@ -66,7 +66,7 @@ object ManipulatorIOSim : ManipulatorIO {
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
     armSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
-    inputs.rollerVelocity = rollerSim.angularVelocityRPM.radians.perSecond
+    inputs.rollerVelocity = rollerSim.angularVelocityRadPerSec.radians.perSecond
     inputs.rollerSupplyCurrent = rollerSim.currentDrawAmps.amps
     inputs.rollerPosition = 0.degrees
     inputs.rollerAppliedVoltage = 0.volts
