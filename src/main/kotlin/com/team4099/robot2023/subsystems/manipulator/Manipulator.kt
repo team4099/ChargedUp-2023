@@ -40,11 +40,11 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     LoggedTunableValue("Manipulator/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
   private val kI =
     LoggedTunableValue(
-      "Manipulator/kP", Pair({ it.inVoltsPerInchSeconds }, { it.volts.perInchSeconds })
+      "Manipulator/kI", Pair({ it.inVoltsPerInchSeconds }, { it.volts.perInchSeconds })
     )
   private val kD =
     LoggedTunableValue(
-      "Manipulator/kP", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
+      "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
   var lastRollerRunTime = Clock.fpgaTime
@@ -155,6 +155,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   override fun periodic() {
     io.updateInputs(inputs)
 
+    if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
+      io.configPID(kP.get(), kI.get(), kD.get())
+    }
+
     Logger.getInstance().processInputs("Manipulator", inputs)
     Logger.getInstance().recordOutput("Manipulator/rollerState", rollerState.name)
     Logger.getInstance().recordOutput("Manipulator/hasCube", hasCube)
@@ -184,7 +188,11 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   fun holdArmPosition(): Command {
-    return run { io.setArmVoltage(0.0.volts) }
+    return run {
+      io.setArmVoltage(armFeedforward.calculate(0.inches.perSecond))
+      Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", true)
+    }
+      .finallyDo { Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", false) }
   }
 
   fun openLoopControl(voltage: ElectricalPotential): Command {
@@ -203,6 +211,8 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     var startTime = Clock.fpgaTime
 
     return run {
+      Logger.getInstance().recordOutput("/ActiveCommands/ExtendArmPosition", true)
+
       setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
       Logger.getInstance()
         .recordOutput(
@@ -224,5 +234,6 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
         this
       )
       .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
+      .finallyDo { Logger.getInstance().recordOutput("/ActiveCommands/ExtendArmPosition", false) }
   }
 }

@@ -2,6 +2,7 @@ package com.team4099.robot2023.commands.manipulator
 
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
@@ -19,9 +20,10 @@ class ArmCharacterizationCommand(val manipulator: Manipulator) : CommandBase() {
   override fun execute() {
     manipulator.setArmVoltage(appliedVolts)
 
-    if (manipulator.inputs.armVelocity < 0.meters.perSecond) {
+    if (manipulator.inputs.armVelocity > 0.meters.perSecond) {
       hasMoved = true
       println(appliedVolts.inVolts)
+      Logger.getInstance().recordOutput("/Manipulator/ksVoltage", appliedVolts.inVolts)
     }
     appliedVolts += step
   }
