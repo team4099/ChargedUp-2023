@@ -3,7 +3,6 @@ package com.team4099.robot2023.config.constants
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
-import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
@@ -14,17 +13,17 @@ object ManipulatorConstants {
   // TODO: 1/9/23
 
   // PID constants
-  val ARM_KS = 0.584.volts
-  val ARM_KV = 0.16.volts / 1.0.meters.perSecond
-  val ARM_KA = 0.0.volts / 1.0.meters.perSecond.perSecond
+  val ARM_KS = 0.002.volts
+  val ARM_KV = 0.2.volts / 1.0.inches.perSecond
+  val ARM_KA = 0.0.volts / 1.0.inches.perSecond.perSecond
 
-  val SIM_ARM_KP = 0.001.volts / 1.0.inches
+  val SIM_ARM_KP = 10.volts / 1.0.inches
   val SIM_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val SIM_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
   val REAL_ARM_KP = 1.0.volts / 1.0.inches
   val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
-  val REAL_ARM_KD = 0.0.volts / 1.0.inches.perSecond
+  val REAL_ARM_KD = 0.25.volts / 1.0.inches.perSecond
 
   // make sure constants are their actual values
   val ARM_RAMP_RATE = 0.5
@@ -43,7 +42,7 @@ object ManipulatorConstants {
   const val SENSOR_CPR = 42.0
 
   // waiting for deisgn
-  const val ARM_GEAR_RATIO = 1.0
+  const val ARM_GEAR_RATIO = 11.25
   const val ROLLER_GEAR_RATIO = 1.0
 
   val CONE_CURRENT_THRESHOLD = 15.amps
@@ -57,7 +56,7 @@ object ManipulatorConstants {
   val ARM_MASS = 10.0.pounds
 
   val ARM_MAX_VELOCITY = 30.inches.perSecond
-  val ARM_MAX_ACCELERATION = 30.inches.perSecond.perSecond
+  val ARM_MAX_ACCELERATION = 15.inches.perSecond.perSecond
 
   // TODO(What is the inertial value)
   val MOMENT_INERTIA = 0.0045

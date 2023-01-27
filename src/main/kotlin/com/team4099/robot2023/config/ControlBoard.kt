@@ -31,4 +31,6 @@ object ControlBoard {
   val retractArm = Trigger { operator.bButton }
 
   val setArmPositionToShelfIntake = Trigger { operator.xButton }
+
+  val armCharacterization = Trigger { operator.yButton }
 }
