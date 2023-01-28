@@ -53,12 +53,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     )
 
   // TODO(fix units library and get rid of /3600)
-  private val ROLLER_KV =
+  private val rollerKV =
     LoggedTunableValue(
       "Manipulator/RollerKV",
-      Pair(
-        { it.inVoltsPerRotationsPerMinute / 3600 }, { it.volts / (1.0.rotations.perMinute) }
-      )
+      Pair({ it.inVoltsPerRotationsPerMinute }, { it.volts / (1.0.rotations.perMinute) })
     )
 
   var lastRollerRunTime = Clock.fpgaTime
@@ -159,12 +157,12 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       kP.initDefault(ManipulatorConstants.REAL_ARM_KP)
       kI.initDefault(ManipulatorConstants.REAL_ARM_KI)
       kD.initDefault(ManipulatorConstants.REAL_ARM_KD)
-      ROLLER_KV.initDefault(ManipulatorConstants.REAL_ROLLER_KV)
+      rollerKV.initDefault(ManipulatorConstants.REAL_ROLLER_KV)
     } else {
       kP.initDefault(ManipulatorConstants.SIM_ARM_KP)
       kI.initDefault(ManipulatorConstants.SIM_ARM_KI)
       kD.initDefault(ManipulatorConstants.SIM_ARM_KD)
-      ROLLER_KV.initDefault(ManipulatorConstants.SIM_ROLLER_KV)
+      rollerKV.initDefault(ManipulatorConstants.SIM_ROLLER_KV)
     }
   }
 
@@ -184,8 +182,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   fun setRollerPower(rpm: AngularVelocity) {
-    val voltage =
-      (rpm.inRotationsPerMinute * ROLLER_KV.get().inVoltsPerRotationsPerMinute / 3600).volts
+    val voltage = rpm * rollerKV.get()
 
     io.setRollerPower(voltage)
     Logger.getInstance().recordOutput("Manipulator/rollerTargetSpeedRPM", rpm.inRotationsPerMinute)
