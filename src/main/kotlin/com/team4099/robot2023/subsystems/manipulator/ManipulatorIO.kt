@@ -19,16 +19,19 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
+import org.team4099.lib.units.inRotationsPerMinute
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 interface ManipulatorIO {
   class ManipulatorIOInputs : LoggableInputs {
     // TODO(Evaluate inputs. Pos, Vel may not be needed)
     var rollerPosition = 0.degrees
-    var rollerVelocity = 0.degrees.perSecond
+    var rollerVelocity = 0.rotations.perMinute
     var rollerAppliedVoltage = 0.volts
     var rollerStatorCurrent = 0.amps
     var rollerSupplyCurrent = 0.amps
@@ -44,7 +47,7 @@ interface ManipulatorIO {
     override fun toLog(table: LogTable?) {
       // TODO: figure out why we did degrees and radians for this
       table?.put("rollerPositionRad", rollerPosition.inRadians)
-      table?.put("rollerVelocityRadPerSec", rollerVelocity.inRadiansPerSecond)
+      table?.put("rollerVelocityRPM", rollerVelocity.inRotationsPerMinute)
       table?.put("rollerAppliedVolts", rollerAppliedVoltage.inVolts)
       table?.put("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
       table?.put("rollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)

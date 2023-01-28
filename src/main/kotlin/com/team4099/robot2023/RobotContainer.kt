@@ -4,6 +4,7 @@ import com.team4099.robot2022.commands.intake.IntakeConeCommand
 import com.team4099.robot2022.commands.intake.IntakeCubeCommand
 import com.team4099.robot2022.commands.intake.ManipulatorIdleCommand
 import com.team4099.robot2022.commands.intake.OuttakeConeCommand
+import com.team4099.robot2022.commands.intake.OutttakeCubeCommand
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
@@ -49,7 +50,7 @@ object RobotContainer {
         drivetrain
       )
 
-    manipulator.defaultCommand = manipulator.holdArmPosition()
+    manipulator.defaultCommand = ManipulatorIdleCommand(manipulator)
   }
 
   fun zeroSteering() {
@@ -80,8 +81,8 @@ object RobotContainer {
     //    ControlBoard.armCharacterization.whileTrue(ArmCharacterizationCommand(manipulator))
     ControlBoard.intakeCone.whileTrue(IntakeConeCommand(manipulator))
     ControlBoard.intakeCube.whileTrue(IntakeCubeCommand(manipulator))
-    ControlBoard.manipulatorIdle.whileTrue(ManipulatorIdleCommand(manipulator))
     ControlBoard.outtakeCone.whileTrue(OuttakeConeCommand(manipulator))
+    ControlBoard.outtakeCube.whileTrue(OutttakeCubeCommand(manipulator))
   }
 
   fun mapTestControls() {}

@@ -15,7 +15,7 @@ class OutttakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
   }
 
   override fun execute() {
-    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CUBE_OUT.voltage)
+    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CUBE_OUT.velocity)
   }
 
   override fun end(interrupted: Boolean) {
