@@ -17,7 +17,7 @@ class OuttakeConeCommand(val manipulator: Manipulator) : CommandBase() {
   }
 
   override fun execute() {
-    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CONE_OUT.voltage)
+    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CONE_OUT.velocity)
   }
 
   override fun end(interrupted: Boolean) {

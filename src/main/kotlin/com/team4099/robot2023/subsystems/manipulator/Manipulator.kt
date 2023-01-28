@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
@@ -21,12 +22,16 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
 import org.team4099.lib.units.derived.inVoltsPerInchSeconds
+import org.team4099.lib.units.derived.inVoltsPerRotationsPerMinute
 import org.team4099.lib.units.derived.perInch
 import org.team4099.lib.units.derived.perInchPerSecond
 import org.team4099.lib.units.derived.perInchSeconds
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
+import org.team4099.lib.units.inRotationsPerMinute
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
@@ -47,13 +52,22 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
+  // TODO(fix units library and get rid of /3600)
+  private val ROLLER_KV =
+    LoggedTunableValue(
+      "Manipulator/RollerKV",
+      Pair(
+        { it.inVoltsPerRotationsPerMinute / 3600 }, { it.volts / (1.0.rotations.perMinute) }
+      )
+    )
+
   var lastRollerRunTime = Clock.fpgaTime
 
   var rollerState = ManipulatorConstants.RollerStates.NO_SPIN
     get() {
       for (state in ManipulatorConstants.RollerStates.values()) {
-        if ((state.voltage - inputs.rollerAppliedVoltage).absoluteValue <=
-          ManipulatorConstants.ROLLER_POWER_TOLERANCE
+        if ((state.velocity - inputs.rollerVelocity).absoluteValue <=
+          ManipulatorConstants.ROLLER_SPEED_TOLERANCE
         ) {
           return state
         }
@@ -145,10 +159,12 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       kP.initDefault(ManipulatorConstants.REAL_ARM_KP)
       kI.initDefault(ManipulatorConstants.REAL_ARM_KI)
       kD.initDefault(ManipulatorConstants.REAL_ARM_KD)
+      ROLLER_KV.initDefault(ManipulatorConstants.REAL_ROLLER_KV)
     } else {
       kP.initDefault(ManipulatorConstants.SIM_ARM_KP)
       kI.initDefault(ManipulatorConstants.SIM_ARM_KI)
       kD.initDefault(ManipulatorConstants.SIM_ARM_KD)
+      ROLLER_KV.initDefault(ManipulatorConstants.SIM_ROLLER_KV)
     }
   }
 
@@ -167,9 +183,13 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastIntakeSpikeTime.inSeconds)
   }
 
-  fun setRollerPower(voltage: ElectricalPotential) {
+  fun setRollerPower(rpm: AngularVelocity) {
+    val voltage =
+      (rpm.inRotationsPerMinute * ROLLER_KV.get().inVoltsPerRotationsPerMinute / 3600).volts
+
     io.setRollerPower(voltage)
-    Logger.getInstance().recordOutput("Manipulator/targetVoltage", voltage.inVolts)
+    Logger.getInstance().recordOutput("Manipulator/rollerTargetSpeedRPM", rpm.inRotationsPerMinute)
+    Logger.getInstance().recordOutput("Manipulator/rollerTargetVoltage", voltage.inVolts)
   }
 
   fun setArmVoltage(voltage: ElectricalPotential) {

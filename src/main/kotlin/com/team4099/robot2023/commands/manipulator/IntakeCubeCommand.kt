@@ -15,11 +15,11 @@ class IntakeCubeCommand(val manipulator: Manipulator) : CommandBase() {
   }
 
   override fun execute() {
-    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CUBE_IN.voltage)
+    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CUBE_IN.velocity)
   }
 
   override fun end(interrupted: Boolean) {
-    manipulator.lastRollerState = manipulator.rollerState
+    manipulator.lastRollerState = ManipulatorConstants.RollerStates.CUBE_IN
   }
 
   override fun isFinished(): Boolean {

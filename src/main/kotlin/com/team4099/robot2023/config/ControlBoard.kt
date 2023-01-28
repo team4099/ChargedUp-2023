@@ -37,7 +37,7 @@ object ControlBoard {
 
   val intakeCube = Trigger { operator.bButton }
 
-  val manipulatorIdle = Trigger { operator.xButton }
-
   val outtakeCone = Trigger { operator.yButton }
+
+  val outtakeCube = Trigger { operator.xButton }
 }

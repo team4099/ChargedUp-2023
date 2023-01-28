@@ -1,16 +1,17 @@
 package com.team4099.robot2023.config.constants
 
+import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 object ManipulatorConstants {
-  // TODO: 1/9/23
 
   // PID constants
   val ARM_KS = 0.002.volts
@@ -24,6 +25,9 @@ object ManipulatorConstants {
   val REAL_ARM_KP = 1.0.volts / 1.0.inches
   val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val REAL_ARM_KD = 0.25.volts / 1.0.inches.perSecond
+
+  val SIM_ROLLER_KV = 0.0039.volts / 1.0.rotations.perMinute
+  val REAL_ROLLER_KV = 0.0039.volts / 1.0.rotations.perMinute
 
   // make sure constants are their actual values
   val ARM_RAMP_RATE = 0.5
@@ -41,16 +45,14 @@ object ManipulatorConstants {
   val ROLLER_STATOR_CURRENT_LIMIT = 25.amps
   const val SENSOR_CPR = 42.0
 
-  // waiting for deisgn
   const val ARM_GEAR_RATIO = 11.25
-  const val ROLLER_GEAR_RATIO = 1.0
+  const val ROLLER_GEAR_RATIO = 18.0
 
   val CONE_CURRENT_THRESHOLD = 15.amps
   val CUBE_CURRENT_THRESHOLD = 15.amps
 
-  // TODO(check measurements with design)
-  val ARM_SPOOL_RADIUS = 1.0.inches
-  val ARM_MAX_EXTENSION = 10.inches
+  val ARM_SPOOL_RADIUS = 0.581.inches
+  val ARM_MAX_EXTENSION = 11.inches
   val ARM_MAX_RETRACTION = 0.inches
   val ARM_TOLERANCE = 0.25.inches
   val ARM_MASS = 10.0.pounds
@@ -58,33 +60,19 @@ object ManipulatorConstants {
   val ARM_MAX_VELOCITY = 30.inches.perSecond
   val ARM_MAX_ACCELERATION = 15.inches.perSecond.perSecond
 
-  // TODO(What is the inertial value)
-  val MOMENT_INERTIA = 0.0045
+  val MOMENT_INERTIA = 0.0000478
 
-  val ROLLER_POWER_TOLERANCE = 0.1.volts
+  val ROLLER_SPEED_TOLERANCE = 10.rotations.perMinute
 
-  enum class RollerDirection(val direction: Double) {
-    CONE(1.0),
-    CUBE(-1.0)
-  }
-
-  enum class RollerStates(val voltage: ElectricalPotential) {
-    // TODO: 1/9/23
-    // figure out if idle should be 0.1 or -0.1 or smth
-    NO_SPIN(0.volts),
-    CONE_IDLE(1.volts),
-    CUBE_IDLE(-0.5.volts),
-    CONE_IN(12.volts),
-    CUBE_IN(-10.volts),
-    CONE_OUT(-12.volts),
-    CUBE_OUT(10.volts),
-    DUMMY(-Double.NEGATIVE_INFINITY.volts);
-
-    companion object {
-      fun fromRollerState(state: RollerStates) {
-        RollerStates.values().first { it.voltage == state.voltage }
-      }
-    }
+  enum class RollerStates(val velocity: AngularVelocity) {
+    NO_SPIN(0.rotations.perMinute),
+    CONE_IDLE(60.rotations.perMinute),
+    CUBE_IDLE(-30.rotations.perMinute),
+    CONE_IN(300.rotations.perMinute),
+    CUBE_IN(-240.rotations.perMinute),
+    CONE_OUT(-300.rotations.perMinute),
+    CUBE_OUT(240.rotations.perMinute),
+    DUMMY(-Double.NEGATIVE_INFINITY.rotations.perMinute)
   }
 
   enum class DesiredArmStates(val position: Length) {
