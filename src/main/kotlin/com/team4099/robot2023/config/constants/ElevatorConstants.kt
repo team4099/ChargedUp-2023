@@ -20,7 +20,7 @@ object ElevatorConstants {
 
   const val SENSOR_CPR = 42
   // TODO(Check ratio with design)
-  const val GEAR_RATIO = (32.0 / 12.0)
+  const val GEAR_RATIO = (25.0 / 12.0)
   val CARRIAGE_MASS = 10.pounds
   const val LEFT_MOTOR_INVERTED = true
   const val RIGHT_MOTOR_INVERTED = false
@@ -36,11 +36,11 @@ object ElevatorConstants {
 
   val ELEVATOR_ANGLE = 51.68.degrees
 
-  val SIM_ELEVATOR_KS = 0.584.volts
-  val REAL_ELEVATOR_KS = 0.584.volts // TODO tune
-  val ELEVATOR_KG = 2.01.volts
-  val ELEVATOR_KV = 1.81.volts / 1.0.meters.perSecond
-  val ELEVATOR_KA = 0.26.volts / 1.0.meters.perSecond.perSecond
+  val SIM_ELEVATOR_KS = 0.0.volts
+  val REAL_ELEVATOR_KS = 0.0.volts // TODO tune
+  val ELEVATOR_KG = 1.1066.volts
+  val ELEVATOR_KV = 1.59.volts / 1.0.meters.perSecond
+  val ELEVATOR_KA = 0.1.volts / 1.0.meters.perSecond.perSecond
 
   val VOLTAGE_COMPENSATION = 12.volts
   val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit

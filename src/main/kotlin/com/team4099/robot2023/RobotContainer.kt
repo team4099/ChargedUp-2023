@@ -3,6 +3,7 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
+import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
@@ -85,9 +86,7 @@ object RobotContainer {
     )
     ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(12.volts))
     ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-12.volts))
-    //
-    // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
-    //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
+    ControlBoard.characterizeElevator.whileTrue(ElevatorCharacterizeCommand(elevator))
   }
 
   fun mapTestControls() {}

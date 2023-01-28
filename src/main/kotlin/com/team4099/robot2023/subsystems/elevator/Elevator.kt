@@ -176,7 +176,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    */
   fun holdElevatorPosition(): Command {
     return run {
-      io.setOutputVoltage(elevatorFeedForward.calculate(0.0001.meters.perSecond))
+      io.setOutputVoltage(elevatorFeedForward.calculate(0.meters.perSecond))
       Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
     }
       .finallyDo {

@@ -27,17 +27,12 @@ object ControlBoard {
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
 
   val runElevatorToHighNode = Trigger { operator.aButton }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> f08fb29 (intermediate elevator logic changes (not working))
+
 
   val openLoopExtend = Trigger { operator.bButton }
 
   val openLoopRetract = Trigger { operator.xButton }
-<<<<<<< HEAD
-=======
->>>>>>> b4b8218 (elevator set position inline command example)
-=======
->>>>>>> f08fb29 (intermediate elevator logic changes (not working))
+
+  val characterizeElevator = Trigger { operator.yButton }
+
 }

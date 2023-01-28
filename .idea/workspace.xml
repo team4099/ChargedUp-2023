@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="09f1d821-b4d8-4d75-bab3-7df1f8c4e3e8" name="Changes" comment="fix merge">
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/commands/elevator/ElevatorCharacterizeCommand.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/commands/elevator/ElevatorCharacterizeCommand.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/RobotContainer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/RobotContainer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/config/ControlBoard.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/config/ControlBoard.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/config/constants/ElevatorConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/config/constants/ElevatorConstants.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/Elevator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/Elevator.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIO.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIO.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIONeo.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIONeo.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIOSim.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/team4099/robot2023/subsystems/elevator/ElevatorIOSim.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
