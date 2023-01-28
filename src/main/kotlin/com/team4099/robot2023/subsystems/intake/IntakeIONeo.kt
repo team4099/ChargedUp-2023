@@ -68,6 +68,5 @@ object IntakeIONeo : IntakeIO {
   }
   override fun zeroEncoder() {
     leaderArmEncoder.setPosition(0.0)
-
   }
 }

@@ -7,22 +7,26 @@ import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
 
 interface IntakeIO {
   class IntakeIOInputs : LoggableInputs {
-    var leaderArmPosition: Angle = 0.0.degrees
-    var leaderArmVelocity = 0.0.degrees.perSecond
+    var armPosition: Angle = 0.0.degrees
+    var armVelocity = 0.0.degrees.perSecond
 
-    var leaderArmAppliedOutput = 0.0
-    var followerArmAppliedOutput = 0.0
+    var leaderArmAppliedVoltage = 0.0.volts
+    var followerArmAppliedVoltage = 0.0.volts
 
     var leaderArmSupplyCurrent = 0.0.amps
     var followerArmSupplyCurrent = 0.0.amps
@@ -30,10 +34,10 @@ interface IntakeIO {
     var leaderArmStatorCurrent = 0.0.amps
     var followerArmStatorCurrent = 0.0.amps
 
-    var leaderTempCelcius = 0.0.celsius
-    var followerTempCelcius = 0.0.celsius
+    var leaderTemp = 0.0.celsius
+    var followerTemp = 0.0.celsius
 
-    var rollerApplied = 0.0
+    var rollerAppliedVoltage = 0.0.volts
 
     var rollerSupplyCurrent = 0.0.amps
     var rollerStatorCurrent = 0.0.amps
@@ -41,11 +45,11 @@ interface IntakeIO {
     var rollerTempCelcius = 0.0.celsius
 
     override fun toLog(table: LogTable?) {
-      table?.put("groundIntakePositionDegrees", leaderArmPosition.inDegrees)
-      table?.put("groundIntakeVelocityDegreesPerSec", leaderArmVelocity.inDegreesPerSecond)
+      table?.put("groundIntakePositionDegrees", armPosition.inDegrees)
+      table?.put("groundIntakeVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)
 
-      table?.put("groundIntakeLeaderArmAppliedOutput", leaderArmAppliedOutput)
-      table?.put("groundIntakeFollowerArmAppliedOutput", followerArmAppliedOutput)
+      table?.put("groundIntakeleaderarmAppliedVoltage", leaderArmAppliedVoltage.inVolts)
+      table?.put("groundIntakefollowerArmAppliedVoltage", followerArmAppliedVoltage.inVolts)
 
       table?.put("groundIntakeLeaderArmSupplyCurrentAmps", leaderArmSupplyCurrent.inAmperes)
       table?.put("groundIntakeFollowerArmSupplyCurrentAmps", followerArmSupplyCurrent.inAmperes)
@@ -53,10 +57,10 @@ interface IntakeIO {
       table?.put("groundIntakeLeaderArmStatorCurrentAmps", leaderArmStatorCurrent.inAmperes)
       table?.put("groundIntakeFollowerArmStatorCurrentAmps", followerArmStatorCurrent.inAmperes)
 
-      table?.put("groundIntakeLeaderTempCelcius", leaderTempCelcius.inCelsius)
-      table?.put("groundIntakeFollowerTempCelcius", followerTempCelcius.inCelsius)
+      table?.put("groundIntakeLeaderTempCelcius", leaderTemp.inCelsius)
+      table?.put("groundIntakeFollowerTempCelcius", followerTemp.inCelsius)
 
-      table?.put("groundIntakeRollerApplied", rollerApplied)
+      table?.put("groundIntakeRollerAppliedVoltage", rollerAppliedVoltage.inVolts)
 
       table?.put("groundIntakeRollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
       table?.put("groundIntakeRollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
@@ -65,17 +69,16 @@ interface IntakeIO {
     }
 
     override fun fromLog(table: LogTable?) {
-      table?.getDouble("groundIntakePositionDegrees", leaderArmPosition.inDegrees)?.let {
-        leaderArmPosition = it.degrees
+      table?.getDouble("groundIntakePositionDegrees", armPosition.inDegrees)?.let {
+        armPosition = it.degrees
       }
-      table?.getDouble("groundIntakeVelocityDegreesPerSec", leaderArmVelocity.inDegreesPerSecond)
-        ?.let { leaderArmVelocity = it.degrees.perSecond }
-      table?.getDouble("groundIntakeLeaderArmAppliedOutput", leaderArmAppliedOutput)?.let {
-        leaderArmAppliedOutput = it
+      table?.getDouble("groundIntakeVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)?.let {
+        armVelocity = it.degrees.perSecond
       }
-      table?.getDouble("groundIntakeFollowerArmAppliedOutput", followerArmAppliedOutput)?.let {
-        followerArmAppliedOutput = it
-      }
+      table?.getDouble("groundIntakeleaderarmAppliedVoltage", leaderArmAppliedVoltage.inVolts)
+        ?.let { leaderArmAppliedVoltage = it.volts }
+      table?.getDouble("groundIntakefollowerArmAppliedVoltage", followerArmAppliedVoltage.inVolts)
+        ?.let { followerArmAppliedVoltage = it.volts }
       table?.getDouble("groundIntakeLeaderArmSupplyCurrentAmps", leaderArmSupplyCurrent.inAmperes)
         ?.let { leaderArmSupplyCurrent = it.amps }
       table?.getDouble(
@@ -88,13 +91,15 @@ interface IntakeIO {
         "groundIntakeFollowerArmStatorCurrentAmps", followerArmStatorCurrent.inAmperes
       )
         ?.let { followerArmStatorCurrent = it.amps }
-      table?.getDouble("groundIntakeLeaderTempCelcius", leaderTempCelcius.inCelsius)?.let {
-        leaderTempCelcius = it.celsius
+      table?.getDouble("groundIntakeLeaderTempCelcius", leaderTemp.inCelsius)?.let {
+        leaderTemp = it.celsius
       }
-      table?.getDouble("groundIntakeFollowerTempCelcius", followerTempCelcius.inCelsius)?.let {
-        followerTempCelcius = it.celsius
+      table?.getDouble("groundIntakeFollowerTempCelcius", followerTemp.inCelsius)?.let {
+        followerTemp = it.celsius
       }
-      table?.getDouble("groundIntakeRollerApplied", rollerApplied)?.let { rollerApplied = it }
+      table?.getDouble("groundIntakeRollerApplied", rollerAppliedVoltage.inVolts)?.let {
+        rollerAppliedVoltage = it.volts
+      }
       table?.getDouble("groundIntakeRollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let {
         rollerSupplyCurrent = it.amps
       }
@@ -113,8 +118,8 @@ interface IntakeIO {
   fun setArmVoltage(voltage: ElectricalPotential) {}
   fun configPID(
     kP: ProportionalGain<Radian, Volt>,
-    kI: ProportionalGain<Radian, Volt>,
-    kD: ProportionalGain<Radian, Volt>
+    kI: IntegralGain<Radian, Volt>,
+    kD: DerivativeGain<Radian, Volt>
   ) {}
   fun zeroEncoder() {}
 }
