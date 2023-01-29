@@ -39,7 +39,16 @@ object RobotContainer {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
       manipulator = Manipulator(ManipulatorIOSim)
-      //      vision = Vision(VisionIOSim)
+      //      vision = Vision(VisionIOSit
+
+      // Set the scheduler to log events for command initialize, interrupt, finish
+      CommandScheduler.getInstance().onCommandInitialize { command: Command ->
+        Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
+      }
+
+      CommandScheduler.getInstance().onCommandFinish { command: Command ->
+        Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
+      }
     }
 
     // Set the scheduler to log events for command initialize, interrupt, finish
@@ -102,7 +111,7 @@ object RobotContainer {
   //  fun getAutonomousCommand() =
   //    AutonomousSelector.getCommand(
   //      drivetrain, intake, feeder, shooter, telescopingClimber, pivotClimber
-  //    )
+  //    )"
 
   fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
 }
