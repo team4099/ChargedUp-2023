@@ -2,6 +2,7 @@ package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.percent
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -27,15 +28,28 @@ object IntakeConstants {
   val ARM_KV = 0.0.volts / 1.0.degrees.perSecond
   val ARM_KA = 0.0.volts / 1.0.degrees.perSecond.perSecond
 
+  val NEO_ROLLER_KV = 1.0.volts / 1.0.rotations.perMinute
+  val SIM_ROLLER_KV = 1.0.volts / 1.0.rotations.perMinute
+
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val ROLLER_CURRENT_LIMIT = 12.amps
   val ARM_CURRENT_LIMIT = 12.amps
 
-  val INTAKE_ZERO = 128 // TODO: (Make this fr)
+  val ROLLER_MOTOR_INVERTED = false
+  val ARM_MOTOR_INVERTED = true
+
+  val ROLLER_RAMP_RATE = 0.5.percent.perSecond
+  val ARM_RAMP_RATE = 0.5.percent.perSecond
+
+  val ABSOLUTE_ENCODER_OFFSET = 128.degrees // TODO: (Make this fr)
   // From encoder to intake
-  val INTAKE_SENSOR_GEAR_RATIO = (14.0 / 32.0) // TODO: (I MADE THIS UP. FIX)
-  val INTAKE_ARM_GEAR_RATIO = (24.0 / 16.0) // TODO: (I MADE THIS UP. FIX)
+  val ROLLER_GEAR_RATIO = (36.0 / 18.0)
+
+  // gear reduction from absolute encoder to output
+  val ARM_ENCODER_GEAR_RATIO = (32.0 / 16.0)
+  // gear reduction from motor to output
+  val ARM_OUTPUT_GEAR_RATIO = ((60 / 12) * (80 / 18) * (32.0 / 16.0))
 
   val MAX_ARM_VELOCITY = 60.degrees.perSecond
   val MAX_ARM_ACCELERATION = 100.degrees.perSecond.perSecond
