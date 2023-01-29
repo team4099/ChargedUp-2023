@@ -11,7 +11,7 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inMeters
-import org.team4099.lib.units.base.inOutputPerSecond
+import org.team4099.lib.units.base.inPercentOutputPerSecond
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
@@ -67,8 +67,8 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
     followerSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
 
-    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inOutputPerSecond
-    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inOutputPerSecond
+    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
+    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
 
     // makes follower motor output exact same power as leader
     followerSparkMax.follow(leaderSparkMax)
