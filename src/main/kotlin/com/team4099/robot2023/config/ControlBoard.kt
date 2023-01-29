@@ -25,4 +25,8 @@ object ControlBoard {
     get() = driver.leftShoulderButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
+
+  val extendIntake = Trigger { operator.aButton }
+  val retractIntake = Trigger { operator.bButton }
+  val characterizeIntake = Trigger { operator.xButton }
 }
