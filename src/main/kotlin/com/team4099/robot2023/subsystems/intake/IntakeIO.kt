@@ -30,7 +30,7 @@ interface IntakeIO {
     var armAppliedVoltage = 0.0.volts
     var armSupplyCurrent = 0.0.amps
     var armStatorCurrent = 0.0.amps
-    var leaderTemp = 0.0.celsius
+    var armTemp = 0.0.celsius
 
     var rollerVelocity = 0.0.rotations.perMinute
 
@@ -49,7 +49,7 @@ interface IntakeIO {
 
       table?.put("groundIntakeArmStatorCurrentAmps", armStatorCurrent.inAmperes)
 
-      table?.put("groundIntakeLeaderTempCelcius", leaderTemp.inCelsius)
+      table?.put("groundIntakeArmTempCelcius", armTemp.inCelsius)
 
       table?.put("groundIntakeRollerAppliedVoltage", rollerAppliedVoltage.inVolts)
 
@@ -76,8 +76,8 @@ interface IntakeIO {
       table?.getDouble("groundIntakeArmStatorCurrentAmps", armStatorCurrent.inAmperes)?.let {
         armStatorCurrent = it.amps
       }
-      table?.getDouble("groundIntakeLeaderTempCelcius", leaderTemp.inCelsius)?.let {
-        leaderTemp = it.celsius
+      table?.getDouble("groundIntakeArmTempCelcius", armTemp.inCelsius)?.let {
+        armTemp = it.celsius
       }
       table?.getDouble("groundIntakeRollerApplied", rollerAppliedVoltage.inVolts)?.let {
         rollerAppliedVoltage = it.volts

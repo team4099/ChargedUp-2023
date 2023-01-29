@@ -2,7 +2,9 @@ package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.percent
+import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -24,8 +26,8 @@ object IntakeConstants {
   val NEO_ARM_KS = 0.0.volts
   val SIM_ARM_KS = 0.0.volts
 
-  val ARM_KG = 0.0.volts / 1.0.degrees
-  val ARM_KV = 0.0.volts / 1.0.degrees.perSecond
+  val ARM_KG = 1.12.volts / 1.0.degrees
+  val ARM_KV = 0.02.volts / 1.0.degrees.perSecond
   val ARM_KA = 0.0.volts / 1.0.degrees.perSecond.perSecond
 
   val NEO_ROLLER_KV = 1.0.volts / 1.0.rotations.perMinute
@@ -46,16 +48,26 @@ object IntakeConstants {
   // From encoder to intake
   val ROLLER_GEAR_RATIO = (36.0 / 18.0)
 
+  // units are kg * m^2
+  val ROLLER_MOMENT_INERTIA = 0.00313
+
   // gear reduction from absolute encoder to output
   val ARM_ENCODER_GEAR_RATIO = (32.0 / 16.0)
   // gear reduction from motor to output
   val ARM_OUTPUT_GEAR_RATIO = ((60 / 12) * (80 / 18) * (32.0 / 16.0))
 
+  val ARM_LENGTH = 15.0.inches
+
+  val ARM_MASS = 9.pounds
+
+  // units are kg * m^2
+  val ARM_MOMENT_INTERTIA = 0.459
+
   val MAX_ARM_VELOCITY = 60.degrees.perSecond
   val MAX_ARM_ACCELERATION = 100.degrees.perSecond.perSecond
 
-  val ARM_MAX_ROTATION = 120.degrees
-  val ARM_MIN_ROTATION = -1.degrees
+  val ARM_MAX_ROTATION = 55.6.degrees
+  val ARM_MIN_ROTATION = 4.4.degrees
 
   val ENCODER_COUNTS = 42
 
@@ -64,14 +76,9 @@ object IntakeConstants {
 
   val ARM_MOTOR_CPR = 42
 
-  // TODO(figure out what these should be)
-
-  // Convert in code from an overall angle to a motor angle
   enum class armStates(val position: Angle) {
-    DOWN(90.degrees),
-    INTAKE(70.degrees),
-    RAISED(20.degrees),
-    STOWED(0.degrees),
+    INTAKE(4.4.degrees),
+    STOWED(55.6.degrees),
     DUMMY(-Double.NEGATIVE_INFINITY.degrees)
   }
 
