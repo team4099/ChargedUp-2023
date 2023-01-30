@@ -175,10 +175,18 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    * to overcome force of gravity
    */
   fun holdElevatorPosition(): Command {
+    var positionToHold = inputs.elevatorPosition
     return run {
-      io.setOutputVoltage(elevatorFeedForward.calculate(0.meters.perSecond))
+      io.setPosition(positionToHold, elevatorFeedForward.calculate(0.meters.perSecond))
       Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
     }
+      .beforeStarting(
+        {
+          positionToHold = inputs.elevatorPosition
+          Logger.getInstance().recordOutput("/Elevator/holdPosition", positionToHold.inInches)
+        },
+        this
+      )
       .finallyDo {
         Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", false)
       }
