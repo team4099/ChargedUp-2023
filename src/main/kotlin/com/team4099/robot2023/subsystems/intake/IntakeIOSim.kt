@@ -73,7 +73,9 @@ object IntakeIOSim : IntakeIO {
     inputs.armTemp = 0.celsius
 
     RoboRioSim.setVInVoltage(
-      BatterySim.calculateDefaultBatteryLoadedVoltage(armSim.currentDrawAmps)
+      BatterySim.calculateDefaultBatteryLoadedVoltage(
+        armSim.currentDrawAmps + rollerSim.currentDrawAmps
+      )
     )
   }
 
