@@ -29,8 +29,6 @@ import org.team4099.lib.units.perSecond
 
 interface ManipulatorIO {
   class ManipulatorIOInputs : LoggableInputs {
-    // TODO(Evaluate inputs. Pos, Vel may not be needed)
-    var rollerPosition = 0.degrees
     var rollerVelocity = 0.rotations.perMinute
     var rollerAppliedVoltage = 0.volts
     var rollerStatorCurrent = 0.amps
@@ -46,7 +44,6 @@ interface ManipulatorIO {
 
     override fun toLog(table: LogTable?) {
       // TODO: figure out why we did degrees and radians for this
-      table?.put("rollerPositionRad", rollerPosition.inRadians)
       table?.put("rollerVelocityRPM", rollerVelocity.inRotationsPerMinute)
       table?.put("rollerAppliedVolts", rollerAppliedVoltage.inVolts)
       table?.put("rollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
@@ -62,10 +59,6 @@ interface ManipulatorIO {
     }
 
     override fun fromLog(table: LogTable?) {
-
-      table?.getDouble("rollerPositionRad", rollerPosition.inRadians)?.let {
-        rollerPosition = it.radians
-      }
       table?.getDouble("rollerVelocityRadPerSec", rollerVelocity.inRadiansPerSecond)?.let {
         rollerVelocity = it.radians.perSecond
       }
@@ -97,23 +90,67 @@ interface ManipulatorIO {
     }
   }
 
+  /**
+   * Updates the values being logged using the actual sensor/motor readings
+   *
+   * @param inputs object of the Manipulator LoggableInputs
+   */
   fun updateInputs(inputs: ManipulatorIOInputs) {}
 
+  /**
+   * Sets the voltage of the roller motor but also checks to make sure the voltage doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   fun setRollerPower(voltage: ElectricalPotential) {}
 
+  /**
+   * Sets the voltage of the arm motor but also checks to make sure the voltage doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   fun setArmVoltage(voltage: ElectricalPotential) {}
 
-  fun setPosition(position: Length, feedforward: ElectricalPotential) {}
+  /**
+   * Sets the position of the arm motor, specifically the length of the arm
+   *
+   * @param position the position to set the arm to
+   * @param feedforward changes voltages to compensate for external forces
+   */
+  fun setArmPosition(position: Length, feedforward: ElectricalPotential) {}
 
+  /**
+   * Sets the current encoder position to be the zero value
+   *
+   */
   fun zeroEncoder() {}
 
+  /**
+   * Updates the PID constants using the implementation controller
+   *
+   * @param kP accounts for linear error
+   * @param kI accounts for integral error
+   * @param kD accounts for derivative error
+   */
   fun configPID(
     kP: ProportionalGain<Meter, Volt>,
     kI: IntegralGain<Meter, Volt>,
     kD: DerivativeGain<Meter, Volt>
   ) {}
 
+  /**
+   * Sets the roller motor brake mode
+   *
+   * @param brake if it brakes
+   */
   fun setRollerBrakeMode(brake: Boolean) {}
 
+  /**
+   * Sets the arm brake mode
+   *
+   * @param brake if it brakes
+   */
   fun setArmBrakeMode(brake: Boolean) {}
 }
