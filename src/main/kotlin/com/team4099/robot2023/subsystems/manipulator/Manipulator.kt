@@ -129,27 +129,28 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
 
   var prevArmSetpoint: TrapezoidProfile.State<Meter> = TrapezoidProfile.State()
-  fun setArmPosition(setPoint: TrapezoidProfile.State<Meter>) {
+
+  fun setArmPosition(setpoint: TrapezoidProfile.State<Meter>) {
     val armAcceleration =
-      (setPoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
-    prevArmSetpoint = setPoint
+      (setpoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
+    prevArmSetpoint = setpoint
 
-    val feedforward = armFeedforward.calculate(setPoint.velocity, armAcceleration)
+    val feedforward = armFeedforward.calculate(setpoint.velocity, armAcceleration)
 
-    if ((forwardLimitReached && setPoint.velocity > 0.inches.perSecond) ||
-      (reverseLimitReached && setPoint.velocity < 0.inches.perSecond)
+    if ((forwardLimitReached && setpoint.velocity > 0.inches.perSecond) ||
+      (reverseLimitReached && setpoint.velocity < 0.inches.perSecond)
     ) {
       // TODO: hold position func
       io.setArmVoltage(0.volts)
     } else {
-      io.setPosition(setPoint.position, feedforward)
+      io.setPosition(setpoint.position, feedforward)
     }
-    Logger.getInstance().recordOutput("Manipulator/armTargetPosition", setPoint.position.inInches)
+    Logger.getInstance().recordOutput("Manipulator/armTargetPosition", setpoint.position.inInches)
     Logger.getInstance()
-      .recordOutput("Manipulator/armTargetVelocity", setPoint.velocity.inInchesPerSecond)
+      .recordOutput("Manipulator/armTargetVelocity", setpoint.velocity.inInchesPerSecond)
     Logger.getInstance()
       .recordOutput("Manipulator/armAcceleraction", armAcceleration.inInchesPerSecondPerSecond)
-    Logger.getInstance().recordOutput("Manipulator/armFeedForward", feedforward.inVolts)
+    Logger.getInstance().recordOutput("Manipulator/armFeedforward", feedforward.inVolts)
   }
 
   init {
