@@ -31,8 +31,8 @@ import org.team4099.lib.units.perSecond
 class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val inputs = ElevatorIO.ElevatorInputs()
 
-  // PID and FeedForward Values
-  var elevatorFeedForward =
+  // PID and Feedforward Values
+  var elevatorFeedforward =
     ElevatorFeedforward(
       ElevatorConstants.REAL_ELEVATOR_KS,
       ElevatorConstants.ELEVATOR_KG,
@@ -88,7 +88,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       kI.initDefault(ElevatorConstants.REAL_KI)
       kD.initDefault(ElevatorConstants.REAL_KD)
 
-      elevatorFeedForward =
+      elevatorFeedforward =
         ElevatorFeedforward(
           ElevatorConstants.REAL_ELEVATOR_KS,
           ElevatorConstants.ELEVATOR_KG,
@@ -100,7 +100,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       kI.initDefault(ElevatorConstants.SIM_KI)
       kD.initDefault(ElevatorConstants.SIM_KD)
 
-      elevatorFeedForward =
+      elevatorFeedforward =
         ElevatorFeedforward(
           ElevatorConstants.SIM_ELEVATOR_KS,
           ElevatorConstants.ELEVATOR_KG,
@@ -146,7 +146,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     elevatorSetpoint = setpoint
 
-    var feedforward = elevatorFeedForward.calculate(setpoint.velocity, elevatorAccel)
+    var feedforward = elevatorFeedforward.calculate(setpoint.velocity, elevatorAccel)
 
     if (forwardLimitReached && setpoint.position > inputs.elevatorPosition ||
       reverseLimitReached && setpoint.position < inputs.elevatorPosition
@@ -177,7 +177,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   fun holdElevatorPosition(): Command {
     var positionToHold = inputs.elevatorPosition
     return run {
-      io.setPosition(positionToHold, elevatorFeedForward.calculate(0.meters.perSecond))
+      io.setPosition(positionToHold, elevatorFeedforward.calculate(0.meters.perSecond))
       Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
     }
       .beforeStarting(

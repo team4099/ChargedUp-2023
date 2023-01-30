@@ -140,8 +140,8 @@ object ElevatorIOSim : ElevatorIO {
    * @param position the target position the PID controller will use
    * @param feedforward change in voltage to account for external forces on the system
    */
-  override fun setPosition(position: Length, feedForward: ElectricalPotential) {
-    val ff = MathUtil.clamp(feedForward.inVolts, -12.0, 12.0).volts
+  override fun setPosition(position: Length, feedforward: ElectricalPotential) {
+    val ff = MathUtil.clamp(feedforward.inVolts, -12.0, 12.0).volts
     val feedback = elevatorController.calculate(elevatorSim.positionMeters.meters, position)
     elevatorSim.setInputVoltage((ff + feedback).inVolts)
   }
