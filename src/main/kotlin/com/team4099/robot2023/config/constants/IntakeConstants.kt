@@ -66,12 +66,7 @@ object IntakeConstants {
   val MAX_ARM_VELOCITY = 60.degrees.perSecond
   val MAX_ARM_ACCELERATION = 100.degrees.perSecond.perSecond
 
-  /*
-  val ARM_MAX_ROTATION = 55.6.degrees
-  val ARM_MIN_ROTATION = 4.4.degrees
-  */
-
-  val ARM_MAX_ROTATION = 100.degrees
+  val ARM_MAX_ROTATION = 56.6.degrees
   val ARM_MIN_ROTATION = 0.degrees
 
   val ENCODER_COUNTS = 42

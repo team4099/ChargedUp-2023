@@ -33,7 +33,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
 
   val inputs = IntakeIO.IntakeIOInputs()
 
-  var armFeedForward =
+  var armFeedforward =
     ArmFeedforward(
       IntakeConstants.NEO_ARM_KS,
       IntakeConstants.ARM_KG,
@@ -104,7 +104,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       kD.initDefault(IntakeConstants.NEO_KD)
       rollerKV.initDefault(IntakeConstants.NEO_ROLLER_KV)
 
-      armFeedForward =
+      armFeedforward =
         ArmFeedforward(
           IntakeConstants.NEO_ARM_KS,
           IntakeConstants.ARM_KG,
@@ -117,7 +117,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       kD.initDefault(IntakeConstants.SIM_KD)
       rollerKV.initDefault(IntakeConstants.SIM_ROLLER_KV)
 
-      var armFeedForward =
+      var armFeedforward =
         ArmFeedforward(
           IntakeConstants.SIM_ARM_KS,
           IntakeConstants.ARM_KG,
@@ -158,7 +158,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
   fun holdArmPosition(): Command {
     positionToHold = inputs.armPosition
     return run {
-      io.setArmPosition(positionToHold, armFeedForward.calculate(0.degrees, 0.degrees.perSecond))
+      io.setArmPosition(positionToHold, armFeedforward.calculate(0.degrees, 0.degrees.perSecond))
 
       Logger.getInstance().recordOutput("Intake/holdPosition", positionToHold.inDegrees)
       Logger.getInstance().recordOutput("Intake/ActiveCommands/holdArmCommand", true)
@@ -168,23 +168,23 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       }
   }
 
-  fun setArmPosition(setPoint: TrapezoidProfile.State<Radian>) {
+  fun setArmPosition(setpoint: TrapezoidProfile.State<Radian>) {
     val armAngularAcceleration =
-      (setPoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
-    prevArmSetpoint = setPoint
+      (setpoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
+    prevArmSetpoint = setpoint
 
     val feedforward =
-      armFeedForward.calculate(setPoint.position, setPoint.velocity, armAngularAcceleration)
+      armFeedforward.calculate(setpoint.position, setpoint.velocity, armAngularAcceleration)
 
-    if ((forwardLimitReached && setPoint.velocity > 0.degrees.perSecond) ||
-      (reverseLimitReached && setPoint.velocity < 0.degrees.perSecond)
+    if ((forwardLimitReached && setpoint.velocity > 0.degrees.perSecond) ||
+      (reverseLimitReached && setpoint.velocity < 0.degrees.perSecond)
     ) {
-      io.setArmVoltage(armFeedForward.calculate(0.degrees, 0.degrees.perSecond))
+      io.setArmVoltage(armFeedforward.calculate(0.degrees, 0.degrees.perSecond))
     } else {
-      io.setArmPosition(setPoint.position, feedforward)
+      io.setArmPosition(setpoint.position, feedforward)
     }
 
-    Logger.getInstance().recordOutput("Intake/intakeArmTargetPosition", setPoint.position.inDegrees)
+    Logger.getInstance().recordOutput("Intake/intakeArmTargetPosition", setpoint.position.inDegrees)
   }
 
   fun rotateArmPosition(position: Angle): Command {
@@ -201,7 +201,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
       Logger.getInstance()
         .recordOutput(
-          "Intake/isAtSetPoint",
+          "Intake/isAtSetpoint",
           (position - inputs.armPosition).absoluteValue <= IntakeConstants.ARM_TOLERANCE
         )
     }
@@ -209,7 +209,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
         {
           Logger.getInstance().recordOutput("Intake/ActiveCommands/setArmPositionCommand", true)
           startTime = Clock.fpgaTime
-          Logger.getInstance().recordOutput("Intake/isAtSetPoint", false)
+          Logger.getInstance().recordOutput("Intake/isAtSetpoint", false)
           armProfile =
             TrapezoidProfile(
               armConstraints,
