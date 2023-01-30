@@ -29,4 +29,7 @@ object ControlBoard {
   val extendIntake = Trigger { operator.aButton }
   val retractIntake = Trigger { operator.bButton }
   val characterizeIntake = Trigger { operator.xButton }
+
+  // for testing
+  val setArmCommand = Trigger { operator.yButton }
 }

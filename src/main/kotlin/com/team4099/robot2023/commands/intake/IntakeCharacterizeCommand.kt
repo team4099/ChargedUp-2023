@@ -23,7 +23,7 @@ class IntakeCharacterizeCommand(val intake: Intake) : CommandBase() {
 
   var hasMoved = false
   var appliedVolts = 0.volts
-  var step = 0.001.volts
+  var step = 0.01.volts
 
   override fun execute() {
     intake.io.setArmVoltage(appliedVolts)

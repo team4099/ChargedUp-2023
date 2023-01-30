@@ -14,6 +14,7 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
@@ -41,20 +42,19 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
     )
 
   private val kP =
-    LoggedTunableValue("GroundIntake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree }))
+    LoggedTunableValue("Intake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree }))
   private val kI =
     LoggedTunableValue(
-      "GroundIntake/kI", Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
+      "Intake/kI", Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
     )
   private val kD =
     LoggedTunableValue(
-      "GroundIntake/kd",
-      Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
+      "Intake/kd", Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
     )
 
   private val rollerKV =
     LoggedTunableValue(
-      "GRoundIntake/rollerKV",
+      "Intake/rollerKV",
       Pair({ it.inVoltsPerRotationsPerMinute }, { it.volts / 1.0.rotations.perMinute })
     )
 
@@ -77,16 +77,6 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       return IntakeConstants.rollerStates.DUMMY
     }
 
-  /*
-  set(state) {
-    io.setRollerPower(state.power)
-    if (state == IntakeConstants.ROLLER_STATE.INTAKE) {
-      lastIntakeRunTime = Clock.fpgaTime
-    }
-    field = state
-  }
-   */
-
   val armState: IntakeConstants.armStates
     get() {
       for (state in IntakeConstants.armStates.values()) {
@@ -104,6 +94,8 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
 
   var prevArmSetpoint: TrapezoidProfile.State<Radian> =
     TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+
+  var positionToHold = inputs.armPosition
 
   init {
     if (RobotBase.isReal()) {
@@ -164,7 +156,16 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
   }
 
   fun holdArmPosition(): Command {
-    return run { io.setArmVoltage(armFeedForward.calculate(0.degrees, 0.degrees.perSecond)) }
+    positionToHold = inputs.armPosition
+    return run {
+      io.setArmPosition(positionToHold, armFeedForward.calculate(0.degrees, 0.degrees.perSecond))
+
+      Logger.getInstance().recordOutput("Intake/holdPosition", positionToHold.inDegrees)
+      Logger.getInstance().recordOutput("Intake/ActiveCommands/holdArmCommand", true)
+    }
+      .finallyDo {
+        Logger.getInstance().recordOutput("Intake/ActiveCommands/holdArmCommand", false)
+      }
   }
 
   fun setArmPosition(setPoint: TrapezoidProfile.State<Radian>) {
@@ -182,6 +183,8 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
     } else {
       io.setArmPosition(setPoint.position, feedforward)
     }
+
+    Logger.getInstance().recordOutput("Intake/intakeArmTargetPosition", setPoint.position.inDegrees)
   }
 
   fun rotateArmPosition(position: Angle): Command {
@@ -204,6 +207,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
     }
       .beforeStarting(
         {
+          Logger.getInstance().recordOutput("Intake/ActiveCommands/setArmPositionCommand", true)
           startTime = Clock.fpgaTime
           Logger.getInstance().recordOutput("Intake/isAtSetPoint", false)
           armProfile =
@@ -216,5 +220,10 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
         this
       )
       .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
+      .finallyDo {
+        positionToHold = position
+        Logger.getInstance().recordOutput("Intake/ActiveCommands/setArmPositionCommand", false)
+      }
+      .handleInterrupt({ positionToHold = inputs.armPosition })
   }
 }

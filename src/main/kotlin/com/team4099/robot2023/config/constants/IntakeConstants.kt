@@ -19,19 +19,19 @@ object IntakeConstants {
   val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
   val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
-  val SIM_KP = 0.0.volts / 1.degrees
-  val SIM_KI = 0.0.volts / (1.degrees * 1.seconds)
-  val SIM_KD = 0.0.volts / (1.degrees.perSecond)
+  val SIM_KP = 1.4.volts / 1.degrees
+  val SIM_KI = 1.0.volts / (1.degrees * 1.seconds)
+  val SIM_KD = 0.06.volts / (1.degrees.perSecond)
 
   val NEO_ARM_KS = 0.0.volts
   val SIM_ARM_KS = 0.0.volts
 
-  val ARM_KG = 1.12.volts / 1.0.degrees
+  val ARM_KG = 1.12.volts
   val ARM_KV = 0.02.volts / 1.0.degrees.perSecond
   val ARM_KA = 0.0.volts / 1.0.degrees.perSecond.perSecond
 
-  val NEO_ROLLER_KV = 1.0.volts / 1.0.rotations.perMinute
-  val SIM_ROLLER_KV = 1.0.volts / 1.0.rotations.perMinute
+  val NEO_ROLLER_KV = 0.00415.volts / 1.0.rotations.perMinute
+  val SIM_ROLLER_KV = 0.00415.volts / 1.0.rotations.perMinute
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
@@ -66,8 +66,13 @@ object IntakeConstants {
   val MAX_ARM_VELOCITY = 60.degrees.perSecond
   val MAX_ARM_ACCELERATION = 100.degrees.perSecond.perSecond
 
+  /*
   val ARM_MAX_ROTATION = 55.6.degrees
   val ARM_MIN_ROTATION = 4.4.degrees
+  */
+
+  val ARM_MAX_ROTATION = 100.degrees
+  val ARM_MIN_ROTATION = 0.degrees
 
   val ENCODER_COUNTS = 42
 

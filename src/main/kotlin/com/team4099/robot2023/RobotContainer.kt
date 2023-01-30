@@ -8,6 +8,7 @@ import com.team4099.robot2023.commands.intake.IntakeExtendCommand
 import com.team4099.robot2023.commands.intake.IntakeRetractCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.IntakeConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -79,6 +80,9 @@ object RobotContainer {
     ControlBoard.extendIntake.whileTrue(IntakeExtendCommand(intake))
     ControlBoard.retractIntake.whileTrue(IntakeRetractCommand(intake))
     ControlBoard.characterizeIntake.whileTrue(IntakeCharacterizeCommand(intake))
+    ControlBoard.setArmCommand.whileTrue(
+      intake.rotateArmPosition(IntakeConstants.armStates.STOWED.position)
+    )
   }
 
   fun mapTestControls() {}
