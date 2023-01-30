@@ -146,16 +146,27 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Intake/RollerTargetVotlage", voltage.inVolts)
   }
 
+  /**
+   * Sets the break/idle mode of the roller
+   *
+   * @param brake The value that break mode for the roller will be set as
+   */
   fun setRollerBrakeMode(brake: Boolean) {
     io.setRollerBrakeMode(brake)
     Logger.getInstance().recordOutput("Intake/rollerBrakeModeEnabled", brake)
   }
 
+  /**
+   * Sets the break/idle mode of the arm
+   *
+   * @param brake The value that break mode for the arm will be set as
+   */
   fun setArmBrakeMode(brake: Boolean) {
     io.setArmBrakeMode(brake)
     Logger.getInstance().recordOutput("Intake/armBrakeModeEnabled", brake)
   }
 
+  /** Tells the feedforward not to move the arm */
   fun holdArmPosition(): Command {
     positionToHold = inputs.armPosition
     return run {
@@ -169,14 +180,25 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       }
   }
 
+  /**
+   * Sets the arm position using the trapezoidal profile state
+   *
+   * @param setpoint.first Represents the position the arm should go to
+   * @param setpoint.second Represents the velocity the arm should be at
+   */
   fun setArmPosition(setpoint: TrapezoidProfile.State<Radian>) {
+
+    // Calculating the acceleration of the arm
     val armAngularAcceleration =
       (setpoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
     prevArmSetpoint = setpoint
 
+    // Set up the feed forward variable
     val feedforward =
       armFeedforward.calculate(setpoint.position, setpoint.velocity, armAngularAcceleration)
 
+    // When the forward or reverse limit is reached, set the voltage to 0
+    // Else mose the arm to the setpoint position
     if ((forwardLimitReached && setpoint.velocity > 0.degrees.perSecond) ||
       (reverseLimitReached && setpoint.velocity < 0.degrees.perSecond)
     ) {
