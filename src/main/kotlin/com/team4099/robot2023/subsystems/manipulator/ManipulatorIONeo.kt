@@ -16,6 +16,7 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
@@ -27,7 +28,7 @@ object ManipulatorIONeo : ManipulatorIO {
   private val rollerSensor =
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
-      ManipulatorConstants.ROLLER_GEAR_RATIO,
+      ManipulatorConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
       Constants.Universal.VOLTAGE_COMPENSATION
     )
   private val armSparkMax =
@@ -35,7 +36,7 @@ object ManipulatorIONeo : ManipulatorIO {
   private val armSensor =
     sparkMaxLinearMechanismSensor(
       armSparkMax,
-      ManipulatorConstants.ARM_GEAR_RATIO,
+      ManipulatorConstants.ARM_GEAR_RATIO.asDrivenOverDriving,
       ManipulatorConstants.ARM_SPOOL_RADIUS * 2,
       Constants.Universal.VOLTAGE_COMPENSATION
     )
@@ -80,7 +81,6 @@ object ManipulatorIONeo : ManipulatorIO {
   }
 
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
-    inputs.rollerPosition = rollerSensor.position
     inputs.rollerVelocity = rollerSensor.velocity
     inputs.rollerAppliedVoltage = rollerSparkMax.busVoltage.volts * rollerSparkMax.appliedOutput
     inputs.rollerStatorCurrent = rollerSparkMax.outputCurrent.amps
@@ -106,7 +106,7 @@ object ManipulatorIONeo : ManipulatorIO {
     armSparkMax.setVoltage(voltage.inVolts)
   }
 
-  override fun setPosition(position: Length, feedforward: ElectricalPotential) {
+  override fun setArmPosition(position: Length, feedforward: ElectricalPotential) {
     armPIDController.ff = feedforward.inVolts
     armPIDController.setReference(
       armSensor.positionToRawUnits(position), CANSparkMax.ControlType.kSmartMotion
