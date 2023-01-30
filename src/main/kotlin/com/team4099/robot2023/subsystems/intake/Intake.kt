@@ -137,6 +137,7 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
     Logger.getInstance().processInputs("Intake", inputs)
   }
 
+  /** @param rpm Represents the angular velocity of the rollers */
   fun setRollerPower(rpm: AngularVelocity) {
     val voltage = (rpm * rollerKV.get())
 
@@ -187,7 +188,14 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Intake/intakeArmTargetPosition", setpoint.position.inDegrees)
   }
 
+  /**
+   * Command for creating a profile to a position and following that profile until reached
+   *
+   * @param position The angle the arm should go to
+   */
   fun rotateArmPosition(position: Angle): Command {
+    // Generate a trapezoidal profile from the current position to the setpoint
+    // with set constraints
     var armProfile =
       TrapezoidProfile(
         armConstraints,
@@ -195,9 +203,13 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
         TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
       )
 
+    // Initializing a variable of start time which represents the start of elapsed
+    // time of the profile
     var startTime = Clock.fpgaTime
 
+    // Creates and returns a command that can be run continuously until the profile finishes
     return run {
+      // Regenerates profile state for that loop cycle and sets to that position
       setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
       Logger.getInstance()
         .recordOutput(
@@ -208,8 +220,10 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       .beforeStarting(
         {
           Logger.getInstance().recordOutput("Intake/ActiveCommands/setArmPositionCommand", true)
+          // Resets the initial time since the time at the start of method is of robot init
           startTime = Clock.fpgaTime
           Logger.getInstance().recordOutput("Intake/isAtSetpoint", false)
+          // Regenerates profile with the new position passed in
           armProfile =
             TrapezoidProfile(
               armConstraints,
@@ -219,7 +233,10 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
         },
         this
       )
-      .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
+      .until {
+        // Run the lambda until the predicted finishing time of the profile elapses
+        armProfile.isFinished(Clock.fpgaTime - startTime)
+      }
       .finallyDo {
         positionToHold = position
         Logger.getInstance().recordOutput("Intake/ActiveCommands/setArmPositionCommand", false)
