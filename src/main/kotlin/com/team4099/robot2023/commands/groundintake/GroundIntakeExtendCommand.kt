@@ -9,7 +9,7 @@ class GroundIntakeExtendCommand(val groundIntake: GroundIntake) : CommandBase() 
 
   private val lowerIntakeArm =
     SequentialCommandGroup(
-      groundIntake.rotateArmPosition(GroundIntakeConstants.ArmStates.INTAKE.position),
+      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.INTAKE.position),
       groundIntake.holdArmPosition()
     )
   init {

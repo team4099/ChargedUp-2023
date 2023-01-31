@@ -81,7 +81,7 @@ object RobotContainer {
     ControlBoard.retractIntake.whileTrue(GroundIntakeRetractCommand(groundIntake))
     ControlBoard.characterizeIntake.whileTrue(GroundIntakeCharacterizeCommand(groundIntake))
     ControlBoard.setArmCommand.whileTrue(
-      groundIntake.rotateArmPosition(GroundIntakeConstants.ArmStates.STOWED.position)
+      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position)
     )
   }
 

@@ -28,13 +28,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
   val inputs = GroundIntakeIO.GroundIntakeIOInputs()
 
-  var armFeedforward =
-    ArmFeedforward(
-      GroundIntakeConstants.PID.NEO_ARM_KS,
-      GroundIntakeConstants.PID.ARM_KG,
-      GroundIntakeConstants.PID.ARM_KV,
-      GroundIntakeConstants.PID.ARM_KA
-    )
+  var armFeedforward: ArmFeedforward
 
   private val kP =
     LoggedTunableValue("GroundIntake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree }))
@@ -70,6 +64,8 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
 
   var positionToHold = inputs.armPosition
+
+  var desiredPosition = 0.0.degrees
 
   init {
     if (RobotBase.isReal()) {
@@ -107,6 +103,13 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     }
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
+
+    Logger.getInstance()
+      .recordOutput(
+        "GroundIntake/isAtSetpoint",
+        (desiredPosition - inputs.armPosition).absoluteValue <=
+          GroundIntakeConstants.ARM_TOLERANCE
+      )
   }
 
   /** @param appliedVoltage Represents the applied voltage of the roller motor */
@@ -154,6 +157,9 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     val feedforward =
       armFeedforward.calculate(setpoint.position, setpoint.velocity, armAngularAcceleration)
 
+    // set the desired position to be the setpoint's position
+    desiredPosition = setpoint.position
+
     // When the forward or reverse limit is reached, set the voltage to 0
     // Else mose the arm to the setpoint position
     if ((forwardLimitReached && setpoint.velocity > 0.degrees.perSecond) ||
@@ -171,15 +177,15 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   /**
    * Command for creating a profile to a position and following that profile until reached
    *
-   * @param position The angle the arm should go to
+   * @param angle The angle the arm should go to
    */
-  fun rotateArmPosition(position: Angle): Command {
+  fun rotateGroundIntakeToAngle(angle: Angle): Command {
     // Generate a trapezoidal profile from the current position to the setpoint
     // with set constraints
     var armProfile =
       TrapezoidProfile(
         armConstraints,
-        TrapezoidProfile.State(position, 0.degrees.perSecond),
+        TrapezoidProfile.State(angle, 0.degrees.perSecond),
         TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
       )
 
@@ -188,40 +194,33 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     var startTime = Clock.fpgaTime
 
     // Creates and returns a command that can be run continuously until the profile finishes
-    return run {
-      // Regenerates profile state for that loop cycle and sets to that position
-      setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
-      Logger.getInstance()
-        .recordOutput(
-          "Intake/isAtSetpoint",
-          (position - inputs.armPosition).absoluteValue <=
-            GroundIntakeConstants.ARM_TOLERANCE
+    val rotateArmPositionCommand =
+      run {
+        // Regenerates profile state for that loop cycle and sets to that position
+        setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
+      }
+        .beforeStarting(
+          {
+            // Resets the initial time since the time at the start of method is of robot init
+            startTime = Clock.fpgaTime
+            // Regenerates profile with the new position passed in
+            armProfile =
+              TrapezoidProfile(
+                armConstraints,
+                TrapezoidProfile.State(angle, 0.degrees.perSecond),
+                TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+              )
+          },
+          this
         )
-    }
-      .beforeStarting(
-        {
-          Logger.getInstance().recordOutput("Intake/ActiveCommands/setArmPositionCommand", true)
-          // Resets the initial time since the time at the start of method is of robot init
-          startTime = Clock.fpgaTime
-          Logger.getInstance().recordOutput("Intake/isAtSetpoint", false)
-          // Regenerates profile with the new position passed in
-          armProfile =
-            TrapezoidProfile(
-              armConstraints,
-              TrapezoidProfile.State(position, 0.degrees.perSecond),
-              TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
-            )
-        },
-        this
-      )
-      .until {
-        // Run the lambda until the predicted finishing time of the profile elapses
-        armProfile.isFinished(Clock.fpgaTime - startTime)
-      }
-      .finallyDo {
-        positionToHold = position
-        Logger.getInstance().recordOutput("Intake/ActiveCommands/setArmPositionCommand", false)
-      }
-      .handleInterrupt({ positionToHold = inputs.armPosition })
+        .until {
+          // Run the lambda until the predicted finishing time of the profile elapses
+          armProfile.isFinished(Clock.fpgaTime - startTime)
+        }
+        .finallyDo { positionToHold = angle }
+        .handleInterrupt({ positionToHold = inputs.armPosition })
+
+    rotateArmPositionCommand.name = "RotateGroundIntakeCommand"
+    return rotateArmPositionCommand
   }
 }

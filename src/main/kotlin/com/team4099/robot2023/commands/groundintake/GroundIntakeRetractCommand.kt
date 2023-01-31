@@ -9,7 +9,7 @@ class GroundIntakeRetractCommand(val groundIntake: GroundIntake) : CommandBase()
 
   private val retractIntakeArm =
     SequentialCommandGroup(
-      groundIntake.rotateArmPosition(GroundIntakeConstants.ArmStates.STOWED.position),
+      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position),
       groundIntake.holdArmPosition()
     )
   init {
