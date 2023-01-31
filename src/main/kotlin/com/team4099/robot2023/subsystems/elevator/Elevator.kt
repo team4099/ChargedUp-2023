@@ -176,20 +176,25 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    */
   fun holdElevatorPosition(): Command {
     var positionToHold = inputs.elevatorPosition
-    return run {
-      io.setPosition(positionToHold, elevatorFeedforward.calculate(0.meters.perSecond))
-      Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
-    }
-      .beforeStarting(
-        {
-          positionToHold = inputs.elevatorPosition
-          Logger.getInstance().recordOutput("/Elevator/holdPosition", positionToHold.inInches)
-        },
-        this
-      )
-      .finallyDo {
-        Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", false)
+    val holdPositionCommand =
+      run {
+        io.setPosition(positionToHold, elevatorFeedforward.calculate(0.meters.perSecond))
+        Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
       }
+        .beforeStarting(
+          {
+            positionToHold = inputs.elevatorPosition
+            Logger.getInstance()
+              .recordOutput("/Elevator/holdPosition", positionToHold.inInches)
+          },
+          this
+        )
+        .finallyDo {
+          Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", false)
+        }
+
+    holdPositionCommand.name = "ElevatorHoldPositionCommand"
+    return holdPositionCommand
   }
 
   /**
@@ -204,6 +209,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     // Constructing our elevator profile in here because its internal values are dependent on the
     // position we want to set the elevator to
+
+    // TODO(switch to sign math before testing irl)
+
     // val position = height/ElevatorConstants.ELEVATOR_ANGLE.sin
     val position = height
 
@@ -220,46 +228,50 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     // Creates a command that runs continuously until the profile is finished. The run function
     // accepts a lambda which indicates what we want to run every iteration.
-    return run {
-      setPosition(
-        elevatorProfile.calculate(
-          Clock.fpgaTime -
-            startTime
-        )
-      ) // Every loop cycle we have a different profile state we're
-      // calculating. Hence, we want to pass in a different Trapezoidal
-      // Profile State into the setPosition function.
-      Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", true)
-      Logger.getInstance()
-        .recordOutput(
-          "/Elevator/isAtSetpoint",
-          (inputs.elevatorPosition - position).absoluteValue <
-            ElevatorConstants.ELEVATOR_TOLERANCE
-        )
-    }
-      .beforeStarting(
-        {
-          startTime = Clock.fpgaTime
-          elevatorProfile =
-            TrapezoidProfile(
-              elevatorConstraints,
-              TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
-              TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
-            )
-          Logger.getInstance().recordOutput("/Elevator/isAtSetpoint", false)
-        },
-        this
-      )
-      .until { // The following lambda creates a race condition that stops the command we created
-        // above when the passed in condition is true. In our case it's checking when
-        // elevatorProfile is finished based on elapsed time.
-        elevatorProfile.isFinished(
-          (Clock.fpgaTime - startTime)
-        ) // This is the race condition we're passing in.
+    val raiseElevatorHeight =
+      run {
+        setPosition(
+          elevatorProfile.calculate(
+            Clock.fpgaTime -
+              startTime
+          )
+        ) // Every loop cycle we have a different profile state we're
+        // calculating. Hence, we want to pass in a different Trapezoidal
+        // Profile State into the setPosition function.
+        Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", true)
+        Logger.getInstance()
+          .recordOutput(
+            "/Elevator/isAtSetpoint",
+            (inputs.elevatorPosition - position).absoluteValue <
+              ElevatorConstants.ELEVATOR_TOLERANCE
+          )
       }
-      .finallyDo {
-        Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", false)
-      }
+        .beforeStarting(
+          {
+            startTime = Clock.fpgaTime
+            elevatorProfile =
+              TrapezoidProfile(
+                elevatorConstraints,
+                TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
+                TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
+              )
+            Logger.getInstance().recordOutput("/Elevator/isAtSetpoint", false)
+          },
+          this
+        )
+        .until { // The following lambda creates a race condition that stops the command we
+          // created
+          // above when the passed in condition is true. In our case it's checking when
+          // elevatorProfile is finished based on elapsed time.
+          elevatorProfile.isFinished(
+            (Clock.fpgaTime - startTime)
+          ) // This is the race condition we're passing in.
+        }
+        .finallyDo {
+          Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", false)
+        }
+    raiseElevatorHeight.name = "RaiseElevatorHeightCommand"
+    return raiseElevatorHeight
   }
 
   /**
@@ -268,24 +280,35 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    * @return Command which sets output voltage of both motors and ends if elevator reachs its limit
    */
   fun openLoopControl(voltage: ElectricalPotential): Command {
-    return run {
-      setOutputVoltage(voltage)
-      if (voltage > 0.volts) {
-        Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", true)
-      } else {
-        Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", true)
-      }
-    }
-      .finallyDo {
-        setOutputVoltage(0.volts)
+    val openLoopElevatorCommand =
+      run {
+        setOutputVoltage(voltage)
         if (voltage > 0.volts) {
-          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", false)
+          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", true)
         } else {
-          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", false)
+          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", true)
         }
       }
-      .until {
-        (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts)
-      }
+        .finallyDo {
+          setOutputVoltage(0.volts)
+          if (voltage > 0.volts) {
+            Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", false)
+          } else {
+            Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", false)
+          }
+        }
+        .until {
+          (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts)
+        }
+
+    if (voltage > 0.volts) {
+      openLoopElevatorCommand.name = "ElevatorExtendOpenLoopCommand"
+    } else if (voltage < 0.volts) {
+      openLoopElevatorCommand.name = "ElevatorRetractOpenLoopCommand"
+    } else {
+      openLoopElevatorCommand.name = "ElevatorZeroVoltageOpenLoopCommand"
+    }
+
+    return openLoopElevatorCommand
   }
 }
