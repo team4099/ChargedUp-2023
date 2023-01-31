@@ -17,9 +17,6 @@ import com.team4099.robot2023.subsystems.vision.VisionIOReal
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import org.littletonrobotics.junction.Logger
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.inSeconds
 
