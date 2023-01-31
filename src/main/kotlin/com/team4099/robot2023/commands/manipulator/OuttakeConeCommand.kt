@@ -5,6 +5,7 @@ import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
 
+/** This command is used to set the roller speed to outtake cone */
 class OuttakeConeCommand(val manipulator: Manipulator) : CommandBase() {
   init {
     addRequirements(manipulator)
@@ -12,12 +13,10 @@ class OuttakeConeCommand(val manipulator: Manipulator) : CommandBase() {
 
   override fun initialize() {
     manipulator.lastRollerRunTime = Clock.fpgaTime
-
-    manipulator.rollerState = ManipulatorConstants.RollerStates.CONE_OUT
   }
 
   override fun execute() {
-    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CONE_OUT.velocity)
+    manipulator.setRollerPower(ManipulatorConstants.RollerStates.CONE_OUT.voltage)
   }
 
   override fun end(interrupted: Boolean) {

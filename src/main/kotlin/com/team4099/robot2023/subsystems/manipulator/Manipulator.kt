@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
-import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
@@ -22,16 +21,12 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
 import org.team4099.lib.units.derived.inVoltsPerInchSeconds
-import org.team4099.lib.units.derived.inVoltsPerRotationsPerMinute
 import org.team4099.lib.units.derived.perInch
 import org.team4099.lib.units.derived.perInchPerSecond
 import org.team4099.lib.units.derived.perInchSeconds
-import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
-import org.team4099.lib.units.inRotationsPerMinute
-import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
@@ -50,12 +45,6 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   private val kD =
     LoggedTunableValue(
       "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
-    )
-
-  private val rollerKV =
-    LoggedTunableValue(
-      "Manipulator/RollerKV",
-      Pair({ it.inVoltsPerRotationsPerMinute }, { it.volts / (1.0.rotations.perMinute) })
     )
 
   var lastRollerRunTime = Clock.fpgaTime
@@ -146,12 +135,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       kP.initDefault(ManipulatorConstants.REAL_ARM_KP)
       kI.initDefault(ManipulatorConstants.REAL_ARM_KI)
       kD.initDefault(ManipulatorConstants.REAL_ARM_KD)
-      rollerKV.initDefault(ManipulatorConstants.REAL_ROLLER_KV)
     } else {
       kP.initDefault(ManipulatorConstants.SIM_ARM_KP)
       kI.initDefault(ManipulatorConstants.SIM_ARM_KI)
       kD.initDefault(ManipulatorConstants.SIM_ARM_KD)
-      rollerKV.initDefault(ManipulatorConstants.SIM_ROLLER_KV)
     }
   }
 
@@ -175,11 +162,8 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    *
    * @param rpm: The revolutions per minute of the roller as stated in radians per second.
    */
-  fun setRollerPower(rpm: AngularVelocity) {
-    val voltage = rpm * rollerKV.get()
-
+  fun setRollerPower(voltage: ElectricalPotential) {
     io.setRollerPower(voltage)
-    Logger.getInstance().recordOutput("Manipulator/rollerTargetSpeedRPM", rpm.inRotationsPerMinute)
     Logger.getInstance().recordOutput("Manipulator/rollerTargetVoltage", voltage.inVolts)
   }
 

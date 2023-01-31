@@ -8,6 +8,14 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
+/**
+ * This command is used to experimentally determine the kS value for the manipulator It prints the
+ * first voltage level that causes the manipulator to move
+ *
+ * @property hasMoved used as end condition
+ * @property appliedVolts the current amount of volts being applied to the motors
+ * @property step the increase in volts per iteration
+ */
 class ArmCharacterizationCommand(val manipulator: Manipulator) : CommandBase() {
   init {
     addRequirements(manipulator)
