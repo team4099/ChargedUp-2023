@@ -120,6 +120,10 @@ object Robot : LoggedRobot() {
     CommandScheduler.getInstance().onCommandFinish { command: Command ->
       Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
+
+    CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
+    }
   }
 
   override fun teleopInit() {
