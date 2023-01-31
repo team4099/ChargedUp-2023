@@ -87,7 +87,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
       armFeedforward =
         ArmFeedforward(
-          GroundIntakeConstants.PID.SIM_ARM_KS,
+          0.0.volts,
           GroundIntakeConstants.PID.ARM_KG,
           GroundIntakeConstants.PID.ARM_KV,
           GroundIntakeConstants.PID.ARM_KA
@@ -104,12 +104,18 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
 
+    Logger.getInstance().recordOutput("GroundIntake/positionToHold", positionToHold.inDegrees)
+
     Logger.getInstance()
       .recordOutput(
         "GroundIntake/isAtSetpoint",
         (desiredPosition - inputs.armPosition).absoluteValue <=
           GroundIntakeConstants.ARM_TOLERANCE
       )
+
+    Logger.getInstance().recordOutput("GroundIntake/ArmState", armState.name)
+
+    Logger.getInstance().recordOutput("GroundIntake/RollerState", rollerState.name)
   }
 
   /** @param appliedVoltage Represents the applied voltage of the roller motor */
@@ -128,13 +134,16 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   }
 
   /** Tells the feedforward not to move the arm */
-  fun holdArmPosition(): Command {
-    positionToHold = inputs.armPosition
-    val holdPositionCommand = run {
-      io.setArmPosition(positionToHold, armFeedforward.calculate(0.degrees, 0.degrees.perSecond))
+  fun holdArmPosition(toAngle: Angle = positionToHold): Command {
+    var holdPosition = toAngle
 
-      Logger.getInstance().recordOutput("GroundIntake/holdPosition", positionToHold.inDegrees)
-    }
+    val holdPositionCommand =
+      run {
+        io.setArmPosition(
+          holdPosition, armFeedforward.calculate(0.degrees, 0.degrees.perSecond)
+        )
+      }
+        .beforeStarting({ holdPosition = positionToHold }, this)
 
     holdPositionCommand.name = "GroundIntakeHoldPositionCommand"
     return holdPositionCommand
@@ -143,8 +152,8 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   /**
    * Sets the arm position using the trapezoidal profile state
    *
-   * @param setpoint.first Represents the position the arm should go to
-   * @param setpoint.second Represents the velocity the arm should be at
+   * @param setpoint.position Represents the position the arm should go to
+   * @param setpoint.velocity Represents the velocity the arm should be at
    */
   fun setArmPosition(setpoint: TrapezoidProfile.State<Radian>) {
 
@@ -198,6 +207,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
       run {
         // Regenerates profile state for that loop cycle and sets to that position
         setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
+        positionToHold = inputs.armPosition
       }
         .beforeStarting(
           {
@@ -217,8 +227,8 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
           // Run the lambda until the predicted finishing time of the profile elapses
           armProfile.isFinished(Clock.fpgaTime - startTime)
         }
-        .finallyDo { positionToHold = angle }
-        .handleInterrupt({ positionToHold = inputs.armPosition })
+        .finallyDo { positionToHold = inputs.armPosition }
+        .handleInterrupt { positionToHold = inputs.armPosition }
 
     rotateArmPositionCommand.name = "RotateGroundIntakeCommand"
     return rotateArmPositionCommand

@@ -26,14 +26,10 @@ object GroundIntakeConstants {
     val SIM_KD = 0.06.volts / (1.degrees.perSecond)
 
     val NEO_ARM_KS = 0.0.volts
-    val SIM_ARM_KS = 0.0.volts
 
     val ARM_KG = 1.12.volts
     val ARM_KV = 0.02.volts / 1.0.degrees.perSecond
     val ARM_KA = 0.0.volts / 1.0.degrees.perSecond.perSecond
-
-    val NEO_ROLLER_KV = 0.00415.volts / 1.0.rotations.perMinute
-    val SIM_ROLLER_KV = 0.00415.volts / 1.0.rotations.perMinute
   }
 
   val VOLTAGE_COMPENSATION = 12.0.volts
