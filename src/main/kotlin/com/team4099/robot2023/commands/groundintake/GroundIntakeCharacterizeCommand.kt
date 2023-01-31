@@ -8,8 +8,8 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 /**
- * This command is used to experimentally determine the kS value for the elevator It prints the
- * first voltage level that causes the elevator to move
+ * This command is used to experimentally determine the kS value for the intake It prints the first
+ * voltage level that causes the elevator to move
  *
  * @property hasMoved used as end condition
  * @property appliedVolts the current amount of volts being applied to the motors
@@ -27,7 +27,8 @@ class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandB
 
   override fun initialize() {
     hasMoved = false
-    appliedVolts = 1.0.volts
+    appliedVolts = 0.volts
+    step = 0.01.volts
   }
 
   override fun execute() {

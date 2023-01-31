@@ -4,9 +4,7 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
-import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
-import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.units.base.amps
@@ -77,12 +75,6 @@ object GroundIntakeIOSim : GroundIntakeIO {
     inputs.armStatorCurrent = armSim.currentDrawAmps.amps
     inputs.armSupplyCurrent = 0.amps
     inputs.armTemp = 0.celsius
-
-    RoboRioSim.setVInVoltage(
-      BatterySim.calculateDefaultBatteryLoadedVoltage(
-        armSim.currentDrawAmps + rollerSim.currentDrawAmps
-      )
-    )
   }
 
   /**
@@ -91,7 +83,13 @@ object GroundIntakeIOSim : GroundIntakeIO {
    * @param voltage the voltage to set the roller motor to
    */
   override fun setRollerPower(voltage: ElectricalPotential) {
-    rollerSim.setInputVoltage(MathUtil.clamp(voltage.inVolts, -12.0, 12.0))
+    rollerSim.setInputVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
+      )
+    )
   }
 
   /**
@@ -114,7 +112,13 @@ object GroundIntakeIOSim : GroundIntakeIO {
    * @param voltage the voltage to set the arm motor to
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
-    armSim.setInputVoltage(MathUtil.clamp(voltage.inVolts, -12.0, 12.0))
+    armSim.setInputVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
+      )
+    )
   }
 
   /**

@@ -4,8 +4,8 @@ import com.team4099.robot2023.config.constants.Constants
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 
 /**
- * Taken from httpgit
- * s://github.com/Mechanical-Advantage/SwerveDevelopment/blob/main/src/main/java/frc/robot/util/TunableNumber.java
+ * Taken from
+ * https://github.com/Mechanical-Advantage/SwerveDevelopment/blob/main/src/main/java/frc/robot/util/TunableNumber.java
  */
 class TunableNumber(dashboardKey: String) {
   private val key: String

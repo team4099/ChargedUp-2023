@@ -214,29 +214,28 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
     // Creates and returns a command that can be run continuously until the profile finishes
     val rotateArmPositionCommand =
-      run {
-        // Regenerates profile state for that loop cycle and sets to that position
-        setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
-        positionToHold = inputs.armPosition
+      runOnce {
+        // Resets the initial time since the time at the start of method is of robot init
+        startTime = Clock.fpgaTime
+        // Regenerates profile with the new position passed in
+        armProfile =
+          TrapezoidProfile(
+            armConstraints,
+            TrapezoidProfile.State(angle, 0.degrees.perSecond),
+            TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+          )
       }
-        .beforeStarting(
-          {
-            // Resets the initial time since the time at the start of method is of robot init
-            startTime = Clock.fpgaTime
-            // Regenerates profile with the new position passed in
-            armProfile =
-              TrapezoidProfile(
-                armConstraints,
-                TrapezoidProfile.State(angle, 0.degrees.perSecond),
-                TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
-              )
-          },
-          this
+        .andThen(
+          run {
+            // Regenerates profile state for that loop cycle and sets to that position
+            setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
+            positionToHold = inputs.armPosition
+          }
+            .until {
+              // Run the lambda until the predicted finishing time of the profile elapses
+              armProfile.isFinished(Clock.fpgaTime - startTime)
+            }
         )
-        .until {
-          // Run the lambda until the predicted finishing time of the profile elapses
-          armProfile.isFinished(Clock.fpgaTime - startTime)
-        }
         .finallyDo { positionToHold = inputs.armPosition }
         .handleInterrupt { positionToHold = inputs.armPosition }
 
