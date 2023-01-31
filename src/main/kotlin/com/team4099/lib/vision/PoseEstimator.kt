@@ -3,14 +3,17 @@ package com.team4099.lib.vision
 import edu.wpi.first.math.Matrix
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Twist2d
 import edu.wpi.first.math.numbers.N1
 import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.wpilibj.Timer
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Twist2d
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
-import java.util.ArrayList
+import org.team4099.lib.units.derived.inRadians
+import org.team4099.lib.units.derived.radians
 import java.util.NavigableMap
 import java.util.TreeMap
 
@@ -31,7 +34,7 @@ class PoseEstimator(stateStdDevs: Matrix<N3, N1>) {
 
   /** Records a new drive movement. */
   fun addDriveData(timestamp: Double, twist: Twist2d) {
-    updates[timestamp] = PoseUpdate(twist, ArrayList<VisionUpdate>())
+    updates[timestamp] = PoseUpdate(twist, mutableListOf<VisionUpdate>())
     update()
   }
 
@@ -131,10 +134,19 @@ class PoseEstimator(stateStdDevs: Matrix<N3, N1>) {
 
         // Multiply by Kalman gain matrix
         val twistMatrix =
-          visionK.times(VecBuilder.fill(visionTwist.dx, visionTwist.dy, visionTwist.dtheta))
+          visionK.times(
+            VecBuilder.fill(
+              visionTwist.dx.inMeters, visionTwist.dy.inMeters, visionTwist.dtheta.inRadians
+            )
+          )
 
         // Apply twist
-        pose = pose.exp(Twist2d(twistMatrix[0, 0], twistMatrix[1, 0], twistMatrix[2, 0]))
+        pose =
+          pose.exp(
+            Twist2d(
+              twistMatrix[0, 0].meters, twistMatrix[1, 0].meters, twistMatrix[2, 0].radians
+            )
+          )
       }
       return pose
     }
