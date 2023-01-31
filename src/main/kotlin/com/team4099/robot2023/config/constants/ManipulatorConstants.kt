@@ -6,6 +6,7 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.reduction
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
@@ -27,7 +28,7 @@ object ManipulatorConstants {
   val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val REAL_ARM_KD = 0.25.volts / 1.0.inches.perSecond
 
-  //Constant for rpm to voltage
+  // Constant for rpm to voltage
   val SIM_ROLLER_KV = 0.0039.volts / 1.0.rotations.perMinute
   val REAL_ROLLER_KV = 0.0039.volts / 1.0.rotations.perMinute
 
@@ -51,6 +52,7 @@ object ManipulatorConstants {
   val ARM_GEAR_RATIO = 11.25.reduction
   val ROLLER_GEAR_RATIO = 18.0.reduction
 
+  // TODO: Change current thresholds
   val CONE_CURRENT_THRESHOLD = 15.amps
   val CUBE_CURRENT_THRESHOLD = 15.amps
 
@@ -66,18 +68,33 @@ object ManipulatorConstants {
 
   val MOMENT_INERTIA = 0.0000478
 
-  //tolerance for determining currentRollerState
-  val ROLLER_SPEED_TOLERANCE = 10.rotations.perMinute
+  // Tolerance for determining currentRollerState
+  val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
-  enum class RollerStates(val velocity: AngularVelocity) {
-    NO_SPIN(0.rotations.perMinute),
-    CONE_IDLE(60.rotations.perMinute),
-    CUBE_IDLE(-30.rotations.perMinute),
-    CONE_IN(300.rotations.perMinute),
-    CUBE_IN(-240.rotations.perMinute),
-    CONE_OUT(-300.rotations.perMinute),
-    CUBE_OUT(240.rotations.perMinute),
-    DUMMY(-Double.NEGATIVE_INFINITY.rotations.perMinute)
+  enum class RollerStates(val voltage: ElectricalPotential) {
+    NO_SPIN(0.volts),
+    CONE_IDLE(2.4.volts),
+    CUBE_IDLE(-1.2.volts),
+    CONE_IN(12.volts),
+    CUBE_IN(-9.6.volts),
+    CONE_OUT(-12.volts),
+    CUBE_OUT(9.6.volts),
+    DUMMY(-Double.NEGATIVE_INFINITY.volts);
+
+    companion object {
+      /**
+       * Uses roller velocity to calculate the current roller state via the difference between the
+       * current roller velocity and the velocity of the state to find the best fit.
+       *
+       * @param rollerVelocity The velocity of the roller as represented in radians per second.
+       */
+      fun fromRollerVoltageToState(rollerVoltage: ElectricalPotential): RollerStates {
+        return values().firstOrNull {
+          (it.voltage - rollerVoltage).absoluteValue <= ROLLER_VOLTAGE_TOLERANCE
+        }
+          ?: DUMMY
+      }
+    }
   }
 
   enum class DesiredArmStates(val position: Length) {
@@ -85,7 +102,23 @@ object ManipulatorConstants {
     SHELF_INTAKE_EXTENSION(4.inches),
     HIGH_SCORE_EXTENSION(8.inches),
     MAX_EXTENSION(10.inches),
-    DUMMY(-Double.NEGATIVE_INFINITY.inches)
+    DUMMY(-Double.NEGATIVE_INFINITY.inches);
+
+
+    companion object {
+      /**
+       * Uses the arm position to find the best fit for the current arm state which is then passed
+       * into the ActualArmState to calculate the proper state.
+       *
+       * @param armPosition The current position of the arm
+       */
+      fun fromArmPositionToState(armPosition: Length): ActualArmStates {
+        return ActualArmStates.fromDesiredState(
+          values().firstOrNull { (it.position - armPosition).absoluteValue <= ARM_TOLERANCE }
+            ?: DUMMY
+        )
+      }
+    }
   }
 
   enum class ActualArmStates(val correspondingDesiredState: DesiredArmStates) {

@@ -5,10 +5,10 @@ import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
-import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot
@@ -112,14 +112,18 @@ object Robot : LoggedRobot() {
     // checking for logging errors
     logReceiverQueueAlert.set(Logger.getInstance().receiverQueueFault)
 
-    // logging all commands
-    Logger.getInstance()
-      .recordOutput(
-        "ActiveCommands/Scheduler",
-        NetworkTableInstance.getDefault()
-          .getEntry("/LiveWindow/Ungrouped/Scheduler/Names")
-          .getStringArray(emptyArray())
-      )
+    // Set the scheduler to log events for command initialize, interrupt, finish
+    CommandScheduler.getInstance().onCommandInitialize { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
+    }
+
+    CommandScheduler.getInstance().onCommandFinish { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
+    }
+
+    CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
+    }
   }
 
   override fun teleopInit() {

@@ -15,8 +15,6 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.rotations
@@ -106,8 +104,12 @@ interface ManipulatorIO {
   fun setRollerPower(voltage: ElectricalPotential) {}
 
   /**
+<<<<<<< HEAD
    * Sets the voltage of the arm motor but also checks to make sure the voltage doesn't exceed
    * limit
+=======
+   * Sets the voltage of the arm motor but also checks to make sure the voltage doesn't exceed limit
+>>>>>>> 4f665faf1c7dc1224bd447f9158ee33b3fd73d0a
    *
    * @param voltage the voltage to set the motor to
    */

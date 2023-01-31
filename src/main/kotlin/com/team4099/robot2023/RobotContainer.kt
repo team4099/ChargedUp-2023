@@ -19,9 +19,6 @@ import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import org.littletonrobotics.junction.Logger
 import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
@@ -40,24 +37,6 @@ object RobotContainer {
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
       manipulator = Manipulator(ManipulatorIOSim)
       //      vision = Vision(VisionIOSit
-
-      // Set the scheduler to log events for command initialize, interrupt, finish
-      CommandScheduler.getInstance().onCommandInitialize { command: Command ->
-        Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
-      }
-
-      CommandScheduler.getInstance().onCommandFinish { command: Command ->
-        Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
-      }
-    }
-
-    // Set the scheduler to log events for command initialize, interrupt, finish
-    CommandScheduler.getInstance().onCommandInitialize { command: Command ->
-      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
-    }
-
-    CommandScheduler.getInstance().onCommandFinish { command: Command ->
-      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
   }
 
