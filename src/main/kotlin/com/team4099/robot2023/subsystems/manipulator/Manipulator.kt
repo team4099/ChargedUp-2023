@@ -117,7 +117,6 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     if ((forwardLimitReached && setpoint.velocity > 0.inches.perSecond) ||
       (reverseLimitReached && setpoint.velocity < 0.inches.perSecond)
     ) {
-      // TODO: hold position func
       io.setArmVoltage(0.volts)
     } else {
       io.setArmPosition(setpoint.position, feedforward)
@@ -201,18 +200,34 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   /** Holds the current arm position in place. */
   fun holdArmPosition(): Command {
-    return run {
-      io.setArmVoltage(armFeedforward.calculate(0.inches.perSecond))
-      Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", true)
-    }
-      .finallyDo { Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", false) }
+    val holdPositionCommand =
+      run {
+        io.setArmVoltage(armFeedforward.calculate(0.inches.perSecond))
+        Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", true)
+      }
+        .finallyDo {
+          Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", false)
+        }
+
+    holdPositionCommand.name = "ManipulatorHoldPositionCommand"
+    return holdPositionCommand
   }
 
   /** Sets the arm's power to the desired voltage until the forward/reverse limits are reached. */
   fun openLoopControl(voltage: ElectricalPotential): Command {
-    return run { setArmVoltage(voltage) }.until {
-      forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts
+    val openLoopArmCommand =
+      run { setArmVoltage(voltage) }.until {
+        forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts
+      }
+    if (voltage > 0.volts) {
+      openLoopArmCommand.name = "ManipulatorExtendArmOpenLoopCommand"
+    } else if (voltage < 0.volts) {
+      openLoopArmCommand.name = "ManipulatorRetractArmOpenLoopCommand"
+    } else {
+      openLoopArmCommand.name = "ManipulatorZeroVoltageOpenLoopCommand"
     }
+
+    return openLoopArmCommand
   }
 
   /** Utilizes the trapezoidal profile of the arm to extend the arm by the desired length. */
