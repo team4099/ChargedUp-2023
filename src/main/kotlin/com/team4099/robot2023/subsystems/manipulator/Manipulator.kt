@@ -52,7 +52,6 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
-  // TODO(fix units library and get rid of /3600)
   private val rollerKV =
     LoggedTunableValue(
       "Manipulator/RollerKV",
@@ -61,22 +60,13 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   var lastRollerRunTime = Clock.fpgaTime
 
-  var rollerState = ManipulatorConstants.RollerStates.NO_SPIN
-    get() {
-      for (state in ManipulatorConstants.RollerStates.values()) {
-        if ((state.velocity - inputs.rollerVelocity).absoluteValue <=
-          ManipulatorConstants.ROLLER_SPEED_TOLERANCE
-        ) {
-          return state
-        }
-      }
-      return ManipulatorConstants.RollerStates.DUMMY
-    }
+  val rollerState: ManipulatorConstants.RollerStates
+    get() = ManipulatorConstants.RollerStates.fromRollerVoltageToState(inputs.rollerAppliedVoltage)
 
   var lastRollerState = rollerState
 
-  // checks if motor current draw is greater than given threshold and if rollers are intaking
-  // last condition prevnts current spikes caused by starting to run intake from triggering this
+  // Checks if motor current draw is greater than given threshold and if rollers are intaking
+  // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCube: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD &&
@@ -88,6 +78,9 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
 
+  // Checks if motor current draw is greater than the given threshold for cubes and if rollers are
+  // intaking
+  // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCone: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CONE_CURRENT_THRESHOLD &&
@@ -108,17 +101,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     get() = inputs.armPosition <= ManipulatorConstants.ARM_MAX_RETRACTION
 
   val currentArmState: ManipulatorConstants.ActualArmStates
-    get() {
-      for (state in ManipulatorConstants.DesiredArmStates.values()) {
-        if ((state.position - inputs.armPosition).absoluteValue <=
-          ManipulatorConstants.ARM_TOLERANCE
-        ) {
-          return ManipulatorConstants.ActualArmStates.fromDesiredState(state)
-        }
-      }
-
-      return ManipulatorConstants.ActualArmStates.BETWEEN_TWO_STATES
-    }
+    get() = ManipulatorConstants.DesiredArmStates.fromArmPositionToState(inputs.armPosition)
 
   var armConstraints: TrapezoidProfile.Constraints<Meter> =
     TrapezoidProfile.Constraints(
@@ -130,6 +113,11 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   var prevArmSetpoint: TrapezoidProfile.State<Meter> = TrapezoidProfile.State()
 
+  /**
+   * Uses the calculations via feed forward to determine where to set the arm position to.
+   *
+   * @param setpoint The trapezoidal profile containing the desired position of the arm.
+   */
   fun setArmPosition(setpoint: TrapezoidProfile.State<Meter>) {
     val armAcceleration =
       (setpoint.velocity - prevArmSetpoint.velocity) / Constants.Universal.LOOP_PERIOD_TIME
@@ -143,7 +131,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       // TODO: hold position func
       io.setArmVoltage(0.volts)
     } else {
-      io.setPosition(setpoint.position, feedforward)
+      io.setArmPosition(setpoint.position, feedforward)
     }
     Logger.getInstance().recordOutput("Manipulator/armTargetPosition", setpoint.position.inInches)
     Logger.getInstance()
@@ -182,6 +170,11 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastIntakeSpikeTime.inSeconds)
   }
 
+  /**
+   * Sets the power of the roller in volts.
+   *
+   * @param rpm: The revolutions per minute of the roller as stated in radians per second.
+   */
   fun setRollerPower(rpm: AngularVelocity) {
     val voltage = rpm * rollerKV.get()
 
@@ -190,6 +183,12 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Manipulator/rollerTargetVoltage", voltage.inVolts)
   }
 
+  /**
+   * Based on the current voltage of the arm, it determines the amount of volts to set the arm to
+   * accordingly.
+   *
+   * @param voltage The desired voltage of the arm.
+   */
   fun setArmVoltage(voltage: ElectricalPotential) {
     if (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts) {
       io.setArmVoltage(0.volts)
@@ -198,14 +197,25 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     }
   }
 
+  /**
+   * Sets the roller motor brake mode.
+   *
+   * @param brake A flag representing the state of the break mode and whether it should be on/off.
+   */
   fun setRollerBrakeMode(brake: Boolean) {
     io.setRollerBrakeMode(brake)
   }
 
+  /**
+   * Sets the arm motor brake mode.
+   *
+   * @param brake A flag representing the state of the break mode and whether it should be on/off.
+   */
   fun setArmBrakeMode(brake: Boolean) {
     io.setArmBrakeMode(brake)
   }
 
+  /** Holds the current arm position in place. */
   fun holdArmPosition(): Command {
     return run {
       io.setArmVoltage(armFeedforward.calculate(0.inches.perSecond))
@@ -214,12 +224,14 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       .finallyDo { Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", false) }
   }
 
+  /** Sets the arm's power to the desired voltage until the forward/reverse limits are reached. */
   fun openLoopControl(voltage: ElectricalPotential): Command {
     return run { setArmVoltage(voltage) }.until {
       forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts
     }
   }
 
+  /** Utilizes the trapezoidal profile of the arm to extend the arm by the desired length. */
   fun extendArmPosition(position: Length): Command {
     var armProfile =
       TrapezoidProfile(
