@@ -133,6 +133,16 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
   }
 
+  fun openLoopCommand(voltage: ElectricalPotential): Command {
+    val openLoopCommand =
+      run { io.setArmVoltage(voltage) }.unless {
+        forwardLimitReached && voltage > 0.0.volts || reverseLimitReached && voltage < 0.0.volts
+      }
+
+    openLoopCommand.name = "GroundIntakeOpenLoopCommand"
+    return openLoopCommand
+  }
+
   /** Tells the feedforward not to move the arm */
   fun holdArmPosition(toAngle: Angle = positionToHold): Command {
     var holdPosition = toAngle

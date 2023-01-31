@@ -4,8 +4,6 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
-import com.team4099.robot2023.commands.groundintake.GroundIntakeExtendCommand
-import com.team4099.robot2023.commands.groundintake.GroundIntakeRetractCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
@@ -19,6 +17,7 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -77,8 +76,8 @@ object RobotContainer {
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
 
-    ControlBoard.extendIntake.whileTrue(GroundIntakeExtendCommand(groundIntake))
-    ControlBoard.retractIntake.whileTrue(GroundIntakeRetractCommand(groundIntake))
+    ControlBoard.extendIntake.whileTrue(groundIntake.openLoopCommand(4.0.volts))
+    ControlBoard.retractIntake.whileTrue(groundIntake.openLoopCommand(-4.0.volts))
     ControlBoard.characterizeIntake.whileTrue(GroundIntakeCharacterizeCommand(groundIntake))
     ControlBoard.setArmCommand.whileTrue(
       groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position)

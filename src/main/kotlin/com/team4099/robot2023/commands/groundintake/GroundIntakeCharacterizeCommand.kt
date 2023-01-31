@@ -25,6 +25,11 @@ class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandB
   var appliedVolts = 0.volts
   var step = 0.01.volts
 
+  override fun initialize() {
+    hasMoved = false
+    appliedVolts = 1.0.volts
+  }
+
   override fun execute() {
     groundIntake.io.setArmVoltage(appliedVolts)
 

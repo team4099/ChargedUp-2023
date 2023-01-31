@@ -8,6 +8,9 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.driven
+import org.team4099.lib.units.derived.driving
+import org.team4099.lib.units.derived.momentOfInertia
 import org.team4099.lib.units.derived.reduction
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -19,15 +22,15 @@ object GroundIntakeConstants {
     val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
     val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
-    val SIM_KP = 1.4.volts / 1.degrees
-    val SIM_KI = 1.0.volts / (1.degrees * 1.seconds)
-    val SIM_KD = 0.06.volts / (1.degrees.perSecond)
+    val SIM_KP = 0.0.volts / 1.degrees
+    val SIM_KI = 0.0.volts / (1.degrees * 1.seconds)
+    val SIM_KD = 0.0.volts / (1.degrees.perSecond)
 
     val NEO_ARM_KS = 0.0.volts
 
-    val ARM_KG = 1.12.volts
-    val ARM_KV = 0.02.volts / 1.0.degrees.perSecond
-    val ARM_KA = 0.0.volts / 1.0.degrees.perSecond.perSecond
+    val ARM_KG = 1.535.volts
+    val ARM_KV = 0.87.volts / 1.0.degrees.perSecond
+    val ARM_KA = 0.04.volts / 1.0.degrees.perSecond.perSecond
   }
 
   val VOLTAGE_COMPENSATION = 12.0.volts
@@ -43,22 +46,24 @@ object GroundIntakeConstants {
 
   val ABSOLUTE_ENCODER_OFFSET = 128.degrees // TODO: (Make this fr)
   // From encoder to intake
-  val ROLLER_GEAR_RATIO = (36.0 / 18.0)
+  val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).reduction
 
   // units are kg * m^2
-  val ROLLER_MOMENT_INERTIA = 0.00313
+  val ROLLER_MOMENT_INERTIA = 0.00313.momentOfInertia
 
   // gear reduction from absolute encoder to output
-  val ARM_ENCODER_GEAR_RATIO = (32.0 / 16.0).reduction
+  val ARM_ENCODER_GEAR_RATIO = (32.0.driven / 16.0.driving).reduction
   // gear reduction from motor to output
-  val ARM_OUTPUT_GEAR_RATIO = ((60 / 12) * (80 / 18) * (32.0 / 16.0)).reduction
+  val ARM_OUTPUT_GEAR_RATIO =
+    ((60.0.driven / 12.0.driving) * (80.0.driven / 18.0.driving) * (32.0.driven / 16.0.driving))
+      .reduction
 
   val ARM_LENGTH = 15.0.inches
 
   val ARM_MASS = 9.pounds
 
   // units are kg * m^2
-  val ARM_MOMENT_INTERTIA = 0.459
+  val ARM_MOMENT_INTERTIA = ARM_MASS * ARM_LENGTH.squared * 1 / 3
 
   val MAX_ARM_VELOCITY = 60.degrees.perSecond
   val MAX_ARM_ACCELERATION = 100.degrees.perSecond.perSecond

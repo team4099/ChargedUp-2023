@@ -39,14 +39,14 @@ object GroundIntakeIONeo : GroundIntakeIO {
   private val rollerSensor =
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
   private val armSensor =
     sparkMaxAngularMechanismSensor(
       armSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
