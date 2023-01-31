@@ -1,4 +1,4 @@
-package com.team4099.robot2023.subsystems.intake
+package com.team4099.robot2023.subsystems.groundintake
 
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
@@ -23,8 +23,8 @@ import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
-interface IntakeIO {
-  class IntakeIOInputs : LoggableInputs {
+interface GroundIntakeIO {
+  class GroundIntakeIOInputs : LoggableInputs {
     var armPosition: Angle = 0.0.degrees
     var armVelocity = 0.0.degrees.perSecond
 
@@ -41,65 +41,66 @@ interface IntakeIO {
     var rollerTemp = 0.0.celsius
 
     override fun toLog(table: LogTable?) {
-      table?.put("intakeArmPositionDegrees", armPosition.inDegrees)
-      table?.put("intakeArmVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)
+      table?.put("groundIntakeArmPositionDegrees", armPosition.inDegrees)
+      table?.put("groundIntakeArmVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)
 
-      table?.put("intakeArmAppliedVoltage", armAppliedVoltage.inVolts)
+      table?.put("groundIntakeArmAppliedVoltage", armAppliedVoltage.inVolts)
 
-      table?.put("intakeArmSupplyCurrentAmps", armSupplyCurrent.inAmperes)
+      table?.put("groundIntakeArmSupplyCurrentAmps", armSupplyCurrent.inAmperes)
 
-      table?.put("intakeArmStatorCurrentAmps", armStatorCurrent.inAmperes)
+      table?.put("groundIntakeArmStatorCurrentAmps", armStatorCurrent.inAmperes)
 
-      table?.put("intakeArmTempCelcius", armTemp.inCelsius)
+      table?.put("groundIntakeArmTempCelsius", armTemp.inCelsius)
 
-      table?.put("intakeRollerVelocityRPM", rollerVelocity.inRotationsPerMinute)
+      table?.put("groundIntakeRollerVelocityRPM", rollerVelocity.inRotationsPerMinute)
 
-      table?.put("intakeRollerAppliedVoltage", rollerAppliedVoltage.inVolts)
+      table?.put("groundIntakeRollerAppliedVoltage", rollerAppliedVoltage.inVolts)
 
-      table?.put("intakeRollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
+      table?.put("groundIntakeRollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)
 
-      table?.put("intakeRollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
+      table?.put("groundIntakeRollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)
 
-      table?.put("intakeRollerTempCelcius", rollerTemp.inCelsius)
+      table?.put("groundIntakeRollerTempCelsius", rollerTemp.inCelsius)
     }
 
     override fun fromLog(table: LogTable?) {
-      table?.getDouble("intakeArmPositionDegrees", armPosition.inDegrees)?.let {
+      table?.getDouble("groundIntakeArmPositionDegrees", armPosition.inDegrees)?.let {
         armPosition = it.degrees
       }
-      table?.getDouble("intakeArmVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)?.let {
-        armVelocity = it.degrees.perSecond
-      }
-      table?.getDouble("intakeArmAppliedVoltage", armAppliedVoltage.inVolts)?.let {
+      table?.getDouble("groundIntakeArmVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)
+        ?.let { armVelocity = it.degrees.perSecond }
+      table?.getDouble("groundIntakeArmAppliedVoltage", armAppliedVoltage.inVolts)?.let {
         armAppliedVoltage = it.volts
       }
-      table?.getDouble("intakeArmSupplyCurrentAmps", armSupplyCurrent.inAmperes)?.let {
+      table?.getDouble("groundIntakeArmSupplyCurrentAmps", armSupplyCurrent.inAmperes)?.let {
         armSupplyCurrent = it.amps
       }
-      table?.getDouble("intakeArmStatorCurrentAmps", armStatorCurrent.inAmperes)?.let {
+      table?.getDouble("groundIntakeArmStatorCurrentAmps", armStatorCurrent.inAmperes)?.let {
         armStatorCurrent = it.amps
       }
-      table?.getDouble("intakeArmTempCelcius", armTemp.inCelsius)?.let { armTemp = it.celsius }
+      table?.getDouble("groundIntakeArmTempCelsius", armTemp.inCelsius)?.let {
+        armTemp = it.celsius
+      }
 
-      table?.getDouble("intakeRollerVelocityRPM", rollerVelocity.inRotationsPerMinute)?.let {
+      table?.getDouble("groundIntakeRollerVelocityRPM", rollerVelocity.inRotationsPerMinute)?.let {
         rollerVelocity = it.rotations.perSecond
       }
-      table?.getDouble("intakeRollerApplied", rollerAppliedVoltage.inVolts)?.let {
+      table?.getDouble("groundIntakeRollerApplied", rollerAppliedVoltage.inVolts)?.let {
         rollerAppliedVoltage = it.volts
       }
-      table?.getDouble("intakeRollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let {
+      table?.getDouble("groundIntakeRollerSupplyCurrentAmps", rollerSupplyCurrent.inAmperes)?.let {
         rollerSupplyCurrent = it.amps
       }
-      table?.getDouble("intakeRollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)?.let {
+      table?.getDouble("groundIntakeRollerStatorCurrentAmps", rollerStatorCurrent.inAmperes)?.let {
         rollerStatorCurrent = it.amps
       }
-      table?.getDouble("intakeRollerTempCelcius", rollerTemp.inCelsius)?.let {
+      table?.getDouble("groundIntakeRollerTempCelsius", rollerTemp.inCelsius)?.let {
         rollerStatorCurrent = it.amps
       }
     }
   }
 
-  fun updateInputs(inputs: IntakeIOInputs) {}
+  fun updateInputs(inputs: GroundIntakeIOInputs) {}
 
   fun setRollerPower(voltage: ElectricalPotential) {}
 

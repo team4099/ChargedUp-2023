@@ -1,6 +1,6 @@
 package com.team4099.robot2023.commands.elevator
 
-import com.team4099.robot2023.subsystems.intake.Intake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inVolts
@@ -15,10 +15,10 @@ import org.team4099.lib.units.perSecond
  * @property appliedVolts the current amount of volts being applied to the motors
  * @property step the increase in volts per iteration
  */
-class IntakeCharacterizeCommand(val intake: Intake) : CommandBase() {
+class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandBase() {
 
   init {
-    addRequirements(intake)
+    addRequirements(groundIntake)
   }
 
   var hasMoved = false
@@ -26,9 +26,9 @@ class IntakeCharacterizeCommand(val intake: Intake) : CommandBase() {
   var step = 0.01.volts
 
   override fun execute() {
-    intake.io.setArmVoltage(appliedVolts)
+    groundIntake.io.setArmVoltage(appliedVolts)
 
-    if (intake.inputs.armVelocity > 0.0.degrees.perSecond) {
+    if (groundIntake.inputs.armVelocity > 0.0.degrees.perSecond) {
       hasMoved = true
       println(appliedVolts.inVolts)
     }

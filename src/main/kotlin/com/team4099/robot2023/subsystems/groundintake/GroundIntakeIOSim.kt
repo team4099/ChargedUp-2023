@@ -1,7 +1,7 @@
-package com.team4099.robot2023.subsystems.intake
+package com.team4099.robot2023.subsystems.groundintake
 
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.IntakeConstants
+import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
@@ -29,33 +29,37 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
-object IntakeIOSim : IntakeIO {
+object GroundIntakeIOSim : GroundIntakeIO {
 
   val rollerSim =
     FlywheelSim(
       DCMotor.getNEO(1),
-      IntakeConstants.ROLLER_GEAR_RATIO,
-      IntakeConstants.ROLLER_MOMENT_INERTIA
+      GroundIntakeConstants.ROLLER_GEAR_RATIO,
+      GroundIntakeConstants.ROLLER_MOMENT_INERTIA
     )
 
   val armSim =
     SingleJointedArmSim(
       DCMotor.getNEO(1),
-      IntakeConstants.ARM_OUTPUT_GEAR_RATIO,
-      IntakeConstants.ARM_MOMENT_INTERTIA,
-      IntakeConstants.ARM_LENGTH.inMeters,
-      IntakeConstants.ARM_MIN_ROTATION.inRadians,
-      IntakeConstants.ARM_MAX_ROTATION.inRadians,
-      IntakeConstants.ARM_MASS.inKilograms,
+      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO,
+      GroundIntakeConstants.ARM_MOMENT_INTERTIA,
+      GroundIntakeConstants.ARM_LENGTH.inMeters,
+      GroundIntakeConstants.ARM_MIN_ROTATION.inRadians,
+      GroundIntakeConstants.ARM_MAX_ROTATION.inRadians,
+      GroundIntakeConstants.ARM_MASS.inKilograms,
       true
     )
 
   private val armController =
-    PIDController(IntakeConstants.SIM_KP, IntakeConstants.SIM_KI, IntakeConstants.SIM_KD)
+    PIDController(
+      GroundIntakeConstants.PID.SIM_KP,
+      GroundIntakeConstants.PID.SIM_KI,
+      GroundIntakeConstants.PID.SIM_KD
+    )
 
   init {}
 
-  override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
+  override fun updateInputs(inputs: GroundIntakeIO.GroundIntakeIOInputs) {
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
     armSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 

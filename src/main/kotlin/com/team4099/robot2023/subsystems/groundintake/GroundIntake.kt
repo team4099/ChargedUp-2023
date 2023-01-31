@@ -1,95 +1,69 @@
-package com.team4099.robot2023.subsystems.intake
+package com.team4099.robot2023.subsystems.groundintake
 
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.IntakeConstants
+import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ArmFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
-import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
-import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
-import org.team4099.lib.units.derived.inVoltsPerRotationsPerMinute
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
-import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inRotationsPerMinute
-import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
-class Intake(val io: IntakeIO) : SubsystemBase() {
+class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
-  val inputs = IntakeIO.IntakeIOInputs()
+  val inputs = GroundIntakeIO.GroundIntakeIOInputs()
 
   var armFeedforward =
     ArmFeedforward(
-      IntakeConstants.NEO_ARM_KS,
-      IntakeConstants.ARM_KG,
-      IntakeConstants.ARM_KV,
-      IntakeConstants.ARM_KA
+      GroundIntakeConstants.PID.NEO_ARM_KS,
+      GroundIntakeConstants.PID.ARM_KG,
+      GroundIntakeConstants.PID.ARM_KV,
+      GroundIntakeConstants.PID.ARM_KA
     )
 
   private val kP =
-    LoggedTunableValue("Intake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree }))
+    LoggedTunableValue("GroundIntake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree }))
   private val kI =
     LoggedTunableValue(
-      "Intake/kI", Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
+      "GroundIntake/kI", Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
     )
   private val kD =
     LoggedTunableValue(
-      "Intake/kd", Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
-    )
-
-  private val rollerKV =
-    LoggedTunableValue(
-      "Intake/rollerKV",
-      Pair({ it.inVoltsPerRotationsPerMinute }, { it.volts / 1.0.rotations.perMinute })
+      "GroundIntake/kD",
+      Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
     )
 
   val forwardLimitReached: Boolean
-    get() = inputs.armPosition >= IntakeConstants.ARM_MAX_ROTATION
+    get() = inputs.armPosition >= GroundIntakeConstants.ARM_MAX_ROTATION
   val reverseLimitReached: Boolean
-    get() = inputs.armPosition <= IntakeConstants.ARM_MIN_ROTATION
+    get() = inputs.armPosition <= GroundIntakeConstants.ARM_MIN_ROTATION
 
   var lastIntakeRunTime = Clock.fpgaTime
 
-  val rollerState: IntakeConstants.rollerStates
-    get() {
-      for (state in IntakeConstants.rollerStates.values()) {
-        if ((state.velocity - inputs.armVelocity).absoluteValue <=
-          IntakeConstants.ROLLERR_TOLERANCE
-        ) {
-          return state
-        }
-      }
-      return IntakeConstants.rollerStates.DUMMY
-    }
+  val rollerState: GroundIntakeConstants.RollerStates
+    get() = GroundIntakeConstants.RollerStates.fromVoltageToRollerState(inputs.rollerAppliedVoltage)
 
-  val armState: IntakeConstants.armStates
-    get() {
-      for (state in IntakeConstants.armStates.values()) {
-        if ((state.position - inputs.armPosition).absoluteValue <= IntakeConstants.ARM_TOLERANCE) {
-          return state
-        }
-      }
-      return IntakeConstants.armStates.DUMMY
-    }
+  val armState: GroundIntakeConstants.ArmStates
+    get() = GroundIntakeConstants.ArmStates.fromDegreesToArmState(inputs.armPosition)
 
   var armConstraints: TrapezoidProfile.Constraints<Radian> =
     TrapezoidProfile.Constraints(
-      IntakeConstants.MAX_ARM_VELOCITY, IntakeConstants.MAX_ARM_ACCELERATION
+      GroundIntakeConstants.MAX_ARM_VELOCITY, GroundIntakeConstants.MAX_ARM_ACCELERATION
     )
 
   var prevArmSetpoint: TrapezoidProfile.State<Radian> =
@@ -99,30 +73,28 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
 
   init {
     if (RobotBase.isReal()) {
-      kP.initDefault(IntakeConstants.NEO_KP)
-      kI.initDefault(IntakeConstants.NEO_KI)
-      kD.initDefault(IntakeConstants.NEO_KD)
-      rollerKV.initDefault(IntakeConstants.NEO_ROLLER_KV)
+      kP.initDefault(GroundIntakeConstants.PID.NEO_KP)
+      kI.initDefault(GroundIntakeConstants.PID.NEO_KI)
+      kD.initDefault(GroundIntakeConstants.PID.NEO_KD)
 
       armFeedforward =
         ArmFeedforward(
-          IntakeConstants.NEO_ARM_KS,
-          IntakeConstants.ARM_KG,
-          IntakeConstants.ARM_KV,
-          IntakeConstants.ARM_KA
+          GroundIntakeConstants.PID.NEO_ARM_KS,
+          GroundIntakeConstants.PID.ARM_KG,
+          GroundIntakeConstants.PID.ARM_KV,
+          GroundIntakeConstants.PID.ARM_KA
         )
     } else {
-      kP.initDefault(IntakeConstants.SIM_KP)
-      kI.initDefault(IntakeConstants.SIM_KI)
-      kD.initDefault(IntakeConstants.SIM_KD)
-      rollerKV.initDefault(IntakeConstants.SIM_ROLLER_KV)
+      kP.initDefault(GroundIntakeConstants.PID.SIM_KP)
+      kI.initDefault(GroundIntakeConstants.PID.SIM_KI)
+      kD.initDefault(GroundIntakeConstants.PID.SIM_KD)
 
-      var armFeedforward =
+      armFeedforward =
         ArmFeedforward(
-          IntakeConstants.SIM_ARM_KS,
-          IntakeConstants.ARM_KG,
-          IntakeConstants.ARM_KV,
-          IntakeConstants.ARM_KA
+          GroundIntakeConstants.PID.SIM_ARM_KS,
+          GroundIntakeConstants.PID.ARM_KG,
+          GroundIntakeConstants.PID.ARM_KV,
+          GroundIntakeConstants.PID.ARM_KA
         )
     }
   }
@@ -134,26 +106,12 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       io.configPID(kP.get(), kI.get(), kD.get())
     }
 
-    Logger.getInstance().processInputs("Intake", inputs)
+    Logger.getInstance().processInputs("GroundIntake", inputs)
   }
 
-  /** @param rpm Represents the angular velocity of the rollers */
-  fun setRollerPower(rpm: AngularVelocity) {
-    val voltage = (rpm * rollerKV.get())
-
-    io.setRollerPower(voltage)
-    Logger.getInstance().recordOutput("Intake/rollerTargetSpeedRPM", rpm.inRotationsPerMinute)
-    Logger.getInstance().recordOutput("Intake/RollerTargetVotlage", voltage.inVolts)
-  }
-
-  /**
-   * Sets the break/idle mode of the roller
-   *
-   * @param brake The value that break mode for the roller will be set as
-   */
-  fun setRollerBrakeMode(brake: Boolean) {
-    io.setRollerBrakeMode(brake)
-    Logger.getInstance().recordOutput("Intake/rollerBrakeModeEnabled", brake)
+  /** @param appliedVoltage Represents the applied voltage of the roller motor */
+  fun setRollerVoltage(appliedVoltage: ElectricalPotential) {
+    io.setRollerPower(appliedVoltage)
   }
 
   /**
@@ -163,21 +121,20 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
    */
   fun setArmBrakeMode(brake: Boolean) {
     io.setArmBrakeMode(brake)
-    Logger.getInstance().recordOutput("Intake/armBrakeModeEnabled", brake)
+    Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
   }
 
   /** Tells the feedforward not to move the arm */
   fun holdArmPosition(): Command {
     positionToHold = inputs.armPosition
-    return run {
+    val holdPositionCommand = run {
       io.setArmPosition(positionToHold, armFeedforward.calculate(0.degrees, 0.degrees.perSecond))
 
-      Logger.getInstance().recordOutput("Intake/holdPosition", positionToHold.inDegrees)
-      Logger.getInstance().recordOutput("Intake/ActiveCommands/holdArmCommand", true)
+      Logger.getInstance().recordOutput("GroundIntake/holdPosition", positionToHold.inDegrees)
     }
-      .finallyDo {
-        Logger.getInstance().recordOutput("Intake/ActiveCommands/holdArmCommand", false)
-      }
+
+    holdPositionCommand.name = "GroundIntakeHoldPositionCommand"
+    return holdPositionCommand
   }
 
   /**
@@ -207,7 +164,8 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       io.setArmPosition(setpoint.position, feedforward)
     }
 
-    Logger.getInstance().recordOutput("Intake/intakeArmTargetPosition", setpoint.position.inDegrees)
+    Logger.getInstance()
+      .recordOutput("GroundIntake/groundIntakeArmTargetPosition", setpoint.position.inDegrees)
   }
 
   /**
@@ -236,7 +194,8 @@ class Intake(val io: IntakeIO) : SubsystemBase() {
       Logger.getInstance()
         .recordOutput(
           "Intake/isAtSetpoint",
-          (position - inputs.armPosition).absoluteValue <= IntakeConstants.ARM_TOLERANCE
+          (position - inputs.armPosition).absoluteValue <=
+            GroundIntakeConstants.ARM_TOLERANCE
         )
     }
       .beforeStarting(

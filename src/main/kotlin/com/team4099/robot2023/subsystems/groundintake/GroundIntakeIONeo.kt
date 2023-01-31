@@ -1,11 +1,10 @@
-package com.team4099.robot2023.subsystems.intake
+package com.team4099.robot2023.subsystems.groundintake
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
-import com.revrobotics.ControlType
 import com.revrobotics.SparkMaxPIDController
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.IntakeConstants
+import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DutyCycleEncoder
 import org.littletonrobotics.junction.Logger
@@ -28,7 +27,7 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 import kotlin.math.IEEErem
 
-object IntakeIONeo : IntakeIO {
+object GroundIntakeIONeo : GroundIntakeIO {
 
   private val rollerSparkMax =
     CANSparkMax(Constants.Intake.ROLLER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
@@ -38,12 +37,16 @@ object IntakeIONeo : IntakeIO {
 
   private val rollerSensor =
     sparkMaxAngularMechanismSensor(
-      rollerSparkMax, IntakeConstants.ROLLER_GEAR_RATIO, IntakeConstants.VOLTAGE_COMPENSATION
+      rollerSparkMax,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO,
+      GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
   private val armSensor =
     sparkMaxAngularMechanismSensor(
-      armSparkMax, IntakeConstants.ROLLER_GEAR_RATIO, IntakeConstants.VOLTAGE_COMPENSATION
+      armSparkMax,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO,
+      GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
   private val armEncoder = armSparkMax.getEncoder()
@@ -54,14 +57,13 @@ object IntakeIONeo : IntakeIO {
 
   val encoderAbsolutePosition: Angle
     get() {
-      return (throughBoreEncoder.get().rotations * IntakeConstants.ARM_ENCODER_GEAR_RATIO)
+      return (throughBoreEncoder.get().rotations * GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO)
     }
 
   val armAbsolutePosition: Angle
     get() {
-      return (encoderAbsolutePosition + IntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees.IEEErem(
-        360.0
-      )
+      return (encoderAbsolutePosition + GroundIntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees
+        .IEEErem(360.0)
         .degrees
     }
 
@@ -69,29 +71,32 @@ object IntakeIONeo : IntakeIO {
     rollerSparkMax.restoreFactoryDefaults()
     rollerSparkMax.clearFaults()
 
-    rollerSparkMax.enableVoltageCompensation(IntakeConstants.VOLTAGE_COMPENSATION.inVolts)
-    rollerSparkMax.setSmartCurrentLimit(IntakeConstants.ROLLER_CURRENT_LIMIT.inAmperes.toInt())
-    rollerSparkMax.inverted = IntakeConstants.ROLLER_MOTOR_INVERTED
+    rollerSparkMax.enableVoltageCompensation(GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts)
+    rollerSparkMax.setSmartCurrentLimit(
+      GroundIntakeConstants.ROLLER_CURRENT_LIMIT.inAmperes.toInt()
+    )
+    rollerSparkMax.inverted = GroundIntakeConstants.ROLLER_MOTOR_INVERTED
     rollerSparkMax.burnFlash()
 
-    rollerSparkMax.openLoopRampRate = IntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
+    rollerSparkMax.openLoopRampRate =
+      GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
     rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
 
     armSparkMax.restoreFactoryDefaults()
     armSparkMax.clearFaults()
 
-    armSparkMax.enableVoltageCompensation(IntakeConstants.VOLTAGE_COMPENSATION.inVolts)
-    armSparkMax.setSmartCurrentLimit(IntakeConstants.ARM_CURRENT_LIMIT.inAmperes.toInt())
-    armSparkMax.inverted = IntakeConstants.LEFT_MOTOR_INVERTED
+    armSparkMax.enableVoltageCompensation(GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts)
+    armSparkMax.setSmartCurrentLimit(GroundIntakeConstants.ARM_CURRENT_LIMIT.inAmperes.toInt())
+    armSparkMax.inverted = GroundIntakeConstants.LEFT_MOTOR_INVERTED
     armSparkMax.burnFlash()
 
-    armSparkMax.openLoopRampRate = IntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
+    armSparkMax.openLoopRampRate = GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
     armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
 
     zeroEncoder()
   }
 
-  override fun updateInputs(inputs: IntakeIO.IntakeIOInputs) {
+  override fun updateInputs(inputs: GroundIntakeIO.GroundIntakeIOInputs) {
     inputs.rollerVelocity = rollerSensor.velocity
     inputs.rollerAppliedVoltage = rollerSparkMax.busVoltage.volts * rollerSparkMax.appliedOutput
     inputs.rollerStatorCurrent = rollerSparkMax.outputCurrent.amps
@@ -120,8 +125,8 @@ object IntakeIONeo : IntakeIO {
     rollerSparkMax.setVoltage(
       MathUtil.clamp(
         voltage.inVolts,
-        -IntakeConstants.VOLTAGE_COMPENSATION.inVolts,
-        IntakeConstants.VOLTAGE_COMPENSATION.inVolts
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
       )
     )
   }

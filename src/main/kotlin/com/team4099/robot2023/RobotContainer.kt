@@ -3,20 +3,20 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
-import com.team4099.robot2023.commands.elevator.IntakeCharacterizeCommand
-import com.team4099.robot2023.commands.intake.IntakeExtendCommand
-import com.team4099.robot2023.commands.intake.IntakeRetractCommand
+import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
+import com.team4099.robot2023.commands.groundintake.GroundIntakeExtendCommand
+import com.team4099.robot2023.commands.groundintake.GroundIntakeRetractCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.IntakeConstants
+import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
-import com.team4099.robot2023.subsystems.intake.Intake
-import com.team4099.robot2023.subsystems.intake.IntakeIONeo
-import com.team4099.robot2023.subsystems.intake.IntakeIOSim
+import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
 
@@ -24,7 +24,7 @@ object RobotContainer {
   private val drivetrain: Drivetrain
   //  private val vision: Vision
 
-  private val intake: Intake
+  private val groundIntake: GroundIntake
 
   init {
     if (RobotBase.isReal()) {
@@ -32,13 +32,13 @@ object RobotContainer {
       drivetrain = Drivetrain(GyroIONavx, DrivetrainIOReal)
       //      vision = Vision(VisionIOSim)
 
-      intake = Intake(IntakeIONeo)
+      groundIntake = GroundIntake(GroundIntakeIONeo)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
       //      vision = Vision(VisionIOSim)
 
-      intake = Intake(IntakeIOSim)
+      groundIntake = GroundIntake(GroundIntakeIOSim)
     }
   }
 
@@ -52,7 +52,7 @@ object RobotContainer {
         drivetrain
       )
 
-    intake.defaultCommand = intake.holdArmPosition()
+    groundIntake.defaultCommand = groundIntake.holdArmPosition()
   }
 
   fun zeroSteering() {
@@ -77,11 +77,11 @@ object RobotContainer {
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
 
-    ControlBoard.extendIntake.whileTrue(IntakeExtendCommand(intake))
-    ControlBoard.retractIntake.whileTrue(IntakeRetractCommand(intake))
-    ControlBoard.characterizeIntake.whileTrue(IntakeCharacterizeCommand(intake))
+    ControlBoard.extendIntake.whileTrue(GroundIntakeExtendCommand(groundIntake))
+    ControlBoard.retractIntake.whileTrue(GroundIntakeRetractCommand(groundIntake))
+    ControlBoard.characterizeIntake.whileTrue(GroundIntakeCharacterizeCommand(groundIntake))
     ControlBoard.setArmCommand.whileTrue(
-      intake.rotateArmPosition(IntakeConstants.armStates.STOWED.position)
+      groundIntake.rotateArmPosition(GroundIntakeConstants.ArmStates.STOWED.position)
     )
   }
 
