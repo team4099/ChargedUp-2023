@@ -31,9 +31,9 @@ import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotations
 import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
-import org.team4099.lib.units.derived.inVoltsPerDegrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -154,7 +154,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     val feedback = steeringFeedback.calculate(turnAbsolutePosition, angle)
     Logger.getInstance().recordOutput("Drivetrain/PID/steeringFeedback", feedback.inVolts)
     Logger.getInstance()
-      .recordOutput("Drivetrain/PID/kP", steeringFeedback.proportionalGain.inVoltsPerDegrees)
+      .recordOutput("Drivetrain/PID/kP", steeringFeedback.proportionalGain.inVoltsPerDegree)
     Logger.getInstance()
       .recordOutput("Drivetrain/PID/kI", steeringFeedback.integralGain.inVoltsPerDegreeSeconds)
     Logger.getInstance()

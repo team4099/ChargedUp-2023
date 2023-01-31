@@ -17,9 +17,9 @@ import org.team4099.lib.units.derived.angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
+import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
-import org.team4099.lib.units.derived.inVoltsPerDegrees
 import org.team4099.lib.units.derived.inVoltsPerMeters
 import org.team4099.lib.units.derived.inVoltsPerMetersPerSecond
 import org.team4099.lib.units.derived.inVoltsPerMetersPerSecondPerSecond
@@ -48,7 +48,7 @@ class SwerveModule(val io: SwerveModuleIO) {
 
   private val steeringkP =
     LoggedTunableValue(
-      "Drivetrain/moduleSteeringkP", Pair({ it.inVoltsPerDegrees }, { it.volts.perDegree })
+      "Drivetrain/moduleSteeringkP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree })
     )
   private val steeringkI =
     LoggedTunableValue(
