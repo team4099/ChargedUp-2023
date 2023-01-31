@@ -102,20 +102,56 @@ interface GroundIntakeIO {
 
   fun updateInputs(inputs: GroundIntakeIOInputs) {}
 
+  /**
+   * Sets the voltage of the roller motor but also checks to make sure the voltage doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   fun setRollerPower(voltage: ElectricalPotential) {}
 
+  /**
+   * Sets the position of the arm motor, specifically the length of the arm
+   *
+   * @param position the position to set the arm to
+   * @param feedforward changes voltages to compensate for external forces
+   */
   fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {}
 
+  /**
+   * Sets the arm motor voltage, ensures the voltage is limited to battery voltage compensation
+   *
+   * @param voltage the voltage to set the arm motor to
+   */
   fun setArmVoltage(voltage: ElectricalPotential) {}
 
+  /**
+   * Updates the PID constants using the implementation controller
+   *
+   * @param kP accounts for linear error
+   * @param kI accounts for integral error
+   * @param kD accounts for derivative error
+   */
   fun configPID(
     kP: ProportionalGain<Radian, Volt>,
     kI: IntegralGain<Radian, Volt>,
     kD: DerivativeGain<Radian, Volt>
   ) {}
 
+  /** Sets the current encoder position to be the zero value */
   fun zeroEncoder() {}
 
+  /**
+   * Sets the roller motor brake mode
+   *
+   * @param brake if it brakes
+   */
   fun setRollerBrakeMode(brake: Boolean) {}
+
+  /**
+   * Sets the roller motor brake mode
+   *
+   * @param brake if it brakes
+   */
   fun setArmBrakeMode(brake: Boolean) {}
 }

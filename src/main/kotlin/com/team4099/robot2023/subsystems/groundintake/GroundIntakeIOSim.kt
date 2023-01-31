@@ -21,6 +21,7 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -41,7 +42,7 @@ object GroundIntakeIOSim : GroundIntakeIO {
   val armSim =
     SingleJointedArmSim(
       DCMotor.getNEO(1),
-      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO,
+      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving,
       GroundIntakeConstants.ARM_MOMENT_INTERTIA,
       GroundIntakeConstants.ARM_LENGTH.inMeters,
       GroundIntakeConstants.ARM_MIN_ROTATION.inRadians,
@@ -83,20 +84,46 @@ object GroundIntakeIOSim : GroundIntakeIO {
     )
   }
 
+  /**
+   * Sets the roller motor voltage, ensures the voltage is limited to battery voltage compensation
+   *
+   * @param voltage the voltage to set the roller motor to
+   */
   override fun setRollerPower(voltage: ElectricalPotential) {
     rollerSim.setInputVoltage(MathUtil.clamp(voltage.inVolts, -12.0, 12.0))
   }
 
+  /**
+   * Sets the arm to a desired angle, uses feedforward to account for external forces in the system
+   * The armPIDController uses the previously set PID constants and ff to calculate how to get to
+   * the desired position
+   *
+   * @param armPosition the desired angle to set the aerm to
+   * @param feedforward the amount of volts to apply for feedforward
+   */
   override fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {
     val ff = MathUtil.clamp(feedforward.inVolts, -12.0, 12.0).volts
     val feedback = armController.calculate(armSim.angleRads.radians, armPosition)
     armSim.setInputVoltage((ff + feedback).inVolts)
   }
 
+  /**
+   * Sets the arm motor voltage, ensures the voltage is limited to battery voltage compensation
+   *
+   * @param voltage the voltage to set the arm motor to
+   */
   override fun setArmVoltage(voltage: ElectricalPotential) {
     armSim.setInputVoltage(MathUtil.clamp(voltage.inVolts, -12.0, 12.0))
   }
 
+  /**
+   * Updates the PID constants using the implementation controller, uses arm sensor to convert from
+   * PID constants to motor controller units
+   *
+   * @param kP accounts for linear error
+   * @param kI accounts for integral error
+   * @param kD accounts for derivative error
+   */
   override fun configPID(
     kP: ProportionalGain<Radian, Volt>,
     kI: IntegralGain<Radian, Volt>,
@@ -105,5 +132,6 @@ object GroundIntakeIOSim : GroundIntakeIO {
     armController.setPID(kP, kI, kD)
   }
 
+  /** recalculates the current position of the neo encoder using value from the absolute encoder */
   override fun zeroEncoder() {}
 }

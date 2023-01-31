@@ -19,6 +19,7 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
@@ -55,11 +56,16 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
   private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
 
+  // gets the reported angle from the borehole encoder
   val encoderAbsolutePosition: Angle
     get() {
-      return (throughBoreEncoder.get().rotations * GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO)
+      return (
+        throughBoreEncoder.get().rotations *
+          GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO.asDrivenOverDriving
+        )
     }
 
+  // uses the absolute encoder position to calculate the arm position
   val armAbsolutePosition: Angle
     get() {
       return (encoderAbsolutePosition + GroundIntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees
@@ -121,6 +127,11 @@ object GroundIntakeIONeo : GroundIntakeIO {
     Logger.getInstance().recordOutput("Intake/AbsoluteArmPosition", armAbsolutePosition.inDegrees)
   }
 
+  /**
+   * Sets the roller motor voltage, ensures the voltage is limited to battery voltage compensation
+   *
+   * @param voltage the voltage to set the roller motor to
+   */
   override fun setRollerPower(voltage: ElectricalPotential) {
     rollerSparkMax.setVoltage(
       MathUtil.clamp(
@@ -131,10 +142,29 @@ object GroundIntakeIONeo : GroundIntakeIO {
     )
   }
 
+  /**
+   * Sets the arm motor voltage, ensures the voltage is limited to battery voltage compensation
+   *
+   * @param voltage the voltage to set the arm motor to
+   */
   override fun setArmVoltage(voltage: ElectricalPotential) {
-    armSparkMax.setVoltage(voltage.inVolts)
+    armSparkMax.setVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
+      )
+    )
   }
 
+  /**
+   * Sets the arm to a desired angle, uses feedforward to account for external forces in the system
+   * The armPIDController uses the previously set PID constants and ff to calculate how to get to
+   * the desired position
+   *
+   * @param armPosition the desired angle to set the aerm to
+   * @param feedforward the amount of volts to apply for feedforward
+   */
   override fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {
     armPIDController.ff = feedforward.inVolts
     armPIDController.setReference(
@@ -142,6 +172,14 @@ object GroundIntakeIONeo : GroundIntakeIO {
     )
   }
 
+  /**
+   * Updates the PID constants using the implementation controller, uses arm sensor to convert from
+   * PID constants to motor controller units
+   *
+   * @param kP accounts for linear error
+   * @param kI accounts for integral error
+   * @param kD accounts for derivative error
+   */
   override fun configPID(
     kP: ProportionalGain<Radian, Volt>,
     kI: IntegralGain<Radian, Volt>,
@@ -152,10 +190,16 @@ object GroundIntakeIONeo : GroundIntakeIO {
     armPIDController.d = armSensor.derivativePositionGainToRawUnits(kD)
   }
 
+  /** recalculates the current position of the neo encoder using value from the absolute encoder */
   override fun zeroEncoder() {
     armEncoder.setPosition(armSensor.positionToRawUnits(armAbsolutePosition))
   }
 
+  /**
+   * Sets the roller motor brake mode
+   *
+   * @param brake if it brakes
+   */
   override fun setRollerBrakeMode(brake: Boolean) {
     if (brake) {
       rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
@@ -164,6 +208,11 @@ object GroundIntakeIONeo : GroundIntakeIO {
     }
   }
 
+  /**
+   * Sets the arm motor brake mode
+   *
+   * @param brake if it brakes
+   */
   override fun setArmBrakeMode(brake: Boolean) {
     if (brake) {
       rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)

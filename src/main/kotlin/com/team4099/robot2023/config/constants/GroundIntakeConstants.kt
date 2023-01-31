@@ -8,6 +8,7 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.reduction
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perMinute
@@ -54,9 +55,9 @@ object GroundIntakeConstants {
   val ROLLER_MOMENT_INERTIA = 0.00313
 
   // gear reduction from absolute encoder to output
-  val ARM_ENCODER_GEAR_RATIO = (32.0 / 16.0)
+  val ARM_ENCODER_GEAR_RATIO = (32.0 / 16.0).reduction
   // gear reduction from motor to output
-  val ARM_OUTPUT_GEAR_RATIO = ((60 / 12) * (80 / 18) * (32.0 / 16.0))
+  val ARM_OUTPUT_GEAR_RATIO = ((60 / 12) * (80 / 18) * (32.0 / 16.0)).reduction
 
   val ARM_LENGTH = 15.0.inches
 
@@ -108,6 +109,4 @@ object GroundIntakeConstants {
       }
     }
   }
-
-  val ROLLERR_TOLERANCE = 10.rotations.perMinute
 }
