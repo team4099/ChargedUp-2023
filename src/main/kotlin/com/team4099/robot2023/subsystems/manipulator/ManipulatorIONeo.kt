@@ -43,22 +43,24 @@ object ManipulatorIONeo : ManipulatorIO {
   private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
 
   init {
+    //resetting the motors
     rollerSparkMax.restoreFactoryDefaults()
     rollerSparkMax.clearFaults()
     armSparkMax.restoreFactoryDefaults()
     armSparkMax.clearFaults()
 
+    //set-up voltage and current limits
     rollerSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
     rollerSparkMax.setSmartCurrentLimit(
       ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
     )
-    rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
+    //configure default settings
+    rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
     rollerSparkMax.inverted = ManipulatorConstants.ROLLER_MOTOR_INVERTED
     rollerSparkMax.burnFlash()
     rollerSparkMax.openLoopRampRate = ManipulatorConstants.ROLLER_RAMP_RATE
 
-    rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
-
+    //set-up voltage and current limits
     armSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
     armSparkMax.setSmartCurrentLimit(
       ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
@@ -67,9 +69,16 @@ object ManipulatorIONeo : ManipulatorIO {
     armSparkMax.burnFlash()
     armSparkMax.openLoopRampRate = ManipulatorConstants.ARM_RAMP_RATE
 
+    //set-up voltage and current limits
     armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
   }
 
+  /**
+   * Sets the voltage of the roller motor but also checks to make sure the voltage doesn't exceed
+   * limit, uses clamp to insure voltage is between battery voltage compensation
+   *
+   * @param voltage the voltage to set the motor to
+   */
   override fun setRollerPower(voltage: ElectricalPotential) {
     rollerSparkMax.setVoltage(
       MathUtil.clamp(
@@ -79,7 +88,11 @@ object ManipulatorIONeo : ManipulatorIO {
       )
     )
   }
-
+  /**
+   * Updates the values being logged using the actual sensor/motor readings
+   *
+   * @param inputs object of the Manipulator LoggableInputs
+   */
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
     inputs.rollerVelocity = rollerSensor.velocity
     inputs.rollerAppliedVoltage = rollerSparkMax.busVoltage.volts * rollerSparkMax.appliedOutput
@@ -102,21 +115,41 @@ object ManipulatorIONeo : ManipulatorIO {
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
     inputs.armTemp = armSparkMax.motorTemperature.celsius
   }
+
+  /**
+   * Sets the voltage of the arm motor but also checks to make sure the voltage doesn't exceed limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
   override fun setArmVoltage(voltage: ElectricalPotential) {
     armSparkMax.setVoltage(voltage.inVolts)
   }
 
+  /**
+   * Sets the position of the arm motor, specifically the length of the arm. Uses the sparkMax PID controller
+   *
+   * @param position the position to set the arm to
+   * @param feedforward changes voltages to compensate for external forces
+   */
   override fun setArmPosition(position: Length, feedforward: ElectricalPotential) {
     armPIDController.ff = feedforward.inVolts
     armPIDController.setReference(
-      armSensor.positionToRawUnits(position), CANSparkMax.ControlType.kSmartMotion
+      armSensor.positionToRawUnits(position), CANSparkMax.ControlType.kPosition
     )
   }
 
+  /** Sets the current encoder position to be the zero value */
   override fun zeroEncoder() {
     armSparkMax.encoder.position = 0.0
   }
 
+  /**
+   * Updates the PID constants using the implementation controller, uses arm sensor to convert from PID constants to motor controller units
+   *
+   * @param kP accounts for linear error
+   * @param kI accounts for integral error
+   * @param kD accounts for derivative error
+   */
   override fun configPID(
     kP: ProportionalGain<Meter, Volt>,
     kI: IntegralGain<Meter, Volt>,
@@ -128,6 +161,11 @@ object ManipulatorIONeo : ManipulatorIO {
     armPIDController.d = armSensor.derivativePositionGainToRawUnits(kD)
   }
 
+  /**
+   * Sets the roller motor brake mode
+   *
+   * @param brake if it brakes
+   */
   override fun setRollerBrakeMode(brake: Boolean) {
     if (brake) {
       rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
@@ -136,6 +174,11 @@ object ManipulatorIONeo : ManipulatorIO {
     }
   }
 
+  /**
+   * Sets the arm brake mode
+   *
+   * @param brake if it brakes
+   */
   override fun setArmBrakeMode(brake: Boolean) {
     if (brake) {
       armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)

@@ -241,9 +241,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       )
     var startTime = Clock.fpgaTime
 
-    return run {
-      Logger.getInstance().recordOutput("/ActiveCommands/ExtendArmPosition", true)
-
+    val extendArmPositionCommand = run {
       setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
       Logger.getInstance()
         .recordOutput(
@@ -265,6 +263,8 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
         this
       )
       .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
-      .finallyDo { Logger.getInstance().recordOutput("/ActiveCommands/ExtendArmPosition", false) }
+
+      extendArmPositionCommand.name = "manipulatorExtendArmPositionCommand"
+      return extendArmPositionCommand
   }
 }
