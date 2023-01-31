@@ -241,30 +241,32 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       )
     var startTime = Clock.fpgaTime
 
-    val extendArmPositionCommand = run {
-      setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
-      Logger.getInstance()
-        .recordOutput(
-          "/Manipulator/isAtSetpoint",
-          (position - inputs.armPosition).absoluteValue <= ManipulatorConstants.ARM_TOLERANCE
+    val extendArmPositionCommand =
+      run {
+        setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
+        Logger.getInstance()
+          .recordOutput(
+            "/Manipulator/isAtSetpoint",
+            (position - inputs.armPosition).absoluteValue <=
+              ManipulatorConstants.ARM_TOLERANCE
+          )
+      }
+        .beforeStarting(
+          {
+            startTime = Clock.fpgaTime
+            Logger.getInstance().recordOutput("/Manipulator/isAtSetpoint", false)
+            armProfile =
+              TrapezoidProfile(
+                armConstraints,
+                TrapezoidProfile.State(position, 0.meters.perSecond),
+                TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+              )
+          },
+          this
         )
-    }
-      .beforeStarting(
-        {
-          startTime = Clock.fpgaTime
-          Logger.getInstance().recordOutput("/Manipulator/isAtSetpoint", false)
-          armProfile =
-            TrapezoidProfile(
-              armConstraints,
-              TrapezoidProfile.State(position, 0.meters.perSecond),
-              TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
-            )
-        },
-        this
-      )
-      .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
+        .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
 
-      extendArmPositionCommand.name = "manipulatorExtendArmPositionCommand"
-      return extendArmPositionCommand
+    extendArmPositionCommand.name = "manipulatorExtendArmPositionCommand"
+    return extendArmPositionCommand
   }
 }

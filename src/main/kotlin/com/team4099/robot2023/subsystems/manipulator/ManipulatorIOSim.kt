@@ -63,7 +63,6 @@ object ManipulatorIOSim : ManipulatorIO {
   val mechanism_arm: MechanismLigament2d =
     mechanism_root.append(MechanismLigament2d("arm", 700.0, 0.0, 8.0, Color8Bit(Color.kWhite)))
 
-
   override fun updateInputs(inputs: ManipulatorIO.ManipulatorIOInputs) {
     armSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)

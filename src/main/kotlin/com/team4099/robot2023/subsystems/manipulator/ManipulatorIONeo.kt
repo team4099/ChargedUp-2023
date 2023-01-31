@@ -43,24 +43,24 @@ object ManipulatorIONeo : ManipulatorIO {
   private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
 
   init {
-    //resetting the motors
+    // resetting the motors
     rollerSparkMax.restoreFactoryDefaults()
     rollerSparkMax.clearFaults()
     armSparkMax.restoreFactoryDefaults()
     armSparkMax.clearFaults()
 
-    //set-up voltage and current limits
+    // set-up voltage and current limits
     rollerSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
     rollerSparkMax.setSmartCurrentLimit(
       ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
     )
-    //configure default settings
+    // configure default settings
     rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
     rollerSparkMax.inverted = ManipulatorConstants.ROLLER_MOTOR_INVERTED
     rollerSparkMax.burnFlash()
     rollerSparkMax.openLoopRampRate = ManipulatorConstants.ROLLER_RAMP_RATE
 
-    //set-up voltage and current limits
+    // set-up voltage and current limits
     armSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
     armSparkMax.setSmartCurrentLimit(
       ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
@@ -69,7 +69,7 @@ object ManipulatorIONeo : ManipulatorIO {
     armSparkMax.burnFlash()
     armSparkMax.openLoopRampRate = ManipulatorConstants.ARM_RAMP_RATE
 
-    //set-up voltage and current limits
+    // set-up voltage and current limits
     armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
   }
 
@@ -126,7 +126,8 @@ object ManipulatorIONeo : ManipulatorIO {
   }
 
   /**
-   * Sets the position of the arm motor, specifically the length of the arm. Uses the sparkMax PID controller
+   * Sets the position of the arm motor, specifically the length of the arm. Uses the sparkMax PID
+   * controller
    *
    * @param position the position to set the arm to
    * @param feedforward changes voltages to compensate for external forces
@@ -144,7 +145,8 @@ object ManipulatorIONeo : ManipulatorIO {
   }
 
   /**
-   * Updates the PID constants using the implementation controller, uses arm sensor to convert from PID constants to motor controller units
+   * Updates the PID constants using the implementation controller, uses arm sensor to convert from
+   * PID constants to motor controller units
    *
    * @param kP accounts for linear error
    * @param kI accounts for integral error
