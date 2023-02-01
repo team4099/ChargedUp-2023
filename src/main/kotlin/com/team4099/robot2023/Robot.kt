@@ -35,7 +35,9 @@ object Robot : LoggedRobot() {
     val logger = Logger.getInstance()
     // running replays as fast as possible when replaying. (play in real time when robot is real or
     // sim)
-    setUseTiming(Constants.Universal.SIM_MODE != Constants.Tuning.SimType.REPLAY)
+    setUseTiming(
+      RobotBase.isReal() || Constants.Universal.SIM_MODE != Constants.Tuning.SimType.REPLAY
+    )
 
     // metadata value (not timed -- just metadata for given log file)
     logger.recordMetadata(
