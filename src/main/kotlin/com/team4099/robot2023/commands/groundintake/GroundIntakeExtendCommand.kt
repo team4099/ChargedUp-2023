@@ -1,11 +1,7 @@
 package com.team4099.robot2023.commands.groundintake
 
-import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import edu.wpi.first.wpilibj2.command.CommandBase
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 //
-//class GroundIntakeExtendCommand(val groundIntake: GroundIntake) : CommandBase() {
+// class GroundIntakeExtendCommand(val groundIntake: GroundIntake) : CommandBase() {
 //
 //  lateinit var lowerIntakeArm: SequentialCommandGroup
 //
@@ -29,4 +25,4 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 //  override fun isFinished(): Boolean {
 //    return false
 //  }
-//}
+// }

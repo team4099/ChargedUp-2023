@@ -7,7 +7,6 @@ import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
 import com.team4099.robot2023.commands.groundintake.GroundIntakeRetractCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -18,7 +17,6 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -80,9 +78,9 @@ object RobotContainer {
     ControlBoard.extendIntake.whileTrue(groundIntake.groundIntakeExtendCommand())
     ControlBoard.retractIntake.whileTrue(GroundIntakeRetractCommand(groundIntake))
     ControlBoard.characterizeIntake.whileTrue(GroundIntakeCharacterizeCommand(groundIntake))
-//    ControlBoard.setArmCommand.whileTrue(
-//      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position)
-//    )
+    //    ControlBoard.setArmCommand.whileTrue(
+    //      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position)
+    //    )
   }
 
   fun mapTestControls() {}

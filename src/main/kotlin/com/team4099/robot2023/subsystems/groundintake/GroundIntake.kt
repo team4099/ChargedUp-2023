@@ -1,7 +1,6 @@
 package com.team4099.robot2023.subsystems.groundintake
 
 import com.team4099.lib.hal.Clock
-import com.team4099.lib.logging.LoggedTunableNumber
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
@@ -73,11 +72,10 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
   init {
     GroundIntakeConstants.ArmStates.values().forEach {
-      actualArmStates[it] = LoggedTunableValue<Radian>(
-        "GroundIntake/${it.name}",
-        it.position,
-        Pair({ it.inDegrees }, { it.degrees })
-      )
+      actualArmStates[it] =
+        LoggedTunableValue<Radian>(
+          "GroundIntake/${it.name}", it.position, Pair({ it.inDegrees }, { it.degrees })
+        )
     }
     if (RobotBase.isReal()) {
       kP.initDefault(GroundIntakeConstants.PID.NEO_KP)
@@ -144,20 +142,25 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
   }
 
-  fun groundIntakeExtendCommand(): Command{
+  fun groundIntakeExtendCommand(): Command {
     var desiredAngle = GroundIntakeConstants.ArmStates.INTAKE.position
     val supplier = DoubleSupplier { desiredAngle.inDegrees }
 
-    val extendCommand = rotateGroundIntakeToAngle(supplier).beforeStarting({
-        if (Constants.Tuning.TUNING_MODE) {
-          desiredAngle = actualArmStates[GroundIntakeConstants.ArmStates.INTAKE]?.get()
+    val setupCommand = runOnce {
+      if (Constants.Tuning.TUNING_MODE) {
+        desiredAngle =
+          actualArmStates[GroundIntakeConstants.ArmStates.INTAKE]?.get()
             ?: GroundIntakeConstants.ArmStates.DUMMY.position
-        }
-      }, this).andThen(holdArmPosition())
+      }
+    }
+
+    val extendCommand = rotateGroundIntakeToAngle(supplier).andThen(holdArmPosition())
+
+    val returnCommand = setupCommand.andThen(extendCommand)
 
     // TODO: change name
-    extendCommand.name = "GroundIntakeExtendCommand"
-    return extendCommand
+    returnCommand.name = "GroundIntakeExtendCommand"
+    return returnCommand
   }
 
   fun openLoopCommand(voltage: ElectricalPotential): Command {
@@ -259,7 +262,9 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
             positionToHold = inputs.armPosition
 
             Logger.getInstance()
-              .recordOutput("GroundIntake/groundIntakeSetpoint", supplier.asDouble.degrees.inDegrees)
+              .recordOutput(
+                "GroundIntake/groundIntakeSetpoint", supplier.asDouble.degrees.inDegrees
+              )
           }
             .until {
               // Run the lambda until the predicted finishing time of the profile elapses
