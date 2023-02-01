@@ -83,7 +83,7 @@ object ElevatorIOSim : ElevatorIO {
       elevatorHome.append(
         MechanismLigament2d(
           "Elevator",
-          ElevatorConstants.DesiredElevatorStates.MAX_HEIGHT.height.inInches,
+          ElevatorConstants.ElevatorStates.MAX_HEIGHT.height.inInches,
           90.0,
           15.0,
           Color8Bit(Color.kOrange)
@@ -130,7 +130,13 @@ object ElevatorIOSim : ElevatorIO {
    * @param voltage the voltage to set the motor to
    */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
-    elevatorSim.setInputVoltage(voltage.inVolts)
+    elevatorSim.setInputVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts,
+        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts
+      )
+    )
   }
 
   /**
@@ -141,7 +147,13 @@ object ElevatorIOSim : ElevatorIO {
    * @param feedforward change in voltage to account for external forces on the system
    */
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {
-    val ff = MathUtil.clamp(feedforward.inVolts, -12.0, 12.0).volts
+    val ff =
+      MathUtil.clamp(
+        feedforward.inVolts,
+        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts,
+        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts
+      )
+        .volts
     val feedback = elevatorController.calculate(elevatorSim.positionMeters.meters, position)
     elevatorSim.setInputVoltage((ff + feedback).inVolts)
   }

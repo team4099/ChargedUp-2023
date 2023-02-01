@@ -46,7 +46,6 @@ object ElevatorIONeo : ElevatorIO {
     )
 
   private val leaderPIDController: SparkMaxPIDController = leaderSparkMax.pidController
-  private val followerPIDController: SparkMaxPIDController = followerSparkMax.pidController
 
   init {
 
@@ -123,7 +122,6 @@ object ElevatorIONeo : ElevatorIO {
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {
 
     leaderPIDController.setFF(feedforward.inVolts)
-    followerPIDController.setFF(feedforward.inVolts)
 
     leaderPIDController.setReference(position.inMeters, CANSparkMax.ControlType.kPosition)
   }
@@ -150,9 +148,5 @@ object ElevatorIONeo : ElevatorIO {
     leaderPIDController.p = leaderSensor.proportionalPositionGainToRawUnits(kP)
     leaderPIDController.i = leaderSensor.integralPositionGainToRawUnits(kI)
     leaderPIDController.d = leaderSensor.derivativePositionGainToRawUnits(kD)
-
-    followerPIDController.p = followerSensor.proportionalPositionGainToRawUnits(kP)
-    followerPIDController.i = followerSensor.integralPositionGainToRawUnits(kI)
-    followerPIDController.d = followerSensor.derivativePositionGainToRawUnits(kD)
   }
 }

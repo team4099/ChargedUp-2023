@@ -13,17 +13,21 @@ import org.team4099.lib.units.base.percent
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import kotlin.math.PI
 
 object ElevatorConstants {
 
   const val SENSOR_CPR = 42
-  // TODO(Check ratio with design)
   const val GEAR_RATIO = (25.0 / 12.0)
   val CARRIAGE_MASS = 10.pounds
+
+  // TODO(check inversion)
   const val LEFT_MOTOR_INVERTED = true
-  const val RIGHT_MOTOR_INVERTED = false
+  const val RIGHT_MOTOR_INVERTED = !LEFT_MOTOR_INVERTED
+
   val RAMP_RATE = 0.5.percent.perSecond
 
   val REAL_KP = 1.0.volts / 1.meters
@@ -45,7 +49,9 @@ object ElevatorConstants {
   val VOLTAGE_COMPENSATION = 12.volts
   val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit
 
-  val SPOOL_RADIUS = 1.128.inches
+  // tooth_width * number_teeth = circumference
+  // circumference / 2pi = radius
+  val SPOOL_RADIUS = 0.005.meters * 32.0 / (2 * PI)
 
   val MAX_VELOCITY = 50.inches.perSecond
   val MAX_ACCELERATION = 75.inches.perSecond.perSecond
@@ -62,7 +68,7 @@ object ElevatorConstants {
   val INTAKE_CUBE_SHELF_OFFSET = 0.0.inches
   val INTAKE_CONE_SHELF_OFFSET = 0.0.inches
 
-  enum class DesiredElevatorStates(val height: Length) {
+  enum class ElevatorStates(val height: Length) {
     MIN_HEIGHT(ELEVATOR_MAX_RETRACTION),
     GROUND_INTAKE(0.inches),
     LOW_CUBE_SCORE(CUBE_DROP_HEIGHT),
@@ -74,27 +80,24 @@ object ElevatorConstants {
     HIGH_CUBE_SCORE(highCubeZ + CUBE_DROP_HEIGHT),
     HIGH_CONE_SCORE(highConeZ + CONE_DROP_HEIGHT),
     MAX_HEIGHT(ELEVATOR_MAX_EXTENSION),
-    DUMMY(-Double.NEGATIVE_INFINITY.inches)
-  }
-
-  // assuming that cone drop height is more than the cube drop height
-  enum class ActualElevatorStates(val correspondingDesiredState: DesiredElevatorStates) {
-    MIN_HEIGHT(DesiredElevatorStates.MIN_HEIGHT),
-    GROUND_INTAKE(DesiredElevatorStates.GROUND_INTAKE),
-    LOW_CUBE_SCORE(DesiredElevatorStates.LOW_CUBE_SCORE),
-    LOW_CONE_SCORE(DesiredElevatorStates.LOW_CONE_SCORE),
-    MID_CUBE_SCORE(DesiredElevatorStates.MID_CUBE_SCORE),
-    MID_CONE_SCORE(DesiredElevatorStates.MID_CONE_SCORE),
-    CUBE_SHELF_INTAKE(DesiredElevatorStates.CUBE_SHELF_INTAKE),
-    CONE_SHELF_INTAKE(DesiredElevatorStates.CONE_SHELF_INTAKE),
-    HIGH_CUBE_SCORE(DesiredElevatorStates.HIGH_CUBE_SCORE),
-    HIGH_CONE_SCORE(DesiredElevatorStates.HIGH_CONE_SCORE),
-    MAX_HEIGHT(DesiredElevatorStates.MAX_HEIGHT),
-    BETWEEN_TWO_STATES(DesiredElevatorStates.DUMMY);
+    BETWEEN_TWO_STATES(-Double.NEGATIVE_INFINITY.inches);
 
     companion object {
-      fun fromDesiredState(desiredState: DesiredElevatorStates) =
-        ActualElevatorStates.values().first { it.correspondingDesiredState == desiredState }
+
+      fun fromHeightToPosition(height: Length): Length {
+        return height / ELEVATOR_ANGLE.sin
+      }
+
+      fun fromPositionToHeight(position: Length): Length {
+        return position * ELEVATOR_ANGLE.sin
+      }
+
+      fun fromPositionToArmState(position: Length): ElevatorStates {
+        return values().firstOrNull {
+          (it.height - fromPositionToHeight(position)).absoluteValue <= ELEVATOR_TOLERANCE
+        }
+          ?: BETWEEN_TWO_STATES
+      }
     }
   }
 

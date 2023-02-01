@@ -32,13 +32,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val inputs = ElevatorIO.ElevatorInputs()
 
   // PID and Feedforward Values
-  var elevatorFeedforward =
-    ElevatorFeedforward(
-      ElevatorConstants.REAL_ELEVATOR_KS,
-      ElevatorConstants.ELEVATOR_KG,
-      ElevatorConstants.ELEVATOR_KV,
-      ElevatorConstants.ELEVATOR_KA
-    )
+  val elevatorFeedforward: ElevatorFeedforward
 
   private val kP =
     LoggedTunableValue("Elevator/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
@@ -58,17 +52,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
-  val currentState: ElevatorConstants.ActualElevatorStates
+  val currentState: ElevatorConstants.ElevatorStates
     get() {
-      for (state in ElevatorConstants.DesiredElevatorStates.values()) {
-        if ((state.height - inputs.elevatorPosition).absoluteValue <=
-          ElevatorConstants.ELEVATOR_TOLERANCE
-        ) {
-          return ElevatorConstants.ActualElevatorStates.fromDesiredState(state)
-        }
-      }
-      // TODO figure out if we'll ever need to know if we're between two states
-      return ElevatorConstants.ActualElevatorStates.BETWEEN_TWO_STATES
+      return ElevatorConstants.ElevatorStates.fromPositionToArmState(inputs.elevatorPosition)
     }
 
   // trapezoidal profile stuff
@@ -210,17 +196,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     // Constructing our elevator profile in here because its internal values are dependent on the
     // position we want to set the elevator to
 
-    // TODO(switch to sign math before testing irl)
+    val position = ElevatorConstants.ElevatorStates.fromPositionToHeight(height)
 
-    // val position = height/ElevatorConstants.ELEVATOR_ANGLE.sin
-    val position = height
-
-    var elevatorProfile =
-      TrapezoidProfile(
-        elevatorConstraints,
-        TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
-        TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
-      )
+    lateinit var elevatorProfile: TrapezoidProfile<Meter>
 
     // Obtaining a start time for this command so that we can pass it into our profile. This is done
     // here because we need the startTime to represent the time at which the profile began.
