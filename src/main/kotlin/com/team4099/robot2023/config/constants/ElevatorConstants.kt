@@ -53,6 +53,8 @@ object ElevatorConstants {
   // TODO(Check height with design)
   val ELEVATOR_MAX_EXTENSION = 52.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
+  val ELEVATOR_SOFTLIMIT_EXTENSION = 51.5.inches
+  val ELEVATOR_SOFTLIMIT_RETRACTION = 0.5.inches
 
   // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_HEIGHT = 0.0.inches

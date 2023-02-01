@@ -52,9 +52,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     )
 
   val forwardLimitReached: Boolean
-    get() = inputs.elevatorPosition >= ElevatorConstants.ELEVATOR_MAX_EXTENSION
+    get() = inputs.elevatorPosition >= ElevatorConstants.ELEVATOR_SOFTLIMIT_EXTENSION
   val reverseLimitReached: Boolean
-    get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION
+    get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION
 
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
