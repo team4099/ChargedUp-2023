@@ -23,7 +23,7 @@ import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
-import java.util.function.DoubleSupplier
+import java.util.function.Supplier
 
 class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
@@ -144,7 +144,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
   fun groundIntakeExtendCommand(): Command {
     var desiredAngle = GroundIntakeConstants.ArmStates.INTAKE.position
-    val supplier = DoubleSupplier { desiredAngle.inDegrees }
 
     val setupCommand = runOnce {
       if (Constants.Tuning.TUNING_MODE) {
@@ -154,7 +153,8 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
       }
     }
 
-    val extendCommand = rotateGroundIntakeToAngle(supplier).andThen(holdArmPosition())
+    val extendCommand =
+      rotateGroundIntakeToAngle(desiredAngle.asSupplier).andThen(holdArmPosition())
 
     val returnCommand = setupCommand.andThen(extendCommand)
 
@@ -228,13 +228,13 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
    *
    * @param angle The angle the arm should go to
    */
-  fun rotateGroundIntakeToAngle(supplier: DoubleSupplier): Command {
+  fun rotateGroundIntakeToAngle(angleSupplier: Supplier<Angle>): Command {
     // Generate a trapezoidal profile from the current position to the setpoint
     // with set constraints
     var armProfile =
       TrapezoidProfile(
         armConstraints,
-        TrapezoidProfile.State(supplier.asDouble.degrees, 0.degrees.perSecond),
+        TrapezoidProfile.State(angleSupplier.get(), 0.degrees.perSecond),
         TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
       )
 
@@ -251,7 +251,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
         armProfile =
           TrapezoidProfile(
             armConstraints,
-            TrapezoidProfile.State(supplier.asDouble.degrees, 0.degrees.perSecond),
+            TrapezoidProfile.State(angleSupplier.get(), 0.degrees.perSecond),
             TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
           )
       }
@@ -263,7 +263,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
             Logger.getInstance()
               .recordOutput(
-                "GroundIntake/groundIntakeSetpoint", supplier.asDouble.degrees.inDegrees
+                "GroundIntake/groundIntakeSetpoint", angleSupplier.get().inDegrees
               )
           }
             .until {
