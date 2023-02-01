@@ -120,7 +120,6 @@ object ManipulatorIOSim : ManipulatorIO {
     armSim.setInputVoltage((ff + feedback).inVolts)
   }
 
-
   /** Sets the current encoder position to be the zero value */
   override fun zeroEncoder() {}
 

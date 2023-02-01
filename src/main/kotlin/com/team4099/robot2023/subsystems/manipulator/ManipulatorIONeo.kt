@@ -60,7 +60,6 @@ object ManipulatorIONeo : ManipulatorIO {
     rollerSparkMax.burnFlash()
     rollerSparkMax.openLoopRampRate = ManipulatorConstants.ROLLER_RAMP_RATE
 
-
     // set-up voltage and current limits
     armSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
     armSparkMax.setSmartCurrentLimit(
@@ -69,7 +68,6 @@ object ManipulatorIONeo : ManipulatorIO {
     armSparkMax.inverted = ManipulatorConstants.ARM_MOTOR_INVERTED
     armSparkMax.burnFlash()
     armSparkMax.openLoopRampRate = ManipulatorConstants.ARM_RAMP_RATE
-
 
     // set-up voltage and current limits
     armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
@@ -127,7 +125,6 @@ object ManipulatorIONeo : ManipulatorIO {
   override fun setArmVoltage(voltage: ElectricalPotential) {
     armSparkMax.setVoltage(voltage.inVolts)
   }
-
 
   /**
    * Sets the position of the arm motor, specifically the length of the arm. Uses the sparkMax PID

@@ -104,12 +104,9 @@ interface ManipulatorIO {
   fun setRollerPower(voltage: ElectricalPotential) {}
 
   /**
-<<<<<<< HEAD
-   * Sets the voltage of the arm motor but also checks to make sure the voltage doesn't exceed
-   * limit
-=======
-   * Sets the voltage of the arm motor but also checks to make sure the voltage doesn't exceed limit
->>>>>>> 4f665faf1c7dc1224bd447f9158ee33b3fd73d0a
+   * <<<<<<< HEAD Sets the voltage of the arm motor but also checks to make sure the voltage doesn't
+   * exceed limit ======= Sets the voltage of the arm motor but also checks to make sure the voltage
+   * doesn't exceed limit >>>>>>> 4f665faf1c7dc1224bd447f9158ee33b3fd73d0a
    *
    * @param voltage the voltage to set the motor to
    */
@@ -123,10 +120,7 @@ interface ManipulatorIO {
    */
   fun setArmPosition(position: Length, feedforward: ElectricalPotential) {}
 
-  /**
-   * Sets the current encoder position to be the zero value
-   *
-   */
+  /** Sets the current encoder position to be the zero value */
   fun zeroEncoder() {}
 
   /**

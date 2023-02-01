@@ -28,7 +28,7 @@ class ArmCharacterizationCommand(val manipulator: Manipulator) : CommandBase() {
   override fun execute() {
     manipulator.setArmVoltage(appliedVolts)
 
-    if (manipulator.inputs.armVelocity > 0.meters.perSecond) {
+    if (manipulator.inputs.armVelocity > 0.meters.perSecond && !hasMoved) {
       hasMoved = true
       println(appliedVolts.inVolts)
       Logger.getInstance().recordOutput("/Manipulator/ksVoltage", appliedVolts.inVolts)

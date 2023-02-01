@@ -1,6 +1,5 @@
 package com.team4099.robot2023.config.constants
 
-import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inches
@@ -8,14 +7,12 @@ import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.reduction
-import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 
 object ManipulatorConstants {
 
-  // PID constants
+  // TODO(Maybe tune feedforward constants)
   val ARM_KS = 0.002.volts
   val ARM_KV = 0.2.volts / 1.0.inches.perSecond
   val ARM_KA = 0.0.volts / 1.0.inches.perSecond.perSecond
@@ -24,18 +21,16 @@ object ManipulatorConstants {
   val SIM_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val SIM_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
+  // TODO(tune these)
   val REAL_ARM_KP = 1.0.volts / 1.0.inches
   val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val REAL_ARM_KD = 0.25.volts / 1.0.inches.perSecond
-
-  // Constant for rpm to voltage
-  val SIM_ROLLER_KV = 0.0039.volts / 1.0.rotations.perMinute
-  val REAL_ROLLER_KV = 0.0039.volts / 1.0.rotations.perMinute
 
   val ARM_RAMP_RATE = 0.5
   val ROLLER_RAMP_RATE = 0.5
 
   // used to detect intake/outake, values need testing
+  // TODO(test this)
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.75.seconds
   val WAIT_FOR_STATE_TO_CHANGE = 0.8.seconds
 
@@ -71,6 +66,7 @@ object ManipulatorConstants {
   // Tolerance for determining currentRollerState
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
+  // TODO(test voltage values)
   enum class RollerStates(val voltage: ElectricalPotential) {
     NO_SPIN(0.volts),
     CONE_IDLE(2.4.volts),
@@ -97,13 +93,13 @@ object ManipulatorConstants {
     }
   }
 
-  enum class DesiredArmStates(val position: Length) {
+  // TODO(figure out the values)
+  enum class armStates(val position: Length) {
     MIN_EXTENSION(0.inches),
     SHELF_INTAKE_EXTENSION(4.inches),
     HIGH_SCORE_EXTENSION(8.inches),
     MAX_EXTENSION(10.inches),
     DUMMY(-Double.NEGATIVE_INFINITY.inches);
-
 
     companion object {
       /**
@@ -112,26 +108,10 @@ object ManipulatorConstants {
        *
        * @param armPosition The current position of the arm
        */
-      fun fromArmPositionToState(armPosition: Length): ActualArmStates {
-        return ActualArmStates.fromDesiredState(
-          values().firstOrNull { (it.position - armPosition).absoluteValue <= ARM_TOLERANCE }
-            ?: DUMMY
-        )
+      fun fromArmPositionToState(armPosition: Length): armStates {
+        return values().firstOrNull { (it.position - armPosition).absoluteValue <= ARM_TOLERANCE }
+          ?: DUMMY
       }
-    }
-  }
-
-  enum class ActualArmStates(val correspondingDesiredState: DesiredArmStates) {
-    MIN_EXTENSION(DesiredArmStates.MIN_EXTENSION),
-    SHELF_INTAKE_EXTENSION(DesiredArmStates.SHELF_INTAKE_EXTENSION),
-    HIGH_SCORE_EXTENSION(DesiredArmStates.HIGH_SCORE_EXTENSION),
-    MAX_EXTENSION(DesiredArmStates.MAX_EXTENSION),
-    BETWEEN_TWO_STATES(DesiredArmStates.DUMMY);
-
-    companion object {
-      //Converts desired state enum to actual state enum
-      fun fromDesiredState(desiredState: DesiredArmStates) =
-        ActualArmStates.values().first { it.correspondingDesiredState == desiredState }
     }
   }
 }
