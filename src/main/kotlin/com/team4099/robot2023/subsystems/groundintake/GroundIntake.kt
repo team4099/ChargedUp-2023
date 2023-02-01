@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.groundintake
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableNumber
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
@@ -23,6 +24,7 @@ import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import java.util.function.DoubleSupplier
 
 class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
@@ -52,6 +54,8 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   val rollerState: GroundIntakeConstants.RollerStates
     get() = GroundIntakeConstants.RollerStates.fromVoltageToRollerState(inputs.rollerAppliedVoltage)
 
+  val actualArmStates = hashMapOf<GroundIntakeConstants.ArmStates, LoggedTunableValue<Radian>>()
+
   val armState: GroundIntakeConstants.ArmStates
     get() = GroundIntakeConstants.ArmStates.fromDegreesToArmState(inputs.armPosition)
 
@@ -68,6 +72,13 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   var desiredPosition = 0.0.degrees
 
   init {
+    GroundIntakeConstants.ArmStates.values().forEach {
+      actualArmStates[it] = LoggedTunableValue<Radian>(
+        "GroundIntake/${it.name}",
+        it.position,
+        Pair({ it.inDegrees }, { it.degrees })
+      )
+    }
     if (RobotBase.isReal()) {
       kP.initDefault(GroundIntakeConstants.PID.NEO_KP)
       kI.initDefault(GroundIntakeConstants.PID.NEO_KI)
@@ -133,14 +144,30 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
   }
 
+  fun groundIntakeExtendCommand(): Command{
+    var desiredAngle = GroundIntakeConstants.ArmStates.INTAKE.position
+    val supplier = DoubleSupplier { desiredAngle.inDegrees }
+
+    val extendCommand = rotateGroundIntakeToAngle(supplier).beforeStarting({
+        if (Constants.Tuning.TUNING_MODE) {
+          desiredAngle = actualArmStates[GroundIntakeConstants.ArmStates.INTAKE]?.get()
+            ?: GroundIntakeConstants.ArmStates.DUMMY.position
+        }
+      }, this).andThen(holdArmPosition())
+
+    // TODO: change name
+    extendCommand.name = "GroundIntakeExtendCommand"
+    return extendCommand
+  }
+
   fun openLoopCommand(voltage: ElectricalPotential): Command {
-    val openLoopCommand =
+    val returnCommand =
       run { io.setArmVoltage(voltage) }.unless {
         forwardLimitReached && voltage > 0.0.volts || reverseLimitReached && voltage < 0.0.volts
       }
 
-    openLoopCommand.name = "GroundIntakeOpenLoopCommand"
-    return openLoopCommand
+    returnCommand.name = "GroundIntakeOpenLoopCommand"
+    return returnCommand
   }
 
   /** Tells the feedforward not to move the arm */
@@ -198,13 +225,13 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
    *
    * @param angle The angle the arm should go to
    */
-  fun rotateGroundIntakeToAngle(angle: Angle): Command {
+  fun rotateGroundIntakeToAngle(supplier: DoubleSupplier): Command {
     // Generate a trapezoidal profile from the current position to the setpoint
     // with set constraints
     var armProfile =
       TrapezoidProfile(
         armConstraints,
-        TrapezoidProfile.State(angle, 0.degrees.perSecond),
+        TrapezoidProfile.State(supplier.asDouble.degrees, 0.degrees.perSecond),
         TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
       )
 
@@ -221,7 +248,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
         armProfile =
           TrapezoidProfile(
             armConstraints,
-            TrapezoidProfile.State(angle, 0.degrees.perSecond),
+            TrapezoidProfile.State(supplier.asDouble.degrees, 0.degrees.perSecond),
             TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
           )
       }
@@ -230,6 +257,9 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
             // Regenerates profile state for that loop cycle and sets to that position
             setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
             positionToHold = inputs.armPosition
+
+            Logger.getInstance()
+              .recordOutput("GroundIntake/groundIntakeSetpoint", supplier.asDouble.degrees.inDegrees)
           }
             .until {
               // Run the lambda until the predicted finishing time of the profile elapses

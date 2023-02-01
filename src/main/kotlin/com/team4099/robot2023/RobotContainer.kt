@@ -4,6 +4,7 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
+import com.team4099.robot2023.commands.groundintake.GroundIntakeRetractCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
@@ -76,12 +77,12 @@ object RobotContainer {
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
 
-    ControlBoard.extendIntake.whileTrue(groundIntake.openLoopCommand(4.0.volts))
-    ControlBoard.retractIntake.whileTrue(groundIntake.openLoopCommand(-4.0.volts))
+    ControlBoard.extendIntake.whileTrue(groundIntake.groundIntakeExtendCommand())
+    ControlBoard.retractIntake.whileTrue(GroundIntakeRetractCommand(groundIntake))
     ControlBoard.characterizeIntake.whileTrue(GroundIntakeCharacterizeCommand(groundIntake))
-    ControlBoard.setArmCommand.whileTrue(
-      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position)
-    )
+//    ControlBoard.setArmCommand.whileTrue(
+//      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position)
+//    )
   }
 
   fun mapTestControls() {}

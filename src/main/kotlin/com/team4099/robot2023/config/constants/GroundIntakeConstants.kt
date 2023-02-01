@@ -84,7 +84,7 @@ object GroundIntakeConstants {
   enum class ArmStates(val position: Angle) {
     INTAKE(4.4.degrees),
     STOWED(55.6.degrees),
-    DUMMY(-Double.NEGATIVE_INFINITY.degrees);
+    DUMMY(-1337.degrees);
 
     companion object {
       fun fromDegreesToArmState(angle: Angle): ArmStates {
