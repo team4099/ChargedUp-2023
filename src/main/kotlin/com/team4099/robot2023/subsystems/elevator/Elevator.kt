@@ -169,37 +169,37 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
     // Creates a command that runs continuously until the profile is finished. The run function
     // accepts a lambda which indicates what we want to run every iteration.
-    return run {
-      setPosition(
-        elevatorProfile.calculate(
-          Clock.fpgaTime -
-            startTime
-        )
-      ) // Every loop cycle we have a different profile state we're
-      // calculating. Hence, we want to pass in a different Trapezoidal
-      // Profile State into the setPosition function.
-      Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", true)
-    }
-      .beforeStarting(
-        {
-          startTime = Clock.fpgaTime
-          elevatorProfile =
-            TrapezoidProfile(
-              elevatorConstraints,
-              TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
-              TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
+    val raiseElevatorHeightCommand = runOnce{
+      startTime = Clock.fpgaTime
+      elevatorProfile =
+        TrapezoidProfile(
+          elevatorConstraints,
+          TrapezoidProfile.State(position, 0.0.meters / 1.0.seconds),
+          TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity))
+
+    }.andThen(
+       run{
+          setPosition(
+            elevatorProfile.calculate(
+              Clock.fpgaTime -
+                startTime
             )
-        },
-        this
+          ) // Every loop cycle we have a different profile state we're
+          // calculating. Hence, we want to pass in a different Trapezoidal
+          // Profile State into the setPosition function.
+          Logger.getInstance().recordOutput("/ActiveCommands/SetElevatorPosition", true)
+        }.until { // The following lambda creates a race condition that stops the command we created
+            // above when the passed in condition is true. In our case it's checking when
+            // elevatorProfile is finished based on elapsed time.
+            elevatorProfile.isFinished(
+              (Clock.fpgaTime - startTime)
+            ) // This is the race condition we're passing in.
+          }
       )
-      .until { // The following lambda creates a race condition that stops the command we created
-        // above when the passed in condition is true. In our case it's checking when
-        // elevatorProfile is finished based on elapsed time.
-        elevatorProfile.isFinished(
-          (Clock.fpgaTime - startTime)
-        ) // This is the race condition we're passing in.
-      }
+    raiseElevatorHeightCommand.name = "ElevatorRaiseHeightCommand"
+    return raiseElevatorHeightCommand
   }
+
 
   fun openLoopControl(percentOutput: Double): Command {
     return run { setOpenLoop(percentOutput) }.finallyDo { setOpenLoop(0.0) }

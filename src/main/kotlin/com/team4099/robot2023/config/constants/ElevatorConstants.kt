@@ -17,7 +17,6 @@ import org.team4099.lib.units.perSecond
 
 object ElevatorConstants {
 
-  const val SENSOR_CPR = 42
   // TODO(Check ratio with design)
   const val GEAR_RATIO = (32.0 / 12.0)
   val CARRIAGE_MASS = 30.pounds
