@@ -1,15 +1,12 @@
 package com.team4099.robot2023
 
-import com.team4099.robot2022.commands.intake.IntakeConeCommand
-import com.team4099.robot2022.commands.intake.IntakeCubeCommand
 import com.team4099.robot2022.commands.intake.ManipulatorIdleCommand
-import com.team4099.robot2022.commands.intake.OuttakeConeCommand
-import com.team4099.robot2022.commands.intake.OutttakeCubeCommand
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -20,6 +17,7 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.inches
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -79,10 +77,18 @@ object RobotContainer {
     //
     // ControlBoard.setArmPositionToShelfIntake.whileTrue(manipulator.extendArmPosition(5.inches))
     //    ControlBoard.armCharacterization.whileTrue(ArmCharacterizationCommand(manipulator))
-    ControlBoard.intakeCone.whileTrue(IntakeConeCommand(manipulator))
-    ControlBoard.intakeCube.whileTrue(IntakeCubeCommand(manipulator))
-    ControlBoard.outtakeCone.whileTrue(OuttakeConeCommand(manipulator))
-    ControlBoard.outtakeCube.whileTrue(OutttakeCubeCommand(manipulator))
+    ControlBoard.intakeCone.whileTrue(
+      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CONE_IN, 0.0.inches)
+    )
+    ControlBoard.intakeCube.whileTrue(
+      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CUBE_IN, 0.0.inches)
+    )
+    ControlBoard.outtakeCone.whileTrue(
+      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CONE_OUT, 0.0.inches)
+    )
+    ControlBoard.outtakeCube.whileTrue(
+      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CUBE_OUT, 0.0.inches)
+    )
   }
 
   fun mapTestControls() {}

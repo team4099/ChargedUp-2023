@@ -6,6 +6,7 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
@@ -91,8 +92,8 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   val reverseLimitReached: Boolean
     get() = inputs.armPosition <= ManipulatorConstants.ARM_MAX_RETRACTION
 
-  val currentArmState: ManipulatorConstants.ActualArmStates
-    get() = ManipulatorConstants.DesiredArmStates.fromArmPositionToState(inputs.armPosition)
+  val currentArmState: ManipulatorConstants.armStates
+    get() = ManipulatorConstants.armStates.fromArmPositionToState(inputs.armPosition)
 
   var armConstraints: TrapezoidProfile.Constraints<Meter> =
     TrapezoidProfile.Constraints(
@@ -270,5 +271,106 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
     extendArmPositionCommand.name = "manipulatorExtendArmPositionCommand"
     return extendArmPositionCommand
+  }
+
+  // roller command factories
+
+  fun rollerIntakeCone(): Command {
+    val rollerIntakeConeCommand =
+      runOnce { lastRollerRunTime = Clock.fpgaTime }
+        .andThen(
+          run { setRollerPower(ManipulatorConstants.RollerStates.CONE_IN.voltage) }.until {
+            hasCone
+          }
+        )
+        .finallyDo { lastRollerState = ManipulatorConstants.RollerStates.CONE_IN }
+
+    rollerIntakeConeCommand.name = "ManipulatorRollerIntakeConeCommand"
+    return rollerIntakeConeCommand
+  }
+
+  fun rollerIntakeCube(): Command {
+    val rollerIntakeCubeCommand =
+      runOnce { lastRollerRunTime = Clock.fpgaTime }
+        .andThen(
+          run { setRollerPower(ManipulatorConstants.RollerStates.CUBE_IN.voltage) }.until {
+            hasCube
+          }
+        )
+        .finallyDo { lastRollerState = ManipulatorConstants.RollerStates.CUBE_IN }
+
+    rollerIntakeCubeCommand.name = "ManipulatorRollerIntakeCubeCommand"
+    return rollerIntakeCubeCommand
+  }
+
+  fun rollerOuttakeCone(): Command {
+    val rollerOuttakeConeCommand =
+      run { setRollerPower(ManipulatorConstants.RollerStates.CONE_OUT.voltage) }.finallyDo {
+        // no spin ensure roller idle state after outtake won't spin
+        lastRollerState = ManipulatorConstants.RollerStates.NO_SPIN
+      }
+
+    rollerOuttakeConeCommand.name = "ManipulatorRollerOuttakeConeCommand"
+    return rollerOuttakeConeCommand
+  }
+
+  fun rollerOuttakeCube(): Command {
+    val rollerOuttakeCubeCommand =
+      run { setRollerPower(ManipulatorConstants.RollerStates.CUBE_OUT.voltage) }.finallyDo {
+        // no spin ensure roller idle state after outtake won't spin
+        lastRollerState = ManipulatorConstants.RollerStates.NO_SPIN
+      }
+
+    rollerOuttakeCubeCommand.name = "ManipulatorRollerOuttakeCubeCommand"
+    return rollerOuttakeCubeCommand
+  }
+
+  // idle command for rollers
+  fun rollerIdle(): Command {
+    val rollerIdleCommand = run {
+      var idleState = ManipulatorConstants.RollerStates.NO_SPIN
+      if (lastRollerState.voltage.sign == ManipulatorConstants.RollerStates.CONE_IN.voltage.sign) {
+        idleState = ManipulatorConstants.RollerStates.CONE_IDLE
+      } else if (lastRollerState.voltage.sign ==
+        ManipulatorConstants.RollerStates.CUBE_IN.voltage.sign
+      ) {
+        idleState = ManipulatorConstants.RollerStates.CUBE_IDLE
+      }
+
+      setRollerPower(idleState.voltage)
+      Logger.getInstance().recordOutput("/Manipulator/idleState", idleState.name)
+    }
+
+    rollerIdleCommand.name = "ManipulatorRollerIdleCommand"
+    return rollerIdleCommand
+  }
+
+  fun rollerNoSpin(): Command {
+    val rollerNoSpinCommand = run { setRollerPower(0.volts) }
+
+    rollerNoSpinCommand.name = "ManipulatorRollerNoSpinCommand"
+    return rollerNoSpinCommand
+  }
+
+  // could get rid of this and just pass in command from robot container
+  val rollerStateToCommand =
+    hashMapOf<ManipulatorConstants.RollerStates, Command>(
+      ManipulatorConstants.RollerStates.NO_SPIN to rollerNoSpin(),
+      ManipulatorConstants.RollerStates.CONE_IN to rollerIntakeCone(),
+      ManipulatorConstants.RollerStates.CUBE_IN to rollerIntakeCone(),
+      ManipulatorConstants.RollerStates.CONE_IN to rollerOuttakeCone(),
+      ManipulatorConstants.RollerStates.CUBE_OUT to rollerOuttakeCube()
+    )
+
+  // big manipulator command that combines roller command factors and setposition command
+  fun manipulatorCommand(
+    rollerState: ManipulatorConstants.RollerStates,
+    armPosition: Length
+  ): Command {
+    val rollerCommand = rollerStateToCommand[rollerState] ?: rollerIdle()
+    val armCommand = extendArmPosition(armPosition)
+    val manipulatorCommand = ParallelCommandGroup(rollerCommand, armCommand)
+    manipulatorCommand.name = "ManipulatorCombinedCommand"
+    return manipulatorCommand
   }
 }
