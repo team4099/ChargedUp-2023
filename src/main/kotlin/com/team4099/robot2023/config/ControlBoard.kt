@@ -28,11 +28,9 @@ object ControlBoard {
 
   val runElevatorToHighNode = Trigger { operator.aButton }
 
-
   val openLoopExtend = Trigger { operator.bButton }
 
   val openLoopRetract = Trigger { operator.xButton }
 
   val characterizeElevator = Trigger { operator.yButton }
-
 }

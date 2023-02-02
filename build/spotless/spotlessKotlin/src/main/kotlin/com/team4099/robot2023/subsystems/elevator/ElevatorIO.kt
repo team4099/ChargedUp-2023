@@ -15,6 +15,8 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.inVolts
+import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.perSecond
 
@@ -24,9 +26,8 @@ interface ElevatorIO {
     var elevatorPosition = 0.0.inches
     var elevatorVelocity = 0.0.inches.perSecond
 
-    // TODO(check if we need to log follower)
-    var leaderAppliedOutput = 0.0
-    var followerAppliedOutput = 0.0
+    var leaderAppliedVoltage = 0.0.volts
+    var followerAppliedVoltage = 0.0.volts
 
     var leaderSupplyCurrent = 0.0.amps
     var leaderStatorCurrent = 0.0.amps
@@ -38,10 +39,10 @@ interface ElevatorIO {
     var followerTempCelcius = 0.0.celsius
 
     override fun toLog(table: LogTable) {
-      table?.put("elevatorPositionRad", elevatorPosition.inInches)
-      table?.put("elevatorVelocityRadPerSec", elevatorVelocity.inInchesPerSecond)
-      table?.put("elevatorAppliedVolts", leaderAppliedOutput)
-      table?.put("elevatorAppliedVolts", followerAppliedOutput)
+      table?.put("elevatorPositionInches", elevatorPosition.inInches)
+      table?.put("elevatorVelocityInchesPerSec", elevatorVelocity.inInchesPerSecond)
+      table?.put("elevatorAppliedVolts", leaderAppliedVoltage.inVolts)
+      table?.put("elevatorAppliedVolts", followerAppliedVoltage.inVolts)
       table?.put("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)
       table?.put("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)
       table?.put("elevatorLeaderCurrentAmps", leaderSupplyCurrent.inAmperes)
@@ -51,15 +52,14 @@ interface ElevatorIO {
     }
 
     override fun fromLog(table: LogTable) {
-
-      table?.getDouble("elevatorPositionRad", elevatorPosition.inInches)?.let {
+      table?.getDouble("elevatorPositionInches", elevatorPosition.inInches)?.let {
         elevatorPosition = it.inches
       }
-      table?.getDouble("elevatorVelocityRadPerSec", elevatorVelocity.inInchesPerSecond)?.let {
+      table?.getDouble("elevatorVelocityInchesPerSec", elevatorVelocity.inInchesPerSecond)?.let {
         elevatorVelocity = it.inches.perSecond
       }
-      table?.getDouble("elevatorLeaderAppliedVolts", leaderAppliedOutput)?.let {
-        leaderAppliedOutput = it
+      table?.getDouble("elevatorLeaderAppliedVolts", leaderAppliedVoltage.inVolts)?.let {
+        leaderAppliedVoltage = it.volts
       }
       table?.getDouble("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)?.let {
         leaderStatorCurrent = it.amps
@@ -67,12 +67,12 @@ interface ElevatorIO {
       table?.getDouble("elevatorLeaderSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)?.let {
         leaderSupplyCurrent = it.amps
       }
-      table?.getDouble("elevatorLeadertempCelcius", leaderTempCelcius.inCelsius)?.let {
+      table?.getDouble("elevatorLeaderTempCelcius", leaderTempCelcius.inCelsius)?.let {
         leaderTempCelcius = it.celsius
       }
 
-      table?.getDouble("elevatorFollowerAppliedVolts", followerAppliedOutput)?.let {
-        followerAppliedOutput = it
+      table?.getDouble("elevatorFollowerAppliedVolts", followerAppliedVoltage.inVolts)?.let {
+        followerAppliedVoltage = it.volts
       }
       table?.getDouble("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)?.let {
         followerStatorCurrent = it.amps
@@ -80,7 +80,7 @@ interface ElevatorIO {
       table?.getDouble("elevatorFollowerSupplyCurrentAmps", followerSupplyCurrent.inAmperes)?.let {
         followerSupplyCurrent = it.amps
       }
-      table?.getDouble("elevatorFollowertempCelcius", followerTempCelcius.inCelsius)?.let {
+      table?.getDouble("elevatorFollowerTempCelcius", followerTempCelcius.inCelsius)?.let {
         followerTempCelcius = it.celsius
       }
     }
@@ -88,12 +88,34 @@ interface ElevatorIO {
 
   fun updateInputs(inputs: ElevatorInputs) {}
 
-  fun setOpenLoop(percentOutput: Double) {}
+  /**
+   * Sets the voltage of the elevator motors but also checks to make sure elevator doesn't exceed
+   * limit
+   *
+   * @param voltage the voltage to set the motor to
+   */
+  fun setOutputVoltage(voltage: ElectricalPotential) {}
 
-  fun setPosition(height: Length, feedForward: ElectricalPotential) {}
+  /**
+   * Sets the elevator to a specific position using trapezoidal profile state and feedforward also
+   * has safety for max extension and retractions
+   *
+   * @param position to set the elevatorto
+   * @param feedForward represents change in supply voltage to the motors to acount for external
+   * forces acting on the system
+   */
+  fun setPosition(position: Length, feedForward: ElectricalPotential) {}
 
+  /** set the current encoder position to be the encoders zero value */
   fun zeroEncoder() {}
 
+  /**
+   * updates the PID values
+   *
+   * @param kP a constant which will be used to scale the proportion gain
+   * @param kI a constant which will be used to scale the integral gain
+   * @param kD a constant which will be used to scale the derivative gain
+   */
   fun configPID(
     kP: ProportionalGain<Meter, Volt>,
     kI: IntegralGain<Meter, Volt>,

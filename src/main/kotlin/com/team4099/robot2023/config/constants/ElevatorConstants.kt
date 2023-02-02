@@ -57,7 +57,7 @@ object ElevatorConstants {
   val MAX_ACCELERATION = 75.inches.perSecond.perSecond
 
   // TODO(Check height with design)
-  val ELEVATOR_MAX_EXTENSION = 52.0.inches
+  val ELEVATOR_MAX_EXTENSION = 100.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
   val ELEVATOR_SOFTLIMIT_EXTENSION = 51.5.inches
   val ELEVATOR_SOFTLIMIT_RETRACTION = 0.5.inches

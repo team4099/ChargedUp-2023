@@ -20,7 +20,6 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.perSecond
 
-
 interface ElevatorIO {
   class ElevatorInputs : LoggableInputs {
 
@@ -110,7 +109,6 @@ interface ElevatorIO {
   /** set the current encoder position to be the encoders zero value */
   fun zeroEncoder() {}
 
-
   /**
    * updates the PID values
    *
@@ -123,5 +121,4 @@ interface ElevatorIO {
     kI: IntegralGain<Meter, Volt>,
     kD: DerivativeGain<Meter, Volt>
   ) {}
-
 }

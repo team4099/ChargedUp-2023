@@ -12,11 +12,10 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
-
-import edu.wpi.first.wpilibj.RobotBase
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
+import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.Logger
@@ -58,8 +57,10 @@ object RobotContainer {
         { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
         { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
         { ControlBoard.robotOriented },
-        drivetrain)
+        drivetrain
+      )
 
+    elevator.defaultCommand = elevator.holdElevatorPosition()
     //    PivotClimber.defaultCommand = PivotIdleCommand()
   }
 

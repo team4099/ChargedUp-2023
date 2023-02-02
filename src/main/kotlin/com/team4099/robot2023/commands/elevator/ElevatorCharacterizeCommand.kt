@@ -35,7 +35,6 @@ class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
     appliedVolts = ElevatorConstants.ELEVATOR_KG
   }
 
-
   override fun execute() {
     elevator.setOutputVoltage(appliedVolts)
 
