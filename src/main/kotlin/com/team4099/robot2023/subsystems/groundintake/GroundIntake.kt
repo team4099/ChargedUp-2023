@@ -15,11 +15,14 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
+import org.team4099.lib.units.derived.inVoltsPerDegreePerSecondPerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
+import org.team4099.lib.units.derived.perDegreePerSecondPerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -41,6 +44,20 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     LoggedTunableValue(
       "GroundIntake/kD",
       Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
+    )
+
+  private val kG = LoggedTunableValue("GroundIntake/kG", Pair({ it.inVolts }, { it.volts }))
+
+  private val kV =
+    LoggedTunableValue(
+      "GroundIntake/kV",
+      Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
+    )
+
+  private val kA =
+    LoggedTunableValue(
+      "GroundIntake/kA",
+      Pair({ it.inVoltsPerDegreePerSecondPerSecond }, { it.volts.perDegreePerSecondPerSecond })
     )
 
   val forwardLimitReached: Boolean
@@ -94,6 +111,10 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
       kI.initDefault(GroundIntakeConstants.PID.SIM_KI)
       kD.initDefault(GroundIntakeConstants.PID.SIM_KD)
 
+      kG.initDefault(GroundIntakeConstants.PID.ARM_KG)
+      kV.initDefault(GroundIntakeConstants.PID.ARM_KV)
+      kA.initDefault(GroundIntakeConstants.PID.ARM_KA)
+
       armFeedforward =
         ArmFeedforward(
           0.0.volts,
@@ -109,6 +130,12 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
       io.configPID(kP.get(), kI.get(), kD.get())
+    }
+
+    if (kG.hasChanged() || kV.hasChanged() || kA.hasChanged()) {
+      if (RobotBase.isSimulation()) {
+        armFeedforward = ArmFeedforward(0.0.volts, kG.get(), kV.get(), kA.get())
+      }
     }
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
@@ -164,10 +191,15 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   }
 
   fun openLoopCommand(voltage: ElectricalPotential): Command {
-    val returnCommand =
-      run { io.setArmVoltage(voltage) }.unless {
-        forwardLimitReached && voltage > 0.0.volts || reverseLimitReached && voltage < 0.0.volts
+    val returnCommand = run {
+      if (forwardLimitReached && voltage > 0.0.volts ||
+        reverseLimitReached && voltage < 0.0.volts
+      ) {
+        io.setArmVoltage(0.0.volts)
+      } else {
+        io.setArmVoltage(voltage)
       }
+    }
 
     returnCommand.name = "GroundIntakeOpenLoopCommand"
     return returnCommand

@@ -6,9 +6,15 @@ import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.util.Color
+import edu.wpi.first.wpilibj.util.Color8Bit
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
+import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
@@ -21,6 +27,8 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.asKilogramsPerMeterSquared
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -44,8 +52,8 @@ object GroundIntakeIOSim : GroundIntakeIO {
       GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivingOverDriven,
       GroundIntakeConstants.ARM_MOMENT_INTERTIA.asKilogramsPerMeterSquared,
       GroundIntakeConstants.ARM_LENGTH.inMeters,
-      GroundIntakeConstants.ARM_MIN_ROTATION.inRadians,
-      GroundIntakeConstants.ARM_MAX_ROTATION.inRadians,
+      -15.degrees.inRadians,
+      90.degrees.inRadians,
       GroundIntakeConstants.ARM_MASS.inKilograms,
       true
     )
@@ -57,7 +65,25 @@ object GroundIntakeIOSim : GroundIntakeIO {
       GroundIntakeConstants.PID.SIM_KD
     )
 
-  init {}
+  private val m_mech2d = Mechanism2d(60.0, 60.0)
+  private val m_armPivot = m_mech2d.getRoot("ArmPivot", 30.0, 30.0)
+  private val m_armTower = m_armPivot.append(MechanismLigament2d("ArmTower", 30.0, -90.0))
+  private val m_arm =
+    m_armPivot.append(
+      MechanismLigament2d(
+        "Arm",
+        GroundIntakeConstants.ARM_LENGTH.inInches,
+        armSim.angleRads.radians.inDegrees,
+        6.0,
+        Color8Bit(Color.kYellow)
+      )
+    )
+
+  init {
+    // Put Mechanism 2d to SmartDashboard
+    SmartDashboard.putData("Arm Sim", m_mech2d)
+    m_armTower.setColor(Color8Bit(Color.kBlue))
+  }
 
   override fun updateInputs(inputs: GroundIntakeIO.GroundIntakeIOInputs) {
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
@@ -75,6 +101,8 @@ object GroundIntakeIOSim : GroundIntakeIO {
     inputs.armStatorCurrent = armSim.currentDrawAmps.amps
     inputs.armSupplyCurrent = 0.amps
     inputs.armTemp = 0.celsius
+
+    m_arm.angle = armSim.angleRads.radians.inDegrees
   }
 
   /**

@@ -22,9 +22,9 @@ object GroundIntakeConstants {
     val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
     val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
-    val SIM_KP = 0.0.volts / 1.degrees
+    val SIM_KP = 1.0.volts / 1.degrees
     val SIM_KI = 0.0.volts / (1.degrees * 1.seconds)
-    val SIM_KD = 0.0.volts / (1.degrees.perSecond)
+    val SIM_KD = 0.01.volts / (1.degrees.perSecond)
 
     val NEO_ARM_KS = 0.0.volts
 
