@@ -28,7 +28,7 @@ object GroundIntakeConstants {
 
     val NEO_ARM_KS = 0.0.volts
 
-    val ARM_KG = 1.535.volts
+    val ARM_KG = 1.582887.volts
     val ARM_KV = 0.87.volts / 1.0.degrees.perSecond
     val ARM_KA = 0.04.volts / 1.0.degrees.perSecond.perSecond
   }
@@ -70,6 +70,9 @@ object GroundIntakeConstants {
 
   val ARM_MAX_ROTATION = 56.6.degrees
   val ARM_MIN_ROTATION = 0.degrees
+
+  val ARM_OPEN_LOOP_MAX_ROTATION = 45.5.degrees
+  val ARM_OPEN_LOOP_MIN_ROTATION = 10.0.degrees
 
   val ENCODER_COUNTS = 42
 

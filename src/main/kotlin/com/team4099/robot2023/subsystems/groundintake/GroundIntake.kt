@@ -65,6 +65,12 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   val reverseLimitReached: Boolean
     get() = inputs.armPosition <= GroundIntakeConstants.ARM_MIN_ROTATION
 
+  val openLoopForwardLimitReached: Boolean
+    get() = inputs.armPosition >= GroundIntakeConstants.ARM_OPEN_LOOP_MAX_ROTATION
+
+  val openLoopReverseLimitReached: Boolean
+    get() = inputs.armPosition <= GroundIntakeConstants.ARM_OPEN_LOOP_MIN_ROTATION
+
   var lastIntakeRunTime = Clock.fpgaTime
 
   val rollerState: GroundIntakeConstants.RollerStates
@@ -140,8 +146,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
 
-    Logger.getInstance().recordOutput("GroundIntake/positionToHold", positionToHold.inDegrees)
-
     Logger.getInstance()
       .recordOutput(
         "GroundIntake/isAtSetpoint",
@@ -176,7 +180,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
       if (Constants.Tuning.TUNING_MODE) {
         desiredAngle =
           actualArmStates[GroundIntakeConstants.ArmStates.INTAKE]?.get()
-            ?: GroundIntakeConstants.ArmStates.DUMMY.position
+            ?: GroundIntakeConstants.ArmStates.INTAKE.position
       }
     }
 
@@ -192,33 +196,32 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
   fun openLoopCommand(voltage: ElectricalPotential): Command {
     val returnCommand = run {
-      if (forwardLimitReached && voltage > 0.0.volts ||
-        reverseLimitReached && voltage < 0.0.volts
+      if ((openLoopForwardLimitReached && voltage > 0.0.volts) ||
+        (openLoopReverseLimitReached && voltage < 0.0.volts)
       ) {
-        io.setArmVoltage(0.0.volts)
+        io.setArmVoltage(armFeedforward.calculate(inputs.armPosition, 0.degrees.perSecond))
       } else {
         io.setArmVoltage(voltage)
       }
     }
 
     returnCommand.name = "GroundIntakeOpenLoopCommand"
+
     return returnCommand
   }
 
   /** Tells the feedforward not to move the arm */
-  fun holdArmPosition(toAngle: Angle = positionToHold): Command {
-    var holdPosition = toAngle
+  fun holdArmPosition(): Command {
+    val returnCommand = run {
+      Logger.getInstance()
+        .recordOutput("GroundIntake/holdArmPosition", inputs.armPosition.inDegrees)
+      io.setArmPosition(
+        inputs.armPosition, armFeedforward.calculate(inputs.armPosition, 0.degrees.perSecond)
+      )
+    }
 
-    val holdPositionCommand =
-      run {
-        io.setArmPosition(
-          holdPosition, armFeedforward.calculate(0.degrees, 0.degrees.perSecond)
-        )
-      }
-        .beforeStarting({ holdPosition = positionToHold }, this)
-
-    holdPositionCommand.name = "GroundIntakeHoldPositionCommand"
-    return holdPositionCommand
+    returnCommand.name = "GroundIntakeHoldPositionCommand"
+    return returnCommand
   }
 
   /**
@@ -246,7 +249,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     if ((forwardLimitReached && setpoint.velocity > 0.degrees.perSecond) ||
       (reverseLimitReached && setpoint.velocity < 0.degrees.perSecond)
     ) {
-      io.setArmVoltage(armFeedforward.calculate(0.degrees, 0.degrees.perSecond))
+      io.setArmVoltage(armFeedforward.calculate(0.0.degrees, 0.degrees.perSecond))
     } else {
       io.setArmPosition(setpoint.position, feedforward)
     }
@@ -291,7 +294,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
           run {
             // Regenerates profile state for that loop cycle and sets to that position
             setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
-            positionToHold = inputs.armPosition
 
             Logger.getInstance()
               .recordOutput(
@@ -303,8 +305,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
               armProfile.isFinished(Clock.fpgaTime - startTime)
             }
         )
-        .finallyDo { positionToHold = inputs.armPosition }
-        .handleInterrupt { positionToHold = inputs.armPosition }
 
     rotateArmPositionCommand.name = "RotateGroundIntakeCommand"
     return rotateArmPositionCommand

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj.util.Color8Bit
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -103,6 +104,8 @@ object GroundIntakeIOSim : GroundIntakeIO {
     inputs.armTemp = 0.celsius
 
     m_arm.angle = armSim.angleRads.radians.inDegrees
+
+    Logger.getInstance().recordOutput("GroundIntake/simulatedArm", m_mech2d)
   }
 
   /**
