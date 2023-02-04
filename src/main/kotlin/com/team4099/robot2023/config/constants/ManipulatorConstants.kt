@@ -17,9 +17,9 @@ object ManipulatorConstants {
   val ARM_KV = 0.2.volts / 1.0.inches.perSecond
   val ARM_KA = 0.0.volts / 1.0.inches.perSecond.perSecond
 
-  val SIM_ARM_KP = 10.volts / 1.0.inches
+  val SIM_ARM_KP = 20.volts / 1.0.inches
   val SIM_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
-  val SIM_ARM_KD = 0.0.volts / 1.0.inches.perSecond
+  val SIM_ARM_KD = 1.0.volts / 1.0.inches.perSecond
 
   // TODO(tune these)
   val REAL_ARM_KP = 1.0.volts / 1.0.inches
@@ -42,6 +42,13 @@ object ManipulatorConstants {
   val ARM_STATOR_CURRENT_LIMIT = 25.amps
   val ROLLER_STATOR_CURRENT_LIMIT = 25.amps
 
+  val ARM_VOLTAGE_COMPENSATION = 12.volts
+  val ROLLER_VOLTAGE_COMPENSATION = 12.volts
+
+  val ARM_HOMING_POSITION_THESHOLD = 5.inches
+  val ARM_HOMING_APPLIED_VOLTAGE = -0.5.volts
+  val ARM_HOMING_STALL_CURRENT = 15.amps
+
   const val SENSOR_CPR = 42.0
 
   val ARM_GEAR_RATIO = 11.25.reduction
@@ -52,10 +59,17 @@ object ManipulatorConstants {
   val CUBE_CURRENT_THRESHOLD = 15.amps
 
   val ARM_SPOOL_RADIUS = 0.581.inches
-  val ARM_MAX_EXTENSION = 11.inches
+  val ARM_MAX_EXTENSION = 20.inches
   val ARM_MAX_RETRACTION = 0.inches
   val ARM_TOLERANCE = 0.25.inches
   val ARM_MASS = 10.0.pounds
+
+  // soft limits
+  val ARM_SOFTLIMIT_EXTENSION = 10.75.inches
+  val ARM_SOFTLIMIT_RETRACTION = 0.25.inches
+
+  val ARM_OPEN_LOOP_SOFTLIMIT_EXTENSION = 8.inches
+  val ARM_OPEN_LOOP_SOFTLIMIT_RETRACTION = 0.5.inches
 
   // TODO(check for accuracy)
   val ARM_MAX_VELOCITY = 30.inches.perSecond
@@ -94,7 +108,7 @@ object ManipulatorConstants {
   }
 
   // TODO(figure out the values)
-  enum class armStates(val position: Length) {
+  enum class ArmStates(val position: Length) {
     MIN_EXTENSION(0.inches),
     SHELF_INTAKE_EXTENSION(4.inches),
     HIGH_SCORE_EXTENSION(8.inches),
@@ -108,7 +122,7 @@ object ManipulatorConstants {
        *
        * @param armPosition The current position of the arm
        */
-      fun fromArmPositionToState(armPosition: Length): armStates {
+      fun fromArmPositionToState(armPosition: Length): ArmStates {
         return values().firstOrNull { (it.position - armPosition).absoluteValue <= ARM_TOLERANCE }
           ?: DUMMY
       }

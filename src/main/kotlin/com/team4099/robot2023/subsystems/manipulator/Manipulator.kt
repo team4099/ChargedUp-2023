@@ -29,6 +29,7 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
+import java.util.function.Supplier
 
 class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   val inputs = ManipulatorIO.ManipulatorIOInputs()
@@ -92,18 +93,31 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   val reverseLimitReached: Boolean
     get() = inputs.armPosition <= ManipulatorConstants.ARM_MAX_RETRACTION
 
-  val currentArmState: ManipulatorConstants.armStates
-    get() = ManipulatorConstants.armStates.fromArmPositionToState(inputs.armPosition)
+  val forwardOpenLoopLimitReached: Boolean
+    get() = inputs.armPosition >= ManipulatorConstants.ARM_OPEN_LOOP_SOFTLIMIT_EXTENSION
+  val reverseOpenLoopLimitReached: Boolean
+    get() = inputs.armPosition <= ManipulatorConstants.ARM_OPEN_LOOP_SOFTLIMIT_RETRACTION
+
+  var desiredArmPosition = ManipulatorConstants.ArmStates.MIN_EXTENSION.position
+
+  val isAtCommandedPosition: Boolean
+    get() {
+      return (
+        (inputs.armPosition - desiredArmPosition).absoluteValue <
+          ManipulatorConstants.ARM_TOLERANCE
+        )
+    }
+
+  val actualArmStates = hashMapOf<ManipulatorConstants.ArmStates, LoggedTunableValue<Meter>>()
 
   var armConstraints: TrapezoidProfile.Constraints<Meter> =
     TrapezoidProfile.Constraints(
       ManipulatorConstants.ARM_MAX_VELOCITY, ManipulatorConstants.ARM_MAX_ACCELERATION
     )
 
-  var armSetpoint: TrapezoidProfile.State<Meter> =
-    TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
-
   var prevArmSetpoint: TrapezoidProfile.State<Meter> = TrapezoidProfile.State()
+
+  var isHomed = false
 
   /**
    * Uses the calculations via feed forward to determine where to set the arm position to.
@@ -134,6 +148,13 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   init {
+    ManipulatorConstants.ArmStates.values().forEach {
+      actualArmStates[it] =
+        LoggedTunableValue(
+          "Manipulator/${it.name}", it.position, Pair({ it.inInches }, { it.inches })
+        )
+    }
+
     if (RobotBase.isReal()) {
       kP.initDefault(ManipulatorConstants.REAL_ARM_KP)
       kI.initDefault(ManipulatorConstants.REAL_ARM_KI)
@@ -158,6 +179,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Manipulator/hasCone", hasCone)
     Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastRollerRunTime.inSeconds)
     Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastIntakeSpikeTime.inSeconds)
+    Logger.getInstance().recordOutput("Elevator/isAtCommandedPosition", isAtCommandedPosition)
   }
 
   /**
@@ -204,14 +226,18 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   /** Holds the current arm position in place. */
   fun holdArmPosition(): Command {
+    var positionToHold = inputs.armPosition
     val holdPositionCommand =
-      run {
-        io.setArmVoltage(armFeedforward.calculate(0.inches.perSecond))
-        Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", true)
+      runOnce {
+        positionToHold = inputs.armPosition
+        Logger.getInstance()
+          .recordOutput("/Manipulator/holdPosition", positionToHold.inInches)
       }
-        .finallyDo {
-          Logger.getInstance().recordOutput("/ActiveCommands/HoldArmPosition", false)
-        }
+        .andThen(
+          run {
+            io.setArmPosition(positionToHold, armFeedforward.calculate(0.meters.perSecond))
+          }
+        )
 
     holdPositionCommand.name = "ManipulatorHoldPositionCommand"
     return holdPositionCommand
@@ -221,7 +247,8 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   fun openLoopControl(voltage: ElectricalPotential): Command {
     val openLoopArmCommand =
       run { setArmVoltage(voltage) }.until {
-        forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts
+        forwardOpenLoopLimitReached && voltage > 0.volts ||
+          reverseOpenLoopLimitReached && voltage < 0.volts
       }
     if (voltage > 0.volts) {
       openLoopArmCommand.name = "ManipulatorExtendArmOpenLoopCommand"
@@ -235,39 +262,48 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   /** Utilizes the trapezoidal profile of the arm to extend the arm by the desired length. */
-  fun extendArmPosition(position: Length): Command {
+  fun extendArmPosition(targetPosition: Supplier<Length>): Command {
     var armProfile =
       TrapezoidProfile(
         armConstraints,
-        TrapezoidProfile.State(position, 0.meters.perSecond),
+        TrapezoidProfile.State(targetPosition.get(), 0.meters.perSecond),
         TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
       )
     var startTime = Clock.fpgaTime
 
     val extendArmPositionCommand =
-      run {
-        setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
-        Logger.getInstance()
-          .recordOutput(
-            "/Manipulator/isAtSetpoint",
-            (position - inputs.armPosition).absoluteValue <=
-              ManipulatorConstants.ARM_TOLERANCE
+      runOnce {
+        startTime = Clock.fpgaTime
+        desiredArmPosition = targetPosition.get()
+        Logger.getInstance().recordOutput("/Manipulator/isAtSetpoint", false)
+        armProfile =
+          TrapezoidProfile(
+            armConstraints,
+            TrapezoidProfile.State(targetPosition.get(), 0.meters.perSecond),
+            TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
           )
       }
-        .beforeStarting(
-          {
-            startTime = Clock.fpgaTime
-            Logger.getInstance().recordOutput("/Manipulator/isAtSetpoint", false)
-            armProfile =
-              TrapezoidProfile(
-                armConstraints,
-                TrapezoidProfile.State(position, 0.meters.perSecond),
-                TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+        .andThen(
+          run {
+            setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
+            Logger.getInstance()
+              .recordOutput(
+                "/Manipulator/isAtSetpoint",
+                (targetPosition.get() - inputs.armPosition).absoluteValue <=
+                  ManipulatorConstants.ARM_TOLERANCE
               )
-          },
-          this
+          }
+            .until {
+              armProfile.isFinished(Clock.fpgaTime - startTime) ||
+                (
+                  forwardLimitReached &&
+                    targetPosition.get() > ManipulatorConstants.ARM_SOFTLIMIT_EXTENSION ||
+                    reverseLimitReached &&
+                    targetPosition.get() <
+                    ManipulatorConstants.ARM_SOFTLIMIT_RETRACTION
+                  )
+            }
         )
-        .until { armProfile.isFinished(Clock.fpgaTime - startTime) }
 
     extendArmPositionCommand.name = "manipulatorExtendArmPositionCommand"
     return extendArmPositionCommand
@@ -275,6 +311,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   // roller command factories
 
+  /**
+   * @return A command that sets roller to voltage for intaking a cone, command ends when cone is
+   * detected
+   */
   fun rollerIntakeCone(): Command {
     val rollerIntakeConeCommand =
       runOnce { lastRollerRunTime = Clock.fpgaTime }
@@ -289,6 +329,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     return rollerIntakeConeCommand
   }
 
+  /**
+   * @return A command that sets roller to voltage for intaking a cube, command ends when cube is
+   * detected
+   */
   fun rollerIntakeCube(): Command {
     val rollerIntakeCubeCommand =
       runOnce { lastRollerRunTime = Clock.fpgaTime }
@@ -303,6 +347,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     return rollerIntakeCubeCommand
   }
 
+  /** @return A command that sets roller to voltage for outtaking a cone, has no end condition */
   fun rollerOuttakeCone(): Command {
     val rollerOuttakeConeCommand =
       run { setRollerPower(ManipulatorConstants.RollerStates.CONE_OUT.voltage) }.finallyDo {
@@ -314,6 +359,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     return rollerOuttakeConeCommand
   }
 
+  /**
+   * @return A command that sets roller to voltage for outtaking a cube, command ends when cube is
+   * detected
+   */
   fun rollerOuttakeCube(): Command {
     val rollerOuttakeCubeCommand =
       run { setRollerPower(ManipulatorConstants.RollerStates.CUBE_OUT.voltage) }.finallyDo {
@@ -325,7 +374,10 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     return rollerOuttakeCubeCommand
   }
 
-  // idle command for rollers
+  /**
+   * @return A that sets rollers to their corresponding idle voltage based on whether the last
+   * intake was a cone or cube
+   */
   fun rollerIdle(): Command {
     val rollerIdleCommand = run {
       var idleState = ManipulatorConstants.RollerStates.NO_SPIN
@@ -345,6 +397,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     return rollerIdleCommand
   }
 
+  /** @return A command that sets roller power to 0 volts */
   fun rollerNoSpin(): Command {
     val rollerNoSpinCommand = run { setRollerPower(0.volts) }
 
@@ -357,20 +410,52 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     hashMapOf<ManipulatorConstants.RollerStates, Command>(
       ManipulatorConstants.RollerStates.NO_SPIN to rollerNoSpin(),
       ManipulatorConstants.RollerStates.CONE_IN to rollerIntakeCone(),
-      ManipulatorConstants.RollerStates.CUBE_IN to rollerIntakeCone(),
+      ManipulatorConstants.RollerStates.CUBE_IN to rollerIntakeCube(),
       ManipulatorConstants.RollerStates.CONE_IN to rollerOuttakeCone(),
       ManipulatorConstants.RollerStates.CUBE_OUT to rollerOuttakeCube()
     )
 
-  // big manipulator command that combines roller command factors and setposition command
+  /**
+   * main command for manipulator that combines roller and arm actions
+   *
+   * @param rollerState the desired state for the manipulator rollers
+   *
+   * @param armState the desired state for the manipulator arm
+   *
+   * @return A parrallel command ground that sets the roller power based on the corresponding state
+   * and extends the arm to the arm state the command ends once both commands have finished
+   */
   fun manipulatorCommand(
     rollerState: ManipulatorConstants.RollerStates,
-    armPosition: Length
+    armState: ManipulatorConstants.ArmStates
   ): Command {
     val rollerCommand = rollerStateToCommand[rollerState] ?: rollerIdle()
+
+    val armPosition = Supplier { actualArmStates[armState]?.get() ?: armState.position }
     val armCommand = extendArmPosition(armPosition)
     val manipulatorCommand = ParallelCommandGroup(rollerCommand, armCommand)
     manipulatorCommand.name = "ManipulatorCombinedCommand"
     return manipulatorCommand
+  }
+
+  /**
+   * Slowly retracts arm and detects when the arm stalls using stator current draw zeros the
+   * encoders when the arm stalls
+   * @return A command that zeros the arm at the beginning of teleop
+   */
+  fun homeArmCommand(): Command {
+    val maybeHomeArmCommand =
+      run { io.setArmVoltage(ManipulatorConstants.ARM_HOMING_APPLIED_VOLTAGE) }
+        .until {
+          isHomed ||
+            inputs.armPosition > ManipulatorConstants.ARM_HOMING_POSITION_THESHOLD ||
+            inputs.armStatorCurrent > ManipulatorConstants.ARM_HOMING_STALL_CURRENT
+        }
+        .finallyDo {
+          io.zeroEncoder()
+          isHomed = true
+        }
+    maybeHomeArmCommand.name = "ElevatorHomingCommand"
+    return maybeHomeArmCommand
   }
 }

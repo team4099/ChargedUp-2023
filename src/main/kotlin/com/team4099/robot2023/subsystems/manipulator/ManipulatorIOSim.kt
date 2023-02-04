@@ -95,8 +95,15 @@ object ManipulatorIOSim : ManipulatorIO {
    * @param voltage the voltage to set the motor to
    */
   override fun setRollerPower(voltage: ElectricalPotential) {
-    rollerSim.setInputVoltage(MathUtil.clamp(voltage.inVolts, -12.0, 12.0))
-    setMechanismNodePosition(voltage / Constants.Universal.VOLTAGE_COMPENSATION)
+    rollerSim.setInputVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts,
+        ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts
+      )
+    )
+
+    setMechanismNodePosition(voltage / ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION)
   }
 
   /**
@@ -105,7 +112,14 @@ object ManipulatorIOSim : ManipulatorIO {
    * @param voltage the voltage to set the motor to
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
-    armSim.setInputVoltage(MathUtil.clamp(voltage.inVolts, -12.0, 12.0))
+    // divide by 2 cause 12 volts is too fast
+    armSim.setInputVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2,
+        ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2
+      )
+    )
   }
 
   /**

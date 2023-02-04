@@ -1,7 +1,6 @@
 package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.milli
 
 object Constants {
@@ -16,7 +15,6 @@ object Constants {
     val LOG_FOLDER = "/media/sda1/"
 
     val LOOP_PERIOD_TIME = 20.milli.seconds
-    val VOLTAGE_COMPENSATION = 12.0.volts
     val POWER_DISTRIBUTION_HUB_ID = 1
     val USE_TIMING = true
   }

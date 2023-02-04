@@ -1,12 +1,10 @@
 package com.team4099.robot2023
 
-import com.team4099.robot2022.commands.intake.ManipulatorIdleCommand
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -18,6 +16,7 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -48,7 +47,13 @@ object RobotContainer {
         drivetrain
       )
 
-    manipulator.defaultCommand = ManipulatorIdleCommand(manipulator)
+    // dont home in sim cause theres no output current to check
+    if (RobotBase.isReal()) {
+      manipulator.defaultCommand =
+        manipulator.homeArmCommand().andThen(manipulator.holdArmPosition())
+    } else {
+      manipulator.defaultCommand = manipulator.holdArmPosition()
+    }
   }
 
   fun zeroSteering() {
@@ -74,21 +79,37 @@ object RobotContainer {
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
     //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
-    //
-    // ControlBoard.setArmPositionToShelfIntake.whileTrue(manipulator.extendArmPosition(5.inches))
-    //    ControlBoard.armCharacterization.whileTrue(ArmCharacterizationCommand(manipulator))
+
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(
+      manipulator.extendArmPosition(5.inches.asSupplier)
+    )
+    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
+    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
+
+    /*
     ControlBoard.intakeCone.whileTrue(
-      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CONE_IN, 0.0.inches)
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CONE_IN,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION)
     )
     ControlBoard.intakeCube.whileTrue(
-      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CUBE_IN, 0.0.inches)
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CUBE_IN,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION)
     )
     ControlBoard.outtakeCone.whileTrue(
-      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CONE_OUT, 0.0.inches)
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CONE_OUT,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION
+      )
     )
     ControlBoard.outtakeCube.whileTrue(
-      manipulator.manipulatorCommand(ManipulatorConstants.RollerStates.CUBE_OUT, 0.0.inches)
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CUBE_OUT,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION
+      )
     )
+     */
   }
 
   fun mapTestControls() {}

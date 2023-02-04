@@ -11,6 +11,8 @@ import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
+import org.team4099.lib.units.base.inInches
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
@@ -29,7 +31,7 @@ object ManipulatorIONeo : ManipulatorIO {
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
       ManipulatorConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
-      Constants.Universal.VOLTAGE_COMPENSATION
+      ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION
     )
   private val armSparkMax =
     CANSparkMax(Constants.Manipulator.ARM_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
@@ -38,7 +40,7 @@ object ManipulatorIONeo : ManipulatorIO {
       armSparkMax,
       ManipulatorConstants.ARM_GEAR_RATIO.asDrivenOverDriving,
       ManipulatorConstants.ARM_SPOOL_RADIUS * 2,
-      Constants.Universal.VOLTAGE_COMPENSATION
+      ManipulatorConstants.ARM_VOLTAGE_COMPENSATION
     )
   private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
 
@@ -50,7 +52,9 @@ object ManipulatorIONeo : ManipulatorIO {
     armSparkMax.clearFaults()
 
     // set-up voltage and current limits
-    rollerSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
+    rollerSparkMax.enableVoltageCompensation(
+      ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts
+    )
     rollerSparkMax.setSmartCurrentLimit(
       ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
     )
@@ -61,7 +65,7 @@ object ManipulatorIONeo : ManipulatorIO {
     rollerSparkMax.openLoopRampRate = ManipulatorConstants.ROLLER_RAMP_RATE
 
     // set-up voltage and current limits
-    armSparkMax.enableVoltageCompensation(Constants.Universal.VOLTAGE_COMPENSATION.inVolts)
+    armSparkMax.enableVoltageCompensation(ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts)
     armSparkMax.setSmartCurrentLimit(
       ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
     )
@@ -83,8 +87,8 @@ object ManipulatorIONeo : ManipulatorIO {
     rollerSparkMax.setVoltage(
       MathUtil.clamp(
         voltage.inVolts,
-        -Constants.Universal.VOLTAGE_COMPENSATION.inVolts,
-        Constants.Universal.VOLTAGE_COMPENSATION.inVolts
+        -ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts,
+        ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts
       )
     )
   }
@@ -123,7 +127,14 @@ object ManipulatorIONeo : ManipulatorIO {
    * @param voltage the voltage to set the motor to
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
-    armSparkMax.setVoltage(voltage.inVolts)
+    // divide by 2 cause 12 volts is too fast
+    armSparkMax.setVoltage(
+      MathUtil.clamp(
+        voltage.inVolts,
+        -ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2,
+        ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2
+      )
+    )
   }
 
   /**
@@ -136,7 +147,15 @@ object ManipulatorIONeo : ManipulatorIO {
   override fun setArmPosition(position: Length, feedforward: ElectricalPotential) {
     armPIDController.ff = feedforward.inVolts
     armPIDController.setReference(
-      armSensor.positionToRawUnits(position), CANSparkMax.ControlType.kPosition
+      armSensor.positionToRawUnits(
+        MathUtil.clamp(
+          position.inInches,
+          ManipulatorConstants.ARM_SOFTLIMIT_RETRACTION.inInches,
+          ManipulatorConstants.ARM_SOFTLIMIT_EXTENSION.inInches
+        )
+          .inches
+      ),
+      CANSparkMax.ControlType.kPosition
     )
   }
 
