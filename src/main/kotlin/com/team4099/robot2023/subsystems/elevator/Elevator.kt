@@ -358,7 +358,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     val maybeHomeElevatorCommand =
       run { io.setOutputVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE) }
         .until {
-          isHomed || inputs.leaderSupplyCurrent > ElevatorConstants.HOMING_STALL_CURRENT
+          isHomed ||
+            inputs.elevatorPosition > ElevatorConstants.HOMING_POSITION_THRESHOLD ||
+            inputs.leaderStatorCurrent > ElevatorConstants.HOMING_STALL_CURRENT
         }
         .finallyDo {
           io.zeroEncoder()

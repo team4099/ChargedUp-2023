@@ -50,6 +50,7 @@ object ElevatorConstants {
   val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit
 
   // TODO figure out what these should be
+  val HOMING_POSITION_THRESHOLD = 30.inches
   val HOMING_APPLIED_VOLTAGE = -0.5.volts
   val HOMING_STALL_CURRENT = 15.amps
 

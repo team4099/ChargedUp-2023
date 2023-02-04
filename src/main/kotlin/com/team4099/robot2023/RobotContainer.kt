@@ -60,9 +60,13 @@ object RobotContainer {
         drivetrain
       )
 
-    elevator.defaultCommand =
-      elevator.homeElevatorCommand().andThen(elevator.holdElevatorPosition())
-    //    PivotClimber.defaultCommand = PivotIdleCommand()
+    // can't home in sim cause sim doesn't emulate stator current
+    if (RobotBase.isReal()) {
+      elevator.defaultCommand =
+        elevator.homeElevatorCommand().andThen(elevator.holdElevatorPosition())
+    } else {
+      elevator.defaultCommand = elevator.holdElevatorPosition()
+    }
   }
 
   fun zeroSteering() {
