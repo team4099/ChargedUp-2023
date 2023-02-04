@@ -60,14 +60,14 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
-  var desiredState = ElevatorConstants.ElevatorStates.MIN_HEIGHT.height
+  var desiredPosition = ElevatorConstants.ElevatorStates.MIN_HEIGHT.height
 
   val isAtCommandedState: Boolean
     get() {
       return (
         (
           inputs.elevatorPosition -
-            ElevatorConstants.ElevatorStates.fromHeightToPosition(desiredState)
+            ElevatorConstants.ElevatorStates.fromHeightToPosition(desiredPosition)
           )
           .absoluteValue < ElevatorConstants.ELEVATOR_TOLERANCE
         )
@@ -266,7 +266,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     val elevatorMovementCommand =
       runOnce {
         startTime = Clock.fpgaTime
-        desiredState = targetPosition.get()
+        desiredPosition = targetPosition.get()
         elevatorProfile =
           TrapezoidProfile(
             elevatorConstraints,
