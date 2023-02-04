@@ -130,11 +130,12 @@ object ElevatorIOSim : ElevatorIO {
    * @param voltage the voltage to set the motor to
    */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
+    // divide by 2 cause full power elevator is scary
     elevatorSim.setInputVoltage(
       MathUtil.clamp(
         voltage.inVolts,
-        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts,
-        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts
+        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts / 2,
+        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts / 2
       )
     )
   }

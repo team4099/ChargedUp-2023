@@ -49,6 +49,10 @@ object ElevatorConstants {
   val VOLTAGE_COMPENSATION = 12.volts
   val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit
 
+  // TODO figure out what these should be
+  val HOMING_APPLIED_VOLTAGE = -0.5.volts
+  val HOMING_STALL_CURRENT = 15.amps
+
   // tooth_width * number_teeth = circumference
   // circumference / 2pi = radius
   val SPOOL_RADIUS = 0.005.meters * 32.0 / (2 * PI)
@@ -56,11 +60,12 @@ object ElevatorConstants {
   val MAX_VELOCITY = 50.inches.perSecond
   val MAX_ACCELERATION = 75.inches.perSecond.perSecond
 
-  // TODO(Check height with design)
   val ELEVATOR_MAX_EXTENSION = 100.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
   val ELEVATOR_SOFTLIMIT_EXTENSION = 51.5.inches
   val ELEVATOR_SOFTLIMIT_RETRACTION = 0.5.inches
+  val ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION = 45.inches
+  val ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION = 5.inches
 
   // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_HEIGHT = 0.0.inches
@@ -90,13 +95,6 @@ object ElevatorConstants {
 
       fun fromPositionToHeight(position: Length): Length {
         return position * ELEVATOR_ANGLE.sin
-      }
-
-      fun fromPositionToArmState(position: Length): ElevatorStates {
-        return values().firstOrNull {
-          (it.height - fromPositionToHeight(position)).absoluteValue <= ELEVATOR_TOLERANCE
-        }
-          ?: BETWEEN_TWO_STATES
       }
     }
   }

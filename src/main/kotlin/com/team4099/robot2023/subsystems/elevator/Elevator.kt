@@ -33,7 +33,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val inputs = ElevatorIO.ElevatorInputs()
 
   // PID and Feedforward Values
-  val elevatorFeedforward: ElevatorFeedforward
+  lateinit var elevatorFeedforward: ElevatorFeedforward
 
   private val kP =
     LoggedTunableValue("Elevator/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
@@ -51,12 +51,30 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val reverseLimitReached: Boolean
     get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION
 
+  val forwardOpenLoopLimitReached: Boolean
+    get() = inputs.elevatorPosition >= ElevatorConstants.ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION
+  val reverseOpenLoopLimitReached: Boolean
+    get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION
+
+  var isHomed = false
+
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
-  val currentState: ElevatorConstants.ElevatorStates
+  var desiredState = ElevatorConstants.ElevatorStates.MIN_HEIGHT.height
+
+  val isAtCommandedState: Boolean
     get() {
-      return ElevatorConstants.ElevatorStates.fromPositionToArmState(inputs.elevatorPosition)
+      return (
+        (
+          inputs.elevatorPosition -
+            ElevatorConstants.ElevatorStates.fromHeightToPosition(desiredState)
+          )
+          .absoluteValue < ElevatorConstants.ELEVATOR_TOLERANCE
+        )
     }
+
+  val actualElevatorStates =
+    hashMapOf<ElevatorConstants.ElevatorStates, LoggedTunableValue<Meter>>()
 
   // trapezoidal profile stuff
   var elevatorConstraints: TrapezoidProfile.Constraints<Meter> =
@@ -68,8 +86,17 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
 
   init {
+
+    ElevatorConstants.ElevatorStates.values().forEach {
+      actualElevatorStates[it] =
+        LoggedTunableValue<Meter>(
+          "Elevator/${it.name}", it.height, Pair({ it.inInches }, { it.inches })
+        )
+    }
+
     // initializing pid constants and changing FF for sim vs real
     if (RobotBase.isReal()) {
+      isHomed = false
 
       kP.initDefault(ElevatorConstants.REAL_KP)
       kI.initDefault(ElevatorConstants.REAL_KI)
@@ -83,6 +110,8 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
           ElevatorConstants.ELEVATOR_KA
         )
     } else {
+      isHomed = true
+
       kP.initDefault(ElevatorConstants.SIM_KP)
       kI.initDefault(ElevatorConstants.SIM_KI)
       kD.initDefault(ElevatorConstants.SIM_KD)
@@ -101,6 +130,8 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     io.updateInputs(inputs)
 
     Logger.getInstance().processInputs("Elevator", inputs)
+
+    Logger.getInstance().recordOutput("Elevator/isAtCommandedState", isAtCommandedState)
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
       io.configPID(kP.get(), kI.get(), kD.get())
@@ -164,21 +195,24 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   fun holdElevatorPosition(): Command {
     var positionToHold = inputs.elevatorPosition
     val holdPositionCommand =
-      run {
-        io.setPosition(positionToHold, elevatorFeedforward.calculate(0.meters.perSecond))
-        Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", true)
+      runOnce {
+        positionToHold = inputs.elevatorPosition
+        Logger.getInstance().recordOutput("/Elevator/holdPosition", positionToHold.inInches)
       }
-        .beforeStarting(
-          {
-            positionToHold = inputs.elevatorPosition
-            Logger.getInstance()
-              .recordOutput("/Elevator/holdPosition", positionToHold.inInches)
-          },
-          this
+        .andThen(
+          run {
+            // check if hold position is close to zero
+            if (inputs.elevatorPosition.absoluteValue <
+              ElevatorConstants.ELEVATOR_TOLERANCE
+            ) {
+              io.setOutputVoltage(0.0.volts)
+            } else {
+              io.setPosition(
+                positionToHold, elevatorFeedforward.calculate(0.meters.perSecond)
+              )
+            }
+          }
         )
-        .finallyDo {
-          Logger.getInstance().recordOutput("/ActiveCommands/HoldElevatorPosition", false)
-        }
 
     holdPositionCommand.name = "ElevatorHoldPositionCommand"
     return holdPositionCommand
@@ -192,17 +226,19 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    * @return A command that runs the elevator's setPosition function until the profile is finished
    * running.
    */
-  fun raiseElevatorHeight(height: Length): Command {
+  fun raiseElevatorHeight(state: ElevatorConstants.ElevatorStates): Command {
 
     // Constructing our elevator profile in here because its internal values are dependent on the
     // position we want to set the elevator to
-
-    val position = ElevatorConstants.ElevatorStates.fromPositionToHeight(height)
+    val position = Supplier {
+      ElevatorConstants.ElevatorStates.fromHeightToPosition(
+        actualElevatorStates[state]?.get() ?: ElevatorConstants.ElevatorStates.MIN_HEIGHT.height
+      )
+    }
 
     // Creates a command that runs continuously until the profile is finished. The run function
     // accepts a lambda which indicates what we want to run every iteration.
-    val raiseElevatorHeight =
-      generateElevatorMoveCommand(Supplier { position }, 0.0.inches.perSecond)
+    val raiseElevatorHeight = generateElevatorMoveCommand(position, 0.0.inches.perSecond)
 
     raiseElevatorHeight.name = "ElevatorRaiseHeightCommand"
     return raiseElevatorHeight
@@ -230,6 +266,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     val elevatorMovementCommand =
       runOnce {
         startTime = Clock.fpgaTime
+        desiredState = targetPosition.get()
         elevatorProfile =
           TrapezoidProfile(
             elevatorConstraints,
@@ -261,12 +298,16 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
               // created
               // above when the passed in condition is true. In our case it's checking when
               // elevatorProfile is finished based on elapsed time.
-              elevatorProfile.isFinished(
+              elevatorProfile.isFinished((Clock.fpgaTime - startTime)) ||
                 (
-                  Clock.fpgaTime -
-                    startTime
+                  forwardLimitReached &&
+                    targetPosition.get() >
+                    ElevatorConstants.ELEVATOR_SOFTLIMIT_EXTENSION ||
+                    reverseLimitReached &&
+                    targetPosition.get() <
+                    ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION
                   )
-              ) // This is the race condition we're passing in.
+              // This is the race condition we're passing in.
             }
         )
     return elevatorMovementCommand
@@ -288,7 +329,10 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
         }
       }
         .until {
-          (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts)
+          (
+            forwardOpenLoopLimitReached && voltage > 0.volts ||
+              reverseOpenLoopLimitReached && voltage < 0.volts
+            )
         }
         .finallyDo {
           setOutputVoltage(0.volts)
@@ -308,5 +352,19 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     }
 
     return openLoopElevatorCommand
+  }
+
+  fun homeElevatorCommand(): Command {
+    val maybeHomeElevatorCommand =
+      run { io.setOutputVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE) }
+        .until {
+          isHomed || inputs.leaderSupplyCurrent > ElevatorConstants.HOMING_STALL_CURRENT
+        }
+        .finallyDo {
+          io.zeroEncoder()
+          isHomed = true
+        }
+    maybeHomeElevatorCommand.name = "ElevatorHomingCommand"
+    return maybeHomeElevatorCommand
   }
 }

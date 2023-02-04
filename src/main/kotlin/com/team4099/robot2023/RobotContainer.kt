@@ -6,7 +6,7 @@ import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.FieldConstants
+import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -60,7 +60,8 @@ object RobotContainer {
         drivetrain
       )
 
-    elevator.defaultCommand = elevator.holdElevatorPosition()
+    elevator.defaultCommand =
+      elevator.homeElevatorCommand().andThen(elevator.holdElevatorPosition())
     //    PivotClimber.defaultCommand = PivotIdleCommand()
   }
 
@@ -82,9 +83,11 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
+
     ControlBoard.runElevatorToHighNode.whileTrue(
-      elevator.raiseElevatorHeight(FieldConstants.Grids.highConeZ)
+      elevator.raiseElevatorHeight(ElevatorConstants.ElevatorStates.HIGH_CONE_SCORE)
     )
+
     ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(12.volts))
     ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-12.volts))
     ControlBoard.characterizeElevator.whileTrue(ElevatorCharacterizeCommand(elevator))
