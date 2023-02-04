@@ -50,9 +50,9 @@ object RobotContainer {
     // dont home in sim cause theres no output current to check
     if (RobotBase.isReal()) {
       manipulator.defaultCommand =
-        manipulator.homeArmCommand().andThen(manipulator.holdArmPosition())
+        manipulator.homeArmCommand().andThen(manipulator.manipulatorIdle())
     } else {
-      manipulator.defaultCommand = manipulator.holdArmPosition()
+      manipulator.defaultCommand = manipulator.manipulatorIdle()
     }
   }
 

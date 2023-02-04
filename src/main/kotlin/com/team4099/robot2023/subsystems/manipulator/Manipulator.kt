@@ -405,6 +405,13 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     return rollerNoSpinCommand
   }
 
+  /** @return A command that idles the rollers and holds the arm at the same time */
+  fun manipulatorIdle(): Command {
+    val manipulatorIdleCommand = ParallelCommandGroup(rollerIdle(), holdArmPosition())
+    manipulatorIdleCommand.name = "ManipulatorIdleCommand"
+    return manipulatorIdleCommand
+  }
+
   // could get rid of this and just pass in command from robot container
   val rollerStateToCommand =
     hashMapOf<ManipulatorConstants.RollerStates, Command>(
