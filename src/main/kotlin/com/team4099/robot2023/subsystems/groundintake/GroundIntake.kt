@@ -78,8 +78,13 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
   val actualArmStates = hashMapOf<GroundIntakeConstants.ArmStates, LoggedTunableValue<Radian>>()
 
-  val armState: GroundIntakeConstants.ArmStates
-    get() = GroundIntakeConstants.ArmStates.fromDegreesToArmState(inputs.armPosition)
+  var desiredArmPosition = GroundIntakeConstants.ArmStates.DUMMY.position
+
+  val armIsAtCommandedPosition: Boolean
+    get() {
+      return (desiredArmPosition - inputs.armPosition).absoluteValue <
+        GroundIntakeConstants.ARM_TOLERANCE
+    }
 
   var armConstraints: TrapezoidProfile.Constraints<Radian> =
     TrapezoidProfile.Constraints(
@@ -89,9 +94,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   var prevArmSetpoint: TrapezoidProfile.State<Radian> =
     TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
 
-  var positionToHold = inputs.armPosition
-
-  var desiredPosition = 0.0.degrees
+  var desiredSetpointPosition = 0.0.degrees
 
   init {
     GroundIntakeConstants.ArmStates.values().forEach {
@@ -149,11 +152,12 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance()
       .recordOutput(
         "GroundIntake/isAtSetpoint",
-        (desiredPosition - inputs.armPosition).absoluteValue <=
+        (desiredSetpointPosition - inputs.armPosition).absoluteValue <=
           GroundIntakeConstants.ARM_TOLERANCE
       )
 
-    Logger.getInstance().recordOutput("GroundIntake/ArmState", armState.name)
+    Logger.getInstance()
+      .recordOutput("GroundIntake/armIsAtCommandedPosition", armIsAtCommandedPosition)
 
     Logger.getInstance().recordOutput("GroundIntake/RollerState", rollerState.name)
   }
@@ -242,7 +246,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
       armFeedforward.calculate(setpoint.position, setpoint.velocity, armAngularAcceleration)
 
     // set the desired position to be the setpoint's position
-    desiredPosition = setpoint.position
+    desiredSetpointPosition = setpoint.position
 
     // When the forward or reverse limit is reached, set the voltage to 0
     // Else mose the arm to the setpoint position
@@ -282,6 +286,8 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
       runOnce {
         // Resets the initial time since the time at the start of method is of robot init
         startTime = Clock.fpgaTime
+        // updates the command position for logging
+        desiredArmPosition = angleSupplier.get()
         // Regenerates profile with the new position passed in
         armProfile =
           TrapezoidProfile(
