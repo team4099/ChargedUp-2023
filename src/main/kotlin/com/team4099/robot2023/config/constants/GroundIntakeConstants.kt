@@ -11,6 +11,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.driven
 import org.team4099.lib.units.derived.driving
 import org.team4099.lib.units.derived.momentOfInertia
+import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.reduction
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -22,15 +23,15 @@ object GroundIntakeConstants {
     val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
     val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
-    val SIM_KP = 1.0.volts / 1.degrees
+    val SIM_KP = 1.5.volts / 1.degrees
     val SIM_KI = 0.0.volts / (1.degrees * 1.seconds)
     val SIM_KD = 0.01.volts / (1.degrees.perSecond)
 
     val NEO_ARM_KS = 0.0.volts
 
     val ARM_KG = 1.582887.volts
-    val ARM_KV = 0.87.volts / 1.0.degrees.perSecond
-    val ARM_KA = 0.04.volts / 1.0.degrees.perSecond.perSecond
+    val ARM_KV = 0.87.volts / 1.0.radians.perSecond
+    val ARM_KA = 0.04.volts / 1.0.radians.perSecond.perSecond
   }
 
   val VOLTAGE_COMPENSATION = 12.0.volts

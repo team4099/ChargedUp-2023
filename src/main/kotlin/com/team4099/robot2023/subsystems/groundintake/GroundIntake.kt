@@ -18,12 +18,14 @@ import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
-import org.team4099.lib.units.derived.inVoltsPerDegreePerSecondPerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
+import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
+import org.team4099.lib.units.derived.inVoltsPerRadianPerSecondPerSecond
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
-import org.team4099.lib.units.derived.perDegreePerSecondPerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
+import org.team4099.lib.units.derived.perRadianPerSecond
+import org.team4099.lib.units.derived.perRadianPerSecondPerSecond
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 import java.util.function.Supplier
@@ -51,13 +53,13 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   private val kV =
     LoggedTunableValue(
       "GroundIntake/kV",
-      Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
+      Pair({ it.inVoltsPerRadianPerSecond }, { it.volts.perRadianPerSecond })
     )
 
   private val kA =
     LoggedTunableValue(
       "GroundIntake/kA",
-      Pair({ it.inVoltsPerDegreePerSecondPerSecond }, { it.volts.perDegreePerSecondPerSecond })
+      Pair({ it.inVoltsPerRadianPerSecondPerSecond }, { it.volts.perRadianPerSecondPerSecond })
     )
 
   val forwardLimitReached: Boolean

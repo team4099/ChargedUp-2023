@@ -80,9 +80,10 @@ object RobotContainer {
     ControlBoard.characterizeIntake.whileTrue(
       groundIntake.rotateGroundIntakeToAngle(5.0.degrees.asSupplier)
     )
-    //    ControlBoard.setArmCommand.whileTrue(
-    //      groundIntake.rotateGroundIntakeToAngle(GroundIntakeConstants.ArmStates.STOWED.position)
-    //    )
+
+    ControlBoard.setArmCommand.whileTrue(
+      groundIntake.rotateGroundIntakeToAngle(45.degrees.asSupplier)
+    )
   }
 
   fun mapTestControls() {}
