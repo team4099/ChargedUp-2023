@@ -108,7 +108,7 @@ interface GroundIntakeIO {
    *
    * @param voltage the voltage to set the motor to
    */
-  fun setRollerPower(voltage: ElectricalPotential) {}
+  fun setRollerVoltage(voltage: ElectricalPotential) {}
 
   /**
    * Sets the position of the arm motor, specifically the length of the arm

@@ -113,7 +113,7 @@ object GroundIntakeIOSim : GroundIntakeIO {
    *
    * @param voltage the voltage to set the roller motor to
    */
-  override fun setRollerPower(voltage: ElectricalPotential) {
+  override fun setRollerVoltage(voltage: ElectricalPotential) {
     rollerSim.setInputVoltage(
       MathUtil.clamp(
         voltage.inVolts,

@@ -88,14 +88,7 @@ object GroundIntakeConstants {
   enum class ArmStates(val position: Angle) {
     INTAKE(4.4.degrees),
     STOWED(55.6.degrees),
-    DUMMY(-1337.degrees);
-
-    companion object {
-      fun fromDegreesToArmState(angle: Angle): ArmStates {
-        return values().firstOrNull { (it.position - angle).absoluteValue <= ARM_TOLERANCE }
-          ?: DUMMY
-      }
-    }
+    DUMMY(-1337.degrees)
   }
 
   enum class RollerStates(val voltage: ElectricalPotential) {

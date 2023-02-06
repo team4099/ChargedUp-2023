@@ -133,7 +133,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
    *
    * @param voltage the voltage to set the roller motor to
    */
-  override fun setRollerPower(voltage: ElectricalPotential) {
+  override fun setRollerVoltage(voltage: ElectricalPotential) {
     rollerSparkMax.setVoltage(
       MathUtil.clamp(
         voltage.inVolts,

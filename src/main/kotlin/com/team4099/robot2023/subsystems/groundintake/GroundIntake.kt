@@ -13,8 +13,10 @@ import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Radian
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
@@ -56,14 +58,15 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
   var lastIntakeRunTime = Clock.fpgaTime
 
-  val rollerState: GroundIntakeConstants.RollerStates
-    get() = GroundIntakeConstants.RollerStates.fromVoltageToRollerState(inputs.rollerAppliedVoltage)
-
-  val actualArmStates = hashMapOf<GroundIntakeConstants.ArmStates, LoggedTunableValue<Radian>>()
+  val targetArmStates = hashMapOf<GroundIntakeConstants.ArmStates, LoggedTunableValue<Radian>>()
 
   var desiredArmPosition = GroundIntakeConstants.ArmStates.DUMMY.position
 
-  val armIsAtCommandedPosition: Boolean
+  val targetRollerStates = hashMapOf<GroundIntakeConstants.RollerStates, LoggedTunableValue<Volt>>()
+
+  var desiredRollerVoltage = GroundIntakeConstants.RollerStates.DUMMY.voltage
+
+  val armIsAtCommandedAngle: Boolean
     get() =
       (desiredArmPosition - inputs.armPosition).absoluteValue <
         GroundIntakeConstants.ARM_TOLERANCE
@@ -80,11 +83,19 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
   init {
     GroundIntakeConstants.ArmStates.values().forEach {
-      actualArmStates[it] =
-        LoggedTunableValue<Radian>(
+      targetArmStates[it] =
+        LoggedTunableValue(
           "GroundIntake/${it.name}", it.position, Pair({ it.inDegrees }, { it.degrees })
         )
     }
+
+    GroundIntakeConstants.RollerStates.values().forEach {
+      targetRollerStates[it] =
+        LoggedTunableValue(
+          "GroundIntake/${it.name}", it.voltage, Pair({ it.inVolts }, { it.volts })
+        )
+    }
+
     if (RobotBase.isReal()) {
       kP.initDefault(GroundIntakeConstants.PID.NEO_KP)
       kI.initDefault(GroundIntakeConstants.PID.NEO_KI)
@@ -128,15 +139,18 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
           GroundIntakeConstants.ARM_TOLERANCE
       )
 
-    Logger.getInstance()
-      .recordOutput("GroundIntake/armIsAtCommandedPosition", armIsAtCommandedPosition)
+    Logger.getInstance().recordOutput("GroundIntake/armIsAtCommandedAngle", armIsAtCommandedAngle)
 
-    Logger.getInstance().recordOutput("GroundIntake/RollerState", rollerState.name)
+    Logger.getInstance()
+      .recordOutput("GroundIntake/lastCommandedAngle", desiredArmPosition.inDegrees)
+
+    Logger.getInstance()
+      .recordOutput("GroundIntake/lastCommandedRollerVoltage", desiredRollerVoltage.inVolts)
   }
 
   /** @param appliedVoltage Represents the applied voltage of the roller motor */
   fun setRollerVoltage(appliedVoltage: ElectricalPotential) {
-    io.setRollerPower(appliedVoltage)
+    io.setRollerVoltage(appliedVoltage)
   }
 
   /**
@@ -149,12 +163,30 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
   }
 
+  fun groundIntakeRunRollersCommand(rollerState: GroundIntakeConstants.RollerStates): Command {
+    var desiredVoltage = rollerState.voltage
+
+    val setupCommand = runOnce {
+      if (Constants.Tuning.TUNING_MODE) {
+        desiredVoltage = targetRollerStates[rollerState]?.get() ?: rollerState.voltage
+      }
+      desiredRollerVoltage = desiredVoltage
+    }
+
+    val runRollersCommand = run { setRollerVoltage(desiredVoltage) }
+
+    val returnCommand = setupCommand.andThen(runRollersCommand)
+
+    returnCommand.name = "GroundIntakeRunRollersCommand"
+    return returnCommand
+  }
+
   fun groundIntakeDeployCommand(armState: GroundIntakeConstants.ArmStates): Command {
     var desiredAngle = armState.position
 
     val setupCommand = runOnce {
       if (Constants.Tuning.TUNING_MODE) {
-        desiredAngle = actualArmStates[armState]?.get() ?: armState.position
+        desiredAngle = targetArmStates[armState]?.get() ?: armState.position
       }
     }
 
@@ -269,11 +301,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
           run {
             // Regenerates profile state for that loop cycle and sets to that position
             setArmPosition(armProfile.calculate(Clock.fpgaTime - startTime))
-
-            Logger.getInstance()
-              .recordOutput(
-                "GroundIntake/groundIntakeSetpoint", angleSupplier.get().inDegrees
-              )
           }
             .until {
               // Run the lambda until the predicted finishing time of the profile elapses
