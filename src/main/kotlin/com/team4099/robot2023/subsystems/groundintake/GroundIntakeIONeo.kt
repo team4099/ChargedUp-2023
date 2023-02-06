@@ -20,6 +20,7 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.asDrivenOverDriving
+import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
@@ -39,18 +40,18 @@ object GroundIntakeIONeo : GroundIntakeIO {
   private val rollerSensor =
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivingOverDriven,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
   private val armSensor =
     sparkMaxAngularMechanismSensor(
       armSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivingOverDriven,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
-  private val armEncoder = armSparkMax.getEncoder()
+  private val armEncoder = armSparkMax.encoder
 
   private val throughBoreEncoder = DutyCycleEncoder(Constants.Intake.REV_ENCODER_PORT)
 
@@ -86,7 +87,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
     rollerSparkMax.openLoopRampRate =
       GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
-    rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kCoast)
+    rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
 
     armSparkMax.restoreFactoryDefaults()
     armSparkMax.clearFaults()
@@ -97,7 +98,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
     armSparkMax.burnFlash()
 
     armSparkMax.openLoopRampRate = GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
-    armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+    armSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
 
     zeroEncoder()
   }
@@ -192,7 +193,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
   /** recalculates the current position of the neo encoder using value from the absolute encoder */
   override fun zeroEncoder() {
-    armEncoder.setPosition(armSensor.positionToRawUnits(armAbsolutePosition))
+    armEncoder.position = armSensor.positionToRawUnits(armAbsolutePosition)
   }
 
   /**
@@ -202,9 +203,9 @@ object GroundIntakeIONeo : GroundIntakeIO {
    */
   override fun setRollerBrakeMode(brake: Boolean) {
     if (brake) {
-      rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+      rollerSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
     } else {
-      rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+      rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
     }
   }
 
@@ -215,9 +216,9 @@ object GroundIntakeIONeo : GroundIntakeIO {
    */
   override fun setArmBrakeMode(brake: Boolean) {
     if (brake) {
-      rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+      rollerSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
     } else {
-      rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+      rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
     }
   }
 }

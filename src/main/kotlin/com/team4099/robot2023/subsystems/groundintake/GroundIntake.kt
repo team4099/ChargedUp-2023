@@ -281,7 +281,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
             }
         )
 
-    rotateArmPositionCommand.name = "RotateGroundIntakeCommand"
+    rotateArmPositionCommand.name = "RotateGroundIntakeToAngleCommand"
     return rotateArmPositionCommand
   }
 }
