@@ -4,6 +4,11 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import com.team4099.robot2023.config.constants.MechanismSimConstants.carriageAttachment
+import com.team4099.robot2023.config.constants.MechanismSimConstants.elevatorAbsoluteXPosition
+import com.team4099.robot2023.config.constants.MechanismSimConstants.elevatorAbsoluteYPosition
+import com.team4099.robot2023.config.constants.MechanismSimConstants.secondStageAttachment
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -129,13 +134,15 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   override fun periodic() {
     io.updateInputs(inputs)
 
-    Logger.getInstance().processInputs("Elevator", inputs)
-
-    Logger.getInstance().recordOutput("Elevator/isAtCommandedState", isAtCommandedState)
+    updateMech2d()
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
       io.configPID(kP.get(), kI.get(), kD.get())
     }
+
+    Logger.getInstance().processInputs("Elevator", inputs)
+
+    Logger.getInstance().recordOutput("Elevator/isAtCommandedState", isAtCommandedState)
   }
 
   /**
@@ -368,5 +375,47 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
         }
     maybeHomeElevatorCommand.name = "ElevatorHomingCommand"
     return maybeHomeElevatorCommand
+  }
+
+  fun updateMech2d() {
+    // updating carriage attachment based on height of elevator
+    val secondStagePosition =
+      MathUtil.clamp(
+        inputs.elevatorPosition.inInches, 0.0, ElevatorConstants.FIRST_STAGE_HEIHT.inInches
+      )
+        .inches
+
+    val carriagePosition =
+      MathUtil.clamp(
+        inputs.elevatorPosition.inInches,
+        secondStagePosition.inInches,
+        ElevatorConstants.ELEVATOR_MAX_EXTENSION.inInches
+      )
+        .inches
+
+    secondStageAttachment.setPosition(
+      (
+        elevatorAbsoluteXPosition -
+          ElevatorConstants.ElevatorStates.fromPositionToRange(secondStagePosition)
+        )
+        .inInches,
+      (
+        elevatorAbsoluteYPosition +
+          ElevatorConstants.ElevatorStates.fromPositionToHeight(secondStagePosition)
+        )
+        .inInches
+    )
+    carriageAttachment.setPosition(
+      (
+        elevatorAbsoluteXPosition -
+          ElevatorConstants.ElevatorStates.fromPositionToRange(carriagePosition)
+        )
+        .inInches,
+      (
+        elevatorAbsoluteYPosition +
+          ElevatorConstants.ElevatorStates.fromPositionToHeight(carriagePosition)
+        )
+        .inInches
+    )
   }
 }

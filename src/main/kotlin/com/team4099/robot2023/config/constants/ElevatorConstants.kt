@@ -12,6 +12,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.percent
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
@@ -61,12 +62,15 @@ object ElevatorConstants {
   val MAX_VELOCITY = 50.inches.perSecond
   val MAX_ACCELERATION = 75.inches.perSecond.perSecond
 
-  val ELEVATOR_MAX_EXTENSION = 100.0.inches
+  val ELEVATOR_MAX_EXTENSION = 52.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
   val ELEVATOR_SOFTLIMIT_EXTENSION = 51.5.inches
   val ELEVATOR_SOFTLIMIT_RETRACTION = 0.5.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION = 45.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION = 5.inches
+
+  val FIRST_STAGE_HEIHT = 28.inches
+  val SECOND_STAGE_HEIGHT = 24.inches
 
   // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_HEIGHT = 0.0.inches
@@ -96,6 +100,14 @@ object ElevatorConstants {
 
       fun fromPositionToHeight(position: Length): Length {
         return position * ELEVATOR_ANGLE.sin
+      }
+
+      fun fromRangeToPosition(range: Length): Length {
+        return range / ELEVATOR_ANGLE.cos
+      }
+
+      fun fromPositionToRange(position: Length): Length {
+        return position * ELEVATOR_ANGLE.cos
       }
     }
   }

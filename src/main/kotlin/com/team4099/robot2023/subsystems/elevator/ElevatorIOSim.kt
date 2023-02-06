@@ -7,17 +7,11 @@ import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
-import edu.wpi.first.wpilibj.util.Color
-import edu.wpi.first.wpilibj.util.Color8Bit
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
-import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.DerivativeGain
@@ -42,60 +36,8 @@ object ElevatorIOSim : ElevatorIO {
       true,
     )
 
-  val m_mech2d = Mechanism2d(90.0, 90.0)
-
-  val carriageAttachment = m_mech2d.getRoot("Attachment", 55.0, 0.0)
-
   private val elevatorController =
     PIDController(ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD)
-
-  init {
-
-    // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
-    val midNodeHome = m_mech2d.getRoot("Mid Node", 27.83, 0.0)
-    val MidNode =
-      midNodeHome.append(
-        MechanismLigament2d("Mid Cone Node", 34.0, 90.0, 10.0, Color8Bit(Color.kWhite))
-      )
-    val highNodeHome = m_mech2d.getRoot("High Node", 10.58, 0.0)
-    val HighNode =
-      highNodeHome.append(
-        MechanismLigament2d("High Cone Node", 46.0, 90.0, 10.0, Color8Bit(Color.kWhite))
-      )
-    val gridHome = m_mech2d.getRoot("Grid Home", 49.75, 0.0)
-    val GridNode =
-      gridHome.append(
-        MechanismLigament2d("Grid Wall", 49.75, 180.0, 50.0, Color8Bit(Color.kWhite))
-      )
-    val dsHome = m_mech2d.getRoot("Double Substation Home", 49.75, 37.0)
-    val DSRamp =
-      dsHome.append(
-        MechanismLigament2d(
-          "Double Substation Ramp", 13.75, 180.0, 10.0, Color8Bit(Color.kWhite)
-        )
-      )
-
-    val m_bumper =
-      gridHome.append(MechanismLigament2d("Bumper", 30.5, 0.0, 60.0, Color8Bit(Color.kRed)))
-
-    val elevatorHome = m_mech2d.getRoot("Elevator Home", 55.0, 0.0)
-    val m_elevator =
-      elevatorHome.append(
-        MechanismLigament2d(
-          "Elevator",
-          ElevatorConstants.ElevatorStates.MAX_HEIGHT.height.inInches,
-          90.0,
-          15.0,
-          Color8Bit(Color.kOrange)
-        )
-      )
-
-    carriageAttachment.append(
-      MechanismLigament2d("Carriage", 10.0, 180.0, 10.0, Color8Bit(Color.kBlue))
-    )
-
-    SmartDashboard.putData("Arm Sim", m_mech2d)
-  }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
     elevatorSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
@@ -116,11 +58,6 @@ object ElevatorIOSim : ElevatorIO {
     RoboRioSim.setVInVoltage(
       BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.currentDrawAmps)
     )
-
-    // updating carriage attachment based on height of elevator
-    carriageAttachment.setPosition(55.0, inputs.elevatorPosition.inInches)
-
-    SmartDashboard.putData("Arm Sim", m_mech2d)
   }
 
   /**
