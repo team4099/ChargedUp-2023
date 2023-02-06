@@ -149,14 +149,12 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
   }
 
-  fun groundIntakeExtendCommand(): Command {
-    var desiredAngle = GroundIntakeConstants.ArmStates.INTAKE.position
+  fun groundIntakeDeployCommand(armState: GroundIntakeConstants.ArmStates): Command {
+    var desiredAngle = armState.position
 
     val setupCommand = runOnce {
       if (Constants.Tuning.TUNING_MODE) {
-        desiredAngle =
-          actualArmStates[GroundIntakeConstants.ArmStates.INTAKE]?.get()
-            ?: GroundIntakeConstants.ArmStates.INTAKE.position
+        desiredAngle = actualArmStates[armState]?.get() ?: armState.position
       }
     }
 
@@ -165,8 +163,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
     val returnCommand = setupCommand.andThen(extendCommand)
 
-    // TODO: change name
-    returnCommand.name = "GroundIntakeExtendCommand"
+    returnCommand.name = "GroundIntake${armState.name}Command"
     return returnCommand
   }
 
