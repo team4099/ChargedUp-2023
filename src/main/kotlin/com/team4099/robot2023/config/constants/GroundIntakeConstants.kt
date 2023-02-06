@@ -27,7 +27,7 @@ object GroundIntakeConstants {
     val SIM_KI = 0.0.volts / (1.degrees * 1.seconds)
     val SIM_KD = 0.01.volts / (1.degrees.perSecond)
 
-    val NEO_ARM_KS = 0.0.volts
+    val ARM_KS = 0.0.volts
 
     val ARM_KG = 1.582887.volts
     val ARM_KV = 0.87.volts / 1.0.radians.perSecond

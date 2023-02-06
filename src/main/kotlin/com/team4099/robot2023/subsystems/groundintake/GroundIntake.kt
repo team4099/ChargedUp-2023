@@ -15,17 +15,12 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
-import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerDegree
 import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
-import org.team4099.lib.units.derived.inVoltsPerRadianPerSecond
-import org.team4099.lib.units.derived.inVoltsPerRadianPerSecondPerSecond
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
-import org.team4099.lib.units.derived.perRadianPerSecond
-import org.team4099.lib.units.derived.perRadianPerSecondPerSecond
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 import java.util.function.Supplier
@@ -46,20 +41,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     LoggedTunableValue(
       "GroundIntake/kD",
       Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
-    )
-
-  private val kG = LoggedTunableValue("GroundIntake/kG", Pair({ it.inVolts }, { it.volts }))
-
-  private val kV =
-    LoggedTunableValue(
-      "GroundIntake/kV",
-      Pair({ it.inVoltsPerRadianPerSecond }, { it.volts.perRadianPerSecond })
-    )
-
-  private val kA =
-    LoggedTunableValue(
-      "GroundIntake/kA",
-      Pair({ it.inVoltsPerRadianPerSecondPerSecond }, { it.volts.perRadianPerSecondPerSecond })
     )
 
   val forwardLimitReached: Boolean
@@ -83,10 +64,9 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   var desiredArmPosition = GroundIntakeConstants.ArmStates.DUMMY.position
 
   val armIsAtCommandedPosition: Boolean
-    get() {
-      return (desiredArmPosition - inputs.armPosition).absoluteValue <
+    get() =
+      (desiredArmPosition - inputs.armPosition).absoluteValue <
         GroundIntakeConstants.ARM_TOLERANCE
-    }
 
   var armConstraints: TrapezoidProfile.Constraints<Radian> =
     TrapezoidProfile.Constraints(
@@ -112,7 +92,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
       armFeedforward =
         ArmFeedforward(
-          GroundIntakeConstants.PID.NEO_ARM_KS,
+          GroundIntakeConstants.PID.ARM_KS,
           GroundIntakeConstants.PID.ARM_KG,
           GroundIntakeConstants.PID.ARM_KV,
           GroundIntakeConstants.PID.ARM_KA
@@ -121,10 +101,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
       kP.initDefault(GroundIntakeConstants.PID.SIM_KP)
       kI.initDefault(GroundIntakeConstants.PID.SIM_KI)
       kD.initDefault(GroundIntakeConstants.PID.SIM_KD)
-
-      kG.initDefault(GroundIntakeConstants.PID.ARM_KG)
-      kV.initDefault(GroundIntakeConstants.PID.ARM_KV)
-      kA.initDefault(GroundIntakeConstants.PID.ARM_KA)
 
       armFeedforward =
         ArmFeedforward(
@@ -141,12 +117,6 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
       io.configPID(kP.get(), kI.get(), kD.get())
-    }
-
-    if (kG.hasChanged() || kV.hasChanged() || kA.hasChanged()) {
-      if (RobotBase.isSimulation()) {
-        armFeedforward = ArmFeedforward(0.0.volts, kG.get(), kV.get(), kA.get())
-      }
     }
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
