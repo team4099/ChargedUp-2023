@@ -3,7 +3,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 plugins {
 	id "idea"
 	id "org.jetbrains.kotlin.jvm" version "1.6.10"
-	id "edu.wpi.first.GradleRIO" version "2023.2.1"
+	id "edu.wpi.first.GradleRIO" version "2023.3.1"
 	id "com.diffplug.spotless" version "6.3.0"
 	id "com.peterabeles.gversion" version "1.10"
 	id "org.jetbrains.kotlinx.kover" version "0.4.2"
