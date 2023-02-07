@@ -95,19 +95,19 @@ object ElevatorConstants {
 
     companion object {
 
-      fun fromHeightToPosition(height: Length): Length {
+      inline fun fromHeightToPosition(height: Length): Length {
         return height / ELEVATOR_ANGLE.sin
       }
 
-      fun fromPositionToHeight(position: Length): Length {
+      inline fun fromPositionToHeight(position: Length): Length {
         return position * ELEVATOR_ANGLE.sin
       }
 
-      fun fromRangeToPosition(range: Length): Length {
+      inline fun fromRangeToPosition(range: Length): Length {
         return range / ELEVATOR_ANGLE.cos
       }
 
-      fun fromPositionToRange(position: Length): Length {
+      inline fun fromPositionToRange(position: Length): Length {
         return position * ELEVATOR_ANGLE.cos
       }
     }

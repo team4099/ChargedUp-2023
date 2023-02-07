@@ -66,14 +66,14 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
 
   // Iterate through all desired states and see if the current position is equivalent to any of the
   // actual positions. If not, return that it's between two positions.
-  var desiredPosition = ElevatorConstants.ElevatorStates.MIN_HEIGHT.height
+  var desiredHeight = ElevatorConstants.ElevatorStates.MIN_HEIGHT.height
 
   val isAtCommandedState: Boolean
     get() {
       return (
         (
           inputs.elevatorPosition -
-            ElevatorConstants.ElevatorStates.fromHeightToPosition(desiredPosition)
+            ElevatorConstants.ElevatorStates.fromHeightToPosition(desiredHeight)
           )
           .absoluteValue < ElevatorConstants.ELEVATOR_TOLERANCE
         )
@@ -144,6 +144,11 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().processInputs("Elevator", inputs)
 
     Logger.getInstance().recordOutput("Elevator/isAtCommandedState", isAtCommandedState)
+    Logger.getInstance()
+      .recordOutput(
+        "Elevator/elevatorHeightWithRespectToGround",
+        ElevatorConstants.ElevatorStates.fromPositionToHeight(inputs.elevatorPosition).inInches
+      )
   }
 
   /**
@@ -186,7 +191,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Elevator/targetVel", setpoint.velocity.inInchesPerSecond)
     Logger.getInstance()
       .recordOutput("Elevator/elevatorAcceleration", elevatorAccel.inInchesPerSecondPerSecond)
-    Logger.getInstance().recordOutput("Elevator/elevatorFeedFoward", feedforward.inVolts)
+    Logger.getInstance().recordOutput("Elevator/elevatorFeedForward", feedforward.inVolts)
   }
 
   /** set the current encoder position to be the encoders zero value */
@@ -205,7 +210,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     val holdPositionCommand =
       runOnce {
         positionToHold = inputs.elevatorPosition
-        Logger.getInstance().recordOutput("/Elevator/holdPosition", positionToHold.inInches)
+        Logger.getInstance().recordOutput("Elevator/holdPosition", positionToHold.inInches)
       }
         .andThen(
           run {
@@ -255,9 +260,9 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   fun slamDown(dropDistance: Length): Command {
     val slamDownCommand =
       generateElevatorMoveCommand(
-        Supplier { inputs.elevatorPosition - dropDistance }, 0.0.inches.perSecond
+        { inputs.elevatorPosition - dropDistance }, 0.0.inches.perSecond
       )
-    slamDownCommand.name = "ElevatorSlamDowmCommand"
+    slamDownCommand.name = "ElevatorSlamDownCommand"
     return slamDownCommand
   }
 
@@ -274,14 +279,14 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     val elevatorMovementCommand =
       runOnce {
         startTime = Clock.fpgaTime
-        desiredPosition = targetPosition.get()
+        desiredHeight = targetPosition.get()
         elevatorProfile =
           TrapezoidProfile(
             elevatorConstraints,
             TrapezoidProfile.State(targetPosition.get(), targetVelocity),
             TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
           )
-        Logger.getInstance().recordOutput("/Elevator/isAtSetpoint", false)
+        Logger.getInstance().recordOutput("Elevator/isAtSetpoint", false)
       }
         .andThen(
           run {
