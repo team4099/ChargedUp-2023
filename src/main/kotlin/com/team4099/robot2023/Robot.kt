@@ -2,13 +2,10 @@ package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
-import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.MechanismSimConstants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
-import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
@@ -145,15 +142,9 @@ object Robot : LoggedRobot() {
     RobotContainer.setDriveBrakeMode() // change to coast
     //    RobotContainer.zeroSteering()
     // autonomousCommand.cancel()
-    SmartDashboard.putData(RobotContainer.elevator)
-    SendableRegistry.setName(RobotContainer.elevator, "elevator")
-    SmartDashboard.putData(
-      "ElevatorCharacterization", ElevatorCharacterizeCommand(RobotContainer.elevator)
-    )
-    SmartDashboard.putData(
-      "ElevatorTuning",
-      RobotContainer.elevator.raiseElevatorHeight(ElevatorConstants.ElevatorStates.TUNABLE_STATE)
-    )
+    if (Constants.Tuning.TUNING_MODE) {
+      RobotContainer.mapTunableCommands()
+    }
   }
 
   override fun testInit() {

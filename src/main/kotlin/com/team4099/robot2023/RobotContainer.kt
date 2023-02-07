@@ -3,6 +3,7 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
+import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
@@ -14,7 +15,9 @@ import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
+import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.littletonrobotics.junction.Logger
@@ -107,4 +110,15 @@ object RobotContainer {
   //    )
 
   fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
+
+  fun mapTunableCommands() {
+    val commandsTab = Shuffleboard.getTab("TunableCommands")
+    commandsTab.add(RobotContainer.elevator)
+    SendableRegistry.setName(RobotContainer.elevator, "elevator")
+    commandsTab.add("ElevatorCharacterization", ElevatorCharacterizeCommand(elevator))
+    commandsTab.add(
+      "ElevatorTuning",
+      RobotContainer.elevator.raiseElevatorHeight(ElevatorConstants.ElevatorStates.TUNABLE_STATE)
+    )
+  }
 }
