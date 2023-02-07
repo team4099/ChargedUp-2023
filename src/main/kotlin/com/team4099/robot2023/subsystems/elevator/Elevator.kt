@@ -11,6 +11,7 @@ import com.team4099.robot2023.config.constants.MechanismSimConstants.secondStage
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
@@ -233,7 +234,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    * @return A command that runs the elevator's setPosition function until the profile is finished
    * running.
    */
-  fun raiseElevatorHeight(state: ElevatorConstants.ElevatorStates): Command {
+  fun raiseElevatorHeight(state: ElevatorConstants.ElevatorStates): CommandBase {
 
     // Constructing our elevator profile in here because its internal values are dependent on the
     // position we want to set the elevator to
@@ -263,7 +264,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   fun generateElevatorMoveCommand(
     targetPosition: Supplier<Length>,
     targetVelocity: LinearVelocity
-  ): Command {
+  ): CommandBase {
     lateinit var elevatorProfile: TrapezoidProfile<Meter>
 
     // Obtaining a start time for this command so that we can pass it into our profile. This is done

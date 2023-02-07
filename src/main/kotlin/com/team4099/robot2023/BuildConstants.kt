@@ -6,10 +6,10 @@ package com.team4099.robot2023
 const val MAVEN_GROUP = ""
 const val MAVEN_NAME = "ChargedUp-2023"
 const val VERSION = "unspecified"
-const val GIT_REVISION = 262
-const val GIT_SHA = "0a5f654c1de2904a4371dcc0fbcc26e8d25db1d7"
-const val GIT_DATE = "2023-02-04T14:13:08Z"
+const val GIT_REVISION = 263
+const val GIT_SHA = "cae14c88e84a47d1edcb7c9af510e1eecb2c9d7a"
+const val GIT_DATE = "2023-02-06T12:29:46Z"
 const val GIT_BRANCH = "elevator"
-const val BUILD_DATE = "2023-02-06T12:18:30Z"
-const val BUILD_UNIX_TIME = 1675703910939L
-const val DIRTY = 1
+const val BUILD_DATE = "2023-02-06T19:41:01Z"
+const val BUILD_UNIX_TIME = 1675730461142L
+const val DIRTY = 0

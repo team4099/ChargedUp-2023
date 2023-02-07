@@ -3,7 +3,6 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
-import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
@@ -24,7 +23,7 @@ import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
-  private val elevator: Elevator
+  val elevator: Elevator
   //  private val vision: Vision
 
   init {
@@ -94,7 +93,10 @@ object RobotContainer {
 
     ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(12.volts))
     ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-12.volts))
-    ControlBoard.characterizeElevator.whileTrue(ElevatorCharacterizeCommand(elevator))
+    // ControlBoard.characterizeElevator.whileTrue(ElevatorCharacterizeCommand(elevator)
+    // SmartDashboard.putData(elevator)
+    // setName(elevator, "elevator")
+    // SmartDashboard.putData("ElevatorCharacterization", ElevatorCharacterizeCommand(elevator))
   }
 
   fun mapTestControls() {}

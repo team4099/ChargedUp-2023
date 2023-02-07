@@ -4,7 +4,11 @@
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Pre-match/Mode": "String Chooser",
       "/SmartDashboard/Arm Sim": "Mechanism2d",
-      "/SmartDashboard/AutonomousMode": "String Chooser"
+      "/SmartDashboard/AutonomousMode": "String Chooser",
+      "/SmartDashboard/Elevator": "Subsystem",
+      "/SmartDashboard/ElevatorCharacterization": "Command",
+      "/SmartDashboard/ElevatorTuning": "Command",
+      "/SmartDashboard/elevator": "Subsystem"
     }
   },
   "NetworkTables": {
@@ -17,6 +21,9 @@
     "transitory": {
       "SmartDashboard": {
         "TunableNumbers": {
+          "Elevator": {
+            "open": true
+          },
           "Intake": {
             "open": true
           },

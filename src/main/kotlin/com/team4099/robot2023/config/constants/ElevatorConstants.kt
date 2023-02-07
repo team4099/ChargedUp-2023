@@ -90,7 +90,8 @@ object ElevatorConstants {
     HIGH_CUBE_SCORE(highCubeZ + CUBE_DROP_HEIGHT),
     HIGH_CONE_SCORE(highConeZ + CONE_DROP_HEIGHT),
     MAX_HEIGHT(ELEVATOR_MAX_EXTENSION),
-    BETWEEN_TWO_STATES(-Double.NEGATIVE_INFINITY.inches);
+    BETWEEN_TWO_STATES(-Double.NEGATIVE_INFINITY.inches),
+    TUNABLE_STATE(30.inches);
 
     companion object {
 

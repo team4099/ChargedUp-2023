@@ -5,8 +5,8 @@
       "maximized": "0",
       "style": "0",
       "userScale": "2",
-      "width": "1280",
-      "xpos": "1280",
+      "width": "720",
+      "xpos": "0",
       "ypos": "53"
     }
   },
@@ -23,13 +23,13 @@
     },
     "###Joysticks": {
       "Collapsed": "0",
-      "Pos": "53,353",
-      "Size": "796,155"
+      "Pos": "34,312",
+      "Size": "714,155"
     },
     "###NetworkTables": {
       "Collapsed": "0",
-      "Pos": "377,145",
-      "Size": "832,591"
+      "Pos": "7,147",
+      "Size": "832,662"
     },
     "###Other Devices": {
       "Collapsed": "0",
