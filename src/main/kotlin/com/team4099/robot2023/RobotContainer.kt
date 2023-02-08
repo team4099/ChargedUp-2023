@@ -128,7 +128,7 @@ object RobotContainer {
   fun mapTunableCommands() {
     val commandsTab = Shuffleboard.getTab("TunableCommands")
     commandsTab.add(manipulator)
-    SendableRegistry.setName(manipulator, "elevator")
+    SendableRegistry.setName(manipulator, "manipulator")
     commandsTab.add("ManipulatorArmCharacterization", ArmCharacterizationCommand(manipulator))
     commandsTab.add(
       "ManipulatorArmTuning",

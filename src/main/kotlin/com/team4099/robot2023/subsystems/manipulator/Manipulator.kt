@@ -18,6 +18,7 @@ import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
@@ -110,6 +111,8 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   val actualArmStates = hashMapOf<ManipulatorConstants.ArmStates, LoggedTunableValue<Meter>>()
 
+  val actualRollerStates = hashMapOf<ManipulatorConstants.RollerStates, LoggedTunableValue<Volt>>()
+
   var armConstraints: TrapezoidProfile.Constraints<Meter> =
     TrapezoidProfile.Constraints(
       ManipulatorConstants.ARM_MAX_VELOCITY, ManipulatorConstants.ARM_MAX_ACCELERATION
@@ -152,6 +155,13 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       actualArmStates[it] =
         LoggedTunableValue(
           "Manipulator/${it.name}", it.position, Pair({ it.inInches }, { it.inches })
+        )
+    }
+
+    ManipulatorConstants.RollerStates.values().forEach {
+      actualRollerStates[it] =
+        LoggedTunableValue(
+          "GroundIntake/${it.name}", it.voltage, Pair({ it.inVolts }, { it.volts })
         )
     }
 
@@ -316,12 +326,16 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * detected
    */
   fun rollerIntakeCone(): Command {
+    val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CONE_IN]
     val rollerIntakeConeCommand =
       runOnce { lastRollerRunTime = Clock.fpgaTime }
         .andThen(
-          run { setRollerPower(ManipulatorConstants.RollerStates.CONE_IN.voltage) }.until {
-            hasCone
+          run {
+            setRollerPower(
+              voltageSupplier?.get() ?: ManipulatorConstants.RollerStates.CONE_IN.voltage
+            )
           }
+            .until { hasCone }
         )
         .finallyDo { lastRollerState = ManipulatorConstants.RollerStates.CONE_IN }
 
@@ -334,12 +348,16 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * detected
    */
   fun rollerIntakeCube(): Command {
+    val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CUBE_IN]
     val rollerIntakeCubeCommand =
       runOnce { lastRollerRunTime = Clock.fpgaTime }
         .andThen(
-          run { setRollerPower(ManipulatorConstants.RollerStates.CUBE_IN.voltage) }.until {
-            hasCube
+          run {
+            setRollerPower(
+              voltageSupplier?.get() ?: ManipulatorConstants.RollerStates.CUBE_IN.voltage
+            )
           }
+            .until { hasCube }
         )
         .finallyDo { lastRollerState = ManipulatorConstants.RollerStates.CUBE_IN }
 
@@ -349,11 +367,17 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   /** @return A command that sets roller to voltage for outtaking a cone, has no end condition */
   fun rollerOuttakeCone(): Command {
+    val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CONE_OUT]
     val rollerOuttakeConeCommand =
-      run { setRollerPower(ManipulatorConstants.RollerStates.CONE_OUT.voltage) }.finallyDo {
-        // no spin ensure roller idle state after outtake won't spin
-        lastRollerState = ManipulatorConstants.RollerStates.NO_SPIN
+      run {
+        setRollerPower(
+          voltageSupplier?.get() ?: ManipulatorConstants.RollerStates.CONE_OUT.voltage
+        )
       }
+        .finallyDo {
+          // no spin ensure roller idle state after outtake won't spin
+          lastRollerState = ManipulatorConstants.RollerStates.NO_SPIN
+        }
 
     rollerOuttakeConeCommand.name = "ManipulatorRollerOuttakeConeCommand"
     return rollerOuttakeConeCommand
@@ -364,11 +388,17 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * detected
    */
   fun rollerOuttakeCube(): Command {
+    val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CUBE_OUT]
     val rollerOuttakeCubeCommand =
-      run { setRollerPower(ManipulatorConstants.RollerStates.CUBE_OUT.voltage) }.finallyDo {
-        // no spin ensure roller idle state after outtake won't spin
-        lastRollerState = ManipulatorConstants.RollerStates.NO_SPIN
+      run {
+        setRollerPower(
+          voltageSupplier?.get() ?: ManipulatorConstants.RollerStates.CUBE_OUT.voltage
+        )
       }
+        .finallyDo {
+          // no spin ensure roller idle state after outtake won't spin
+          lastRollerState = ManipulatorConstants.RollerStates.NO_SPIN
+        }
 
     rollerOuttakeCubeCommand.name = "ManipulatorRollerOuttakeCubeCommand"
     return rollerOuttakeCubeCommand
@@ -379,19 +409,29 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * intake was a cone or cube
    */
   fun rollerIdle(): Command {
-    val rollerIdleCommand = run {
-      var idleState = ManipulatorConstants.RollerStates.NO_SPIN
-      if (lastRollerState.voltage.sign == ManipulatorConstants.RollerStates.CONE_IN.voltage.sign) {
-        idleState = ManipulatorConstants.RollerStates.CONE_IDLE
-      } else if (lastRollerState.voltage.sign ==
-        ManipulatorConstants.RollerStates.CUBE_IN.voltage.sign
-      ) {
-        idleState = ManipulatorConstants.RollerStates.CUBE_IDLE
-      }
+    var idleState = ManipulatorConstants.RollerStates.NO_SPIN
+    var voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.NO_SPIN]
 
-      setRollerPower(idleState.voltage)
-      Logger.getInstance().recordOutput("/Manipulator/idleState", idleState.name)
-    }
+    val rollerIdleCommand =
+      runOnce {
+        if (lastRollerState.voltage.sign ==
+          ManipulatorConstants.RollerStates.CONE_IN.voltage.sign
+        ) {
+          idleState = ManipulatorConstants.RollerStates.CONE_IDLE
+        } else if (lastRollerState.voltage.sign ==
+          ManipulatorConstants.RollerStates.CUBE_IN.voltage.sign
+        ) {
+          idleState = ManipulatorConstants.RollerStates.CUBE_IDLE
+        }
+
+        voltageSupplier = actualRollerStates[idleState]
+      }
+        .andThen(
+          run {
+            setRollerPower(voltageSupplier?.get() ?: idleState.voltage)
+            Logger.getInstance().recordOutput("/Manipulator/idleState", idleState.name)
+          }
+        )
 
     rollerIdleCommand.name = "ManipulatorRollerIdleCommand"
     return rollerIdleCommand
