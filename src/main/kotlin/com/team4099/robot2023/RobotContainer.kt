@@ -3,8 +3,10 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
+import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -13,7 +15,9 @@ import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
+import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.volts
@@ -120,4 +124,17 @@ object RobotContainer {
   //    )"
 
   fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
+
+  fun mapTunableCommands() {
+    val commandsTab = Shuffleboard.getTab("TunableCommands")
+    commandsTab.add(manipulator)
+    SendableRegistry.setName(manipulator, "elevator")
+    commandsTab.add("ManipulatorArmCharacterization", ArmCharacterizationCommand(manipulator))
+    commandsTab.add(
+      "ManipulatorArmTuning",
+      manipulator.extendArmPosition(
+        ManipulatorConstants.ArmStates.TUNABLE_STATE.position.asSupplier
+      )
+    )
+  }
 }

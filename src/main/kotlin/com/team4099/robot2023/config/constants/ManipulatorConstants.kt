@@ -89,6 +89,7 @@ object ManipulatorConstants {
     CUBE_IN(-9.6.volts),
     CONE_OUT(-12.volts),
     CUBE_OUT(9.6.volts),
+    TUNABLE_STATE(4.0.volts),
     DUMMY(-Double.NEGATIVE_INFINITY.volts);
 
     companion object {
@@ -113,6 +114,7 @@ object ManipulatorConstants {
     SHELF_INTAKE_EXTENSION(4.inches),
     HIGH_SCORE_EXTENSION(8.inches),
     MAX_EXTENSION(10.inches),
+    TUNABLE_STATE(5.inches),
     DUMMY(-Double.NEGATIVE_INFINITY.inches);
 
     companion object {
