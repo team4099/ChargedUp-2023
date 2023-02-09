@@ -5,7 +5,7 @@ import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ArmFeedforward
@@ -163,7 +163,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
   }
 
-  fun groundIntakeRunRollersCommand(rollerState: GroundIntakeConstants.RollerStates): Command {
+  fun groundIntakeRunRollersCommand(rollerState: GroundIntakeConstants.RollerStates): CommandBase {
     var desiredVoltage = rollerState.voltage
 
     val setupCommand = runOnce {
@@ -181,7 +181,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     return returnCommand
   }
 
-  fun groundIntakeDeployCommand(armState: GroundIntakeConstants.ArmStates): Command {
+  fun groundIntakeDeployCommand(armState: GroundIntakeConstants.ArmStates): CommandBase {
     var desiredAngle = armState.position
 
     val setupCommand = runOnce {
@@ -199,7 +199,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
     return returnCommand
   }
 
-  fun openLoopCommand(voltage: ElectricalPotential): Command {
+  fun openLoopCommand(voltage: ElectricalPotential): CommandBase {
     val returnCommand = run {
       if ((openLoopForwardLimitReached && voltage > 0.0.volts) ||
         (openLoopReverseLimitReached && voltage < 0.0.volts)
@@ -216,7 +216,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
   }
 
   /** Tells the feedforward not to move the arm */
-  fun holdArmPosition(): Command {
+  fun holdArmPosition(): CommandBase {
     val returnCommand = run {
       Logger.getInstance()
         .recordOutput("GroundIntake/holdArmPosition", inputs.armPosition.inDegrees)
@@ -268,7 +268,7 @@ class GroundIntake(val io: GroundIntakeIO) : SubsystemBase() {
    *
    * @param angle The angle the arm should go to
    */
-  fun rotateGroundIntakeToAngle(angleSupplier: Supplier<Angle>): Command {
+  fun rotateGroundIntakeToAngle(angleSupplier: Supplier<Angle>): CommandBase {
     // Generate a trapezoidal profile from the current position to the setpoint
     // with set constraints
     var armProfile =
