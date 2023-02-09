@@ -205,7 +205,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
    * @return Command which keeps elevator at its current position uses small amount of feedforward
    * to overcome force of gravity
    */
-  fun holdElevatorPosition(): Command {
+  fun holdElevatorPosition(): CommandBase {
     var positionToHold = inputs.elevatorPosition
     val holdPositionCommand =
       runOnce {
@@ -257,7 +257,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     return raiseElevatorHeight
   }
 
-  fun slamDown(dropDistance: Length): Command {
+  fun slamDown(dropDistance: Length): CommandBase {
     val slamDownCommand =
       generateElevatorMoveCommand(
         { inputs.elevatorPosition - dropDistance }, 0.0.inches.perSecond
@@ -367,7 +367,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     return openLoopElevatorCommand
   }
 
-  fun homeElevatorCommand(): Command {
+  fun homeElevatorCommand(): CommandBase {
     val maybeHomeElevatorCommand =
       run { io.setOutputVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE) }
         .until {
