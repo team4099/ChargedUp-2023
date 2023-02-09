@@ -6,6 +6,7 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -235,7 +236,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   /** Holds the current arm position in place. */
-  fun holdArmPosition(): Command {
+  fun holdArmPosition(): CommandBase {
     var positionToHold = inputs.armPosition
     val holdPositionCommand =
       runOnce {
@@ -254,7 +255,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   /** Sets the arm's power to the desired voltage until the forward/reverse limits are reached. */
-  fun openLoopControl(voltage: ElectricalPotential): Command {
+  fun openLoopControl(voltage: ElectricalPotential): CommandBase {
     val openLoopArmCommand =
       run { setArmVoltage(voltage) }.until {
         forwardOpenLoopLimitReached && voltage > 0.volts ||
@@ -272,7 +273,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   /** Utilizes the trapezoidal profile of the arm to extend the arm by the desired length. */
-  fun extendArmPosition(targetPosition: Supplier<Length>): Command {
+  fun extendArmPosition(targetPosition: Supplier<Length>): CommandBase {
     var armProfile =
       TrapezoidProfile(
         armConstraints,
@@ -325,7 +326,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * @return A command that sets roller to voltage for intaking a cone, command ends when cone is
    * detected
    */
-  fun rollerIntakeCone(): Command {
+  fun rollerIntakeCone(): CommandBase {
     val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CONE_IN]
     val rollerIntakeConeCommand =
       runOnce { lastRollerRunTime = Clock.fpgaTime }
@@ -347,7 +348,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * @return A command that sets roller to voltage for intaking a cube, command ends when cube is
    * detected
    */
-  fun rollerIntakeCube(): Command {
+  fun rollerIntakeCube(): CommandBase {
     val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CUBE_IN]
     val rollerIntakeCubeCommand =
       runOnce { lastRollerRunTime = Clock.fpgaTime }
@@ -366,7 +367,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   /** @return A command that sets roller to voltage for outtaking a cone, has no end condition */
-  fun rollerOuttakeCone(): Command {
+  fun rollerOuttakeCone(): CommandBase {
     val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CONE_OUT]
     val rollerOuttakeConeCommand =
       run {
@@ -387,7 +388,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * @return A command that sets roller to voltage for outtaking a cube, command ends when cube is
    * detected
    */
-  fun rollerOuttakeCube(): Command {
+  fun rollerOuttakeCube(): CommandBase {
     val voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.CUBE_OUT]
     val rollerOuttakeCubeCommand =
       run {
@@ -408,7 +409,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * @return A that sets rollers to their corresponding idle voltage based on whether the last
    * intake was a cone or cube
    */
-  fun rollerIdle(): Command {
+  fun rollerIdle(): CommandBase {
     var idleState = ManipulatorConstants.RollerStates.NO_SPIN
     var voltageSupplier = actualRollerStates[ManipulatorConstants.RollerStates.NO_SPIN]
 
@@ -438,7 +439,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   /** @return A command that sets roller power to 0 volts */
-  fun rollerNoSpin(): Command {
+  fun rollerNoSpin(): CommandBase {
     val rollerNoSpinCommand = run { setRollerPower(0.volts) }
 
     rollerNoSpinCommand.name = "ManipulatorRollerNoSpinCommand"
@@ -446,7 +447,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   }
 
   /** @return A command that idles the rollers and holds the arm at the same time */
-  fun manipulatorIdle(): Command {
+  fun manipulatorIdle(): CommandBase {
     val manipulatorIdleCommand = ParallelCommandGroup(rollerIdle(), holdArmPosition())
     manipulatorIdleCommand.name = "ManipulatorIdleCommand"
     return manipulatorIdleCommand
@@ -475,7 +476,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   fun manipulatorCommand(
     rollerState: ManipulatorConstants.RollerStates,
     armState: ManipulatorConstants.ArmStates
-  ): Command {
+  ): CommandBase {
     val rollerCommand = rollerStateToCommand[rollerState] ?: rollerIdle()
 
     val armPosition = Supplier { actualArmStates[armState]?.get() ?: armState.position }
@@ -490,7 +491,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    * encoders when the arm stalls
    * @return A command that zeros the arm at the beginning of teleop
    */
-  fun homeArmCommand(): Command {
+  fun homeArmCommand(): CommandBase {
     val maybeHomeArmCommand =
       run { io.setArmVoltage(ManipulatorConstants.ARM_HOMING_APPLIED_VOLTAGE) }
         .until {
