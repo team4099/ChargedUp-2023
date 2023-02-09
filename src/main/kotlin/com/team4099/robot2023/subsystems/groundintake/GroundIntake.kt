@@ -137,8 +137,6 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
   private var prevArmSetpoint: TrapezoidProfile.State<Radian> =
     TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
 
-  var desiredSetpointPosition = 0.0.degrees
-
   init {
     if (RobotBase.isReal()) {
       kP.initDefault(GroundIntakeConstants.PID.NEO_KP)
@@ -276,7 +274,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
    */
   fun setArmBrakeMode(brake: Boolean) {
     io.setArmBrakeMode(brake)
-    Logger.getInstance().recordOutput("GroundIntake/groundIntakeArmBrakeModeEnabled", brake)
+    Logger.getInstance().recordOutput("GroundIntake/armBrakeModeEnabled", brake)
   }
 
   fun zeroArm() {
