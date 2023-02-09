@@ -3,9 +3,9 @@ package com.team4099.robot2023.subsystems.groundintake
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.SparkMaxPIDController
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DutyCycleEncoder
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.amps
@@ -20,7 +20,6 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.asDrivenOverDriving
-import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
@@ -35,19 +34,19 @@ object GroundIntakeIONeo : GroundIntakeIO {
     CANSparkMax(Constants.Intake.ROLLER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
   private val armSparkMax =
-    CANSparkMax(Constants.Intake.LEADER_ARM_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless)
+    CANSparkMax(Constants.Intake.ARM_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
   private val rollerSensor =
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivingOverDriven,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
   private val armSensor =
     sparkMaxAngularMechanismSensor(
       armSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivingOverDriven,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
@@ -57,8 +56,8 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
   private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
 
-  // gets the reported angle from the borehole encoder
-  val encoderAbsolutePosition: Angle
+  // gets the reported angle from the through bore encoder
+  private val encoderAbsolutePosition: Angle
     get() {
       return (
         throughBoreEncoder.get().rotations *
@@ -67,7 +66,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
     }
 
   // uses the absolute encoder position to calculate the arm position
-  val armAbsolutePosition: Angle
+  private val armAbsolutePosition: Angle
     get() {
       return (encoderAbsolutePosition + GroundIntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees
         .IEEErem(360.0)
@@ -83,24 +82,22 @@ object GroundIntakeIONeo : GroundIntakeIO {
       GroundIntakeConstants.ROLLER_CURRENT_LIMIT.inAmperes.toInt()
     )
     rollerSparkMax.inverted = GroundIntakeConstants.ROLLER_MOTOR_INVERTED
-    rollerSparkMax.burnFlash()
 
     rollerSparkMax.openLoopRampRate =
       GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
     rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
+
+    rollerSparkMax.burnFlash()
 
     armSparkMax.restoreFactoryDefaults()
     armSparkMax.clearFaults()
 
     armSparkMax.enableVoltageCompensation(GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts)
     armSparkMax.setSmartCurrentLimit(GroundIntakeConstants.ARM_CURRENT_LIMIT.inAmperes.toInt())
-    armSparkMax.inverted = GroundIntakeConstants.LEFT_MOTOR_INVERTED
-    armSparkMax.burnFlash()
-
-    armSparkMax.openLoopRampRate = GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
+    armSparkMax.inverted = GroundIntakeConstants.ARM_MOTOR_INVERTED
     armSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
 
-    zeroEncoder()
+    armSparkMax.burnFlash()
   }
 
   override fun updateInputs(inputs: GroundIntakeIO.GroundIntakeIOInputs) {
@@ -108,9 +105,9 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.rollerAppliedVoltage = rollerSparkMax.busVoltage.volts * rollerSparkMax.appliedOutput
     inputs.rollerStatorCurrent = rollerSparkMax.outputCurrent.amps
 
-    // BatteryVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
-    // AppliedVoltage = percentOutput * BatteryVoltage
-    // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
+    // BusVoltage * SupplyCurrent = AppliedVoltage * StatorCurrent
+    // AppliedVoltage = percentOutput * BusVoltage
+    // SupplyCurrent = (percentOutput * BusVoltage / BusVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
     inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput
     inputs.rollerTemp = rollerSparkMax.motorTemperature.celsius
@@ -124,8 +121,11 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
 
     Logger.getInstance()
-      .recordOutput("Intake/AbsoluteEncoderPosition", encoderAbsolutePosition.inDegrees)
-    Logger.getInstance().recordOutput("Intake/AbsoluteArmPosition", armAbsolutePosition.inDegrees)
+      .recordOutput("GroundIntake/absoluteEncoderRawRotations", throughBoreEncoder.get())
+    Logger.getInstance()
+      .recordOutput("GroundIntake/AbsoluteEncoderPosition", encoderAbsolutePosition.inDegrees)
+    Logger.getInstance()
+      .recordOutput("GroundIntake/AbsoluteArmPosition", armAbsolutePosition.inDegrees)
   }
 
   /**
@@ -135,11 +135,12 @@ object GroundIntakeIONeo : GroundIntakeIO {
    */
   override fun setRollerVoltage(voltage: ElectricalPotential) {
     rollerSparkMax.setVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
-        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        voltage,
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION
       )
+        .inVolts
     )
   }
 
@@ -150,11 +151,12 @@ object GroundIntakeIONeo : GroundIntakeIO {
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
     armSparkMax.setVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
-        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        voltage,
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION
       )
+        .inVolts
     )
   }
 

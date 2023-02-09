@@ -6,7 +6,6 @@ import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -18,8 +17,8 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.derived.degrees
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -53,7 +52,7 @@ object RobotContainer {
         drivetrain
       )
 
-    groundIntake.defaultCommand = groundIntake.holdArmPosition()
+    groundIntake.defaultCommand = InstantCommand({}, groundIntake)
   }
 
   fun zeroSteering() {
@@ -62,6 +61,7 @@ object RobotContainer {
 
   fun zeroSensors() {
     drivetrain.zeroSensors()
+    groundIntake.zeroArm()
   }
 
   fun setDriveCoastMode() {
@@ -74,23 +74,15 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
-    //
-    // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
-    //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
 
-    ControlBoard.extendIntake.whileTrue(
-      groundIntake.groundIntakeDeployCommand(GroundIntakeConstants.ArmStates.INTAKE)
-    )
-    ControlBoard.retractIntake.whileTrue(
-      groundIntake.groundIntakeDeployCommand(GroundIntakeConstants.ArmStates.STOWED)
-    )
-    ControlBoard.characterizeIntake.whileTrue(
-      groundIntake.rotateGroundIntakeToAngle(5.0.degrees.asSupplier)
-    )
+    ControlBoard.extendIntake.whileTrue(groundIntake.intakeCommand())
+    ControlBoard.retractIntake.whileTrue(groundIntake.stowedUpCommand())
+    //    ControlBoard.characterizeIntake.whileTrue(
+    //      groundIntake.groundIntakeDeployCommand(GroundIntakeConstants.ArmStates.TUNABLE_STATE) //
+    // TODO make legit
+    //    )
 
-    ControlBoard.setArmCommand.whileTrue(
-      groundIntake.rotateGroundIntakeToAngle(45.degrees.asSupplier)
-    )
+    ControlBoard.setArmCommand.whileTrue(groundIntake.stowedDownCommand())
   }
 
   fun mapTestControls() {}
@@ -109,11 +101,6 @@ object RobotContainer {
     commandsTab.add(
       "GroundIntakeArmCharacterization", GroundIntakeCharacterizeCommand(groundIntake)
     )
-    commandsTab.add(
-      "GroundIntakeArmTuning",
-      groundIntake.rotateGroundIntakeToAngle(
-        GroundIntakeConstants.ArmStates.TUNABLE_STATE.position.asSupplier
-      )
-    )
+    commandsTab.add("GroundIntakeArmTuning", groundIntake.stowedUpCommand())
   }
 }

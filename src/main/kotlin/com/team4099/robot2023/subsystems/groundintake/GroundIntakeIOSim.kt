@@ -1,5 +1,6 @@
 package com.team4099.robot2023.subsystems.groundintake
 
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import edu.wpi.first.math.MathUtil
@@ -51,7 +52,7 @@ object GroundIntakeIOSim : GroundIntakeIO {
     SingleJointedArmSim(
       DCMotor.getNEO(1),
       GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivingOverDriven,
-      GroundIntakeConstants.ARM_MOMENT_INTERTIA.asKilogramsPerMeterSquared,
+      GroundIntakeConstants.ARM_MOMENT_INERTIA.asKilogramsPerMeterSquared,
       GroundIntakeConstants.ARM_LENGTH.inMeters,
       -15.degrees.inRadians,
       90.degrees.inRadians,
@@ -91,9 +92,9 @@ object GroundIntakeIOSim : GroundIntakeIO {
     armSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
     inputs.rollerVelocity = rollerSim.angularVelocityRPM.rotations.perMinute
-    inputs.rollerSupplyCurrent = rollerSim.currentDrawAmps.amps
+    inputs.rollerSupplyCurrent = 0.amps
     inputs.rollerAppliedVoltage = 0.volts
-    inputs.rollerStatorCurrent = 0.amps
+    inputs.rollerStatorCurrent = rollerSim.currentDrawAmps.amps
     inputs.rollerTemp = 0.0.celsius
 
     inputs.armPosition = armSim.angleRads.radians
@@ -115,11 +116,12 @@ object GroundIntakeIOSim : GroundIntakeIO {
    */
   override fun setRollerVoltage(voltage: ElectricalPotential) {
     rollerSim.setInputVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
-        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        voltage,
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION
       )
+        .inVolts
     )
   }
 
@@ -144,11 +146,12 @@ object GroundIntakeIOSim : GroundIntakeIO {
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
     armSim.setInputVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts,
-        GroundIntakeConstants.VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        voltage,
+        -GroundIntakeConstants.VOLTAGE_COMPENSATION,
+        GroundIntakeConstants.VOLTAGE_COMPENSATION
       )
+        .inVolts
     )
   }
 

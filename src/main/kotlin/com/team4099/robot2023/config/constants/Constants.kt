@@ -65,15 +65,9 @@ object Constants {
     val TABS = arrayOf("Pre-match", "In-match")
   }
 
-  object Led {
-    const val LED_CANDLE_ID = 1
-    const val LED_BLINKEN_ID = 1
-  }
-
   object Intake {
-    const val ROLLER_MOTOR_ID = 1
-    const val LEADER_ARM_MOTOR = 1
-    const val FOLLOWER_ARM_MOTOR = 1
+    const val ROLLER_MOTOR_ID = 32
+    const val ARM_MOTOR_ID = 31
     const val REV_ENCODER_PORT = 1
   }
 }

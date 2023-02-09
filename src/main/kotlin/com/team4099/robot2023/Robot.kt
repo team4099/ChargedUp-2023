@@ -10,11 +10,6 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import org.ejml.EjmlVersion.BUILD_DATE
-import org.ejml.EjmlVersion.DIRTY
-import org.ejml.EjmlVersion.GIT_BRANCH
-import org.ejml.EjmlVersion.GIT_SHA
-import org.ejml.EjmlVersion.MAVEN_NAME
 import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger

@@ -1,5 +1,6 @@
 package com.team4099.robot2023.commands.elevator
 
+import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
@@ -26,29 +27,31 @@ class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandB
   var hasMoved = false
   var appliedVolts = 0.volts
 
-  var sim_step = 0.01.volts
-  var real_step = 0.1.volts
+  var simStep = 0.01.volts
+  var realStep = 0.1.volts
 
   var moveTolerance = 0.1.degrees.perSecond
 
   override fun initialize() {
     hasMoved = false
     appliedVolts = 0.volts
+    groundIntake.requestedState = GroundIntakeConstants.ArmStates.OPEN_LOOP
   }
 
   override fun execute() {
-    groundIntake.io.setArmVoltage(appliedVolts)
+    groundIntake.armVoltageTarget = appliedVolts
 
-    if ((groundIntake.inputs.armVelocity - 0.0.degrees.perSecond).absoluteValue > moveTolerance) {
+    if (groundIntake.inputs.armVelocity.absoluteValue > moveTolerance) {
       hasMoved = true
-      println(appliedVolts.inVolts)
       Logger.getInstance().recordOutput("GroundIntake/CharacterizationOutput", appliedVolts.inVolts)
     }
 
-    if (RobotBase.isReal()) {
-      appliedVolts += real_step
-    } else {
-      appliedVolts += sim_step
+    if (!hasMoved) {
+      if (RobotBase.isReal()) {
+        appliedVolts += realStep
+      } else {
+        appliedVolts += simStep
+      }
     }
   }
 
