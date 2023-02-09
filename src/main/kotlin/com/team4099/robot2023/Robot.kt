@@ -134,6 +134,10 @@ object Robot : LoggedRobot() {
     RobotContainer.setDriveBrakeMode() // change to coast
     //    RobotContainer.zeroSteering()
     // autonomousCommand.cancel()
+
+    if (Constants.Tuning.TUNING_MODE) {
+      RobotContainer.mapTunableCommands()
+    }
   }
 
   override fun testInit() {
