@@ -11,7 +11,7 @@ import org.team4099.lib.units.derived.ElectricalPotential
 sealed interface SuperStructureRequest {
   // Implements SuperStructureRequest to ensure standardized structure
   sealed interface GroundIntakeRequest : SuperStructureRequest {
-    class TargetingPosition(val position: Angle) : GroundIntakeRequest
-    class OpenLoop(val voltage: ElectricalPotential) : GroundIntakeRequest
+    class TargetingPosition(val position: Angle, val rollerVoltage: ElectricalPotential) : GroundIntakeRequest
+    class ArmOpenLoop(val voltage: ElectricalPotential, val rollerVoltage: ElectricalPotential) : GroundIntakeRequest
   }
 }

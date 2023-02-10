@@ -119,7 +119,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
   var currentState: GroundIntakeState = GroundIntakeState.UNINITIALIZED
 
   var requestedState: GroundIntakeRequest =
-    GroundIntakeRequest.TargetingPosition(stowedUpAngle.get())
+    GroundIntakeRequest.TargetingPosition(stowedUpAngle.get(), neutralVoltage.get())
 
   private var armConstraints: TrapezoidProfile.Constraints<Radian> =
     TrapezoidProfile.Constraints(
@@ -253,10 +253,9 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
     // next loop cycle.
     currentState = nextState
 
-    if (requestedState is GroundIntakeRequest.OpenLoop) {
-      armVoltageTarget = (requestedState as GroundIntakeRequest.OpenLoop).voltage
-    } else if (requestedState is GroundIntakeRequest.TargetingPosition) {
-      armPositionTarget = (requestedState as GroundIntakeRequest.TargetingPosition).position
+    when (val currentRequest = requestedState) {
+      is GroundIntakeRequest.TargetingPosition -> armPositionTarget = currentRequest.position
+      is GroundIntakeRequest.ArmOpenLoop -> armVoltageTarget = currentRequest.voltage
     }
   }
 
@@ -281,9 +280,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun intakeCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(intakeAngle.get())
-      armPositionTarget = intakeAngle.get()
-      rollerVoltageTarget = intakeVoltage.get()
+      requestedState = GroundIntakeRequest.TargetingPosition(intakeAngle.get(), intakeVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeIntakeCommand"
@@ -292,9 +289,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun outtakeCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(outtakeAngle.get())
-      armPositionTarget = outtakeAngle.get()
-      rollerVoltageTarget = outtakeVoltage.get()
+      requestedState = GroundIntakeRequest.TargetingPosition(outtakeAngle.get(), outtakeVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeOuttakeCommand"
@@ -303,9 +298,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun stowedUpCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(stowedUpAngle.get())
-      armPositionTarget = stowedUpAngle.get()
-      rollerVoltageTarget = neutralVoltage.get()
+      requestedState = GroundIntakeRequest.TargetingPosition(stowedUpAngle.get(), neutralVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeIntakeCommand"
@@ -314,9 +307,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun stowedDownCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(stowedDownAngle.get())
-      armPositionTarget = stowedDownAngle.get()
-      rollerVoltageTarget = neutralVoltage.get()
+      requestedState = GroundIntakeRequest.TargetingPosition(stowedDownAngle.get(), neutralVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeIntakeCommand"
@@ -376,7 +367,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
       inline fun equivalentToRequest(request: GroundIntakeRequest): Boolean {
         return (
-          (request is GroundIntakeRequest.OpenLoop && this == OPEN_LOOP_REQUEST) ||
+          (request is GroundIntakeRequest.ArmOpenLoop && this == OPEN_LOOP_REQUEST) ||
             (request is GroundIntakeRequest.TargetingPosition && this == TARGETING_POSITION)
           )
       }
@@ -384,7 +375,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
     inline fun fromRequestToState(request: GroundIntakeRequest): GroundIntakeState {
       return when (request) {
-        is GroundIntakeRequest.OpenLoop -> GroundIntakeState.OPEN_LOOP_REQUEST
+        is GroundIntakeRequest.ArmOpenLoop -> GroundIntakeState.OPEN_LOOP_REQUEST
         is GroundIntakeRequest.TargetingPosition -> GroundIntakeState.TARGETING_POSITION
       }
     }
