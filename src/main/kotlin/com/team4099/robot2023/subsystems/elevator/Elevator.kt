@@ -39,7 +39,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val inputs = ElevatorIO.ElevatorInputs()
 
   // PID and Feedforward Values
-  lateinit var elevatorFeedforward: ElevatorFeedforward
+  var elevatorFeedforward: ElevatorFeedforward
 
   private val kP =
     LoggedTunableValue("Elevator/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
