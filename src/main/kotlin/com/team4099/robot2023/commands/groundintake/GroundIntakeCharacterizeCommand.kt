@@ -2,6 +2,7 @@ package com.team4099.robot2023.commands.elevator
 
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.superstructure.RequestStructure
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
@@ -35,7 +36,10 @@ class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandB
   override fun initialize() {
     hasMoved = false
     appliedVolts = 0.volts
-    groundIntake.requestedState = GroundIntakeConstants.ArmStates.OPEN_LOOP
+    groundIntake.currentRequest =
+      RequestStructure.GroundIntakeRequest.TargetingPosition(
+        GroundIntakeConstants.STOWED_UP_ANGLE
+      )
   }
 
   override fun execute() {
