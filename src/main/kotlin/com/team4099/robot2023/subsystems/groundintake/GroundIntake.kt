@@ -26,7 +26,7 @@ import org.team4099.lib.units.derived.perDegreeSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
-import com.team4099.robot2023.subsystems.superstructure.SuperStructureRequest.GroundIntakeRequest as GroundIntakeRequest
+import com.team4099.robot2023.subsystems.superstructure.RequestStructure.GroundIntakeRequest as GroundIntakeRequest
 
 class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
@@ -103,6 +103,8 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   private var lastArmPositionTarget = 0.0.degrees
 
+  private var lastArmVoltage = 0.0.volts
+
   val forwardLimitReached: Boolean
     get() = inputs.armPosition >= GroundIntakeConstants.ARM_MAX_ROTATION
   val reverseLimitReached: Boolean
@@ -118,7 +120,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   var currentState: GroundIntakeState = GroundIntakeState.UNINITIALIZED
 
-  var requestedState: GroundIntakeRequest =
+  var currentRequest: GroundIntakeRequest =
     GroundIntakeRequest.TargetingPosition(stowedUpAngle.get(), neutralVoltage.get())
 
   private var armConstraints: TrapezoidProfile.Constraints<Radian> =
@@ -179,11 +181,11 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("GroundIntake/currentState", currentState.name)
 
     Logger.getInstance()
-      .recordOutput("GroundIntake/requestedState", requestedState.javaClass.simpleName)
+      .recordOutput("GroundIntake/requestedState", currentRequest.javaClass.simpleName)
 
     Logger.getInstance()
       .recordOutput(
-        "GroundIntake/isAtCommandedState", currentState.equivalentToRequest(requestedState)
+        "GroundIntake/isAtCommandedState", currentState.equivalentToRequest(currentRequest)
       )
 
     Logger.getInstance().recordOutput("GroundIntake/armPositionTarget", armPositionTarget.inDegrees)
@@ -208,15 +210,24 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
         // loop cycle
 
         // Transitions
-        nextState = fromRequestToState(requestedState)
+        nextState = fromRequestToState(currentRequest)
       }
       GroundIntakeState.OPEN_LOOP_REQUEST -> {
         // Outputs
+        if (armVoltageTarget != lastArmVoltage) {
+          lastIntakeRunTime = Clock.fpgaTime
+        }
+
         setArmVoltage(armVoltageTarget)
         setRollerVoltage(rollerVoltageTarget)
 
         // Transitions
-        nextState = fromRequestToState(requestedState)
+        nextState = fromRequestToState(currentRequest)
+
+        // See related comment in targeting position to see why we do this
+        if (!(currentState.equivalentToRequest(currentRequest))) {
+          lastArmVoltage = -1337.volts
+        }
       }
       GroundIntakeState.TARGETING_POSITION -> {
         // Outputs
@@ -228,19 +239,28 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
               TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
             )
           timeProfileGeneratedAt = Clock.fpgaTime
+
+          // This statement is only run when the armPositionTarget is first noticed to be different
+          // than the previous setpoint the arm went to.
           lastArmPositionTarget = armPositionTarget
+          lastIntakeRunTime = Clock.fpgaTime
         }
 
-        setArmPosition(armProfile.calculate(Clock.fpgaTime - timeProfileGeneratedAt))
+        val timeElapsed = Clock.fpgaTime - timeProfileGeneratedAt
+
+        setArmPosition(armProfile.calculate(timeElapsed))
         setRollerVoltage(rollerVoltageTarget)
 
+        Logger.getInstance()
+          .recordOutput("GroundIntake/completedMotionProfile", armProfile.isFinished(timeElapsed))
+
         // Transitions
-        nextState = fromRequestToState(requestedState)
+        nextState = fromRequestToState(currentRequest)
 
         // if we're transitioning out of targeting position, we want to make sure the next time we
         // enter targeting position, we regenerate profile (even if the arm setpoint is the same as
         // the previous time we ran it)
-        if (!(currentState.equivalentToRequest(requestedState))) {
+        if (!(currentState.equivalentToRequest(currentRequest))) {
           // setting the last target to something unreasonable so the profile is generated next loop
           // cycle
           lastArmPositionTarget = (-1337).degrees
@@ -253,9 +273,11 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
     // next loop cycle.
     currentState = nextState
 
-    when (val currentRequest = requestedState) {
-      is GroundIntakeRequest.TargetingPosition -> armPositionTarget = currentRequest.position
-      is GroundIntakeRequest.ArmOpenLoop -> armVoltageTarget = currentRequest.voltage
+    // Taking advantage of Kotlin's smart casting on val assignment.
+    // https://kotlinlang.org/docs/typecasts.html#smart-casts
+    when (val typedRequest = currentRequest) {
+      is GroundIntakeRequest.TargetingPosition -> armPositionTarget = typedRequest.position
+      is GroundIntakeRequest.ArmOpenLoop -> armVoltageTarget = typedRequest.voltage
     }
   }
 
@@ -280,7 +302,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun intakeCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(intakeAngle.get(), intakeVoltage.get())
+      currentRequest = GroundIntakeRequest.TargetingPosition(intakeAngle.get(), intakeVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeIntakeCommand"
@@ -289,7 +311,8 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun outtakeCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(outtakeAngle.get(), outtakeVoltage.get())
+      currentRequest =
+        GroundIntakeRequest.TargetingPosition(outtakeAngle.get(), outtakeVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeOuttakeCommand"
@@ -298,7 +321,8 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun stowedUpCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(stowedUpAngle.get(), neutralVoltage.get())
+      currentRequest =
+        GroundIntakeRequest.TargetingPosition(stowedUpAngle.get(), neutralVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeIntakeCommand"
@@ -307,7 +331,8 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun stowedDownCommand(): CommandBase {
     val returnCommand = runOnce {
-      requestedState = GroundIntakeRequest.TargetingPosition(stowedDownAngle.get(), neutralVoltage.get())
+      currentRequest =
+        GroundIntakeRequest.TargetingPosition(stowedDownAngle.get(), neutralVoltage.get())
     }
 
     returnCommand.name = "GroundIntakeIntakeCommand"

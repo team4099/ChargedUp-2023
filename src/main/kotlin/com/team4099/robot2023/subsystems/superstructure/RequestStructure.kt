@@ -8,10 +8,13 @@ import org.team4099.lib.units.derived.ElectricalPotential
 // typealiasing for nested interfaces and sealed classes doesn't work
 // https://youtrack.jetbrains.com/issue/KT-34281/Access-nested-classes-including-sealed-class-subclasses-through-typealias
 
-sealed interface SuperStructureRequest {
-  // Implements SuperStructureRequest to ensure standardized structure
-  sealed interface GroundIntakeRequest : SuperStructureRequest {
-    class TargetingPosition(val position: Angle, val rollerVoltage: ElectricalPotential) : GroundIntakeRequest
-    class ArmOpenLoop(val voltage: ElectricalPotential, val rollerVoltage: ElectricalPotential) : GroundIntakeRequest
+sealed interface RequestStructure {
+
+  // Implements RequestStructure to ensure standardized structure
+  sealed interface GroundIntakeRequest : RequestStructure {
+    class TargetingPosition(val position: Angle, val rollerVoltage: ElectricalPotential) :
+      GroundIntakeRequest
+    class ArmOpenLoop(val voltage: ElectricalPotential, val rollerVoltage: ElectricalPotential) :
+      GroundIntakeRequest
   }
 }
