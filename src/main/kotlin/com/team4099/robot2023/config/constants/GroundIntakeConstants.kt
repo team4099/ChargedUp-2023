@@ -89,12 +89,6 @@ object GroundIntakeConstants {
   val STOWED_DOWN_ANGLE = 4.4.degrees
   val NEUTRAL_VOLTAGE = 0.0.volts
 
-  enum class ArmStates {
-    OPEN_LOOP,
-    TARGETING_POSITION,
-    UNINITIALIZED
-  }
-
   enum class RollerStates(val voltage: ElectricalPotential) {
     INTAKE(3.0.volts),
     OUTTAKE((-3.0).volts),
