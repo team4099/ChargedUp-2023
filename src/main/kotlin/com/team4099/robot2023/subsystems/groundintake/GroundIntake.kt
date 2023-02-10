@@ -4,7 +4,6 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import com.team4099.robot2023.subsystems.superstructure.SuperStructureState
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -27,8 +26,7 @@ import org.team4099.lib.units.derived.perDegreeSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
-import com.team4099.robot2023.subsystems.superstructure.SuperStructureState.GroundIntakeStructure.GroundIntakeRequest as GroundIntakeRequest
-import com.team4099.robot2023.subsystems.superstructure.SuperStructureState.GroundIntakeStructure.GroundIntakeState as GroundIntakeState
+import com.team4099.robot2023.subsystems.superstructure.SuperStructureRequest.GroundIntakeRequest as GroundIntakeRequest
 
 class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
@@ -118,12 +116,10 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   var lastIntakeRunTime = Clock.fpgaTime
 
-  var currentState: GroundIntakeState = GroundIntakeState.Uninitialized()
+  var currentState: GroundIntakeState = GroundIntakeState.UNINITIALIZED
 
-  var requestedState =
-    SuperStructureState.GroundIntakeStructure.GroundIntakeRequest.TargetingPosition(
-      stowedUpAngle.get()
-    )
+  var requestedState: GroundIntakeRequest =
+    GroundIntakeRequest.TargetingPosition(stowedUpAngle.get())
 
   private var armConstraints: TrapezoidProfile.Constraints<Radian> =
     TrapezoidProfile.Constraints(
@@ -180,12 +176,15 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
 
-    Logger.getInstance().recordOutput("GroundIntake/currentState", currentState.javaClass.name)
-
-    Logger.getInstance().recordOutput("GroundIntake/requestedState", requestedState.javaClass.name)
+    Logger.getInstance().recordOutput("GroundIntake/currentState", currentState.name)
 
     Logger.getInstance()
-      .recordOutput("GroundIntake/isAtCommandedState", requestedState.equals(currentState))
+      .recordOutput("GroundIntake/requestedState", requestedState.javaClass.simpleName)
+
+    Logger.getInstance()
+      .recordOutput(
+        "GroundIntake/isAtCommandedState", currentState.equivalentToRequest(requestedState)
+      )
 
     Logger.getInstance().recordOutput("GroundIntake/armPositionTarget", armPositionTarget.inDegrees)
 
@@ -201,25 +200,25 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
     Logger.getInstance().recordOutput("GroundIntake/reverseLimitReached", reverseLimitReached)
 
-    var nextState: SuperStructureState.GroundIntakeStructure = currentState
+    var nextState = currentState
     when (currentState) {
-      GroundIntakeState.Uninitialized() -> {
+      GroundIntakeState.UNINITIALIZED -> {
         // Outputs
         // No designated output functionality because targeting position will take care of it next
         // loop cycle
 
         // Transitions
-        nextState = requestedState
+        nextState = fromRequestToState(requestedState)
       }
-      GroundIntakeState.OpenLoop() -> {
+      GroundIntakeState.OPEN_LOOP_REQUEST -> {
         // Outputs
         setArmVoltage(armVoltageTarget)
         setRollerVoltage(rollerVoltageTarget)
 
         // Transitions
-        nextState = requestedState
+        nextState = fromRequestToState(requestedState)
       }
-      GroundIntakeState.TargetingPosition() -> {
+      GroundIntakeState.TARGETING_POSITION -> {
         // Outputs
         if (armPositionTarget != lastArmPositionTarget) {
           armProfile =
@@ -236,15 +235,15 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
         setRollerVoltage(rollerVoltageTarget)
 
         // Transitions
-        nextState = requestedState
+        nextState = fromRequestToState(requestedState)
 
         // if we're transitioning out of targeting position, we want to make sure the next time we
         // enter targeting position, we regenerate profile (even if the arm setpoint is the same as
         // the previous time we ran it)
-        if (!(requestedState.equals(currentState))) {
+        if (!(currentState.equivalentToRequest(requestedState))) {
           // setting the last target to something unreasonable so the profile is generated next loop
           // cycle
-          lastArmPositionTarget = -1337.degrees
+          lastArmPositionTarget = (-1337).degrees
         }
       }
     }
@@ -252,11 +251,12 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
     // The next loop cycle, we want to run ground intake at the state that was requested. setting
     // current state to the next state ensures that we run the logic for the state we want in the
     // next loop cycle.
+    currentState = nextState
 
-    when (nextState) {
-      is GroundIntakeRequest.TargetingPosition ->
-        currentState = GroundIntakeState.TargetingPosition()
-      is GroundIntakeRequest.OpenLoop -> currentState = GroundIntakeState.OpenLoop()
+    if (requestedState is GroundIntakeRequest.OpenLoop) {
+      armVoltageTarget = (requestedState as GroundIntakeRequest.OpenLoop).voltage
+    } else if (requestedState is GroundIntakeRequest.TargetingPosition) {
+      armPositionTarget = (requestedState as GroundIntakeRequest.TargetingPosition).position
     }
   }
 
@@ -366,5 +366,27 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
   private fun isOutOfBounds(velocity: AngularVelocity): Boolean {
     return (velocity > 0.0.degrees.perSecond && forwardLimitReached) ||
       (velocity < 0.0.degrees.perSecond && reverseLimitReached)
+  }
+
+  companion object {
+    enum class GroundIntakeState {
+      UNINITIALIZED,
+      TARGETING_POSITION,
+      OPEN_LOOP_REQUEST;
+
+      inline fun equivalentToRequest(request: GroundIntakeRequest): Boolean {
+        return (
+          (request is GroundIntakeRequest.OpenLoop && this == OPEN_LOOP_REQUEST) ||
+            (request is GroundIntakeRequest.TargetingPosition && this == TARGETING_POSITION)
+          )
+      }
+    }
+
+    inline fun fromRequestToState(request: GroundIntakeRequest): GroundIntakeState {
+      return when (request) {
+        is GroundIntakeRequest.OpenLoop -> GroundIntakeState.OPEN_LOOP_REQUEST
+        is GroundIntakeRequest.TargetingPosition -> GroundIntakeState.TARGETING_POSITION
+      }
+    }
   }
 }
