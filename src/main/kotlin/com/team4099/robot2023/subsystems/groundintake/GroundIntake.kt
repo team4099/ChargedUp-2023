@@ -5,8 +5,6 @@ import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.CommandBase
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ArmFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
@@ -26,9 +24,9 @@ import org.team4099.lib.units.derived.perDegreeSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
-import com.team4099.robot2023.subsystems.superstructure.RequestStructure.GroundIntakeRequest as GroundIntakeRequest
+import com.team4099.robot2023.subsystems.superstructure.Request.GroundIntakeRequest as GroundIntakeRequest
 
-class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
+class GroundIntake(private val io: GroundIntakeIO) {
 
   val inputs = GroundIntakeIO.GroundIntakeIOInputs()
 
@@ -46,54 +44,56 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
       Pair({ it.inVoltsPerDegreePerSecond }, { it.volts.perDegreePerSecond })
     )
 
-  private val intakeAngle =
-    LoggedTunableValue(
-      "GroundIntake/intakeAngle",
-      GroundIntakeConstants.INTAKE_ANGLE,
-      Pair({ it.inDegrees }, { it.degrees })
-    )
+  object TunableGroundIntakeStates {
+    val intakeAngle =
+      LoggedTunableValue(
+        "GroundIntake/intakeAngle",
+        GroundIntakeConstants.INTAKE_ANGLE,
+        Pair({ it.inDegrees }, { it.degrees })
+      )
 
-  private val outtakeAngle =
-    LoggedTunableValue(
-      "GroundIntake/outtakeAngle",
-      GroundIntakeConstants.OUTTAKE_ANGLE,
-      Pair({ it.inDegrees }, { it.degrees })
-    )
+    val outtakeAngle =
+      LoggedTunableValue(
+        "GroundIntake/outtakeAngle",
+        GroundIntakeConstants.OUTTAKE_ANGLE,
+        Pair({ it.inDegrees }, { it.degrees })
+      )
 
-  private val stowedUpAngle =
-    LoggedTunableValue(
-      "GroundIntake/stowedUpAngle",
-      GroundIntakeConstants.STOWED_UP_ANGLE,
-      Pair({ it.inDegrees }, { it.degrees })
-    )
+    val stowedUpAngle =
+      LoggedTunableValue(
+        "GroundIntake/stowedUpAngle",
+        GroundIntakeConstants.STOWED_UP_ANGLE,
+        Pair({ it.inDegrees }, { it.degrees })
+      )
 
-  private val stowedDownAngle =
-    LoggedTunableValue(
-      "GroundIntake/stowedDownAngle",
-      GroundIntakeConstants.STOWED_DOWN_ANGLE,
-      Pair({ it.inDegrees }, { it.degrees })
-    )
+    val stowedDownAngle =
+      LoggedTunableValue(
+        "GroundIntake/stowedDownAngle",
+        GroundIntakeConstants.STOWED_DOWN_ANGLE,
+        Pair({ it.inDegrees }, { it.degrees })
+      )
 
-  private val intakeVoltage =
-    LoggedTunableValue(
-      "GroundIntake/intakeVoltage",
-      GroundIntakeConstants.INTAKE_VOLTAGE,
-      Pair({ it.inVolts }, { it.volts })
-    )
+    val intakeVoltage =
+      LoggedTunableValue(
+        "GroundIntake/intakeVoltage",
+        GroundIntakeConstants.INTAKE_VOLTAGE,
+        Pair({ it.inVolts }, { it.volts })
+      )
 
-  private val outtakeVoltage =
-    LoggedTunableValue(
-      "GroundIntake/outtakeVoltage",
-      GroundIntakeConstants.OUTTAKE_VOLTAGE,
-      Pair({ it.inVolts }, { it.volts })
-    )
+    val outtakeVoltage =
+      LoggedTunableValue(
+        "GroundIntake/outtakeVoltage",
+        GroundIntakeConstants.OUTTAKE_VOLTAGE,
+        Pair({ it.inVolts }, { it.volts })
+      )
 
-  private val neutralVoltage =
-    LoggedTunableValue(
-      "GroundIntake/neutralVoltage",
-      GroundIntakeConstants.NEUTRAL_VOLTAGE,
-      Pair({ it.inVolts }, { it.volts })
-    )
+    val neutralVoltage =
+      LoggedTunableValue(
+        "GroundIntake/neutralVoltage",
+        GroundIntakeConstants.NEUTRAL_VOLTAGE,
+        Pair({ it.inVolts }, { it.volts })
+      )
+  }
 
   var armPositionTarget: Angle = 0.0.degrees
 
@@ -121,7 +121,20 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
   var currentState: GroundIntakeState = GroundIntakeState.UNINITIALIZED
 
   var currentRequest: GroundIntakeRequest =
-    GroundIntakeRequest.TargetingPosition(stowedUpAngle.get(), neutralVoltage.get())
+    GroundIntakeRequest.TargetingPosition(
+      TunableGroundIntakeStates.stowedUpAngle.get(),
+      TunableGroundIntakeStates.neutralVoltage.get()
+    )
+    set(value) {
+        when (value) {
+          is GroundIntakeRequest.OpenLoop -> armVoltageTarget = value.voltage
+          is GroundIntakeRequest.TargetingPosition -> {
+            armPositionTarget = value.position
+          }
+          else -> {}
+        }
+        field = value
+      }
 
   private var armConstraints: TrapezoidProfile.Constraints<Radian> =
     TrapezoidProfile.Constraints(
@@ -139,6 +152,13 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   private var prevArmSetpoint: TrapezoidProfile.State<Radian> =
     TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+
+  val isAtTargetedPosition: Boolean
+    get() =
+      currentState == GroundIntakeState.TARGETING_POSITION &&
+        armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+        (inputs.armPosition - armPositionTarget).absoluteValue <=
+        GroundIntakeConstants.ARM_TOLERANCE
 
   init {
 
@@ -169,7 +189,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
     }
   }
 
-  override fun periodic() {
+  fun periodic() {
     io.updateInputs(inputs)
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
@@ -272,13 +292,6 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
     // current state to the next state ensures that we run the logic for the state we want in the
     // next loop cycle.
     currentState = nextState
-
-    // Taking advantage of Kotlin's smart casting on val assignment.
-    // https://kotlinlang.org/docs/typecasts.html#smart-casts
-    when (val typedRequest = currentRequest) {
-      is GroundIntakeRequest.TargetingPosition -> armPositionTarget = typedRequest.position
-      is GroundIntakeRequest.OpenLoop -> armVoltageTarget = typedRequest.voltage
-    }
   }
 
   /** @param appliedVoltage Represents the applied voltage of the roller motor */
@@ -298,45 +311,6 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
   fun zeroArm() {
     io.zeroEncoder()
-  }
-
-  fun intakeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest = GroundIntakeRequest.TargetingPosition(intakeAngle.get(), intakeVoltage.get())
-    }
-
-    returnCommand.name = "GroundIntakeIntakeCommand"
-    return returnCommand
-  }
-
-  fun outtakeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        GroundIntakeRequest.TargetingPosition(outtakeAngle.get(), outtakeVoltage.get())
-    }
-
-    returnCommand.name = "GroundIntakeOuttakeCommand"
-    return returnCommand
-  }
-
-  fun stowedUpCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        GroundIntakeRequest.TargetingPosition(stowedUpAngle.get(), neutralVoltage.get())
-    }
-
-    returnCommand.name = "GroundIntakeIntakeCommand"
-    return returnCommand
-  }
-
-  fun stowedDownCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        GroundIntakeRequest.TargetingPosition(stowedDownAngle.get(), neutralVoltage.get())
-    }
-
-    returnCommand.name = "GroundIntakeIntakeCommand"
-    return returnCommand
   }
 
   fun setArmVoltage(voltage: ElectricalPotential) {

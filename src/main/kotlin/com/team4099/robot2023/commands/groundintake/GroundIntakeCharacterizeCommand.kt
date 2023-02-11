@@ -2,7 +2,7 @@ package com.team4099.robot2023.commands.elevator
 
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.superstructure.RequestStructure
+import com.team4099.robot2023.subsystems.superstructure.Request
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
@@ -22,7 +22,7 @@ import org.team4099.lib.units.perSecond
 class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandBase() {
 
   init {
-    addRequirements(groundIntake)
+    //    addRequirements(groundIntake)
   }
 
   var hasMoved = false
@@ -37,7 +37,7 @@ class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandB
     hasMoved = false
     appliedVolts = 0.volts
     groundIntake.currentRequest =
-      RequestStructure.GroundIntakeRequest.TargetingPosition(
+      Request.GroundIntakeRequest.TargetingPosition(
         GroundIntakeConstants.STOWED_UP_ANGLE, 0.0.volts
       )
   }

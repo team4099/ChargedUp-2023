@@ -11,14 +11,13 @@ import com.team4099.robot2023.config.constants.MechanismSimConstants.elevatorAbs
 import com.team4099.robot2023.config.constants.MechanismSimConstants.secondStageAttachment
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.CommandBase
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
+import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.cos
@@ -33,9 +32,9 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
-import com.team4099.robot2023.subsystems.superstructure.RequestStructure.ElevatorRequest as ElevatorRequest
+import com.team4099.robot2023.subsystems.superstructure.Request.ElevatorRequest as ElevatorRequest
 
-class Elevator(val io: ElevatorIO) : SubsystemBase() {
+class Elevator(val io: ElevatorIO) {
   val inputs = ElevatorIO.ElevatorInputs()
 
   // PID and Feedforward Values
@@ -53,16 +52,16 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     )
 
   object TunableElevatorHeights {
-    val minHeight =
+    val minPosition =
       LoggedTunableValue(
-        "Elevator/minHeight",
+        "Elevator/minPosition",
         ElevatorConstants.ELEVATOR_MAX_RETRACTION,
         Pair({ it.inInches }, { it.inches })
       )
 
-    val maxHeight =
+    val maxPosition =
       LoggedTunableValue(
-        "Elevator/maxHeight",
+        "Elevator/maxPosition",
         ElevatorConstants.ELEVATOR_MAX_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
@@ -77,17 +76,17 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
         "Elevator/openLoopRetractVoltage", -12.0.volts, Pair({ it.inVolts }, { it.volts })
       )
 
-    val cubeDropHeight =
+    val cubeDropPosition =
       LoggedTunableValue(
-        "Elevator/cubeDropHeight",
-        ElevatorConstants.CUBE_DROP_HEIGHT,
+        "Elevator/cubeDropPosition",
+        ElevatorConstants.CUBE_DROP_POSITION_DELTA,
         Pair({ it.inInches }, { it.inches })
       )
 
-    val coneDropHeight =
+    val coneDropPosition =
       LoggedTunableValue(
-        "Elevator/coneDropHeight",
-        ElevatorConstants.CONE_DROP_HEIGHT,
+        "Elevator/coneDropPosition",
+        ElevatorConstants.CONE_DROP_POSITION_DELTA,
         Pair({ it.inInches }, { it.inches })
       )
 
@@ -101,56 +100,79 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     val shelfIntakeCubeOffset =
       LoggedTunableValue(
         "Elevator/shelfIntakeCubeOffset",
-        ElevatorConstants.INTAKE_CUBE_SHELF_OFFSET,
+        ElevatorConstants.DOUBLE_SUBSTATION_CUBE_OFFSET,
         Pair({ it.inInches }, { it.inches })
       )
 
     val shelfIntakeConeOffset =
       LoggedTunableValue(
         "Elevator/shelfIntakeConeOffset",
-        ElevatorConstants.INTAKE_CONE_SHELF_OFFSET,
+        ElevatorConstants.DOUBLE_SUBSTATION_CONE_OFFSET,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val singleSubstationCubeOffset =
+      LoggedTunableValue(
+        "Elevator/singleSubstationCubeOffset",
+        ElevatorConstants.DOUBLE_SUBSTATION_CUBE_OFFSET,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val singleSubstationConeOffset =
+      LoggedTunableValue(
+        "Elevator/singleSubstationConeOffset",
+        ElevatorConstants.DOUBLE_SUBSTATION_CONE_OFFSET,
         Pair({ it.inInches }, { it.inches })
       )
 
     val hybridHeight =
       LoggedTunableValue(
-        "Elevator/midCubeHeight", 0.0.inches, Pair({ it.inInches }, { it.inches })
+        "Elevator/hybridHeight", 0.0.inches, Pair({ it.inInches }, { it.inches })
       )
 
     val midCubeHeight =
       LoggedTunableValue(
         "Elevator/midCubeHeight",
-        FieldConstants.Grids.midCubeZ,
+        fromHeightToPosition(FieldConstants.Grids.midCubeZ),
         Pair({ it.inInches }, { it.inches })
       )
 
     val midConeHeight =
       LoggedTunableValue(
         "Elevator/midConeHeight",
-        FieldConstants.Grids.midConeZ,
+        fromHeightToPosition(FieldConstants.Grids.midConeZ),
         Pair({ it.inInches }, { it.inches })
       )
 
     val highCubeHeight =
       LoggedTunableValue(
         "Elevator/highCubeHeight",
-        FieldConstants.Grids.highCubeZ,
+        fromHeightToPosition(FieldConstants.Grids.highCubeZ),
         Pair({ it.inInches }, { it.inches })
       )
 
     val highConeHeight =
       LoggedTunableValue(
         "Elevator/highConeHeight",
-        FieldConstants.Grids.highConeZ,
+        fromHeightToPosition(FieldConstants.Grids.highConeZ),
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val singleSubstationHeight =
+      LoggedTunableValue(
+        "Elevator/singleSubstationHeight",
+        fromHeightToPosition(FieldConstants.LoadingZone.singleSubstationHeight),
         Pair({ it.inInches }, { it.inches })
       )
 
     val doubleSubstationHeight =
       LoggedTunableValue(
         "Elevator/doubleSubstationHeight",
-        FieldConstants.LoadingZone.doubleSubstationShelfZ,
+        fromHeightToPosition(FieldConstants.LoadingZone.doubleSubstationShelfZ),
         Pair({ it.inInches }, { it.inches })
       )
+
+    // TODO add ground intake height for elevator
   }
 
   val forwardLimitReached: Boolean
@@ -163,18 +185,37 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   val reverseOpenLoopLimitReached: Boolean
     get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION
 
+  val isStowed: Boolean
+    get() =
+      (inputs.elevatorPosition - ElevatorConstants.ELEVATOR_MAX_RETRACTION).absoluteValue <=
+        ElevatorConstants.ELEVATOR_TOLERANCE
+
   var isHomed = false
 
   var currentState: ElevatorState = ElevatorState.UNINITIALIZED
 
   var currentRequest: ElevatorRequest =
-    ElevatorRequest.TargetingPosition(TunableElevatorHeights.minHeight.get())
+    ElevatorRequest.TargetingPosition(TunableElevatorHeights.minPosition.get())
+    set(value) {
+        when (value) {
+          is ElevatorRequest.OpenLoop -> elevatorVoltageTarget = value.voltage
+          is ElevatorRequest.TargetingPosition -> {
+            elevatorPositionTarget = value.position
+            elevatorVelocityTarget = value.finalVelocity
+          }
+          else -> {}
+        }
+        field = value
+      }
 
   var elevatorPositionTarget = 0.0.inches
+    private set
 
   var elevatorVelocityTarget = 0.0.inches.perSecond
+    private set
 
   var elevatorVoltageTarget = 0.0.volts
+    private set
 
   private var lastRequestedPosition = 0.0.inches
 
@@ -199,6 +240,13 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       TrapezoidProfile.State(-1337.inches, -1337.inches.perSecond),
       TrapezoidProfile.State(-1337.inches, -1337.inches.perSecond)
     )
+
+  val isAtTargetedPosition: Boolean
+    get() =
+      currentRequest is ElevatorRequest.TargetingPosition &&
+        elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
+        ElevatorConstants.ELEVATOR_TOLERANCE
 
   init {
     TunableElevatorHeights
@@ -235,7 +283,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     }
   }
 
-  override fun periodic() {
+  fun periodic() {
     io.updateInputs(inputs)
 
     updateMech2d()
@@ -255,6 +303,12 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     Logger.getInstance().recordOutput("Elevator/currentState", currentState.name)
     Logger.getInstance()
       .recordOutput("Elevator/currentRequest", currentRequest.javaClass.simpleName)
+
+    Logger.getInstance().recordOutput("Elevator/isHomed", isHomed)
+
+    Logger.getInstance().recordOutput("Elevator/isAtTargetPosition", isAtTargetedPosition)
+    Logger.getInstance().recordOutput("Elevator/isStowed", isStowed)
+    Logger.getInstance().recordOutput("Elevator/lastGeneratedAt", timeProfileGeneratedAt.inSeconds)
 
     Logger.getInstance()
       .recordOutput("Elevator/elevatorPositionTarget", elevatorPositionTarget.inInches)
@@ -325,10 +379,7 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
       }
       ElevatorState.HOME -> {
         // Outputs
-        if (!isHomed &&
-          inputs.elevatorPosition < ElevatorConstants.HOMING_POSITION_THRESHOLD &&
-          inputs.leaderStatorCurrent > ElevatorConstants.HOMING_STALL_CURRENT
-        ) {
+        if (!isHomed && inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT) {
           setOutputVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE)
         } else {
           zeroEncoder()
@@ -341,13 +392,6 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
     }
 
     currentState = nextState
-    when (val typedRequest = currentRequest) {
-      is ElevatorRequest.OpenLoop -> elevatorVoltageTarget = typedRequest.voltage
-      is ElevatorRequest.TargetingPosition -> {
-        elevatorPositionTarget = typedRequest.position
-        elevatorVelocityTarget = typedRequest.finalVelocity
-      }
-    }
   }
 
   /**
@@ -396,164 +440,6 @@ class Elevator(val io: ElevatorIO) : SubsystemBase() {
   /** set the current encoder position to be the encoders zero value */
   fun zeroEncoder() {
     io.zeroEncoder()
-  }
-
-  fun defaultCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest = ElevatorRequest.TargetingPosition(inputs.elevatorPosition)
-    }
-
-    returnCommand.name = "ElevatorDefaultCommand"
-    return returnCommand
-  }
-
-  fun homeCommand(): CommandBase {
-    val returnCommand = runOnce { currentRequest = ElevatorRequest.Home() }
-
-    returnCommand.name = "ElevatorHomeCommand"
-    return returnCommand
-  }
-
-  fun openLoopExtendCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest = ElevatorRequest.OpenLoop(TunableElevatorHeights.openLoopExtendVoltage.get())
-    }
-
-    returnCommand.name = "ElevatorOpenLoopExtendCommand"
-    return returnCommand
-  }
-
-  fun openLoopRetractCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest = ElevatorRequest.OpenLoop(TunableElevatorHeights.openLoopRetractVoltage.get())
-    }
-
-    returnCommand.name = "ElevatorOpenLoopRetractCommand"
-    return returnCommand
-  }
-
-  fun goToLowCubeNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(TunableElevatorHeights.cubeDropHeight.get())
-    }
-
-    returnCommand.name = "ElevatorGoToLowCubeNodeCommand"
-    return returnCommand
-  }
-
-  fun goToLowConeNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(TunableElevatorHeights.coneDropHeight.get())
-    }
-
-    returnCommand.name = "ElevatorGoToLowConeNodeCommand"
-    return returnCommand
-  }
-
-  fun goToMidCubeNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.midCubeHeight.get() +
-            TunableElevatorHeights.cubeDropHeight.get()
-        )
-    }
-
-    returnCommand.name = "ElevatorGoToMidCubeNodeCommand"
-    return returnCommand
-  }
-
-  fun goToMidConeNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.midConeHeight.get() +
-            TunableElevatorHeights.coneDropHeight.get()
-        )
-    }
-
-    returnCommand.name = "ElevatorGoToMidConeNodeCommand"
-    return returnCommand
-  }
-
-  fun goToHighCubeNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.highCubeHeight.get() +
-            TunableElevatorHeights.cubeDropHeight.get()
-        )
-    }
-
-    returnCommand.name = "ElevatorGoToHighCubeNodeCommand"
-    return returnCommand
-  }
-
-  fun goToHighConeNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.highConeHeight.get() +
-            TunableElevatorHeights.coneDropHeight.get()
-        )
-    }
-
-    returnCommand.name = "ElevatorGoToHighConeNodeCommand"
-    return returnCommand
-  }
-
-  fun goToIntakeCubeFromDoubleStationCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.doubleSubstationHeight.get() +
-            TunableElevatorHeights.shelfIntakeCubeOffset.get()
-        )
-    }
-
-    returnCommand.name = "ElevatorGoToIntakeCubeFromDoubleStationCommand"
-    return returnCommand
-  }
-
-  fun goToIntakeConeFromDoubleStationCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.doubleSubstationHeight.get() +
-            TunableElevatorHeights.shelfIntakeConeOffset.get()
-        )
-    }
-
-    returnCommand.name = "ElevatorGoToIntakeConeFromDoubleStationCommand"
-    return returnCommand
-  }
-
-  fun slamConeOnMidNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.midConeHeight.get(),
-          TunableElevatorHeights.slamVelocity.get()
-        ) // TODO fix height?
-    }
-
-    returnCommand.name = "ElevatorSlamConeOnMidNodeCommand"
-    return returnCommand
-  }
-
-  fun slamConeOnHighNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ElevatorRequest.TargetingPosition(
-          TunableElevatorHeights.highConeHeight.get(),
-          TunableElevatorHeights.slamVelocity.get()
-        ) // TODO fix height?
-    }
-
-    returnCommand.name = "ElevatorSlamConeOnHighNodeCommand"
-    return returnCommand
   }
 
   //  /**

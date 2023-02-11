@@ -19,7 +19,7 @@ import org.team4099.lib.units.perSecond
  */
 class ArmCharacterizationCommand(val manipulator: Manipulator) : CommandBase() {
   init {
-    addRequirements(manipulator)
+    //    addRequirements(manipulator)
   }
 
   var hasMoved = false

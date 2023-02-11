@@ -19,7 +19,7 @@ import org.team4099.lib.units.perSecond
  */
 class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
   init {
-    addRequirements(elevator)
+    //    addRequirements(elevator)
   }
 
   var hasMoved = false

@@ -3,10 +3,9 @@ package com.team4099.robot2023.subsystems.manipulator
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.CommandBase
-import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
@@ -15,6 +14,7 @@ import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inVolts
@@ -28,9 +28,9 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
-import com.team4099.robot2023.subsystems.superstructure.RequestStructure.ManipulatorRequest as ManipulatorRequest
+import com.team4099.robot2023.subsystems.superstructure.Request.ManipulatorRequest as ManipulatorRequest
 
-class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
+class Manipulator(val io: ManipulatorIO) {
   val inputs = ManipulatorIO.ManipulatorIOInputs()
   // placement feedforward
   private var armFeedforward: SimpleMotorFeedforward<Meter, Volt>
@@ -45,6 +45,11 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
+  val isStowed: Boolean
+    get() =
+      (inputs.armPosition - ManipulatorConstants.ARM_MAX_RETRACTION).absoluteValue <=
+        ManipulatorConstants.ARM_TOLERANCE
+
   object TunableManipulatorStates {
     val minExtension =
       LoggedTunableValue(
@@ -58,10 +63,39 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
         ManipulatorConstants.MAX_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
-    val shelfIntakeExtension =
+
+    val spitTime =
       LoggedTunableValue(
-        "Manipulator/shelfIntakeExtension",
-        ManipulatorConstants.SHELF_INTAKE_EXTENSION,
+        "Manipulator/spitTime",
+        ManipulatorConstants.SPIT_OUT_TIME,
+        Pair({ it.inSeconds }, { it.seconds })
+      )
+
+    val groundIntakeCubeExtension =
+      LoggedTunableValue(
+        "Manipulator/groundIntakeCubeExtension",
+        ManipulatorConstants.INTAKE_CUBE_FROM_GROUND_EXTENSION,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val groundIntakeConeExtension =
+      LoggedTunableValue(
+        "Manipulator/groundIntakeCubeExtension",
+        ManipulatorConstants.INTAKE_CONE_FROM_GROUND_EXTENSION,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val singleSubstationIntakeShelfExtension =
+      LoggedTunableValue(
+        "Manipulator/singleSubstationIntakeShelfExtension",
+        ManipulatorConstants.SINGLE_SUBSTATION_INTAKE_EXTENSION,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val doubleSubstationIntakeShelfExtension =
+      LoggedTunableValue(
+        "Manipulator/doubleSubstationIntakeShelfExtension",
+        ManipulatorConstants.DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
@@ -145,7 +179,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
 
   // Checks if motor current draw is greater than given threshold and if rollers are intaking
   // Last condition prevents current spikes caused by starting to run intake from triggering this
-  val hasCube: Boolean
+  private val hasCube: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD &&
         (
@@ -162,7 +196,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
   // Checks if motor current draw is greater than the given threshold for cubes and if rollers are
   // intaking
   // Last condition prevents current spikes caused by starting to run intake from triggering this
-  val hasCone: Boolean
+  private val hasCone: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CONE_CURRENT_THRESHOLD &&
         (
@@ -174,6 +208,17 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
           ) &&
         (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+    }
+
+  val holdingGamePiece: GamePiece
+    get() {
+      if (hasCone) {
+        return GamePiece.CONE
+      }
+      if (hasCube) {
+        return GamePiece.CUBE
+      }
+      return GamePiece.NONE
     }
 
   var lastIntakeSpikeTime = Clock.fpgaTime
@@ -195,6 +240,16 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     ManipulatorRequest.TargetingPosition(
       TunableManipulatorStates.minExtension.get(), ManipulatorConstants.IDLE_VOLTAGE
     )
+    set(value) {
+        when (value) {
+          is ManipulatorRequest.OpenLoop -> armVoltageTarget = value.voltage
+          is ManipulatorRequest.TargetingPosition -> {
+            armPositionTarget = value.position
+          }
+          else -> {}
+        }
+        field = value
+      }
 
   var armPositionTarget: Length = 0.0.inches
 
@@ -222,7 +277,14 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       TrapezoidProfile.State(-1337.inches, -1337.inches.perSecond)
     )
 
-  var isHomed = false
+  var isHomed = RobotBase.isSimulation() // fix this pls
+
+  val isAtTargetedPosition: Boolean
+    get() =
+      currentRequest is ManipulatorRequest.TargetingPosition &&
+        armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+        (inputs.armPosition - armPositionTarget).absoluteValue <=
+        ManipulatorConstants.ARM_TOLERANCE
 
   init {
     TunableManipulatorStates
@@ -248,7 +310,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     }
   }
 
-  override fun periodic() {
+  fun periodic() {
     io.updateInputs(inputs)
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
@@ -258,6 +320,8 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     Logger.getInstance().processInputs("Manipulator", inputs)
 
     Logger.getInstance().recordOutput("Manipulator/currentState", currentState.name)
+
+    Logger.getInstance().recordOutput("Manipulator/isHomed", isHomed)
 
     Logger.getInstance().recordOutput("Manipulator/hasCube", hasCube)
 
@@ -348,10 +412,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       }
       ManipulatorState.HOME -> {
         // Outputs
-        if (!isHomed &&
-          inputs.armPosition < ManipulatorConstants.ARM_HOMING_POSITION_THESHOLD &&
-          inputs.armStatorCurrent < ManipulatorConstants.ARM_HOMING_STALL_CURRENT
-        ) {
+        if (!isHomed && inputs.armStatorCurrent < ManipulatorConstants.ARM_HOMING_STALL_CURRENT) {
           setArmVoltage(ManipulatorConstants.ARM_HOMING_APPLIED_VOLTAGE)
         } else {
           zeroEncoder()
@@ -452,160 +513,6 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
    */
   fun setArmBrakeMode(brake: Boolean) {
     io.setArmBrakeMode(brake)
-  }
-
-  fun openLoopExtendCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.OpenLoop(
-          TunableManipulatorStates.openLoopExtendVoltage.get(),
-          ManipulatorConstants.IDLE_VOLTAGE
-        )
-    }
-
-    returnCommand.name = "ManipulatorOpenLoopExtendCommand"
-    return returnCommand
-  }
-
-  fun openLoopRetractCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.OpenLoop(
-          TunableManipulatorStates.openLoopRetractVoltage.get(),
-          ManipulatorConstants.IDLE_VOLTAGE
-        )
-    }
-
-    returnCommand.name = "ManipulatorOpenLoopRetractCommand"
-    return returnCommand
-  }
-
-  fun goToMinExtensionCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.minExtension.get(), ManipulatorConstants.IDLE_VOLTAGE
-        )
-    }
-
-    returnCommand.name = "GoToMinExtensionCommand"
-    return returnCommand
-  }
-
-  fun goToMaxExtensionCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.maxExtension.get(), ManipulatorConstants.IDLE_VOLTAGE
-        )
-    }
-
-    returnCommand.name = "GoToMaxExtensionCommand"
-    return returnCommand
-  }
-
-  fun intakeCubeFromDoubleSubstationCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.shelfIntakeExtension.get(),
-          TunableManipulatorStates.cubeInVoltage.get()
-        )
-    }
-
-    returnCommand.name = "IntakeCubeFromDoubleSubstationCommand"
-    return returnCommand
-  }
-
-  fun intakeConeFromDoubleSubstationCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.shelfIntakeExtension.get(),
-          TunableManipulatorStates.coneInVoltage.get()
-        )
-    }
-
-    returnCommand.name = "IntakeConeFromDoubleSubstationCommand"
-    return returnCommand
-  }
-
-  fun scoreCubeAtHybridNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.lowScoreExtension.get(),
-          TunableManipulatorStates.cubeOutVoltage.get()
-        )
-    }
-
-    returnCommand.name = "ScoreCubeAtHybridNodeCommand"
-    return returnCommand
-  }
-
-  fun scoreConeAtHybridNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.lowScoreExtension.get(),
-          TunableManipulatorStates.coneOutVoltage.get()
-        )
-    }
-
-    returnCommand.name = "ScoreConeAtHybridNodeCommand"
-    return returnCommand
-  }
-
-  fun scoreConeAtMidNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.midScoreExtension.get(),
-          TunableManipulatorStates.coneOutVoltage.get()
-        )
-    }
-
-    returnCommand.name = "ScoreConeAtMidNodeCommand"
-    return returnCommand
-  }
-
-  fun scoreCubeAtMidNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.midScoreExtension.get(),
-          TunableManipulatorStates.cubeOutVoltage.get()
-        )
-    }
-
-    returnCommand.name = "ScoreCubeAtMidNodeCommand"
-    return returnCommand
-  }
-
-  fun scoreCubeAtHighNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.highScoreExtension.get(),
-          TunableManipulatorStates.cubeOutVoltage.get()
-        )
-    }
-
-    returnCommand.name = "ScoreConeAtHighNodeCommand"
-    return returnCommand
-  }
-
-  fun scoreConeAtHighNodeCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        ManipulatorRequest.TargetingPosition(
-          TunableManipulatorStates.highScoreExtension.get(),
-          TunableManipulatorStates.coneOutVoltage.get()
-        )
-    }
-
-    returnCommand.name = "ScoreConeAtHighNodeCommand"
-    return returnCommand
   }
 
   companion object {

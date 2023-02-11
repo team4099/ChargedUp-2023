@@ -3,9 +3,6 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
-import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
-import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
-import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
@@ -22,38 +19,34 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
-import edu.wpi.first.util.sendable.SendableRegistry
+import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
   private val drivetrain: Drivetrain
-  private val manipulator: Manipulator
-  val elevator: Elevator
-  //  private val vision: Vision
-
-  private val groundIntake: GroundIntake
+  private val superstructure: Superstructure
 
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(GyroIONavx, DrivetrainIOReal)
-      manipulator = Manipulator(ManipulatorIONeo)
-      elevator = Elevator(ElevatorIONeo)
-      //      vision = Vision(VisionIOSim)
-
-      groundIntake = GroundIntake(GroundIntakeIONeo)
+      superstructure =
+        Superstructure(
+          Elevator(ElevatorIONeo),
+          GroundIntake(GroundIntakeIONeo),
+          Manipulator(ManipulatorIONeo)
+        )
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
-      manipulator = Manipulator(ManipulatorIOSim)
-      //      vision = Vision(VisionIOSit
-      elevator = Elevator(ElevatorIOSim)
-      //      vision = Vision(VisionIOSim)
-
-      groundIntake = GroundIntake(GroundIntakeIOSim)
+      superstructure =
+        Superstructure(
+          Elevator(ElevatorIOSim),
+          GroundIntake(GroundIntakeIOSim),
+          Manipulator(ManipulatorIOSim)
+        )
     }
   }
 
@@ -66,12 +59,7 @@ object RobotContainer {
         { ControlBoard.robotOriented },
         drivetrain
       )
-
-    // dont home in sim cause theres no output current to check
-    manipulator.defaultCommand = InstantCommand({}, manipulator)
-    //    elevator.defaultCommand = elevator.homeCommand().andThen(InstantCommand({}, elevator))
-    elevator.defaultCommand = InstantCommand({}, elevator)
-    groundIntake.defaultCommand = InstantCommand({}, groundIntake)
+    superstructure.defaultCommand = InstantCommand({}, superstructure)
   }
 
   fun zeroSteering() {
@@ -80,7 +68,6 @@ object RobotContainer {
 
   fun zeroSensors() {
     drivetrain.zeroSensors()
-    groundIntake.zeroArm()
   }
 
   fun setDriveCoastMode() {
@@ -99,9 +86,13 @@ object RobotContainer {
     //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
-    ControlBoard.setArmPositionToShelfIntake.whileTrue(manipulator.goToMaxExtensionCommand())
-    ControlBoard.extendArm.whileTrue(manipulator.openLoopExtendCommand())
-    ControlBoard.retractArm.whileTrue(manipulator.openLoopRetractCommand())
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.prepscoreConeHighCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.scoreConeHighCommand())
+
+    //
+    // ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())
+    //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCommand())
+    //    ControlBoard.retractArm.whileTrue(superstructure.manipulatorGoToMaxExtensionCommand())
 
     /*
     ControlBoard.intakeCone.whileTrue(
@@ -128,19 +119,20 @@ object RobotContainer {
     )
      */
 
-    ControlBoard.runElevatorToHighNode.whileTrue(elevator.goToHighConeNodeCommand())
-
-    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopExtendCommand())
-    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopRetractCommand())
-
-    ControlBoard.extendIntake.whileTrue(groundIntake.intakeCommand())
-    ControlBoard.retractIntake.whileTrue(groundIntake.stowedUpCommand())
-    //    ControlBoard.characterizeIntake.whileTrue(
-    //      groundIntake.groundIntakeDeployCommand(GroundIntakeConstants.ArmStates.TUNABLE_STATE) //
-    // TODO make legit
-    //    )
-
-    ControlBoard.setArmCommand.whileTrue(groundIntake.stowedDownCommand())
+    //    ControlBoard.runElevatorToHighNode.whileTrue(elevator.goToHighConeNodeCommand())
+    //
+    //    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopExtendCommand())
+    //    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopRetractCommand())
+    //
+    //    ControlBoard.extendIntake.whileTrue(groundIntake.intakeCommand())
+    //    ControlBoard.retractIntake.whileTrue(groundIntake.stowedUpCommand())
+    //    //    ControlBoard.characterizeIntake.whileTrue(
+    //    //
+    // groundIntake.groundIntakeDeployCommand(GroundIntakeConstants.ArmStates.TUNABLE_STATE) //
+    //    // TODO make legit
+    //    //    )
+    //
+    //    ControlBoard.setArmCommand.whileTrue(groundIntake.stowedDownCommand())
   }
 
   fun mapTestControls() {}
@@ -153,26 +145,26 @@ object RobotContainer {
   fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
 
   fun mapTunableCommands() {
-    val commandsTab = Shuffleboard.getTab("TunableCommands")
-    commandsTab.add(manipulator)
-    SendableRegistry.setName(manipulator, "manipulator")
-    commandsTab.add("ManipulatorArmCharacterization", ArmCharacterizationCommand(manipulator))
-    commandsTab.add(
-      "ManipulatorArmTuning",
-      manipulator.scoreConeAtHighNodeCommand( // TODO fix
-      )
-    )
-    commandsTab.add(RobotContainer.elevator)
-    SendableRegistry.setName(RobotContainer.elevator, "elevator")
-    commandsTab.add("ElevatorCharacterization", ElevatorCharacterizeCommand(elevator))
-    commandsTab.add(
-      "ElevatorTuning", elevator.goToMidConeNodeCommand() // TODO FIX
-    )
-    commandsTab.add(groundIntake)
-    SendableRegistry.setName(groundIntake, "groundIntake")
-    commandsTab.add(
-      "GroundIntakeArmCharacterization", GroundIntakeCharacterizeCommand(groundIntake)
-    )
-    commandsTab.add("GroundIntakeArmTuning", groundIntake.stowedUpCommand())
+    //    val commandsTab = Shuffleboard.getTab("TunableCommands")
+    //    commandsTab.add(manipulator)
+    //    SendableRegistry.setName(manipulator, "manipulator")
+    //    commandsTab.add("ManipulatorArmCharacterization", ArmCharacterizationCommand(manipulator))
+    //    commandsTab.add(
+    //      "ManipulatorArmTuning",
+    //      manipulator.scoreConeAtHighNodeCommand( // TODO fix
+    //      )
+    //    )
+    //    commandsTab.add(RobotContainer.elevator)
+    //    SendableRegistry.setName(RobotContainer.elevator, "elevator")
+    //    commandsTab.add("ElevatorCharacterization", ElevatorCharacterizeCommand(elevator))
+    //    commandsTab.add(
+    //      "ElevatorTuning", elevator.goToMidConeNodeCommand() // TODO FIX
+    //    )
+    //    commandsTab.add(groundIntake)
+    //    SendableRegistry.setName(groundIntake, "groundIntake")
+    //    commandsTab.add(
+    //      "GroundIntakeArmCharacterization", GroundIntakeCharacterizeCommand(groundIntake)
+    //    )
+    //    commandsTab.add("GroundIntakeArmTuning", groundIntake.stowedUpCommand())
   }
 }

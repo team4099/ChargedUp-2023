@@ -39,6 +39,8 @@ object ElevatorIOSim : ElevatorIO {
   private val elevatorController =
     PIDController(ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD)
 
+  private var lastAppliedVoltage = 0.0.volts
+
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
     elevatorSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
@@ -48,12 +50,12 @@ object ElevatorIOSim : ElevatorIO {
     inputs.leaderTempCelcius = 0.0.celsius
     inputs.leaderStatorCurrent = 0.0.amps
     inputs.leaderSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
-    inputs.leaderAppliedVoltage = 0.0.volts
+    inputs.leaderAppliedVoltage = lastAppliedVoltage
 
     inputs.followerTempCelcius = 0.0.celsius
     inputs.followerStatorCurrent = 0.0.amps
     inputs.followerSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
-    inputs.followerAppliedVoltage = 0.0.volts
+    inputs.followerAppliedVoltage = lastAppliedVoltage
 
     RoboRioSim.setVInVoltage(
       BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.currentDrawAmps)
@@ -67,14 +69,16 @@ object ElevatorIOSim : ElevatorIO {
    * @param voltage the voltage to set the motor to
    */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
-    // divide by 2 cause full power elevator is scary
-    elevatorSim.setInputVoltage(
+    val clampedVoltage =
       MathUtil.clamp(
         voltage.inVolts,
-        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts / 2,
-        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts / 2
+        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts,
+        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts
       )
-    )
+
+    lastAppliedVoltage = clampedVoltage.volts
+
+    elevatorSim.setInputVoltage(clampedVoltage)
   }
 
   /**
@@ -93,6 +97,8 @@ object ElevatorIOSim : ElevatorIO {
       )
         .volts
     val feedback = elevatorController.calculate(elevatorSim.positionMeters.meters, position)
+
+    lastAppliedVoltage = ff + feedback
     elevatorSim.setInputVoltage((ff + feedback).inVolts)
   }
 

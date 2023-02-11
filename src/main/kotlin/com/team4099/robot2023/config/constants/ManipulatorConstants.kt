@@ -35,7 +35,7 @@ object ManipulatorConstants {
   // used to detect intake/outake, values need testing
   // TODO(test this)
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.75.seconds
-  val WAIT_FOR_STATE_TO_CHANGE = 0.8.seconds
+  val SPIT_OUT_TIME = 0.8.seconds
 
   // TODO(check if these motors are inverted)
   val ARM_MOTOR_INVERTED = false
@@ -120,10 +120,13 @@ object ManipulatorConstants {
   }
 
   val MIN_EXTENSION = 0.0.inches
-  val SHELF_INTAKE_EXTENSION = 4.0.inches
+  val SINGLE_SUBSTATION_INTAKE_EXTENSION = 4.0.inches
+  val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 4.0.inches
   val LOW_SCORE_EXTENSION = 0.0.inches
   val MID_SCORE_EXTENSION = 4.0.inches
   val HIGH_SCORE_EXTENSION = 8.0.inches
+  val INTAKE_CUBE_FROM_GROUND_EXTENSION = 9.0.inches
+  val INTAKE_CONE_FROM_GROUND_EXTENSION = 9.5.inches
   val MAX_EXTENSION = 10.0.inches
 
   // TODO(figure out the values)

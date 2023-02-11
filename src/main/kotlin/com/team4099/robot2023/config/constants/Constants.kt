@@ -3,6 +3,10 @@ package com.team4099.robot2023.config.constants
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
 
+typealias GamePiece = Constants.Universal.GamePiece
+
+typealias NodeTier = Constants.Universal.NodeTier
+
 object Constants {
   object Universal {
     val SIM_MODE = Tuning.SimType.SIM
@@ -17,6 +21,25 @@ object Constants {
     val LOOP_PERIOD_TIME = 20.milli.seconds
     val POWER_DISTRIBUTION_HUB_ID = 1
     val USE_TIMING = true
+
+    enum class GamePiece {
+      CUBE,
+      CONE,
+      NONE
+    }
+
+    enum class NodeTier {
+      HYBRID,
+      MID,
+      HIGH,
+      NONE
+    }
+
+    enum class Substation {
+      DOUBLE_SUBSTATION_LEFT,
+      DOUBLE_SUBSTATION_RIGHT,
+      SINGLE_SUBSTATION,
+    }
   }
 
   object Tuning {
