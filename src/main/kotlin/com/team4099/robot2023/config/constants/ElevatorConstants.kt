@@ -77,6 +77,7 @@ object ElevatorConstants {
   val CONE_DROP_HEIGHT = 0.0.inches
   val INTAKE_CUBE_SHELF_OFFSET = 0.0.inches
   val INTAKE_CONE_SHELF_OFFSET = 0.0.inches
+  val SLAM_VELOCITY = 5.0.inches.perSecond
 
   enum class ElevatorStates(val height: Length) {
     MIN_HEIGHT(ELEVATOR_MAX_RETRACTION),

@@ -6,7 +6,6 @@ import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -20,9 +19,9 @@ import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -62,13 +61,8 @@ object RobotContainer {
         drivetrain
       )
 
-    // can't home in sim cause sim doesn't emulate stator current
-    if (RobotBase.isReal()) {
-      elevator.defaultCommand =
-        elevator.homeElevatorCommand().andThen(elevator.holdElevatorPosition())
-    } else {
-      elevator.defaultCommand = elevator.holdElevatorPosition()
-    }
+    //    elevator.defaultCommand = elevator.homeCommand().andThen(InstantCommand({}, elevator))
+    elevator.defaultCommand = InstantCommand({}, elevator)
   }
 
   fun zeroSteering() {
@@ -90,12 +84,10 @@ object RobotContainer {
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
 
-    ControlBoard.runElevatorToHighNode.whileTrue(
-      elevator.raiseElevatorHeight(ElevatorConstants.ElevatorStates.HIGH_CONE_SCORE)
-    )
+    ControlBoard.runElevatorToHighNode.whileTrue(elevator.goToHighConeNodeCommand())
 
-    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopControl(12.volts))
-    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopControl(-12.volts))
+    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopExtendCommand())
+    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopRetractCommand())
     // ControlBoard.characterizeElevator.whileTrue(ElevatorCharacterizeCommand(elevator)
     // SmartDashboard.putData(elevator)
     // setName(elevator, "elevator")
@@ -117,8 +109,7 @@ object RobotContainer {
     SendableRegistry.setName(RobotContainer.elevator, "elevator")
     commandsTab.add("ElevatorCharacterization", ElevatorCharacterizeCommand(elevator))
     commandsTab.add(
-      "ElevatorTuning",
-      RobotContainer.elevator.raiseElevatorHeight(ElevatorConstants.ElevatorStates.TUNABLE_STATE)
+      "ElevatorTuning", elevator.goToMidConeNodeCommand() // TODO FIX
     )
   }
 }
