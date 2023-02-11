@@ -1,5 +1,10 @@
 package com.team4099.robot2023.subsystems.superstructure
 
+import org.team4099.lib.units.LinearVelocity
+import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.perSecond
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 
@@ -11,6 +16,15 @@ import org.team4099.lib.units.derived.ElectricalPotential
 sealed interface RequestStructure {
 
   // Implements RequestStructure to ensure standardized structure
+  sealed interface ElevatorRequest : RequestStructure {
+    class TargetingPosition(
+      val position: Length,
+      val finalVelocity: LinearVelocity = 0.0.inches.perSecond
+    ) : ElevatorRequest
+    class OpenLoop(val voltage: ElectricalPotential) : ElevatorRequest
+    class Home : ElevatorRequest
+  }
+  
   sealed interface GroundIntakeRequest : RequestStructure {
     class TargetingPosition(val position: Angle, val rollerVoltage: ElectricalPotential) :
       GroundIntakeRequest
