@@ -15,6 +15,9 @@ import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
+import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -22,13 +25,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.littletonrobotics.junction.Logger
-import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
-import edu.wpi.first.util.sendable.SendableRegistry
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
@@ -104,7 +100,7 @@ object RobotContainer {
 
     ControlBoard.openLoopExtend.whileTrue(elevator.openLoopExtendCommand())
     ControlBoard.openLoopRetract.whileTrue(elevator.openLoopRetractCommand())
-  
+
     ControlBoard.extendIntake.whileTrue(groundIntake.intakeCommand())
     ControlBoard.retractIntake.whileTrue(groundIntake.stowedUpCommand())
     //    ControlBoard.characterizeIntake.whileTrue(

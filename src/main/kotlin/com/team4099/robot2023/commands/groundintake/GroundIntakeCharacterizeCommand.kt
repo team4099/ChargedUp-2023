@@ -38,7 +38,7 @@ class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandB
     appliedVolts = 0.volts
     groundIntake.currentRequest =
       RequestStructure.GroundIntakeRequest.TargetingPosition(
-        GroundIntakeConstants.STOWED_UP_ANGLE
+        GroundIntakeConstants.STOWED_UP_ANGLE, 0.0.volts
       )
   }
 
