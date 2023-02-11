@@ -6,7 +6,6 @@ import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
@@ -18,9 +17,8 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.inches
-import org.team4099.lib.units.derived.volts
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -52,12 +50,7 @@ object RobotContainer {
       )
 
     // dont home in sim cause theres no output current to check
-    if (RobotBase.isReal()) {
-      manipulator.defaultCommand =
-        manipulator.homeArmCommand().andThen(manipulator.manipulatorIdle())
-    } else {
-      manipulator.defaultCommand = manipulator.manipulatorIdle()
-    }
+    manipulator.defaultCommand = InstantCommand({}, manipulator)
   }
 
   fun zeroSteering() {
@@ -84,11 +77,9 @@ object RobotContainer {
     //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
-    ControlBoard.setArmPositionToShelfIntake.whileTrue(
-      manipulator.extendArmPosition(5.inches.asSupplier)
-    )
-    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
-    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(manipulator.goToMaxExtensionCommand())
+    ControlBoard.extendArm.whileTrue(manipulator.openLoopExtendCommand())
+    ControlBoard.retractArm.whileTrue(manipulator.openLoopRetractCommand())
 
     /*
     ControlBoard.intakeCone.whileTrue(
@@ -132,8 +123,7 @@ object RobotContainer {
     commandsTab.add("ManipulatorArmCharacterization", ArmCharacterizationCommand(manipulator))
     commandsTab.add(
       "ManipulatorArmTuning",
-      manipulator.extendArmPosition(
-        ManipulatorConstants.ArmStates.TUNABLE_STATE.position.asSupplier
+      manipulator.scoreConeAtHighNodeCommand( // TODO fix
       )
     )
   }

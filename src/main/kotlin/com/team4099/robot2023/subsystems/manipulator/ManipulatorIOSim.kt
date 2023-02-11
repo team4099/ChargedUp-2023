@@ -26,6 +26,7 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.asDrivenOverDriving
+import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
@@ -37,7 +38,7 @@ object ManipulatorIOSim : ManipulatorIO {
     FlywheelSim(
       DCMotor.getNEO(1),
       ManipulatorConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
-      ManipulatorConstants.MOMENT_INERTIA
+      ManipulatorConstants.MOMENT_INERTIA.inKilogramsMeterSquared
     )
 
   val armSim: ElevatorSim =

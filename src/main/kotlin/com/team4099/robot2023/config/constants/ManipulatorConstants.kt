@@ -2,12 +2,15 @@ package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
-import org.team4099.lib.units.derived.reduction
+import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perSecond
 
 object ManipulatorConstants {
@@ -51,8 +54,8 @@ object ManipulatorConstants {
 
   const val SENSOR_CPR = 42.0
 
-  val ARM_GEAR_RATIO = 11.25.reduction
-  val ROLLER_GEAR_RATIO = 18.0.reduction
+  val ARM_GEAR_RATIO = 11.25.gearRatio
+  val ROLLER_GEAR_RATIO = 18.0.gearRatio
 
   // TODO: Change current thresholds
   val CONE_CURRENT_THRESHOLD = 15.amps
@@ -75,10 +78,18 @@ object ManipulatorConstants {
   val ARM_MAX_VELOCITY = 30.inches.perSecond
   val ARM_MAX_ACCELERATION = 15.inches.perSecond.perSecond
 
-  val MOMENT_INERTIA = 0.0000478
+  val MOMENT_INERTIA = 0.0000478.kilo.grams * 1.0.meters.squared
 
   // Tolerance for determining currentRollerState
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
+
+  val IDLE_VOLTAGE = 0.0.volts
+  val CONE_IDLE = 2.4.volts
+  val CUBE_IDLE = -1.2.volts
+  val CONE_IN = 12.volts
+  val CUBE_IN = -9.6.volts
+  val CONE_OUT = -12.volts
+  val CUBE_OUT = 9.6.volts
 
   // TODO(test voltage values)
   enum class RollerStates(val voltage: ElectricalPotential) {
@@ -107,6 +118,13 @@ object ManipulatorConstants {
       }
     }
   }
+
+  val MIN_EXTENSION = 0.0.inches
+  val SHELF_INTAKE_EXTENSION = 4.0.inches
+  val LOW_SCORE_EXTENSION = 0.0.inches
+  val MID_SCORE_EXTENSION = 4.0.inches
+  val HIGH_SCORE_EXTENSION = 8.0.inches
+  val MAX_EXTENSION = 10.0.inches
 
   // TODO(figure out the values)
   enum class ArmStates(val position: Length) {
