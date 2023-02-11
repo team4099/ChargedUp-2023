@@ -101,5 +101,8 @@ simgui-ds.json
 # Glass
 .glass
 
+# NetworkTables
+networktables.json
+
 **/.DS_Store
 /src/main/kotlin/com/team4099/robot2023/BuildConstants.kt
