@@ -57,6 +57,11 @@ object Constants {
     const val BACK_LEFT_ANALOG_POTENTIOMETER = 3
   }
 
+  object Elevator {
+    const val LEADER_MOTOR_ID = 1337
+    const val FOLLOWER_MOTOR_ID = 1337
+  }
+
   object Gyro {
     const val PIGEON_2_ID = 1337
   }
@@ -68,5 +73,11 @@ object Constants {
 
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
+  }
+
+  object Intake {
+    const val ROLLER_MOTOR_ID = 32
+    const val ARM_MOTOR_ID = 31
+    const val REV_ENCODER_PORT = 1
   }
 }

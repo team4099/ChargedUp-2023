@@ -2,6 +2,12 @@ package com.team4099.robot2023.subsystems.superstructure
 
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.LinearVelocity
+import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.perSecond
 
 // typealias GroundIntakeRequest = SuperStructureState.GroundIntakeStructure.GroundIntakeRequest
 // typealias GroundIntakeState = SuperStructureState.GroundIntakeStructure.GroundIntakeState
@@ -17,5 +23,20 @@ sealed interface RequestStructure {
     class OpenLoop(val voltage: ElectricalPotential, val rollerVoltage: ElectricalPotential) :
       ManipulatorRequest
     class Home() : ManipulatorRequest
+}
+  sealed interface ElevatorRequest : RequestStructure {
+    class TargetingPosition(
+      val position: Length,
+      val finalVelocity: LinearVelocity = 0.0.inches.perSecond
+    ) : ElevatorRequest
+    class OpenLoop(val voltage: ElectricalPotential) : ElevatorRequest
+    class Home : ElevatorRequest
+  }
+
+  sealed interface GroundIntakeRequest : RequestStructure {
+    class TargetingPosition(val position: Angle, val rollerVoltage: ElectricalPotential) :
+      GroundIntakeRequest
+    class ArmOpenLoop(val voltage: ElectricalPotential, val rollerVoltage: ElectricalPotential) :
+      GroundIntakeRequest
   }
 }
