@@ -277,7 +277,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
     // https://kotlinlang.org/docs/typecasts.html#smart-casts
     when (val typedRequest = currentRequest) {
       is GroundIntakeRequest.TargetingPosition -> armPositionTarget = typedRequest.position
-      is GroundIntakeRequest.ArmOpenLoop -> armVoltageTarget = typedRequest.voltage
+      is GroundIntakeRequest.OpenLoop -> armVoltageTarget = typedRequest.voltage
     }
   }
 
@@ -392,7 +392,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
       inline fun equivalentToRequest(request: GroundIntakeRequest): Boolean {
         return (
-          (request is GroundIntakeRequest.ArmOpenLoop && this == OPEN_LOOP_REQUEST) ||
+          (request is GroundIntakeRequest.OpenLoop && this == OPEN_LOOP_REQUEST) ||
             (request is GroundIntakeRequest.TargetingPosition && this == TARGETING_POSITION)
           )
       }
@@ -400,7 +400,7 @@ class GroundIntake(private val io: GroundIntakeIO) : SubsystemBase() {
 
     inline fun fromRequestToState(request: GroundIntakeRequest): GroundIntakeState {
       return when (request) {
-        is GroundIntakeRequest.ArmOpenLoop -> GroundIntakeState.OPEN_LOOP_REQUEST
+        is GroundIntakeRequest.OpenLoop -> GroundIntakeState.OPEN_LOOP_REQUEST
         is GroundIntakeRequest.TargetingPosition -> GroundIntakeState.TARGETING_POSITION
       }
     }

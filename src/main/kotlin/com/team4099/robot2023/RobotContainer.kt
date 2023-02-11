@@ -3,9 +3,9 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
-import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
+import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
@@ -13,6 +13,12 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
+import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
+import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
+import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
@@ -20,19 +26,6 @@ import edu.wpi.first.util.sendable.SendableRegistry
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.InstantCommand
-import com.team4099.robot2023.subsystems.elevator.Elevator
-import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
-import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
-import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
-import edu.wpi.first.util.sendable.SendableRegistry
-import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import org.littletonrobotics.junction.Logger
 import org.team4099.lib.smoothDeadband
 
 object RobotContainer {
@@ -61,15 +54,6 @@ object RobotContainer {
       //      vision = Vision(VisionIOSim)
 
       groundIntake = GroundIntake(GroundIntakeIOSim)
-    }
-
-    // Set the scheduler to log events for command initialize, interrupt, finish
-    CommandScheduler.getInstance().onCommandInitialize { command: Command ->
-      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
-    }
-
-    CommandScheduler.getInstance().onCommandFinish { command: Command ->
-      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
   }
 
@@ -143,7 +127,6 @@ object RobotContainer {
       )
     )
      */
-=======
 
     ControlBoard.runElevatorToHighNode.whileTrue(elevator.goToHighConeNodeCommand())
 

@@ -256,11 +256,17 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
     }
 
     Logger.getInstance().processInputs("Manipulator", inputs)
+
     Logger.getInstance().recordOutput("Manipulator/currentState", currentState.name)
+
     Logger.getInstance().recordOutput("Manipulator/hasCube", hasCube)
+
     Logger.getInstance().recordOutput("Manipulator/hasCone", hasCone)
-    Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastRollerRunTime.inSeconds)
-    Logger.getInstance().recordOutput("Manipulator/rollerRunTime", lastIntakeSpikeTime.inSeconds)
+
+    Logger.getInstance().recordOutput("Manipulator/lastRollerRunTime", lastRollerRunTime.inSeconds)
+
+    Logger.getInstance()
+      .recordOutput("Manipulator/lastRollerSpikeTime", lastIntakeSpikeTime.inSeconds)
 
     Logger.getInstance().recordOutput("Manipulator/currentState", currentState.name)
 
@@ -280,7 +286,7 @@ class Manipulator(val io: ManipulatorIO) : SubsystemBase() {
       .recordOutput("Manipulator/rollerVoltageTarget", rollerVoltageTarget.inVolts)
 
     Logger.getInstance()
-      .recordOutput("Manipulator/lastCommandedAngle", lastArmPositionTarget.inInches)
+      .recordOutput("Manipulator/lastCommandedArmPosition", lastArmPositionTarget.inInches)
 
     Logger.getInstance().recordOutput("Manipulator/forwardLimitReached", forwardLimitReached)
 
