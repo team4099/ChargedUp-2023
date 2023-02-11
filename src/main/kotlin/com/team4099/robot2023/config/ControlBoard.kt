@@ -27,6 +27,24 @@ object ControlBoard {
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
 
+  val extendArm = Trigger { operator.aButton }
+
+  val retractArm = Trigger { operator.bButton }
+
+  val setArmPositionToShelfIntake = Trigger { operator.xButton }
+
+  // val armCharacterization = Trigger { operator.yButton }
+
+  /*
+  val intakeCone = Trigger { operator.aButton }
+
+  val intakeCube = Trigger { operator.bButton }
+
+  val outtakeCone = Trigger { operator.yButton }
+
+  val outtakeCube = Trigger { operator.xButton }
+
+   */
   val runElevatorToHighNode = Trigger { operator.aButton }
 
   val openLoopExtend = Trigger { operator.bButton }
