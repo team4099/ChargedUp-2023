@@ -3,16 +3,14 @@ package com.team4099.robot2023.subsystems.manipulator
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.SparkMaxPIDController
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
-import edu.wpi.first.math.MathUtil
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
-import org.team4099.lib.units.base.inInches
-import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
@@ -85,11 +83,12 @@ object ManipulatorIONeo : ManipulatorIO {
    */
   override fun setRollerPower(voltage: ElectricalPotential) {
     rollerSparkMax.setVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts,
-        ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        voltage,
+        -ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION,
+        ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION
       )
+        .inVolts
     )
   }
 
@@ -129,11 +128,12 @@ object ManipulatorIONeo : ManipulatorIO {
   override fun setArmVoltage(voltage: ElectricalPotential) {
     // divide by 2 cause 12 volts is too fast
     armSparkMax.setVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2,
-        ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2
+      clamp(
+        voltage,
+        -ManipulatorConstants.ARM_VOLTAGE_COMPENSATION / 2,
+        ManipulatorConstants.ARM_VOLTAGE_COMPENSATION / 2
       )
+        .inVolts
     )
   }
 
@@ -148,12 +148,11 @@ object ManipulatorIONeo : ManipulatorIO {
     armPIDController.ff = feedforward.inVolts
     armPIDController.setReference(
       armSensor.positionToRawUnits(
-        MathUtil.clamp(
-          position.inInches,
-          ManipulatorConstants.ARM_SOFTLIMIT_RETRACTION.inInches,
-          ManipulatorConstants.ARM_SOFTLIMIT_EXTENSION.inInches
+        clamp(
+          position,
+          ManipulatorConstants.ARM_SOFTLIMIT_RETRACTION,
+          ManipulatorConstants.ARM_SOFTLIMIT_EXTENSION
         )
-          .inches
       ),
       CANSparkMax.ControlType.kPosition
     )

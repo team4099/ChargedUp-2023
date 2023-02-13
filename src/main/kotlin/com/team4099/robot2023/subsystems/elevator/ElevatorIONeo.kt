@@ -3,17 +3,15 @@ package com.team4099.robot2023.subsystems.elevator
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.SparkMaxPIDController
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
-import edu.wpi.first.math.MathUtil
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
-import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inPercentOutputPerSecond
-import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
@@ -113,11 +111,12 @@ object ElevatorIONeo : ElevatorIO {
   override fun setOutputVoltage(voltage: ElectricalPotential) {
     // divide by 2 cause full power elevator is scary
     leaderSparkMax.setVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts / 2,
-        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts / 2
+      clamp(
+        voltage,
+        -ElevatorConstants.VOLTAGE_COMPENSATION / 2,
+        ElevatorConstants.VOLTAGE_COMPENSATION / 2
       )
+        .inVolts
     )
   }
 
@@ -134,12 +133,11 @@ object ElevatorIONeo : ElevatorIO {
 
     leaderPIDController.setReference(
       leaderSensor.positionToRawUnits(
-        MathUtil.clamp(
-          position.inMeters,
-          ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION.inMeters,
-          ElevatorConstants.ELEVATOR_SOFTLIMIT_EXTENSION.inMeters
+        clamp(
+          position,
+          ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION,
+          ElevatorConstants.ELEVATOR_SOFTLIMIT_EXTENSION
         )
-          .meters
       ),
       CANSparkMax.ControlType.kPosition
     )

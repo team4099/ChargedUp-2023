@@ -1,9 +1,9 @@
 package com.team4099.robot2023.subsystems.manipulator
 
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.util.ElevatorSim
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -97,11 +97,12 @@ object ManipulatorIOSim : ManipulatorIO {
    */
   override fun setRollerPower(voltage: ElectricalPotential) {
     rollerSim.setInputVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts,
-        ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        voltage,
+        -ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION,
+        ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION
       )
+        .inVolts
     )
 
     setMechanismNodePosition(voltage / ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION)
@@ -115,11 +116,12 @@ object ManipulatorIOSim : ManipulatorIO {
   override fun setArmVoltage(voltage: ElectricalPotential) {
     // divide by 2 cause 12 volts is too fast
     armSim.setInputVoltage(
-      MathUtil.clamp(
-        voltage.inVolts,
-        -ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2,
-        ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts / 2
+      clamp(
+        voltage,
+        -ManipulatorConstants.ARM_VOLTAGE_COMPENSATION / 2,
+        ManipulatorConstants.ARM_VOLTAGE_COMPENSATION / 2
       )
+        .inVolts
     )
   }
 
@@ -130,7 +132,7 @@ object ManipulatorIOSim : ManipulatorIO {
    * @param feedforward changes voltages to compensate for external forces
    */
   override fun setArmPosition(position: Length, feedforward: ElectricalPotential) {
-    val ff = MathUtil.clamp(feedforward.inVolts, -12.0, 12.0).volts
+    val ff = clamp(feedforward, -12.0.volts, 12.0.volts)
     val feedback = armController.calculate(armSim.positionMeters.meters, position)
     armSim.setInputVoltage((ff + feedback).inVolts)
   }

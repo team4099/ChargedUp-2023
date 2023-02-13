@@ -1,8 +1,8 @@
 package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -141,13 +141,13 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
 
   // helper functions to clamp all inputs and set sim motor voltages properly
   private fun setDriveVoltage(volts: ElectricalPotential) {
-    val driveAppliedVolts = MathUtil.clamp(volts.inVolts, -12.0, 12.0)
-    driveMotorSim.setInputVoltage(driveAppliedVolts)
+    val driveAppliedVolts = clamp(volts, -12.0.volts, 12.0.volts)
+    driveMotorSim.setInputVoltage(driveAppliedVolts.inVolts)
   }
 
   private fun setSteeringVoltage(volts: ElectricalPotential) {
-    val turnAppliedVolts = MathUtil.clamp(volts.inVolts, -12.0, 12.0)
-    steerMotorSim.setInputVoltage(turnAppliedVolts)
+    val turnAppliedVolts = clamp(volts, -12.0.volts, 12.0.volts)
+    steerMotorSim.setInputVoltage(turnAppliedVolts.inVolts)
   }
 
   override fun setSteeringSetpoint(angle: Angle) {

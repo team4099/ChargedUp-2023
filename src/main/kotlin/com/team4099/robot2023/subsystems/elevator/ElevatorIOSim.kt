@@ -1,9 +1,9 @@
 package com.team4099.robot2023.subsystems.elevator
 
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.util.ElevatorSim
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
@@ -70,15 +70,15 @@ object ElevatorIOSim : ElevatorIO {
    */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
     val clampedVoltage =
-      MathUtil.clamp(
-        voltage.inVolts,
-        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts,
-        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        voltage,
+        -ElevatorConstants.VOLTAGE_COMPENSATION,
+        ElevatorConstants.VOLTAGE_COMPENSATION
       )
 
-    lastAppliedVoltage = clampedVoltage.volts
+    lastAppliedVoltage = clampedVoltage
 
-    elevatorSim.setInputVoltage(clampedVoltage)
+    elevatorSim.setInputVoltage(clampedVoltage.inVolts)
   }
 
   /**
@@ -90,12 +90,11 @@ object ElevatorIOSim : ElevatorIO {
    */
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {
     val ff =
-      MathUtil.clamp(
-        feedforward.inVolts,
-        -ElevatorConstants.VOLTAGE_COMPENSATION.inVolts,
-        ElevatorConstants.VOLTAGE_COMPENSATION.inVolts
+      clamp(
+        feedforward,
+        -ElevatorConstants.VOLTAGE_COMPENSATION,
+        ElevatorConstants.VOLTAGE_COMPENSATION
       )
-        .volts
     val feedback = elevatorController.calculate(elevatorSim.positionMeters.meters, position)
 
     lastAppliedVoltage = ff + feedback

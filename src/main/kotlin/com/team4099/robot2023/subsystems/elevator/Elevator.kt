@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.elevator
 
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.FieldConstants
@@ -9,7 +10,6 @@ import com.team4099.robot2023.config.constants.MechanismSimConstants.carriageAtt
 import com.team4099.robot2023.config.constants.MechanismSimConstants.elevatorAbsoluteXPosition
 import com.team4099.robot2023.config.constants.MechanismSimConstants.elevatorAbsoluteYPosition
 import com.team4099.robot2023.config.constants.MechanismSimConstants.secondStageAttachment
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
@@ -634,18 +634,12 @@ class Elevator(val io: ElevatorIO) {
   fun updateMech2d() {
     // updating carriage attachment based on height of elevator
     val secondStagePosition =
-      MathUtil.clamp(
-        inputs.elevatorPosition.inInches, 0.0, ElevatorConstants.FIRST_STAGE_HEIHT.inInches
-      )
-        .inches
+      clamp(inputs.elevatorPosition, 0.0.inches, ElevatorConstants.FIRST_STAGE_HEIHT)
 
     val carriagePosition =
-      MathUtil.clamp(
-        inputs.elevatorPosition.inInches,
-        secondStagePosition.inInches,
-        ElevatorConstants.ELEVATOR_MAX_EXTENSION.inInches
+      clamp(
+        inputs.elevatorPosition, secondStagePosition, ElevatorConstants.ELEVATOR_MAX_EXTENSION
       )
-        .inches
 
     secondStageAttachment.setPosition(
       (

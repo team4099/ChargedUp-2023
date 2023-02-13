@@ -3,7 +3,6 @@ package com.team4099.robot2023.subsystems.groundintake
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
@@ -134,7 +133,7 @@ object GroundIntakeIOSim : GroundIntakeIO {
    * @param feedforward the amount of volts to apply for feedforward
    */
   override fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {
-    val ff = MathUtil.clamp(feedforward.inVolts, -12.0, 12.0).volts
+    val ff = clamp(feedforward, -12.0.volts, 12.0.volts)
     val feedback = armController.calculate(armSim.angleRads.radians, armPosition)
     armSim.setInputVoltage((ff + feedback).inVolts)
   }
