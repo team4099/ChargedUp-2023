@@ -84,7 +84,7 @@ dependencies {
 
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 
-	implementation 'com.github.team4099:FalconUtils:1.1.8'
+	implementation 'com.github.team4099:FalconUtils:1.1.12'
 	implementation 'com.google.code.gson:gson:2.10.1'
 
 	// We need to add the Kotlin stdlib in order to use most Kotlin language features.
