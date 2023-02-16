@@ -64,6 +64,12 @@ class Manipulator(val io: ManipulatorIO) {
         Pair({ it.inInches }, { it.inches })
       )
 
+    val intakeTime = LoggedTunableValue(
+      "Manipulator/intakeTime",
+      ManipulatorConstants.INTAKE_IN_TIME,
+      Pair({ it.inSeconds }, { it.seconds })
+    )
+
     val spitTime =
       LoggedTunableValue(
         "Manipulator/spitTime",

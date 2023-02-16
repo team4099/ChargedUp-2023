@@ -24,7 +24,7 @@ class Superstructure(
 ) : SubsystemBase() {
 
   var currentRequest: SuperstructureRequest =
-    SuperstructureRequest.Idle() // eventually switch to idle
+    SuperstructureRequest.Idle()
     set(value) {
         when (value) {
           is SuperstructureRequest.GroundIntakeCone -> usingGamePiece = GamePiece.CONE
@@ -91,7 +91,7 @@ class Superstructure(
     when (currentState) {
       SuperstructureStates.UNINITIALIZED -> {
         // Outputs
-        groundIntake.zeroArm()
+        groundIntake.zeroArm() // zeroing happens in one loop cycle
 
         // Transition
         nextState = SuperstructureStates.HOME_PREP
@@ -217,7 +217,7 @@ class Superstructure(
         // Transition
         if (groundIntake.isAtTargetedPosition && manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE
-        } else if (currentRequest is SuperstructureRequest.Idle) {
+        } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
         }
       }
@@ -237,7 +237,7 @@ class Superstructure(
         // Transition
         if (groundIntake.isAtTargetedPosition && manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
-        } else if (currentRequest is SuperstructureRequest.Idle) {
+        } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
         }
       }
@@ -266,7 +266,7 @@ class Superstructure(
         // Transition
         if (groundIntake.isAtTargetedPosition && manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE
-        } else if (currentRequest is SuperstructureRequest.Idle) {
+        } else if (currentRequest !is SuperstructureRequest.GroundIntakeCone) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP
         }
       }
@@ -281,7 +281,7 @@ class Superstructure(
         // Transition
         if (manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP
-        } else if (currentRequest is SuperstructureRequest.Idle) {
+        } else if (currentRequest !is SuperstructureRequest.GroundIntakeCone) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP
         }
       }
@@ -294,7 +294,8 @@ class Superstructure(
           )
 
         // Transition
-        if (manipulator.isAtTargetedPosition) {
+        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >=
+          Manipulator.TunableManipulatorStates.intakeTime.get()) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -329,7 +330,7 @@ class Superstructure(
           elevator.isAtTargetedPosition
         ) {
           nextState = SuperstructureStates.DOUBLE_SUBSTATION_INTAKE
-        } else if (currentRequest is SuperstructureRequest.Idle) {
+        } else if (currentRequest !is SuperstructureRequest.DoubleSubstationIntake) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -348,7 +349,8 @@ class Superstructure(
           )
 
         // Transition
-        if (manipulator.isAtTargetedPosition) {
+        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >=
+          Manipulator.TunableManipulatorStates.intakeTime.get()) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -399,7 +401,7 @@ class Superstructure(
         // Outputs
 
         // Transition
-        if (manipulator.isAtTargetedPosition) {
+        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >= Manipulator.TunableManipulatorStates.intakeTime.get()) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -412,7 +414,7 @@ class Superstructure(
         // Outputs
 
         // Transition
-        if (manipulator.isAtTargetedPosition) {
+        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >= Manipulator.TunableManipulatorStates.intakeTime.get()) {
           nextState = SuperstructureStates.IDLE
         }
       }

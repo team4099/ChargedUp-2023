@@ -36,6 +36,7 @@ object ManipulatorConstants {
   // TODO(test this)
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.75.seconds
   val SPIT_OUT_TIME = 0.8.seconds
+  val INTAKE_IN_TIME = 0.5.seconds
 
   // TODO(check if these motors are inverted)
   val ARM_MOTOR_INVERTED = false
