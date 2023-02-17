@@ -11,6 +11,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.driven
 import org.team4099.lib.units.derived.driving
 import org.team4099.lib.units.derived.gearRatio
+import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
@@ -25,7 +26,7 @@ import org.team4099.lib.units.perSecond
 import kotlin.math.sqrt
 
 object DrivetrainConstants {
-  const val MINIMIZE_SKEW = true
+  const val MINIMIZE_SKEW = false
 
   const val WHEEL_COUNT = 4
   val WHEEL_DIAMETER = 3.785.inches
@@ -82,8 +83,8 @@ object DrivetrainConstants {
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
 
-  val DRIVE_WHEEL_INERTIA = 0.025.kilo.grams * 1.0.meters.squared
-  val STEERING_WHEEL_INERTIA = 0.004096955.kilo.grams * 1.0.meters.squared
+  val DRIVE_WHEEL_INERTIA = 0.025.kilo.grams.meterSquared
+  val STEERING_WHEEL_INERTIA = 0.004096955.kilo.grams.meterSquared
 
   object PID {
     val AUTO_POS_KP = 2.0.meters.perSecond / 1.0.meters

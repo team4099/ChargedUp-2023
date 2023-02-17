@@ -34,14 +34,14 @@ import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
   private val drivetrain: Drivetrain
-  private val vision: Vision
+//  private val vision: Vision
   private val superstructure: Superstructure
 
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
-      vision = Vision(object : VisionIO {})
+//      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
@@ -57,7 +57,7 @@ object RobotContainer {
           GroundIntake(GroundIntakeIOSim),
           Manipulator(ManipulatorIOSim)
         )
-       vision = Vision(VisionIOSim)
+//       vision = Vision(VisionIOSim)
     }
   }
 
@@ -72,8 +72,8 @@ object RobotContainer {
       )
   }
 
-  val measurementsWithTimestamps
-    get() = vision.visionMeasurements
+//  val measurementsWithTimestamps
+//    get() = vision.visionMeasurements
 
   fun addVisionMeasurement(visionMeasurement: VisionMeasurement) {
     drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(

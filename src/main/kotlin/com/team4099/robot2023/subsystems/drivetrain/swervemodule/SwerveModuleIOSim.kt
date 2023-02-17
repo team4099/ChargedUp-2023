@@ -46,7 +46,7 @@ import kotlin.random.Random
 class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   // Use inverses of gear ratios because our standard is <1 is reduction
   private val driveMotorSim: FlywheelSim =
-    FlywheelSim(DCMotor.getNEO(1), DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO.asDrivenOverDriving, DrivetrainConstants.DRIVE_WHEEL_INERTIA.inKilogramsMeterSquared)
+    FlywheelSim(DCMotor.getNEO(1), DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO.asDrivingOverDriven, DrivetrainConstants.DRIVE_WHEEL_INERTIA.inKilogramsMeterSquared)
 
   private val steerMotorSim =
     FlywheelSim(
