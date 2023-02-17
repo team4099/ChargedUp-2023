@@ -244,7 +244,7 @@ object FieldConstants {
     // Double substation dimensions
     val doubleSubstationLength = (14.0).inches
     val doubleSubstationX = innerX - doubleSubstationLength
-    val doubleSubstationShelfZ = (37.375)
+    val doubleSubstationShelfZ = (37.375).inches
 
     // Single substation dimensions
     val singleSubstationWidth = (22.75).inches

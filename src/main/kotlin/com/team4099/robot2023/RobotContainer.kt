@@ -16,23 +16,48 @@ import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.VisionIO
 import com.team4099.robot2023.subsystems.vision.VisionIOSim
 import edu.wpi.first.math.VecBuilder
+import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
+import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
+import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
+import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
+import com.team4099.robot2023.subsystems.manipulator.Manipulator
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
+import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
   private val drivetrain: Drivetrain
   private val vision: Vision
+  private val superstructure: Superstructure
 
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
       vision = Vision(object : VisionIO {})
+      superstructure =
+        Superstructure(
+          Elevator(ElevatorIONeo),
+          GroundIntake(GroundIntakeIONeo),
+          Manipulator(ManipulatorIONeo)
+        )
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
-      vision = Vision(VisionIOSim)
+      superstructure =
+        Superstructure(
+          Elevator(ElevatorIOSim),
+          GroundIntake(GroundIntakeIOSim),
+          Manipulator(ManipulatorIOSim)
+        )
+       vision = Vision(VisionIOSim)
     }
   }
 
@@ -58,6 +83,7 @@ object RobotContainer {
         0.1, 0.1, 1.0
       ) // TODO figure out an actual formula for stdev to make convergence speedy
     )
+    superstructure.defaultCommand = InstantCommand({}, superstructure)
   }
 
   fun zeroSteering() {
@@ -84,6 +110,56 @@ object RobotContainer {
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
+    //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
+    //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
+
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.prepscoreConeHighCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.scoreConeHighCommand())
+
+    //
+    // ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())
+    //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCommand())
+    //    ControlBoard.retractArm.whileTrue(superstructure.manipulatorGoToMaxExtensionCommand())
+
+    /*
+    ControlBoard.intakeCone.whileTrue(
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CONE_IN,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION)
+    )
+    ControlBoard.intakeCube.whileTrue(
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CUBE_IN,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION)
+    )
+    ControlBoard.outtakeCone.whileTrue(
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CONE_OUT,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION
+      )
+    )
+    ControlBoard.outtakeCube.whileTrue(
+      manipulator.manipulatorCommand(
+        ManipulatorConstants.RollerStates.CUBE_OUT,
+        ManipulatorConstants.ArmStates.MIN_EXTENSION
+      )
+    )
+     */
+
+    //    ControlBoard.runElevatorToHighNode.whileTrue(elevator.goToHighConeNodeCommand())
+    //
+    //    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopExtendCommand())
+    //    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopRetractCommand())
+    //
+    //    ControlBoard.extendIntake.whileTrue(groundIntake.intakeCommand())
+    //    ControlBoard.retractIntake.whileTrue(groundIntake.stowedUpCommand())
+    //    //    ControlBoard.characterizeIntake.whileTrue(
+    //    //
+    // groundIntake.groundIntakeDeployCommand(GroundIntakeConstants.ArmStates.TUNABLE_STATE) //
+    //    // TODO make legit
+    //    //    )
+    //
+    //    ControlBoard.setArmCommand.whileTrue(groundIntake.stowedDownCommand())
   }
 
   fun mapTestControls() {}
@@ -91,7 +167,31 @@ object RobotContainer {
   //  fun getAutonomousCommand() =
   //    AutonomousSelector.getCommand(
   //      drivetrain, intake, feeder, shooter, telescopingClimber, pivotClimber
-  //    )
+  //    )"
 
   fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
+
+  fun mapTunableCommands() {
+    //    val commandsTab = Shuffleboard.getTab("TunableCommands")
+    //    commandsTab.add(manipulator)
+    //    SendableRegistry.setName(manipulator, "manipulator")
+    //    commandsTab.add("ManipulatorArmCharacterization", ArmCharacterizationCommand(manipulator))
+    //    commandsTab.add(
+    //      "ManipulatorArmTuning",
+    //      manipulator.scoreConeAtHighNodeCommand( // TODO fix
+    //      )
+    //    )
+    //    commandsTab.add(RobotContainer.elevator)
+    //    SendableRegistry.setName(RobotContainer.elevator, "elevator")
+    //    commandsTab.add("ElevatorCharacterization", ElevatorCharacterizeCommand(elevator))
+    //    commandsTab.add(
+    //      "ElevatorTuning", elevator.goToMidConeNodeCommand() // TODO FIX
+    //    )
+    //    commandsTab.add(groundIntake)
+    //    SendableRegistry.setName(groundIntake, "groundIntake")
+    //    commandsTab.add(
+    //      "GroundIntakeArmCharacterization", GroundIntakeCharacterizeCommand(groundIntake)
+    //    )
+    //    commandsTab.add("GroundIntakeArmTuning", groundIntake.stowedUpCommand())
+  }
 }

@@ -3,13 +3,20 @@ package com.team4099.robot2023
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.MechanismSimConstants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.ejml.EjmlVersion.BUILD_DATE
+import org.ejml.EjmlVersion.DIRTY
+import org.ejml.EjmlVersion.GIT_BRANCH
+import org.ejml.EjmlVersion.GIT_SHA
+import org.ejml.EjmlVersion.MAVEN_NAME
 import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger
@@ -35,7 +42,9 @@ object Robot : LoggedRobot() {
     val logger = Logger.getInstance()
     // running replays as fast as possible when replaying. (play in real time when robot is real or
     // sim)
-    setUseTiming(Constants.Universal.SIM_MODE != Constants.Tuning.SimType.REPLAY)
+    setUseTiming(
+      RobotBase.isReal() || Constants.Universal.SIM_MODE != Constants.Tuning.SimType.REPLAY
+    )
 
     // metadata value (not timed -- just metadata for given log file)
     logger.recordMetadata(
@@ -78,6 +87,8 @@ object Robot : LoggedRobot() {
           logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")))
         }
       }
+
+      // initialize mech2d stuff
     }
 
     logger.start() // no more configuration allowed
@@ -126,6 +137,10 @@ object Robot : LoggedRobot() {
     CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
       Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
+
+    if (!RobotBase.isReal()) {
+      SmartDashboard.putData("Arm Sim", MechanismSimConstants.m_mech2d)
+    }
   }
 
   override fun teleopInit() {
@@ -134,6 +149,9 @@ object Robot : LoggedRobot() {
     RobotContainer.setDriveBrakeMode() // change to coast
     //    RobotContainer.zeroSteering()
     // autonomousCommand.cancel()
+    if (Constants.Tuning.TUNING_MODE) {
+      RobotContainer.mapTunableCommands()
+    }
   }
 
   override fun testInit() {

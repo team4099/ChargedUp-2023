@@ -3,6 +3,10 @@ package com.team4099.robot2023.config.constants
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
 
+typealias GamePiece = Constants.Universal.GamePiece
+
+typealias NodeTier = Constants.Universal.NodeTier
+
 object Constants {
   object Universal {
     val SIM_MODE = Tuning.SimType.SIM
@@ -17,6 +21,25 @@ object Constants {
     val LOOP_PERIOD_TIME = 20.milli.seconds
     val POWER_DISTRIBUTION_HUB_ID = 1
     val USE_TIMING = true
+
+    enum class GamePiece {
+      CUBE,
+      CONE,
+      NONE
+    }
+
+    enum class NodeTier {
+      HYBRID,
+      MID,
+      HIGH,
+      NONE
+    }
+
+    enum class Substation {
+      DOUBLE_SUBSTATION_LEFT,
+      DOUBLE_SUBSTATION_RIGHT,
+      SINGLE_SUBSTATION,
+    }
   }
 
   object Tuning {
@@ -58,11 +81,27 @@ object Constants {
     const val BACK_LEFT_ANALOG_POTENTIOMETER = 3
   }
 
+  object Elevator {
+    const val LEADER_MOTOR_ID = 1337
+    const val FOLLOWER_MOTOR_ID = 1337
+  }
+
   object Gyro {
     const val PIGEON_2_ID = 1337
   }
 
+  object Manipulator {
+    const val INTAKE_MOTOR_ID = 51
+    const val ARM_MOTOR_ID = 52
+  }
+
   object Alert {
     val TABS = arrayOf("Pre-match", "In-match")
+  }
+
+  object Intake {
+    const val ROLLER_MOTOR_ID = 32
+    const val ARM_MOTOR_ID = 31
+    const val REV_ENCODER_PORT = 1
   }
 }
