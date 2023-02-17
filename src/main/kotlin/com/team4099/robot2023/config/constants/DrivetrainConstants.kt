@@ -2,11 +2,15 @@ package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.feet
+import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.driven
+import org.team4099.lib.units.derived.driving
+import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
@@ -16,6 +20,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
+import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perSecond
 import kotlin.math.sqrt
 
@@ -55,8 +60,8 @@ object DrivetrainConstants {
   const val DRIVE_SENSOR_CPR = 2048
   const val STEERING_SENSOR_CPR = 2048
 
-  const val DRIVE_SENSOR_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
-  const val STEERING_SENSOR_GEAR_RATIO = 7.0 / 150.0
+  val DRIVE_SENSOR_GEAR_RATIO = ((50.0.driven / 14.0.driving) * (17.0.driven / 27.0.driving) * (45.0.driven / 15.0.driving)).gearRatio
+  val STEERING_SENSOR_GEAR_RATIO = (150.0.driven / 7.0.driving).gearRatio
 
   val ALLOWED_STEERING_ANGLE_ERROR = 1.degrees
 
@@ -76,6 +81,9 @@ object DrivetrainConstants {
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
+
+  val DRIVE_WHEEL_INERTIA = 0.025.kilo.grams * 1.0.meters.squared
+  val STEERING_WHEEL_INERTIA = 0.004096955.kilo.grams * 1.0.meters.squared
 
   object PID {
     val AUTO_POS_KP = 2.0.meters.perSecond / 1.0.meters

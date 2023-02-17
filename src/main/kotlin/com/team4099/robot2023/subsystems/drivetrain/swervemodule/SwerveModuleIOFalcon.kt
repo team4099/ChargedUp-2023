@@ -26,6 +26,8 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.asDrivenOverDriving
+import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -41,14 +43,14 @@ class SwerveModuleIOFalcon(
     ctreAngularMechanismSensor(
       steeringFalcon,
       DrivetrainConstants.STEERING_SENSOR_CPR,
-      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO,
+      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO.asDrivenOverDriving,
       DrivetrainConstants.STEERING_COMPENSATION_VOLTAGE
     )
   private val driveSensor =
     ctreLinearMechanismSensor(
       driveFalcon,
       DrivetrainConstants.DRIVE_SENSOR_CPR,
-      DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO,
+      DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO.asDrivenOverDriving,
       DrivetrainConstants.WHEEL_DIAMETER,
       DrivetrainConstants.DRIVE_COMPENSATION_VOLTAGE
     )
