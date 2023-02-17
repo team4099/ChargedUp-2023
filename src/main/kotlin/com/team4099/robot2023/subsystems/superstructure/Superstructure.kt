@@ -235,7 +235,7 @@ class Superstructure(
           )
 
         // Transition
-        if (groundIntake.isAtTargetedPosition && manipulator.isAtTargetedPosition) {
+        if (groundIntake.isAtTargetedPosition && manipulator.isAtTargetedPosition && currentRequest !is SuperstructureRequest.GroundIntakeCube) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
@@ -279,7 +279,7 @@ class Superstructure(
           )
 
         // Transition
-        if (manipulator.isAtTargetedPosition) {
+        if (manipulator.isAtTargetedPosition && currentRequest !is SuperstructureRequest.GroundIntakeCone) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCone) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP
@@ -462,18 +462,22 @@ class Superstructure(
               }
               else -> 0.0.inches
             }
-          val extension =
-            when (nodeTier) {
-              NodeTier.HYBRID -> Manipulator.TunableManipulatorStates.lowScoreExtension.get()
-              NodeTier.MID -> Manipulator.TunableManipulatorStates.midScoreExtension.get()
-              NodeTier.HIGH -> Manipulator.TunableManipulatorStates.highScoreExtension.get()
-              else -> 0.0.inches
-            }
-          manipulator.currentRequest =
-            Request.ManipulatorRequest.TargetingPosition(
-              extension, ManipulatorConstants.IDLE_VOLTAGE
-            )
+
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(scoreHeight)
+
+          if (elevator.isAtTargetedPosition){
+            val extension =
+              when (nodeTier) {
+                NodeTier.HYBRID -> Manipulator.TunableManipulatorStates.lowScoreExtension.get()
+                NodeTier.MID -> Manipulator.TunableManipulatorStates.midScoreExtension.get()
+                NodeTier.HIGH -> Manipulator.TunableManipulatorStates.highScoreExtension.get()
+                else -> 0.0.inches
+              }
+            manipulator.currentRequest =
+              Request.ManipulatorRequest.TargetingPosition(
+                extension, ManipulatorConstants.IDLE_VOLTAGE
+              )
+          }
         }
 
         // Transition
@@ -505,7 +509,10 @@ class Superstructure(
           (Clock.fpgaTime - lastTransitionTime) >=
           Manipulator.TunableManipulatorStates.spitTime.get()
         ) {
-          nextState = SuperstructureStates.IDLE
+          nextState = SuperstructureStates.SCORE_CLEANUP
+          currentRequest = SuperstructureRequest.Idle()
+        } else if (currentRequest !is SuperstructureRequest.Score){
+          nextState = SuperstructureStates.SCORE_CLEANUP
         }
       }
       SuperstructureStates.SCORE_CONE -> {
@@ -532,8 +539,17 @@ class Superstructure(
           (Clock.fpgaTime - lastTransitionTime) >=
           Manipulator.TunableManipulatorStates.spitTime.get()
         ) {
-          nextState = SuperstructureStates.IDLE
+          nextState = SuperstructureStates.SCORE_CLEANUP
           currentRequest = SuperstructureRequest.Idle()
+        } else if (currentRequest !is SuperstructureRequest.Score){
+          nextState = SuperstructureStates.SCORE_CLEANUP
+        }
+      }
+      SuperstructureStates.SCORE_CLEANUP -> {
+        manipulator.currentRequest = Request.ManipulatorRequest.TargetingPosition(Manipulator.TunableManipulatorStates.minExtension.get(), ManipulatorConstants.IDLE_VOLTAGE)
+
+        if (manipulator.isAtTargetedPosition){
+          nextState = SuperstructureStates.IDLE
         }
       }
       SuperstructureStates.TUNING -> {}
@@ -553,14 +569,14 @@ class Superstructure(
         SuperstructureRequest.PrepScore(
           Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
         )
-    }
+    }.until { currentState == SuperstructureStates.SCORE_PREP }
 
     returnCommand.name = "PrepscoreConeHighCommand"
     return returnCommand
   }
 
   fun scoreConeHighCommand(): CommandBase {
-    val returnCommand = runOnce { currentRequest = SuperstructureRequest.Score() }
+    val returnCommand = runOnce { currentRequest = SuperstructureRequest.Score() }. until { currentState == SuperstructureStates.SCORE_CONE}
 
     returnCommand.name = "ScoreConeHighCommand"
     return returnCommand
@@ -986,7 +1002,8 @@ class Superstructure(
       SINGLE_SUBSTATION_INTAKE_CONE,
       SCORE_PREP,
       SCORE_CUBE,
-      SCORE_CONE
+      SCORE_CONE,
+      SCORE_CLEANUP
     }
   }
 }

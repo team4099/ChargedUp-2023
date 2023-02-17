@@ -399,7 +399,9 @@ class Manipulator(val io: ManipulatorIO) {
         val timeElapsed = Clock.fpgaTime - timeProfileGeneratedAt
 
         setArmPosition(armProfile.calculate(timeElapsed))
-        setRollerPower(rollerVoltageTarget)
+        if (armProfile.isFinished(timeElapsed)){
+          setRollerPower(rollerVoltageTarget)
+        }
 
         Logger.getInstance()
           .recordOutput("GroundIntake/completedMotionProfile", armProfile.isFinished(timeElapsed))
