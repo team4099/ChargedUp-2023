@@ -124,7 +124,7 @@ class Superstructure(
         } else {
           groundIntake.currentRequest =
             Request.GroundIntakeRequest.TargetingPosition(
-              GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+              GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
               GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
             )
         }

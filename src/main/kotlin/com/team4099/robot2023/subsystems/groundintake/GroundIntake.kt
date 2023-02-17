@@ -203,24 +203,27 @@ class GroundIntake(private val io: GroundIntakeIO) {
     Logger.getInstance()
       .recordOutput("GroundIntake/requestedState", currentRequest.javaClass.simpleName)
 
-    Logger.getInstance()
-      .recordOutput(
-        "GroundIntake/isAtCommandedState", currentState.equivalentToRequest(currentRequest)
-      )
+    if (Constants.Tuning.DEBUGING_MODE) {
+      Logger.getInstance()
+        .recordOutput(
+          "GroundIntake/isAtCommandedState", currentState.equivalentToRequest(currentRequest)
+        )
 
-    Logger.getInstance().recordOutput("GroundIntake/armPositionTarget", armPositionTarget.inDegrees)
+      Logger.getInstance()
+        .recordOutput("GroundIntake/armPositionTarget", armPositionTarget.inDegrees)
 
-    Logger.getInstance().recordOutput("GroundIntake/armVoltageTarget", armVoltageTarget.inVolts)
+      Logger.getInstance().recordOutput("GroundIntake/armVoltageTarget", armVoltageTarget.inVolts)
 
-    Logger.getInstance()
-      .recordOutput("GroundIntake/rollerVoltageTarget", rollerVoltageTarget.inVolts)
+      Logger.getInstance()
+        .recordOutput("GroundIntake/rollerVoltageTarget", rollerVoltageTarget.inVolts)
 
-    Logger.getInstance()
-      .recordOutput("GroundIntake/lastCommandedAngle", lastArmPositionTarget.inDegrees)
+      Logger.getInstance()
+        .recordOutput("GroundIntake/lastCommandedAngle", lastArmPositionTarget.inDegrees)
 
-    Logger.getInstance().recordOutput("GroundIntake/forwardLimitReached", forwardLimitReached)
+      Logger.getInstance().recordOutput("GroundIntake/forwardLimitReached", forwardLimitReached)
 
-    Logger.getInstance().recordOutput("GroundIntake/reverseLimitReached", reverseLimitReached)
+      Logger.getInstance().recordOutput("GroundIntake/reverseLimitReached", reverseLimitReached)
+    }
 
     var nextState = currentState
     when (currentState) {

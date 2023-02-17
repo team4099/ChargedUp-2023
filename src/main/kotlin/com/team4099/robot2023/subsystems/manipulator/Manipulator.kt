@@ -327,40 +327,43 @@ class Manipulator(val io: ManipulatorIO) {
 
     Logger.getInstance().recordOutput("Manipulator/currentState", currentState.name)
 
-    Logger.getInstance().recordOutput("Manipulator/isHomed", isHomed)
+    if (Constants.Tuning.DEBUGING_MODE) {
+      Logger.getInstance().recordOutput("Manipulator/isHomed", isHomed)
 
-    Logger.getInstance().recordOutput("Manipulator/hasCube", hasCube)
+      Logger.getInstance().recordOutput("Manipulator/hasCube", hasCube)
 
-    Logger.getInstance().recordOutput("Manipulator/hasCone", hasCone)
+      Logger.getInstance().recordOutput("Manipulator/hasCone", hasCone)
 
-    Logger.getInstance().recordOutput("Manipulator/lastRollerRunTime", lastRollerRunTime.inSeconds)
+      Logger.getInstance()
+        .recordOutput("Manipulator/lastRollerRunTime", lastRollerRunTime.inSeconds)
 
-    Logger.getInstance()
-      .recordOutput("Manipulator/lastRollerSpikeTime", lastIntakeSpikeTime.inSeconds)
+      Logger.getInstance()
+        .recordOutput("Manipulator/lastRollerSpikeTime", lastIntakeSpikeTime.inSeconds)
 
-    Logger.getInstance().recordOutput("Manipulator/currentState", currentState.name)
+      Logger.getInstance().recordOutput("Manipulator/currentState", currentState.name)
 
-    Logger.getInstance()
-      .recordOutput("Manipulator/requestedState", currentRequest.javaClass.simpleName)
+      Logger.getInstance()
+        .recordOutput("Manipulator/requestedState", currentRequest.javaClass.simpleName)
 
-    Logger.getInstance()
-      .recordOutput(
-        "Manipulator/isAtCommandedState", currentState.equivalentToRequest(currentRequest)
-      )
+      Logger.getInstance()
+        .recordOutput(
+          "Manipulator/isAtCommandedState", currentState.equivalentToRequest(currentRequest)
+        )
 
-    Logger.getInstance().recordOutput("Manipulator/armPositionTarget", armPositionTarget.inInches)
+      Logger.getInstance().recordOutput("Manipulator/armPositionTarget", armPositionTarget.inInches)
 
-    Logger.getInstance().recordOutput("Manipulator/armVoltageTarget", armVoltageTarget.inVolts)
+      Logger.getInstance().recordOutput("Manipulator/armVoltageTarget", armVoltageTarget.inVolts)
 
-    Logger.getInstance()
-      .recordOutput("Manipulator/rollerVoltageTarget", rollerVoltageTarget.inVolts)
+      Logger.getInstance()
+        .recordOutput("Manipulator/rollerVoltageTarget", rollerVoltageTarget.inVolts)
 
-    Logger.getInstance()
-      .recordOutput("Manipulator/lastCommandedArmPosition", lastArmPositionTarget.inInches)
+      Logger.getInstance()
+        .recordOutput("Manipulator/lastCommandedArmPosition", lastArmPositionTarget.inInches)
 
-    Logger.getInstance().recordOutput("Manipulator/forwardLimitReached", forwardLimitReached)
+      Logger.getInstance().recordOutput("Manipulator/forwardLimitReached", forwardLimitReached)
 
-    Logger.getInstance().recordOutput("Manipulator/reverseLimitReached", reverseLimitReached)
+      Logger.getInstance().recordOutput("Manipulator/reverseLimitReached", reverseLimitReached)
+    }
 
     var nextState = currentState
     when (currentState) {

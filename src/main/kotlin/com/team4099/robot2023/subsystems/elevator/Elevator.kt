@@ -55,14 +55,14 @@ class Elevator(val io: ElevatorIO) {
     val minPosition =
       LoggedTunableValue(
         "Elevator/minPosition",
-        ElevatorConstants.ELEVATOR_MAX_RETRACTION,
+        ElevatorConstants.ELEVATOR_SOFT_LIMIT_RETRACTION,
         Pair({ it.inInches }, { it.inches })
       )
 
     val maxPosition =
       LoggedTunableValue(
         "Elevator/maxPosition",
-        ElevatorConstants.ELEVATOR_MAX_EXTENSION,
+        ElevatorConstants.ELEVATOR_SOFT_LIMIT_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
@@ -176,9 +176,9 @@ class Elevator(val io: ElevatorIO) {
   }
 
   val forwardLimitReached: Boolean
-    get() = inputs.elevatorPosition >= ElevatorConstants.ELEVATOR_SOFTLIMIT_EXTENSION
+    get() = inputs.elevatorPosition >= ElevatorConstants.ELEVATOR_SOFT_LIMIT_EXTENSION
   val reverseLimitReached: Boolean
-    get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION
+    get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_SOFT_LIMIT_RETRACTION
 
   val forwardOpenLoopLimitReached: Boolean
     get() = inputs.elevatorPosition >= ElevatorConstants.ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION
@@ -304,30 +304,33 @@ class Elevator(val io: ElevatorIO) {
     Logger.getInstance()
       .recordOutput("Elevator/currentRequest", currentRequest.javaClass.simpleName)
 
-    Logger.getInstance().recordOutput("Elevator/isHomed", isHomed)
+    if (Constants.Tuning.DEBUGING_MODE){
+      Logger.getInstance().recordOutput("Elevator/isHomed", isHomed)
 
-    Logger.getInstance().recordOutput("Elevator/isAtTargetPosition", isAtTargetedPosition)
-    Logger.getInstance().recordOutput("Elevator/isStowed", isStowed)
-    Logger.getInstance().recordOutput("Elevator/lastGeneratedAt", timeProfileGeneratedAt.inSeconds)
+      Logger.getInstance().recordOutput("Elevator/isAtTargetPosition", isAtTargetedPosition)
+      Logger.getInstance().recordOutput("Elevator/isStowed", isStowed)
+      Logger.getInstance().recordOutput("Elevator/lastGeneratedAt", timeProfileGeneratedAt.inSeconds)
 
-    Logger.getInstance()
-      .recordOutput("Elevator/elevatorPositionTarget", elevatorPositionTarget.inInches)
-    Logger.getInstance()
-      .recordOutput("Elevator/elevatorVelocityTarget", elevatorVelocityTarget.inInchesPerSecond)
-    Logger.getInstance()
-      .recordOutput("Elevator/elevatorVoltageTarget", elevatorVoltageTarget.inVolts)
+      Logger.getInstance()
+        .recordOutput("Elevator/elevatorPositionTarget", elevatorPositionTarget.inInches)
+      Logger.getInstance()
+        .recordOutput("Elevator/elevatorVelocityTarget", elevatorVelocityTarget.inInchesPerSecond)
+      Logger.getInstance()
+        .recordOutput("Elevator/elevatorVoltageTarget", elevatorVoltageTarget.inVolts)
 
-    Logger.getInstance()
-      .recordOutput("Elevator/lastElevatorPositionTarget", lastRequestedPosition.inInches)
-    Logger.getInstance()
-      .recordOutput(
-        "Elevator/lastElevatorVelocityTarget", lastRequestedVelocity.inInchesPerSecond
-      )
-    Logger.getInstance()
-      .recordOutput("Elevator/lastElevatorVoltageTarget", lastRequestedVoltage.inVolts)
+      Logger.getInstance()
+        .recordOutput("Elevator/lastElevatorPositionTarget", lastRequestedPosition.inInches)
+      Logger.getInstance()
+        .recordOutput(
+          "Elevator/lastElevatorVelocityTarget", lastRequestedVelocity.inInchesPerSecond
+        )
+      Logger.getInstance()
+        .recordOutput("Elevator/lastElevatorVoltageTarget", lastRequestedVoltage.inVolts)
 
-    Logger.getInstance().recordOutput("Elevator/forwardLimitReached", forwardLimitReached)
-    Logger.getInstance().recordOutput("Elevator/reverseLimitReached", reverseLimitReached)
+      Logger.getInstance().recordOutput("Elevator/forwardLimitReached", forwardLimitReached)
+      Logger.getInstance().recordOutput("Elevator/reverseLimitReached", reverseLimitReached)
+    }
+
 
     var nextState = currentState
     when (currentState) {
@@ -425,7 +428,7 @@ class Elevator(val io: ElevatorIO) {
     if (forwardLimitReached && setpoint.position > inputs.elevatorPosition ||
       reverseLimitReached && setpoint.position < inputs.elevatorPosition
     ) {
-      io.setOutputVoltage(0.volts)
+      io.setOutputVoltage(0.0.volts)
     } else {
       io.setPosition(setpoint.position, feedforward)
     }

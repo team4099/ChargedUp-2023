@@ -135,8 +135,8 @@ object ElevatorIONeo : ElevatorIO {
       leaderSensor.positionToRawUnits(
         clamp(
           position,
-          ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION,
-          ElevatorConstants.ELEVATOR_SOFTLIMIT_EXTENSION
+          ElevatorConstants.ELEVATOR_SOFT_LIMIT_RETRACTION,
+          ElevatorConstants.ELEVATOR_SOFT_LIMIT_EXTENSION
         )
       ),
       CANSparkMax.ControlType.kPosition

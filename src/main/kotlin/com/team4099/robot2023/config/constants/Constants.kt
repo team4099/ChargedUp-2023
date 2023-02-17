@@ -20,7 +20,6 @@ object Constants {
 
     val LOOP_PERIOD_TIME = 20.milli.seconds
     val POWER_DISTRIBUTION_HUB_ID = 1
-    val USE_TIMING = true
 
     enum class GamePiece {
       CUBE,
@@ -45,6 +44,7 @@ object Constants {
   object Tuning {
 
     const val TUNING_MODE = true
+    const val DEBUGING_MODE = true
     const val SIMULATE_DRIFT = true
     const val DRIFT_CONSTANT = 0.001
 
