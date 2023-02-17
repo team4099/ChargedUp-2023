@@ -89,8 +89,8 @@ class SwerveModuleIOFalcon(
       DrivetrainConstants.STEERING_SUPPLY_CURRENT_LIMIT.inAmperes
     steeringConfiguration.supplyCurrLimit.enable = true
 
-    steeringFalcon.setNeutralMode(NeutralMode.Coast)
-    steeringFalcon.inverted = false
+    steeringFalcon.setNeutralMode(NeutralMode.Brake) // change back to coast maybe?
+    steeringFalcon.inverted = true
     steeringFalcon.configAllSettings(steeringConfiguration)
     steeringFalcon.configAllowableClosedloopError(
       0, steeringSensor.positionToRawUnits(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR)
@@ -134,10 +134,10 @@ class SwerveModuleIOFalcon(
     inputs.steeringStatorCurrent = steeringFalcon.statorCurrent.amps
     inputs.steeringSupplyCurrent = steeringFalcon.statorCurrent.amps
 
-    inputs.drivePosition = -driveSensor.position
+    inputs.drivePosition = driveSensor.position
     inputs.steeringPosition = steeringSensor.position
 
-    inputs.driveVelocity = -driveSensor.velocity
+    inputs.driveVelocity = driveSensor.velocity
     inputs.steeringVelocity = steeringSensor.velocity
 
     inputs.driveTemp = driveFalcon.temperature.celsius

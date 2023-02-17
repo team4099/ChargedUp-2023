@@ -15,6 +15,7 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearAcceleration
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -37,6 +38,7 @@ import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
+import kotlin.random.Random
 
 class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   // Use inverses of gear ratios because our standard is <1 is reduction
@@ -52,6 +54,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   var turnAbsolutePosition =
     (Math.random() * 2.0 * Math.PI).radians // getting a random value that we zero to
   var driveVelocity = 0.0.meters.perSecond
+  var drift: Length = 0.0.meters
 
   private val driveFeedback =
     PIDController(
@@ -95,6 +98,19 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
       turnAbsolutePosition -= (2.0 * Math.PI).radians
     }
 
+    // s = r * theta -> d/2 * rad/s = m/s
+    driveVelocity =
+      (DrivetrainConstants.WHEEL_DIAMETER / 2 * driveMotorSim.angularVelocityRadPerSec).perSecond
+
+    // simming drift
+    var loopCycleDrift = 0.0.meters
+    if (Constants.Tuning.SIMULATE_DRIFT && driveVelocity > 2.0.meters.perSecond) {
+      loopCycleDrift =
+        (Random.nextDouble() * Constants.Tuning.DRIFT_CONSTANT)
+          .meters // 0.0005 is just a nice number that ended up working out for drift
+    }
+    drift += loopCycleDrift
+
     // pi * d * rotations = distance travelled
     inputs.drivePosition =
       inputs.drivePosition +
@@ -105,13 +121,13 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
           Constants.Universal.LOOP_PERIOD_TIME.inSeconds
         )
         .radians
-        .inRotations
+        .inRotations +
+      loopCycleDrift // adding a random amount of drift
     inputs.steeringPosition = turnAbsolutePosition
+    inputs.drift = drift
 
-    // s = r * theta -> d/2 * rad/s = m/s
-    driveVelocity =
-      (DrivetrainConstants.WHEEL_DIAMETER / 2 * driveMotorSim.angularVelocityRadPerSec).perSecond
     inputs.driveVelocity = driveVelocity
+    inputs.steeringVelocity = steerMotorSim.angularVelocityRadPerSec.radians.perSecond
 
     inputs.driveAppliedVoltage = (-1337).volts
     inputs.driveSupplyCurrent = driveMotorSim.currentDrawAmps.amps

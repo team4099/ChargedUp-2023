@@ -67,7 +67,6 @@ configurations.all {
 dependencies {
 	implementation wpi.java.deps.wpilib()
 	implementation wpi.java.vendor.java()
-	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
 
 	roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
 	roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
@@ -85,7 +84,8 @@ dependencies {
 
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 
-	implementation 'com.github.team4099:FalconUtils:1.1.11'
+	implementation 'com.github.team4099:FalconUtils:1.1.12'
+	implementation 'com.google.code.gson:gson:2.10.1'
 
 	// We need to add the Kotlin stdlib in order to use most Kotlin language features.
 	// compile "org.jetbrains.kotlin:kotlin-stdlib"
@@ -126,7 +126,7 @@ spotless {
 		// by default the target is every '.kt' and '.kts` file in the java sourcesets
 		target fileTree(".") {
 			include "**/*.kt"
-			exclude "**/BuildConstants.kt", "**/build/**"
+			exclude "**/BuildConstants.kt", "**/build/**", "src/main/kotlin/com/team4099/lib/sim/**"
 		}
 		ktfmt()
 		ktlint().userData(['max_line_length': '120', 'insert_final_newline': 'true', 'indent_size': '2', 'continuation_indent_size': '2'])
@@ -137,9 +137,20 @@ wrapper {
 	gradleVersion = '7.3.3'
 }
 
+// Configure jar and deploy tasks
+deployArtifact.jarTask = jar
+wpi.java.configureExecutableTasks(jar)
+wpi.java.configureTestTasks(test)
+
+// Configure string concat to always inline compile
+tasks.withType(JavaCompile) {
+	options.compilerArgs.add "-XDstringConcat=inline"
+}
+
 compileKotlin {
 	kotlinOptions {
 		freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+		jvmTarget="17"
 	}
 }
 

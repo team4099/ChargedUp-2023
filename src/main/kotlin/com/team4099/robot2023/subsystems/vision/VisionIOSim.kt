@@ -1,13 +1,17 @@
 package com.team4099.robot2023.subsystems.vision
 
-import org.photonvision.PhotonCamera
-import org.photonvision.SimPhotonCamera
+import com.team4099.robot2023.config.constants.VisionConstants
+import com.team4099.robot2023.subsystems.vision.camera.Camera
+import com.team4099.robot2023.subsystems.vision.camera.CameraIOSim
 
 object VisionIOSim : VisionIO {
-
-  val camera1: PhotonCamera = SimPhotonCamera("")
-
-  override fun updateInputs(inputs: VisionIO.VisionInputs) {
-    super.updateInputs(inputs)
-  }
+  override val visionCameras: List<Camera>
+    get() =
+      listOf(
+        Camera(
+          CameraIOSim(
+            VisionConstants.CAMERA_TRANSFORMS[0], VisionConstants.FRONT_CAMERA_NAME
+          )
+        )
+      )
 }

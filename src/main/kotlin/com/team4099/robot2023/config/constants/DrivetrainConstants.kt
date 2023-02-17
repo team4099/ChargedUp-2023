@@ -27,6 +27,10 @@ object DrivetrainConstants {
   val DRIVETRAIN_LENGTH = 22.750.inches
   val DRIVETRAIN_WIDTH = 22.750.inches
 
+  val DOCKING_GYRO_SETPOINT = 0.0.degrees
+  val DOCKING_GYRO_TOLERANCE = 2.5.degrees
+  val DOCKING_TIME_THRESHOLD = 1.0.seconds
+
   val DRIVE_SETPOINT_MAX = 15.feet.perSecond
   val TURN_SETPOINT_MAX =
     (DRIVE_SETPOINT_MAX.inMetersPerSecond / DRIVETRAIN_LENGTH.inMeters / 2 * sqrt(2.0))
@@ -65,10 +69,10 @@ object DrivetrainConstants {
   val DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT = 80.0.amps
   val DRIVE_STATOR_TRIGGER_THRESHOLD_TIME = 1.0.seconds
 
-  val FRONT_LEFT_MODULE_ZERO = 2.687684.radians
-  val FRONT_RIGHT_MODULE_ZERO = 3.274.radians
-  val BACK_RIGHT_MODULE_ZERO = 4.608515.radians
-  val BACK_LEFT_MODULE_ZERO = 5.204072.radians
+  val FRONT_LEFT_MODULE_ZERO = 5.834.radians
+  val FRONT_RIGHT_MODULE_ZERO = 0.083.radians
+  val BACK_LEFT_MODULE_ZERO = 2.059.radians
+  val BACK_RIGHT_MODULE_ZERO = 1.458.radians
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
@@ -79,10 +83,23 @@ object DrivetrainConstants {
     val AUTO_POS_KD =
       (0.75.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
 
+    val AUTO_THETA_ALLOWED_ERROR = 3.degrees
+
     val AUTO_THETA_PID_KP = 7.6.degrees.perSecond / 1.degrees
     val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val AUTO_THETA_PID_KD =
       (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+
+    val SIM_AUTO_THETA_PID_KP = 7.degrees.perSecond / 1.degrees
+    val SIM_AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
+    val SIM_AUTO_THETA_PID_KD =
+      (0.5.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+
+    val AUTO_LEVEL_KP = 2.0.meters.perSecond / 1.0.degrees // tune this
+    val AUTO_LEVEL_KI = 2.0.meters.perSecond / (1.0.degrees * 1.seconds) // tune this
+    val AUTO_LEVEL_KD = 2.0.meters.perSecond / (1.0.degrees.perSecond) // tune this
+    val AUTO_LEVEL_MAX_VEL_SETPOINT = 5.degrees.perSecond
+    val AUTO_LEVEL_MAX_ACCEL_SETPOINT = 3.degrees.perSecond.perSecond
 
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
