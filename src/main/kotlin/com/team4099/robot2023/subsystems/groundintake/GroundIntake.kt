@@ -8,7 +8,11 @@ import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ArmFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Radian
@@ -197,6 +201,8 @@ class GroundIntake(private val io: GroundIntakeIO) {
     }
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
+
+    Logger.getInstance().recordOutput("SimulatedMechanisms/GroundIntake", Pose3d(0.1.meters, 0.3575.meters, 0.215.meters, Rotation3d(0.0.degrees, inputs.armPosition, 0.0.degrees)).pose3d)
 
     Logger.getInstance().recordOutput("GroundIntake/currentState", currentState.name)
 

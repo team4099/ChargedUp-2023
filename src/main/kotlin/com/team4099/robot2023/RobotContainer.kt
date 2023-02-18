@@ -114,7 +114,8 @@ object RobotContainer {
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
     ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.prepscoreConeHighCommand())
-    ControlBoard.extendArm.whileTrue(superstructure.scoreConeHighCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeStowedDownCommand())
+    ControlBoard.retractArm.whileTrue(superstructure.groundIntakeStowedUpCommand())
 
     //
     // ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())
