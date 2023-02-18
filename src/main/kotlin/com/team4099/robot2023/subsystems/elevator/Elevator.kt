@@ -14,13 +14,21 @@ import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.cos
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
@@ -32,6 +40,7 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
+import java.lang.Math.sin
 import com.team4099.robot2023.subsystems.superstructure.Request.ElevatorRequest as ElevatorRequest
 
 class Elevator(val io: ElevatorIO) {
@@ -172,7 +181,43 @@ class Elevator(val io: ElevatorIO) {
         Pair({ it.inInches }, { it.inches })
       )
 
-    // TODO add ground intake height for elevator
+    val xPos = LoggedTunableValue(
+      "Elevator/xPos",
+      0.0.meters,
+    )
+    val yPos = LoggedTunableValue(
+      "Elevator/yPos",
+      0.0.meters,
+    )
+    val zPos = LoggedTunableValue(
+      "Elevator/zPos",
+      0.0.meters,
+    )
+
+    val thetaPos = LoggedTunableValue(
+      "Elevator/thetaPos",
+      0.0.degrees,
+      Pair({it.inDegrees}, {it.degrees})
+    )
+
+    val x1Pos = LoggedTunableValue(
+      "Elevator/x1Pos",
+      0.0.meters,
+    )
+    val y1Pos = LoggedTunableValue(
+      "Elevator/y1Pos",
+      0.0.meters,
+    )
+    val z1Pos = LoggedTunableValue(
+      "Elevator/z1Pos",
+      0.0.meters,
+    )
+
+    val theta1Pos = LoggedTunableValue(
+      "Elevator/theta1Pos",
+      ElevatorConstants.ELEVATOR_ANGLE,
+      Pair({it.inDegrees}, {it.degrees})
+    )
   }
 
   val forwardLimitReached: Boolean
@@ -637,7 +682,7 @@ class Elevator(val io: ElevatorIO) {
   fun updateMech2d() {
     // updating carriage attachment based on height of elevator
     val secondStagePosition =
-      clamp(inputs.elevatorPosition, 0.0.inches, ElevatorConstants.FIRST_STAGE_HEIHT)
+      clamp(inputs.elevatorPosition, 0.0.inches, ElevatorConstants.FIRST_STAGE_HEIGHT)
 
     val carriagePosition =
       clamp(

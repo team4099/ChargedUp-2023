@@ -39,7 +39,7 @@ object ElevatorConstants {
   val SIM_KI = 0.0.volts / (1.inches * 1.seconds)
   val SIM_KD = 0.25.volts / (1.inches.perSecond)
 
-  val ELEVATOR_ANGLE = 51.68.degrees
+  val ELEVATOR_ANGLE = 49.678.degrees
 
   val SIM_ELEVATOR_KS = 0.0.volts
   val REAL_ELEVATOR_KS = 0.0.volts // TODO tune
@@ -69,7 +69,7 @@ object ElevatorConstants {
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION = 45.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION = 5.inches
 
-  val FIRST_STAGE_HEIHT = 28.inches
+  val FIRST_STAGE_HEIGHT = 25.05.inches
   val SECOND_STAGE_HEIGHT = 24.inches
 
   // TODO(do tests to figure out what these values should be)

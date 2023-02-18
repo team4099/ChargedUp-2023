@@ -75,7 +75,7 @@ object MechanismSimConstants {
     firstStageAttachment.append(
       MechanismLigament2d(
         "Elevator First Stage",
-        ElevatorConstants.FIRST_STAGE_HEIHT.inInches,
+        ElevatorConstants.FIRST_STAGE_HEIGHT.inInches,
         180.0 - ElevatorConstants.ELEVATOR_ANGLE.inDegrees,
         15.0,
         Color8Bit(Color.kOrange)

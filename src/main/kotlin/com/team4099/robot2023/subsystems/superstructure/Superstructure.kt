@@ -1,7 +1,9 @@
 package com.team4099.robot2023.subsystems.superstructure
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.config.constants.NodeTier
@@ -11,9 +13,16 @@ import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.volts
 import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRequest as SuperstructureRequest
 
@@ -22,6 +31,25 @@ class Superstructure(
   private val groundIntake: GroundIntake,
   private val manipulator: Manipulator
 ) : SubsystemBase() {
+
+  val x1Pos = LoggedTunableValue(
+    "Superstructure/x1Pos",
+    0.0.meters,
+  )
+  val y1Pos = LoggedTunableValue(
+    "Superstructure/y1Pos",
+    0.0.meters,
+  )
+  val z1Pos = LoggedTunableValue(
+    "Superstructure/z1Pos",
+    0.0.meters,
+  )
+
+  val tunableThehta = LoggedTunableValue(
+    "Superstructure/tunableThehta",
+    0.0.degrees,
+    Pair({it.inDegrees}, {it.degrees})
+  )
 
   var currentRequest: SuperstructureRequest =
     SuperstructureRequest.Idle()
@@ -87,6 +115,29 @@ class Superstructure(
     Logger.getInstance()
       .recordOutput("Superstructure/lastTransitionTime", lastTransitionTime.inSeconds)
 
+    Logger.getInstance().recordOutput("SimulatedMechanisms/0", Pose3d(0.1016.meters, 0.0.meters, 0.211550.meters, Rotation3d(0.0.degrees, -groundIntake.inputs.armPosition, 0.0.degrees)).pose3d)
+
+    if (elevator.inputs.elevatorPosition >= ElevatorConstants.FIRST_STAGE_HEIGHT){
+      Logger.getInstance().recordOutput("SimulatedMechanisms/1", Pose3d().transformBy(Transform3d(Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition - ElevatorConstants.FIRST_STAGE_HEIGHT).rotateBy(
+        Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
+      ).pose3d)
+    } else {
+      Logger.getInstance().recordOutput("SimulatedMechanisms/1", Pose3d().transformBy(Transform3d(Translation3d(0.0.inches, 0.0.inches, 0.0.inches).rotateBy(
+        Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
+      ).pose3d)
+    }
+
+    Logger.getInstance().recordOutput("SimulatedMechanisms/2", Pose3d().transformBy(Transform3d(Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition).rotateBy(
+      Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
+    ).pose3d)
+
+    Logger.getInstance().recordOutput("SimulatedMechanisms/3", Pose3d(-0.15.meters + manipulator.inputs.armPosition, 0.05.meters, 0.5825.meters, Rotation3d()).transformBy(
+      Transform3d(
+        Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition).rotateBy(
+      Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
+    ).pose3d)
+
+
     var nextState = currentState
     when (currentState) {
       SuperstructureStates.UNINITIALIZED -> {
@@ -124,7 +175,7 @@ class Superstructure(
         } else {
           groundIntake.currentRequest =
             Request.GroundIntakeRequest.TargetingPosition(
-              GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
+              GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
               GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
             )
         }
@@ -567,7 +618,7 @@ class Superstructure(
     val returnCommand = runOnce {
       currentRequest =
         SuperstructureRequest.PrepScore(
-          Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
+          Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.MID
         )
     }.until { currentState == SuperstructureStates.SCORE_PREP }
 

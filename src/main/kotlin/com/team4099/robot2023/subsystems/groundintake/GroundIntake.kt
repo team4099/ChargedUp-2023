@@ -202,8 +202,6 @@ class GroundIntake(private val io: GroundIntakeIO) {
 
     Logger.getInstance().processInputs("GroundIntake", inputs)
 
-    Logger.getInstance().recordOutput("SimulatedMechanisms/GroundIntake", Pose3d(0.1.meters, 0.3575.meters, 0.215.meters, Rotation3d(0.0.degrees, inputs.armPosition, 0.0.degrees)).pose3d)
-
     Logger.getInstance().recordOutput("GroundIntake/currentState", currentState.name)
 
     Logger.getInstance()
