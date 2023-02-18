@@ -81,9 +81,10 @@ object Constants {
     const val BACK_LEFT_ANALOG_POTENTIOMETER = 3
   }
 
+  // leader is right motor and follower is left
   object Elevator {
-    const val LEADER_MOTOR_ID = 1337
-    const val FOLLOWER_MOTOR_ID = 1337
+    const val LEADER_MOTOR_ID = 42
+    const val FOLLOWER_MOTOR_ID = 41
   }
 
   object Gyro {

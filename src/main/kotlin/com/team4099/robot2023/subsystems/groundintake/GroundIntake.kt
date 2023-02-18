@@ -8,11 +8,7 @@ import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ArmFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.AngularVelocity
-import org.team4099.lib.units.base.inches
-import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Radian

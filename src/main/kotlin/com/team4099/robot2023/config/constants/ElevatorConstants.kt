@@ -25,8 +25,7 @@ object ElevatorConstants {
   const val GEAR_RATIO = (25.0 / 12.0)
   val CARRIAGE_MASS = 10.pounds
 
-  // TODO(check inversion)
-  const val LEFT_MOTOR_INVERTED = true
+  const val LEFT_MOTOR_INVERTED = false
   const val RIGHT_MOTOR_INVERTED = !LEFT_MOTOR_INVERTED
 
   val RAMP_RATE = 0.5.percent.perSecond

@@ -14,10 +14,6 @@ import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
-import org.team4099.lib.geometry.Pose3d
-import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
@@ -28,7 +24,6 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.inVoltsPerInch
 import org.team4099.lib.units.derived.inVoltsPerInchPerSecond
@@ -181,43 +176,47 @@ class Elevator(val io: ElevatorIO) {
         Pair({ it.inInches }, { it.inches })
       )
 
-    val xPos = LoggedTunableValue(
-      "Elevator/xPos",
-      0.0.meters,
-    )
-    val yPos = LoggedTunableValue(
-      "Elevator/yPos",
-      0.0.meters,
-    )
-    val zPos = LoggedTunableValue(
-      "Elevator/zPos",
-      0.0.meters,
-    )
+    val xPos =
+      LoggedTunableValue(
+        "Elevator/xPos",
+        0.0.meters,
+      )
+    val yPos =
+      LoggedTunableValue(
+        "Elevator/yPos",
+        0.0.meters,
+      )
+    val zPos =
+      LoggedTunableValue(
+        "Elevator/zPos",
+        0.0.meters,
+      )
 
-    val thetaPos = LoggedTunableValue(
-      "Elevator/thetaPos",
-      0.0.degrees,
-      Pair({it.inDegrees}, {it.degrees})
-    )
+    val thetaPos =
+      LoggedTunableValue("Elevator/thetaPos", 0.0.degrees, Pair({ it.inDegrees }, { it.degrees }))
 
-    val x1Pos = LoggedTunableValue(
-      "Elevator/x1Pos",
-      0.0.meters,
-    )
-    val y1Pos = LoggedTunableValue(
-      "Elevator/y1Pos",
-      0.0.meters,
-    )
-    val z1Pos = LoggedTunableValue(
-      "Elevator/z1Pos",
-      0.0.meters,
-    )
+    val x1Pos =
+      LoggedTunableValue(
+        "Elevator/x1Pos",
+        0.0.meters,
+      )
+    val y1Pos =
+      LoggedTunableValue(
+        "Elevator/y1Pos",
+        0.0.meters,
+      )
+    val z1Pos =
+      LoggedTunableValue(
+        "Elevator/z1Pos",
+        0.0.meters,
+      )
 
-    val theta1Pos = LoggedTunableValue(
-      "Elevator/theta1Pos",
-      ElevatorConstants.ELEVATOR_ANGLE,
-      Pair({it.inDegrees}, {it.degrees})
-    )
+    val theta1Pos =
+      LoggedTunableValue(
+        "Elevator/theta1Pos",
+        ElevatorConstants.ELEVATOR_ANGLE,
+        Pair({ it.inDegrees }, { it.degrees })
+      )
   }
 
   val forwardLimitReached: Boolean
@@ -349,12 +348,13 @@ class Elevator(val io: ElevatorIO) {
     Logger.getInstance()
       .recordOutput("Elevator/currentRequest", currentRequest.javaClass.simpleName)
 
-    if (Constants.Tuning.DEBUGING_MODE){
+    if (Constants.Tuning.DEBUGING_MODE) {
       Logger.getInstance().recordOutput("Elevator/isHomed", isHomed)
 
       Logger.getInstance().recordOutput("Elevator/isAtTargetPosition", isAtTargetedPosition)
       Logger.getInstance().recordOutput("Elevator/isStowed", isStowed)
-      Logger.getInstance().recordOutput("Elevator/lastGeneratedAt", timeProfileGeneratedAt.inSeconds)
+      Logger.getInstance()
+        .recordOutput("Elevator/lastGeneratedAt", timeProfileGeneratedAt.inSeconds)
 
       Logger.getInstance()
         .recordOutput("Elevator/elevatorPositionTarget", elevatorPositionTarget.inInches)
@@ -375,7 +375,6 @@ class Elevator(val io: ElevatorIO) {
       Logger.getInstance().recordOutput("Elevator/forwardLimitReached", forwardLimitReached)
       Logger.getInstance().recordOutput("Elevator/reverseLimitReached", reverseLimitReached)
     }
-
 
     var nextState = currentState
     when (currentState) {

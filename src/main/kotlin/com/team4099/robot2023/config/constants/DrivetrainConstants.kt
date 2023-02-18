@@ -61,7 +61,9 @@ object DrivetrainConstants {
   const val DRIVE_SENSOR_CPR = 2048
   const val STEERING_SENSOR_CPR = 2048
 
-  val DRIVE_SENSOR_GEAR_RATIO = ((50.0.driven / 14.0.driving) * (17.0.driven / 27.0.driving) * (45.0.driven / 15.0.driving)).gearRatio
+  val DRIVE_SENSOR_GEAR_RATIO =
+    ((50.0.driven / 14.0.driving) * (17.0.driven / 27.0.driving) * (45.0.driven / 15.0.driving))
+      .gearRatio
   val STEERING_SENSOR_GEAR_RATIO = (150.0.driven / 7.0.driving).gearRatio
 
   val ALLOWED_STEERING_ANGLE_ERROR = 1.degrees

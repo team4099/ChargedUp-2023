@@ -12,11 +12,6 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
-import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.VisionIO
-import com.team4099.robot2023.subsystems.vision.VisionIOSim
-import edu.wpi.first.math.VecBuilder
-import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIONavx
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
@@ -27,6 +22,7 @@ import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
+import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.team4099.lib.smoothDeadband
@@ -34,14 +30,14 @@ import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
   private val drivetrain: Drivetrain
-//  private val vision: Vision
+  //  private val vision: Vision
   private val superstructure: Superstructure
 
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
-//      vision = Vision(object : VisionIO {})
+      //      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
@@ -57,7 +53,7 @@ object RobotContainer {
           GroundIntake(GroundIntakeIOSim),
           Manipulator(ManipulatorIOSim)
         )
-//       vision = Vision(VisionIOSim)
+      //       vision = Vision(VisionIOSim)
     }
   }
 
@@ -72,8 +68,8 @@ object RobotContainer {
       )
   }
 
-//  val measurementsWithTimestamps
-//    get() = vision.visionMeasurements
+  //  val measurementsWithTimestamps
+  //    get() = vision.visionMeasurements
 
   fun addVisionMeasurement(visionMeasurement: VisionMeasurement) {
     drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(

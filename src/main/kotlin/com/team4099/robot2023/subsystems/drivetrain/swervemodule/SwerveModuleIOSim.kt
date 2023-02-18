@@ -29,7 +29,6 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inRadians
@@ -46,11 +45,17 @@ import kotlin.random.Random
 class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   // Use inverses of gear ratios because our standard is <1 is reduction
   private val driveMotorSim: FlywheelSim =
-    FlywheelSim(DCMotor.getNEO(1), DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO.asDrivingOverDriven, DrivetrainConstants.DRIVE_WHEEL_INERTIA.inKilogramsMeterSquared)
+    FlywheelSim(
+      DCMotor.getNEO(1),
+      DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO.asDrivingOverDriven,
+      DrivetrainConstants.DRIVE_WHEEL_INERTIA.inKilogramsMeterSquared
+    )
 
   private val steerMotorSim =
     FlywheelSim(
-      DCMotor.getNEO(1), DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO.asDrivingOverDriven, DrivetrainConstants.STEERING_WHEEL_INERTIA.inKilogramsMeterSquared
+      DCMotor.getNEO(1),
+      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO.asDrivingOverDriven,
+      DrivetrainConstants.STEERING_WHEEL_INERTIA.inKilogramsMeterSquared
     )
 
   var turnRelativePosition = 0.0.radians

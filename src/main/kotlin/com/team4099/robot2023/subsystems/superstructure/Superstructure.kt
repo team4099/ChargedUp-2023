@@ -32,45 +32,46 @@ class Superstructure(
   private val manipulator: Manipulator
 ) : SubsystemBase() {
 
-  val x1Pos = LoggedTunableValue(
-    "Superstructure/x1Pos",
-    0.0.meters,
-  )
-  val y1Pos = LoggedTunableValue(
-    "Superstructure/y1Pos",
-    0.0.meters,
-  )
-  val z1Pos = LoggedTunableValue(
-    "Superstructure/z1Pos",
-    0.0.meters,
-  )
+  val x1Pos =
+    LoggedTunableValue(
+      "Superstructure/x1Pos",
+      0.0.meters,
+    )
+  val y1Pos =
+    LoggedTunableValue(
+      "Superstructure/y1Pos",
+      0.0.meters,
+    )
+  val z1Pos =
+    LoggedTunableValue(
+      "Superstructure/z1Pos",
+      0.0.meters,
+    )
 
-  val tunableThehta = LoggedTunableValue(
-    "Superstructure/tunableThehta",
-    0.0.degrees,
-    Pair({it.inDegrees}, {it.degrees})
-  )
+  val tunableThehta =
+    LoggedTunableValue(
+      "Superstructure/tunableThehta", 0.0.degrees, Pair({ it.inDegrees }, { it.degrees })
+    )
 
-  var currentRequest: SuperstructureRequest =
-    SuperstructureRequest.Idle()
+  var currentRequest: SuperstructureRequest = SuperstructureRequest.Idle()
     set(value) {
-        when (value) {
-          is SuperstructureRequest.GroundIntakeCone -> usingGamePiece = GamePiece.CONE
-          is SuperstructureRequest.GroundIntakeCube -> usingGamePiece = GamePiece.CUBE
-          is SuperstructureRequest.DoubleSubstationIntake -> usingGamePiece = value.gamePiece
-          is SuperstructureRequest.SingleSubstationIntake -> usingGamePiece = value.gamePiece
-          is SuperstructureRequest.PrepScore -> {
-            usingGamePiece = value.gamePiece
-            nodeTier = value.nodeTier
-          }
-          is SuperstructureRequest.Score -> {}
-          else -> {
-            usingGamePiece = GamePiece.NONE
-            nodeTier = NodeTier.NONE
-          }
+      when (value) {
+        is SuperstructureRequest.GroundIntakeCone -> usingGamePiece = GamePiece.CONE
+        is SuperstructureRequest.GroundIntakeCube -> usingGamePiece = GamePiece.CUBE
+        is SuperstructureRequest.DoubleSubstationIntake -> usingGamePiece = value.gamePiece
+        is SuperstructureRequest.SingleSubstationIntake -> usingGamePiece = value.gamePiece
+        is SuperstructureRequest.PrepScore -> {
+          usingGamePiece = value.gamePiece
+          nodeTier = value.nodeTier
         }
-        field = value
+        is SuperstructureRequest.Score -> {}
+        else -> {
+          usingGamePiece = GamePiece.NONE
+          nodeTier = NodeTier.NONE
+        }
       }
+      field = value
+    }
 
   var currentState: SuperstructureStates = SuperstructureStates.UNINITIALIZED
 
@@ -115,28 +116,85 @@ class Superstructure(
     Logger.getInstance()
       .recordOutput("Superstructure/lastTransitionTime", lastTransitionTime.inSeconds)
 
-    Logger.getInstance().recordOutput("SimulatedMechanisms/0", Pose3d(0.1016.meters, 0.0.meters, 0.211550.meters, Rotation3d(0.0.degrees, -groundIntake.inputs.armPosition, 0.0.degrees)).pose3d)
+    Logger.getInstance()
+      .recordOutput(
+        "SimulatedMechanisms/0",
+        Pose3d(
+          0.1016.meters,
+          0.0.meters,
+          0.211550.meters,
+          Rotation3d(0.0.degrees, -groundIntake.inputs.armPosition, 0.0.degrees)
+        )
+          .pose3d
+      )
 
-    if (elevator.inputs.elevatorPosition >= ElevatorConstants.FIRST_STAGE_HEIGHT){
-      Logger.getInstance().recordOutput("SimulatedMechanisms/1", Pose3d().transformBy(Transform3d(Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition - ElevatorConstants.FIRST_STAGE_HEIGHT).rotateBy(
-        Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
-      ).pose3d)
+    if (elevator.inputs.elevatorPosition >= ElevatorConstants.FIRST_STAGE_HEIGHT) {
+      Logger.getInstance()
+        .recordOutput(
+          "SimulatedMechanisms/1",
+          Pose3d()
+            .transformBy(
+              Transform3d(
+                Translation3d(
+                  0.0.inches,
+                  0.0.inches,
+                  elevator.inputs.elevatorPosition -
+                    ElevatorConstants.FIRST_STAGE_HEIGHT
+                )
+                  .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+                Rotation3d()
+              )
+            )
+            .pose3d
+        )
     } else {
-      Logger.getInstance().recordOutput("SimulatedMechanisms/1", Pose3d().transformBy(Transform3d(Translation3d(0.0.inches, 0.0.inches, 0.0.inches).rotateBy(
-        Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
-      ).pose3d)
+      Logger.getInstance()
+        .recordOutput(
+          "SimulatedMechanisms/1",
+          Pose3d()
+            .transformBy(
+              Transform3d(
+                Translation3d(0.0.inches, 0.0.inches, 0.0.inches)
+                  .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+                Rotation3d()
+              )
+            )
+            .pose3d
+        )
     }
 
-    Logger.getInstance().recordOutput("SimulatedMechanisms/2", Pose3d().transformBy(Transform3d(Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition).rotateBy(
-      Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
-    ).pose3d)
+    Logger.getInstance()
+      .recordOutput(
+        "SimulatedMechanisms/2",
+        Pose3d()
+          .transformBy(
+            Transform3d(
+              Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
+                .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+              Rotation3d()
+            )
+          )
+          .pose3d
+      )
 
-    Logger.getInstance().recordOutput("SimulatedMechanisms/3", Pose3d(-0.15.meters + manipulator.inputs.armPosition, 0.05.meters, 0.5825.meters, Rotation3d()).transformBy(
-      Transform3d(
-        Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition).rotateBy(
-      Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)), Rotation3d())
-    ).pose3d)
-
+    Logger.getInstance()
+      .recordOutput(
+        "SimulatedMechanisms/3",
+        Pose3d(
+          -0.15.meters + manipulator.inputs.armPosition,
+          0.05.meters,
+          0.5825.meters,
+          Rotation3d()
+        )
+          .transformBy(
+            Transform3d(
+              Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
+                .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+              Rotation3d()
+            )
+          )
+          .pose3d
+      )
 
     var nextState = currentState
     when (currentState) {
@@ -286,7 +344,10 @@ class Superstructure(
           )
 
         // Transition
-        if (groundIntake.isAtTargetedPosition && manipulator.isAtTargetedPosition && currentRequest !is SuperstructureRequest.GroundIntakeCube) {
+        if (groundIntake.isAtTargetedPosition &&
+          manipulator.isAtTargetedPosition &&
+          currentRequest !is SuperstructureRequest.GroundIntakeCube
+        ) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
@@ -330,7 +391,9 @@ class Superstructure(
           )
 
         // Transition
-        if (manipulator.isAtTargetedPosition && currentRequest !is SuperstructureRequest.GroundIntakeCone) {
+        if (manipulator.isAtTargetedPosition &&
+          currentRequest !is SuperstructureRequest.GroundIntakeCone
+        ) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCone) {
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP
@@ -345,8 +408,10 @@ class Superstructure(
           )
 
         // Transition
-        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.intakeTime.get()) {
+        if (manipulator.isAtTargetedPosition &&
+          (Clock.fpgaTime - lastTransitionTime) >=
+          Manipulator.TunableManipulatorStates.intakeTime.get()
+        ) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -400,8 +465,10 @@ class Superstructure(
           )
 
         // Transition
-        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.intakeTime.get()) {
+        if (manipulator.isAtTargetedPosition &&
+          (Clock.fpgaTime - lastTransitionTime) >=
+          Manipulator.TunableManipulatorStates.intakeTime.get()
+        ) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -452,7 +519,10 @@ class Superstructure(
         // Outputs
 
         // Transition
-        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >= Manipulator.TunableManipulatorStates.intakeTime.get()) {
+        if (manipulator.isAtTargetedPosition &&
+          (Clock.fpgaTime - lastTransitionTime) >=
+          Manipulator.TunableManipulatorStates.intakeTime.get()
+        ) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -465,7 +535,10 @@ class Superstructure(
         // Outputs
 
         // Transition
-        if (manipulator.isAtTargetedPosition && (Clock.fpgaTime - lastTransitionTime) >= Manipulator.TunableManipulatorStates.intakeTime.get()) {
+        if (manipulator.isAtTargetedPosition &&
+          (Clock.fpgaTime - lastTransitionTime) >=
+          Manipulator.TunableManipulatorStates.intakeTime.get()
+        ) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -516,7 +589,7 @@ class Superstructure(
 
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(scoreHeight)
 
-          if (elevator.isAtTargetedPosition){
+          if (elevator.isAtTargetedPosition) {
             val extension =
               when (nodeTier) {
                 NodeTier.HYBRID -> Manipulator.TunableManipulatorStates.lowScoreExtension.get()
@@ -562,7 +635,7 @@ class Superstructure(
         ) {
           nextState = SuperstructureStates.SCORE_CLEANUP
           currentRequest = SuperstructureRequest.Idle()
-        } else if (currentRequest !is SuperstructureRequest.Score){
+        } else if (currentRequest !is SuperstructureRequest.Score) {
           nextState = SuperstructureStates.SCORE_CLEANUP
         }
       }
@@ -592,14 +665,18 @@ class Superstructure(
         ) {
           nextState = SuperstructureStates.SCORE_CLEANUP
           currentRequest = SuperstructureRequest.Idle()
-        } else if (currentRequest !is SuperstructureRequest.Score){
+        } else if (currentRequest !is SuperstructureRequest.Score) {
           nextState = SuperstructureStates.SCORE_CLEANUP
         }
       }
       SuperstructureStates.SCORE_CLEANUP -> {
-        manipulator.currentRequest = Request.ManipulatorRequest.TargetingPosition(Manipulator.TunableManipulatorStates.minExtension.get(), ManipulatorConstants.IDLE_VOLTAGE)
+        manipulator.currentRequest =
+          Request.ManipulatorRequest.TargetingPosition(
+            Manipulator.TunableManipulatorStates.minExtension.get(),
+            ManipulatorConstants.IDLE_VOLTAGE
+          )
 
-        if (manipulator.isAtTargetedPosition){
+        if (manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -615,19 +692,24 @@ class Superstructure(
 
   // Superstructure Commands
   fun prepscoreConeHighCommand(): CommandBase {
-    val returnCommand = runOnce {
-      currentRequest =
-        SuperstructureRequest.PrepScore(
-          Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.MID
-        )
-    }.until { currentState == SuperstructureStates.SCORE_PREP }
+    val returnCommand =
+      runOnce {
+        currentRequest =
+          SuperstructureRequest.PrepScore(
+            Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.MID
+          )
+      }
+        .until { currentState == SuperstructureStates.SCORE_PREP }
 
     returnCommand.name = "PrepscoreConeHighCommand"
     return returnCommand
   }
 
   fun scoreConeHighCommand(): CommandBase {
-    val returnCommand = runOnce { currentRequest = SuperstructureRequest.Score() }. until { currentState == SuperstructureStates.SCORE_CONE}
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
+        currentState == SuperstructureStates.SCORE_CONE
+      }
 
     returnCommand.name = "ScoreConeHighCommand"
     return returnCommand

@@ -60,8 +60,8 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
     followerSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
 
-    leaderSparkMax.inverted = ElevatorConstants.LEFT_MOTOR_INVERTED
-    followerSparkMax.inverted = ElevatorConstants.RIGHT_MOTOR_INVERTED
+    leaderSparkMax.inverted = ElevatorConstants.RIGHT_MOTOR_INVERTED
+    followerSparkMax.inverted = ElevatorConstants.LEFT_MOTOR_INVERTED
 
     leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
     followerSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
