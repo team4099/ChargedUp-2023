@@ -66,8 +66,8 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
     followerSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
 
-    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
-    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
+//    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
+//    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
 
     // makes follower motor output exact same power as leader
     followerSparkMax.follow(leaderSparkMax)
@@ -111,13 +111,7 @@ object ElevatorIONeo : ElevatorIO {
   override fun setOutputVoltage(voltage: ElectricalPotential) {
     // divide by 2 cause full power elevator is scary
     leaderSparkMax.setVoltage(
-      clamp(
-        voltage,
-        -ElevatorConstants.VOLTAGE_COMPENSATION / 2,
-        ElevatorConstants.VOLTAGE_COMPENSATION / 2
-      )
-        .inVolts
-    )
+      voltage.inVolts)
   }
 
   /**

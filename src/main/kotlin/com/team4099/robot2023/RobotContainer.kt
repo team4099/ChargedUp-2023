@@ -41,8 +41,8 @@ object RobotContainer {
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIONeo),
-          Manipulator(ManipulatorIONeo)
+          GroundIntake(GroundIntakeIOSim),
+          Manipulator(ManipulatorIOSim)
         )
     } else {
       // Simulation implementations
@@ -66,6 +66,8 @@ object RobotContainer {
         { ControlBoard.robotOriented },
         drivetrain
       )
+
+    superstructure.defaultCommand = InstantCommand({}, superstructure)
   }
 
   //  val measurementsWithTimestamps
@@ -79,7 +81,6 @@ object RobotContainer {
         0.1, 0.1, 1.0
       ) // TODO figure out an actual formula for stdev to make convergence speedy
     )
-    superstructure.defaultCommand = InstantCommand({}, superstructure)
   }
 
   fun zeroSteering() {
@@ -110,8 +111,8 @@ object RobotContainer {
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
     ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.prepscoreConeHighCommand())
-    ControlBoard.extendArm.whileTrue(superstructure.prepscoreConeHighCommand())
-    ControlBoard.retractArm.whileTrue(superstructure.scoreConeHighCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.elevatorGoToMidConeNodeCommand())
+    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 
     //
     // ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())

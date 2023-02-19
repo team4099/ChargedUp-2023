@@ -41,8 +41,7 @@ interface ElevatorIO {
     override fun toLog(table: LogTable) {
       table?.put("elevatorPositionInches", elevatorPosition.inInches)
       table?.put("elevatorVelocityInchesPerSec", elevatorVelocity.inInchesPerSecond)
-      table?.put("elevatorAppliedVolts", leaderAppliedVoltage.inVolts)
-      table?.put("elevatorAppliedVolts", followerAppliedVoltage.inVolts)
+      table?.put("elevatorLeaderAppliedVolts", leaderAppliedVoltage.inVolts)
       table?.put("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)
       table?.put("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)
       table?.put("elevatorLeaderCurrentAmps", leaderSupplyCurrent.inAmperes)

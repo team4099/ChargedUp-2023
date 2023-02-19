@@ -4,6 +4,7 @@ import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
@@ -26,7 +27,7 @@ class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
 
   var appliedVolts = ElevatorConstants.ELEVATOR_KG
   var sim_step = 0.001.volts
-  var real_step = 0.01.volts
+  var real_step = 0.1.volts
 
   var moveTolerance = 0.1.inches.perSecond
 
@@ -38,16 +39,18 @@ class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
   override fun execute() {
     elevator.setOutputVoltage(appliedVolts)
 
-    if ((elevator.inputs.elevatorVelocity - 0.0.inches.perSecond).absoluteValue > moveTolerance) {
-      hasMoved = true
-      println(appliedVolts.inVolts - ElevatorConstants.ELEVATOR_KG.inVolts)
-    }
+//    if ((elevator.inputs.elevatorVelocity - 0.0.inches.perSecond).absoluteValue > moveTolerance) {
+//      hasMoved = true
+//      println(appliedVolts.inVolts - ElevatorConstants.ELEVATOR_KG.inVolts)
+//    }
 
     if (RobotBase.isReal()) {
       appliedVolts += real_step
     } else {
       appliedVolts += sim_step
     }
+
+    Logger.getInstance().recordOutput("Elevator/characterizationVolts", appliedVolts.inVolts)
   }
 
   override fun isFinished(): Boolean {

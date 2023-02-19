@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.superstructure
 
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.robot2023.commands.elevator.ElevatorCharacterizeCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.GamePiece
@@ -726,8 +727,12 @@ class Superstructure(
     return returnCommand
   }
 
+  fun elevatorCharacterizeCommand(): CommandBase{
+    return ElevatorCharacterizeCommand(elevator)
+  }
+
   fun elevatorOpenLoopExtendCommand(): CommandBase {
-    val returnCommand = runOnce {
+    val returnCommand = run {
       elevator.currentRequest =
         Request.ElevatorRequest.OpenLoop(
           Elevator.TunableElevatorHeights.openLoopExtendVoltage.get()

@@ -26,7 +26,7 @@ object ElevatorConstants {
   val CARRIAGE_MASS = 10.pounds
 
   const val LEFT_MOTOR_INVERTED = false
-  const val RIGHT_MOTOR_INVERTED = !LEFT_MOTOR_INVERTED
+  const val RIGHT_MOTOR_INVERTED = true
 
   val RAMP_RATE = 0.5.percent.perSecond
 
@@ -47,7 +47,7 @@ object ElevatorConstants {
   val ELEVATOR_KA = 0.1.volts / 1.0.meters.perSecond.perSecond
 
   val VOLTAGE_COMPENSATION = 12.volts
-  val PHASE_CURRENT_LIMIT = 12.amps // TODO tune stator current limit
+  val PHASE_CURRENT_LIMIT = 30.amps // TODO tune stator current limit
 
   // TODO figure out what these should be
   val HOMING_POSITION_THRESHOLD = 30.inches

@@ -72,7 +72,7 @@ class Elevator(val io: ElevatorIO) {
 
     val openLoopExtendVoltage =
       LoggedTunableValue(
-        "Elevator/openLoopExtendVoltage", 12.0.volts, Pair({ it.inVolts }, { it.volts })
+        "Elevator/openLoopExtendVoltage", 12.volts, Pair({ it.inVolts }, { it.volts })
       )
 
     val openLoopRetractVoltage =
@@ -234,7 +234,7 @@ class Elevator(val io: ElevatorIO) {
       (inputs.elevatorPosition - ElevatorConstants.ELEVATOR_MAX_RETRACTION).absoluteValue <=
         ElevatorConstants.ELEVATOR_TOLERANCE
 
-  var isHomed = false
+  var isHomed = true
 
   var currentState: ElevatorState = ElevatorState.UNINITIALIZED
 
@@ -389,7 +389,7 @@ class Elevator(val io: ElevatorIO) {
         setOutputVoltage(elevatorVoltageTarget)
 
         // Transitions
-        nextState = fromElevatorRequestToState(currentRequest)
+//        nextState = fromElevatorRequestToState(currentRequest)
       }
       ElevatorState.TARGETING_POSITION -> {
         // Outputs
