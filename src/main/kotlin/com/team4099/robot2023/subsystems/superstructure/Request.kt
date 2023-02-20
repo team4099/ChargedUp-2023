@@ -56,6 +56,7 @@ sealed interface Request {
       GroundIntakeRequest
     class OpenLoop(val voltage: ElectricalPotential, val rollerVoltage: ElectricalPotential) :
       GroundIntakeRequest
+    class ZeroArm(): GroundIntakeRequest
   }
 }
 

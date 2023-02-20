@@ -103,10 +103,14 @@ object Robot : LoggedRobot() {
     RobotContainer.mapDefaultCommands()
   }
 
+  override fun disabledExit() {
+    RobotContainer.regenerateProfiles()
+  }
+
   override fun autonomousInit() {
     // autonomousCommand.schedule()
     RobotContainer.setDriveBrakeMode()
-    //    RobotContainer.zeroSteering()
+    RobotContainer.zeroSteering()
     RobotContainer.getAutonomousCommand().schedule()
   }
 
@@ -148,7 +152,8 @@ object Robot : LoggedRobot() {
     RobotContainer.mapTeleopControls()
     // RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.setDriveBrakeMode() // change to coast
-    //    RobotContainer.zeroSteering()
+    RobotContainer.zeroSteering()
+    RobotContainer.zeroArm()
     // autonomousCommand.cancel()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()

@@ -145,7 +145,6 @@ object ManipulatorIONeo : ManipulatorIO {
    * @param feedforward changes voltages to compensate for external forces
    */
   override fun setArmPosition(position: Length, feedforward: ElectricalPotential) {
-    armPIDController.ff = feedforward.inVolts
     armPIDController.setReference(
       armSensor.positionToRawUnits(
         clamp(
@@ -154,7 +153,9 @@ object ManipulatorIONeo : ManipulatorIO {
           ManipulatorConstants.ARM_SOFTLIMIT_EXTENSION
         )
       ),
-      CANSparkMax.ControlType.kPosition
+      CANSparkMax.ControlType.kPosition,
+      0,
+      feedforward.inVolts
     )
   }
 

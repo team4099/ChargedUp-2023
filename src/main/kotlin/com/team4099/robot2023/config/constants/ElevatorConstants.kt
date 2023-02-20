@@ -14,6 +14,9 @@ import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.driven
+import org.team4099.lib.units.derived.driving
+import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -22,17 +25,16 @@ import kotlin.math.PI
 object ElevatorConstants {
 
   const val SENSOR_CPR = 42
-  const val GEAR_RATIO = (25.0 / 12.0)
+  val GEAR_RATIO = (24.0.driven / 12.0.driving).gearRatio
   val CARRIAGE_MASS = 10.pounds
 
-  const val LEFT_MOTOR_INVERTED = false
-  const val RIGHT_MOTOR_INVERTED = true
+  const val FOLLOW_MOTOR_INVERTED = true
 
   val RAMP_RATE = 0.5.percent.perSecond
 
-  val REAL_KP = 1.0.volts / 1.meters
-  val REAL_KI = 0.0.volts / (1.meters * 1.seconds)
-  val REAL_KD = 0.0.volts / (1.meters.perSecond)
+  val REAL_KP = 0.0.volts / 1.inches
+  val REAL_KI = 0.0.volts / (1.inches * 1.seconds)
+  val REAL_KD = 0.0.volts / (1.inches.perSecond)
 
   val SIM_KP = 1.5.volts / 1.inches
   val SIM_KI = 0.0.volts / (1.inches * 1.seconds)
@@ -40,26 +42,32 @@ object ElevatorConstants {
 
   val ELEVATOR_ANGLE = 49.678.degrees
 
-  val SIM_ELEVATOR_KS = 0.0.volts
-  val REAL_ELEVATOR_KS = 0.0.volts // TODO tune
-  val ELEVATOR_KG = 1.1066.volts
-  val ELEVATOR_KV = 1.59.volts / 1.0.meters.perSecond
-  val ELEVATOR_KA = 0.1.volts / 1.0.meters.perSecond.perSecond
+  val SIM_ELEVATOR_KS_SECOND_STAGE = 0.0.volts
+  val REAL_ELEVATOR_KS_SECOND_STAGE = 0.56.volts // TODO tune
+  val ELEVATOR_KG_SECOND_STAGE = 1.1066.volts
+  val ELEVATOR_KV_SECOND_STAGE = 1.59.volts / 1.0.meters.perSecond
+  val ELEVATOR_KA_SECOND_STAGE = 0.1.volts / 1.0.meters.perSecond.perSecond
+
+  val SIM_ELEVATOR_KS_FIRST_STAGE = 0.0.volts
+  val REAL_ELEVATOR_KS_FIRST_STAGE = 0.56.volts
+  val ELEVATOR_KG_FIRST_STAGE = 0.0.volts
+  val ELEVATOR_KV_FIRST_STAGE = 0.037.volts / 1.0.inches.perSecond
+  val ELEVATOR_KA_FIRST_STAGE = 0.0025.volts / 1.0.inches.perSecond.perSecond
 
   val VOLTAGE_COMPENSATION = 12.volts
-  val PHASE_CURRENT_LIMIT = 30.amps // TODO tune stator current limit
+  val PHASE_CURRENT_LIMIT = 80.amps // TODO tune stator current limit
 
   // TODO figure out what these should be
   val HOMING_POSITION_THRESHOLD = 30.inches
-  val HOMING_APPLIED_VOLTAGE = -0.5.volts
-  val HOMING_STALL_CURRENT = 15.amps
+  val HOMING_APPLIED_VOLTAGE = -1.volts
+  val HOMING_STALL_CURRENT = 30.amps
 
   // tooth_width * number_teeth = circumference
   // circumference / 2pi = radius
   val SPOOL_RADIUS = 0.005.meters * 32.0 / (2 * PI)
 
   val MAX_VELOCITY = 50.inches.perSecond
-  val MAX_ACCELERATION = 75.inches.perSecond.perSecond
+  val MAX_ACCELERATION = 150.inches.perSecond.perSecond
 
   val ELEVATOR_MAX_EXTENSION = 52.0.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
@@ -72,7 +80,7 @@ object ElevatorConstants {
   val SECOND_STAGE_HEIGHT = 24.inches
 
   // TODO(do tests to figure out what these values should be)
-  val CUBE_DROP_POSITION_DELTA = 0.0.inches
+  val CUBE_DROP_POSITION_DELTA = 2.0.inches
   val CONE_DROP_POSITION_DELTA = 0.0.inches
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val DOUBLE_SUBSTATION_CONE_OFFSET = 0.0.inches
@@ -115,5 +123,5 @@ object ElevatorConstants {
     }
   }
 
-  val ELEVATOR_TOLERANCE = 1.0.inches
+  val ELEVATOR_TOLERANCE = 1.inches
 }

@@ -6,6 +6,7 @@ import com.team4099.robot2023.commands.drivetrain.AutoLevel
 import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
+import com.team4099.robot2023.commands.elevator.ElevatorKvCharacterizeCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
@@ -41,7 +42,7 @@ object RobotContainer {
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIOSim),
+          GroundIntake(GroundIntakeIONeo),
           Manipulator(ManipulatorIOSim)
         )
     } else {
@@ -67,7 +68,7 @@ object RobotContainer {
         drivetrain
       )
 
-    superstructure.defaultCommand = InstantCommand({}, superstructure)
+//    superstructure.defaultCommand = InstantCommand({}, superstructure)
   }
 
   //  val measurementsWithTimestamps
@@ -83,12 +84,21 @@ object RobotContainer {
     )
   }
 
+  fun zeroArm(){
+    superstructure.groundIntakeZeroArm()
+  }
+
+  fun regenerateProfiles(){
+    superstructure.regenerateProfiles()
+  }
+
   fun zeroSteering() {
     drivetrain.zeroGyroYaw()
   }
 
   fun zeroSensors() {
     drivetrain.zeroSensors()
+    zeroArm()
   }
 
   fun setDriveCoastMode() {
@@ -110,9 +120,9 @@ object RobotContainer {
     //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
-    ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.prepscoreConeHighCommand())
-    ControlBoard.extendArm.whileTrue(superstructure.elevatorGoToMidConeNodeCommand())
-    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.groundIntakeStowedUpCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeStowedDownCommand())
+//    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 
     //
     // ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())
@@ -167,7 +177,7 @@ object RobotContainer {
   //      drivetrain, intake, feeder, shooter, telescopingClimber, pivotClimber
   //    )"
 
-  fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain)
+  fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain, superstructure)
 
   fun mapTunableCommands() {
     //    val commandsTab = Shuffleboard.getTab("TunableCommands")

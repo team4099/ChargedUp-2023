@@ -1,7 +1,9 @@
 package com.team4099.robot2023.auto
 
 import com.team4099.robot2023.auto.mode.TestAutoPath
+import com.team4099.robot2023.commands.elevator.ElevatorKsCharacterizeCommand
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
+import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -29,6 +31,7 @@ object AutonomousSelector {
     //    autoTab.add("Starting Orientation", orientationChooser)
 
     autonomousModeChooser.addOption("Test", AutonomousMode.TEST_AUTO_PATH)
+    autonomousModeChooser.addOption("Characterize Elevator", AutonomousMode.ELEVATOR_CHARACTERIZE)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(5, 2).withPosition(3, 0)
     waitBeforeCommandSlider =
@@ -53,19 +56,22 @@ object AutonomousSelector {
   val secondaryWaitTime: Time
     get() = secondaryWaitInAuto.getDouble(0.0).seconds
 
-  fun getCommand(drivetrain: Drivetrain): CommandBase {
+  fun getCommand(drivetrain: Drivetrain, superstructure: Superstructure): CommandBase {
 
     val mode = autonomousModeChooser.get()
     //    println("${waitTime().inSeconds} wait command")
     when (mode) {
       AutonomousMode.TEST_AUTO_PATH ->
         return WaitCommand(waitTime.inSeconds).andThen(TestAutoPath(drivetrain))
+      AutonomousMode.ELEVATOR_CHARACTERIZE ->
+        return ElevatorKsCharacterizeCommand(superstructure)
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()
   }
 
   private enum class AutonomousMode {
-    TEST_AUTO_PATH
+    TEST_AUTO_PATH,
+    ELEVATOR_CHARACTERIZE
   }
 }

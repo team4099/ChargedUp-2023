@@ -284,7 +284,7 @@ class Manipulator(val io: ManipulatorIO) {
       TrapezoidProfile.State(-1337.inches, -1337.inches.perSecond)
     )
 
-  var isHomed = RobotBase.isSimulation() // fix this pls
+  var isHomed = true // TODO ONCE ROBOT WORKS
 
   val isAtTargetedPosition: Boolean
     get() =
@@ -465,6 +465,13 @@ class Manipulator(val io: ManipulatorIO) {
   fun setRollerPower(voltage: ElectricalPotential) {
     io.setRollerPower(voltage)
     Logger.getInstance().recordOutput("Manipulator/rollerTargetVoltage", voltage.inVolts)
+  }
+
+  fun regenerateProfileNextLoopCycle(){
+    lastArmVoltage = -3337.volts
+    lastArmPositionTarget = -3337.inches
+    lastIntakeSpikeTime = -3337.seconds
+    lastRollerRunTime = -3337.seconds
   }
 
   /**

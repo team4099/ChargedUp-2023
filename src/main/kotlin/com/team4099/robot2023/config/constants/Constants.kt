@@ -103,6 +103,6 @@ object Constants {
   object Intake {
     const val ROLLER_MOTOR_ID = 32
     const val ARM_MOTOR_ID = 31
-    const val REV_ENCODER_PORT = 1
+    const val REV_ENCODER_PORT = 8
   }
 }

@@ -2,6 +2,8 @@ package com.team4099.robot2023.commands.elevator
 
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.superstructure.Request
+import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
@@ -18,42 +20,32 @@ import org.team4099.lib.units.perSecond
  * @property appliedVolts the current amount of volts being applied to the motors
  * @property step the increase in volts per iteration
  */
-class ElevatorCharacterizeCommand(val elevator: Elevator) : CommandBase() {
+class ElevatorKvCharacterizeCommand(val superstructure: Superstructure) : CommandBase() {
   init {
-    //    addRequirements(elevator)
+    addRequirements(superstructure)
   }
 
-  var hasMoved = false
-
-  var appliedVolts = ElevatorConstants.ELEVATOR_KG
+  var appliedVolts = 0.0.volts
   var sim_step = 0.001.volts
-  var real_step = 0.1.volts
-
-  var moveTolerance = 0.1.inches.perSecond
+  var real_step = 0.01.volts
 
   override fun initialize() {
-    hasMoved = false
-    appliedVolts = ElevatorConstants.ELEVATOR_KG
+    appliedVolts = 0.0.volts
+    superstructure.currentRequest = Request.SuperstructureRequest.Tuning()
   }
 
   override fun execute() {
-    elevator.setOutputVoltage(appliedVolts)
-
-//    if ((elevator.inputs.elevatorVelocity - 0.0.inches.perSecond).absoluteValue > moveTolerance) {
-//      hasMoved = true
-//      println(appliedVolts.inVolts - ElevatorConstants.ELEVATOR_KG.inVolts)
-//    }
+    Logger.getInstance().recordOutput("Elevator/appliedVolts", appliedVolts.inVolts)
+    superstructure.elevatorSetVoltage(appliedVolts)
 
     if (RobotBase.isReal()) {
       appliedVolts += real_step
     } else {
       appliedVolts += sim_step
     }
-
-    Logger.getInstance().recordOutput("Elevator/characterizationVolts", appliedVolts.inVolts)
   }
 
   override fun isFinished(): Boolean {
-    return hasMoved
+    return false
   }
 }

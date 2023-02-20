@@ -9,6 +9,8 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ArmFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.AngularVelocity
+import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.Radian
@@ -101,6 +103,8 @@ class GroundIntake(private val io: GroundIntakeIO) {
 
   var rollerVoltageTarget: ElectricalPotential = 0.0.volts
 
+  var isZeroed = false
+
   private var lastArmPositionTarget = 0.0.degrees
 
   private var lastArmVoltage = 0.0.volts
@@ -121,10 +125,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
   var currentState: GroundIntakeState = GroundIntakeState.UNINITIALIZED
 
   var currentRequest: GroundIntakeRequest =
-    GroundIntakeRequest.TargetingPosition(
-      TunableGroundIntakeStates.stowedUpAngle.get(),
-      TunableGroundIntakeStates.neutralVoltage.get()
-    )
+    GroundIntakeRequest.ZeroArm()
     set(value) {
         when (value) {
           is GroundIntakeRequest.OpenLoop -> armVoltageTarget = value.voltage
@@ -203,11 +204,15 @@ class GroundIntake(private val io: GroundIntakeIO) {
     Logger.getInstance()
       .recordOutput("GroundIntake/requestedState", currentRequest.javaClass.simpleName)
 
+    Logger.getInstance().recordOutput("GroundIntake/isZeroed", isZeroed)
+
     if (Constants.Tuning.DEBUGING_MODE) {
       Logger.getInstance()
         .recordOutput(
           "GroundIntake/isAtCommandedState", currentState.equivalentToRequest(currentRequest)
         )
+
+      Logger.getInstance().recordOutput("GroundIntake/timeProfileGeneratedAt", timeProfileGeneratedAt.inSeconds)
 
       Logger.getInstance()
         .recordOutput("GroundIntake/armPositionTarget", armPositionTarget.inDegrees)
@@ -231,6 +236,17 @@ class GroundIntake(private val io: GroundIntakeIO) {
         // Outputs
         // No designated output functionality because targeting position will take care of it next
         // loop cycle
+
+        // Transitions
+        nextState = GroundIntakeState.ZEROING_ARM
+      }
+      GroundIntakeState.ZEROING_ARM -> {
+        zeroArm()
+
+        if ((inputs.armPosition - inputs.armAbsoluteEncoderPosition).absoluteValue <= 1.degrees){
+          isZeroed = true
+          lastArmPositionTarget = -1337.degrees
+        }
 
         // Transitions
         nextState = fromRequestToState(currentRequest)
@@ -259,7 +275,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
             TrapezoidProfile(
               armConstraints,
               TrapezoidProfile.State(armPositionTarget, 0.0.degrees.perSecond),
-              TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
+              TrapezoidProfile.State(inputs.armPosition, 0.0.degrees.perSecond)
             )
           timeProfileGeneratedAt = Clock.fpgaTime
 
@@ -271,11 +287,16 @@ class GroundIntake(private val io: GroundIntakeIO) {
 
         val timeElapsed = Clock.fpgaTime - timeProfileGeneratedAt
 
-        setArmPosition(armProfile.calculate(timeElapsed))
+        val profileOutput = armProfile.calculate(timeElapsed)
+
+        setArmPosition(profileOutput)
         setRollerVoltage(rollerVoltageTarget)
 
         Logger.getInstance()
           .recordOutput("GroundIntake/completedMotionProfile", armProfile.isFinished(timeElapsed))
+
+        Logger.getInstance().recordOutput("GroundIntake/profilePositionDegrees", profileOutput.position.inDegrees)
+        Logger.getInstance().recordOutput("GroundIntake/profileVelocityDegreesPerSecond", profileOutput.velocity.inDegreesPerSecond)
 
         // Transitions
         nextState = fromRequestToState(currentRequest)
@@ -316,6 +337,12 @@ class GroundIntake(private val io: GroundIntakeIO) {
     io.zeroEncoder()
   }
 
+  fun regenerateProfileNextLoopCycle(){
+    lastArmVoltage = -3337.volts
+    lastArmPositionTarget = -3337.degrees
+    lastIntakeRunTime = -3337.seconds
+  }
+
   fun setArmVoltage(voltage: ElectricalPotential) {
     if ((openLoopForwardLimitReached && voltage > 0.0.volts) ||
       (openLoopReverseLimitReached && voltage < 0.0.volts)
@@ -346,11 +373,13 @@ class GroundIntake(private val io: GroundIntakeIO) {
     // When the forward or reverse limit is reached, set the voltage to 0
     // Else move the arm to the setpoint position
     if (isOutOfBounds(setpoint.velocity)) {
-      io.setArmVoltage(armFeedforward.calculate(0.0.degrees, 0.degrees.perSecond))
+      io.setArmVoltage(armFeedforward.calculate(inputs.armPosition, 0.degrees.perSecond))
     } else {
       io.setArmPosition(setpoint.position, feedforward)
     }
 
+    Logger.getInstance().recordOutput("GroundIntake/profileIsOutOfBounds", isOutOfBounds(setpoint.velocity))
+    Logger.getInstance().recordOutput("GroundIntake/armFeedForward", feedforward.inVolts)
     Logger.getInstance().recordOutput("GroundIntake/armTargetPosition", setpoint.position.inDegrees)
     Logger.getInstance()
       .recordOutput("GroundIntake/armTargetVelocity", setpoint.velocity.inDegreesPerSecond)
@@ -364,6 +393,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
   companion object {
     enum class GroundIntakeState {
       UNINITIALIZED,
+      ZEROING_ARM,
       TARGETING_POSITION,
       OPEN_LOOP_REQUEST;
 
@@ -379,6 +409,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
       return when (request) {
         is GroundIntakeRequest.OpenLoop -> GroundIntakeState.OPEN_LOOP_REQUEST
         is GroundIntakeRequest.TargetingPosition -> GroundIntakeState.TARGETING_POSITION
+        is GroundIntakeRequest.ZeroArm -> GroundIntakeState.ZEROING_ARM
       }
     }
   }

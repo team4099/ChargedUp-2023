@@ -17,6 +17,7 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
@@ -29,21 +30,13 @@ object ElevatorIONeo : ElevatorIO {
   private val leaderSensor =
     sparkMaxLinearMechanismSensor(
       leaderSparkMax,
-      ElevatorConstants.GEAR_RATIO,
+      ElevatorConstants.GEAR_RATIO.asDrivenOverDriving,
       ElevatorConstants.SPOOL_RADIUS * 2,
       ElevatorConstants.VOLTAGE_COMPENSATION
     )
 
   private val followerSparkMax =
     CANSparkMax(Constants.Elevator.FOLLOWER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
-
-  private val followerSensor =
-    sparkMaxLinearMechanismSensor(
-      followerSparkMax,
-      ElevatorConstants.GEAR_RATIO,
-      ElevatorConstants.SPOOL_RADIUS * 2,
-      ElevatorConstants.VOLTAGE_COMPENSATION
-    )
 
   private val leaderPIDController: SparkMaxPIDController = leaderSparkMax.pidController
 
@@ -60,17 +53,24 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
     followerSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
 
-    leaderSparkMax.inverted = ElevatorConstants.RIGHT_MOTOR_INVERTED
-    followerSparkMax.inverted = ElevatorConstants.LEFT_MOTOR_INVERTED
+    leaderSparkMax.inverted = true
 
     leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
     followerSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
 
-//    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
-//    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
+    leaderSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
+    followerSparkMax.openLoopRampRate = ElevatorConstants.RAMP_RATE.inPercentOutputPerSecond
+
+    leaderSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
+    followerSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
 
     // makes follower motor output exact same power as leader
-    followerSparkMax.follow(leaderSparkMax)
+    followerSparkMax.follow(leaderSparkMax, ElevatorConstants.FOLLOW_MOTOR_INVERTED)
+
+    leaderPIDController.ff = 0.0
+
+    leaderSparkMax.burnFlash()
+    followerSparkMax.burnFlash()
   }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
@@ -122,9 +122,6 @@ object ElevatorIONeo : ElevatorIO {
    * @param feedforward change in voltage to account for external forces on the system
    */
   override fun setPosition(position: Length, feedforward: ElectricalPotential) {
-
-    leaderPIDController.setFF(feedforward.inVolts)
-
     leaderPIDController.setReference(
       leaderSensor.positionToRawUnits(
         clamp(
@@ -133,7 +130,9 @@ object ElevatorIONeo : ElevatorIO {
           ElevatorConstants.ELEVATOR_SOFT_LIMIT_EXTENSION
         )
       ),
-      CANSparkMax.ControlType.kPosition
+      CANSparkMax.ControlType.kPosition,
+      0,
+      feedforward.inVolts,
     )
   }
 

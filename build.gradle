@@ -151,7 +151,7 @@ compileKotlin {
 	kotlinOptions {
 		freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
 		jvmTarget="17"
-	}
+    }
 }
 
 gversion {

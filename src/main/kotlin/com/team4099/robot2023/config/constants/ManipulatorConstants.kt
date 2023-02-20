@@ -8,10 +8,13 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
+import org.team4099.lib.units.derived.driven
+import org.team4099.lib.units.derived.driving
 import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perSecond
+import kotlin.math.PI
 
 object ManipulatorConstants {
 
@@ -55,14 +58,14 @@ object ManipulatorConstants {
 
   const val SENSOR_CPR = 42.0
 
-  val ARM_GEAR_RATIO = 11.25.gearRatio
+  val ARM_GEAR_RATIO = ((84.0.driven / 29.0.driving) * (60.0.driven / 16.0.driving)).gearRatio
   val ROLLER_GEAR_RATIO = 18.0.gearRatio
 
   // TODO: Change current thresholds
   val CONE_CURRENT_THRESHOLD = 15.amps
   val CUBE_CURRENT_THRESHOLD = 15.amps
 
-  val ARM_SPOOL_RADIUS = 0.581.inches
+  val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
   val ARM_MAX_EXTENSION = 20.inches
   val ARM_MAX_RETRACTION = 0.inches
   val ARM_TOLERANCE = 0.25.inches

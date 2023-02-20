@@ -41,8 +41,28 @@ import com.team4099.robot2023.subsystems.superstructure.Request.ElevatorRequest 
 class Elevator(val io: ElevatorIO) {
   val inputs = ElevatorIO.ElevatorInputs()
 
+  private var elevatorFeedforwardFirstStage: ElevatorFeedforward = ElevatorFeedforward(
+    ElevatorConstants.REAL_ELEVATOR_KS_FIRST_STAGE,
+    ElevatorConstants.ELEVATOR_KG_FIRST_STAGE,
+    ElevatorConstants.ELEVATOR_KV_FIRST_STAGE,
+    ElevatorConstants.ELEVATOR_KA_FIRST_STAGE
+  )
+  private var elevatorFeedforwardSecondStage: ElevatorFeedforward = ElevatorFeedforward(
+    ElevatorConstants.REAL_ELEVATOR_KS_SECOND_STAGE,
+    ElevatorConstants.ELEVATOR_KG_SECOND_STAGE,
+    ElevatorConstants.ELEVATOR_KV_SECOND_STAGE,
+    ElevatorConstants.ELEVATOR_KA_SECOND_STAGE
+  )
+
   // PID and Feedforward Values
-  var elevatorFeedforward: ElevatorFeedforward
+  var elevatorFeedforward: ElevatorFeedforward = elevatorFeedforwardFirstStage
+    get() {
+      return if (inputs.elevatorPosition > ElevatorConstants.FIRST_STAGE_HEIGHT) {
+        elevatorFeedforwardSecondStage
+      } else {
+        elevatorFeedforwardFirstStage
+      }
+    }
 
   private val kP =
     LoggedTunableValue("Elevator/kP", Pair({ it.inVoltsPerInch }, { it.volts.perInch }))
@@ -72,7 +92,7 @@ class Elevator(val io: ElevatorIO) {
 
     val openLoopExtendVoltage =
       LoggedTunableValue(
-        "Elevator/openLoopExtendVoltage", 12.volts, Pair({ it.inVolts }, { it.volts })
+        "Elevator/openLoopExtendVoltage", 6.volts, Pair({ it.inVolts }, { it.volts })
       )
 
     val openLoopRetractVoltage =
@@ -229,12 +249,11 @@ class Elevator(val io: ElevatorIO) {
   val reverseOpenLoopLimitReached: Boolean
     get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION
 
-  val isStowed: Boolean
-    get() =
-      (inputs.elevatorPosition - ElevatorConstants.ELEVATOR_MAX_RETRACTION).absoluteValue <=
-        ElevatorConstants.ELEVATOR_TOLERANCE
+  val isStowed: Boolean = true // TODO change back when you unplug motor
+//    get() =
+//      inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
 
-  var isHomed = true
+  var isHomed = false
 
   var currentState: ElevatorState = ElevatorState.UNINITIALIZED
 
@@ -261,11 +280,11 @@ class Elevator(val io: ElevatorIO) {
   var elevatorVoltageTarget = 0.0.volts
     private set
 
-  private var lastRequestedPosition = 0.0.inches
+  private var lastRequestedPosition = -1337.inches
 
-  private var lastRequestedVelocity = 0.0.inches.perSecond
+  private var lastRequestedVelocity = -1337.inches.perSecond
 
-  private var lastRequestedVoltage = 0.0.volts
+  private var lastRequestedVoltage = -1337.volts
 
   private var timeProfileGeneratedAt = Clock.fpgaTime
 
@@ -285,12 +304,12 @@ class Elevator(val io: ElevatorIO) {
       TrapezoidProfile.State(-1337.inches, -1337.inches.perSecond)
     )
 
-  val isAtTargetedPosition: Boolean
-    get() =
-      currentRequest is ElevatorRequest.TargetingPosition &&
-        elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
-        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
-        ElevatorConstants.ELEVATOR_TOLERANCE
+  val isAtTargetedPosition: Boolean = true
+//    get() =
+//      currentRequest is ElevatorRequest.TargetingPosition &&
+//        elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+//        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
+//        ElevatorConstants.ELEVATOR_TOLERANCE
 
   init {
     TunableElevatorHeights
@@ -303,12 +322,20 @@ class Elevator(val io: ElevatorIO) {
       kI.initDefault(ElevatorConstants.REAL_KI)
       kD.initDefault(ElevatorConstants.REAL_KD)
 
-      elevatorFeedforward =
+      elevatorFeedforwardSecondStage =
         ElevatorFeedforward(
-          ElevatorConstants.REAL_ELEVATOR_KS,
-          ElevatorConstants.ELEVATOR_KG,
-          ElevatorConstants.ELEVATOR_KV,
-          ElevatorConstants.ELEVATOR_KA
+          ElevatorConstants.REAL_ELEVATOR_KS_SECOND_STAGE,
+          ElevatorConstants.ELEVATOR_KG_SECOND_STAGE,
+          ElevatorConstants.ELEVATOR_KV_SECOND_STAGE,
+          ElevatorConstants.ELEVATOR_KA_SECOND_STAGE
+        )
+
+      elevatorFeedforwardFirstStage =
+        ElevatorFeedforward(
+          ElevatorConstants.REAL_ELEVATOR_KS_FIRST_STAGE,
+          ElevatorConstants.ELEVATOR_KG_FIRST_STAGE,
+          ElevatorConstants.ELEVATOR_KV_FIRST_STAGE,
+          ElevatorConstants.ELEVATOR_KA_FIRST_STAGE
         )
     } else {
       isHomed = true
@@ -317,13 +344,23 @@ class Elevator(val io: ElevatorIO) {
       kI.initDefault(ElevatorConstants.SIM_KI)
       kD.initDefault(ElevatorConstants.SIM_KD)
 
-      elevatorFeedforward =
+      elevatorFeedforwardSecondStage = // TODO make sim values
         ElevatorFeedforward(
-          ElevatorConstants.SIM_ELEVATOR_KS,
-          ElevatorConstants.ELEVATOR_KG,
-          ElevatorConstants.ELEVATOR_KV,
-          ElevatorConstants.ELEVATOR_KA
+          ElevatorConstants.REAL_ELEVATOR_KS_SECOND_STAGE,
+          ElevatorConstants.ELEVATOR_KG_SECOND_STAGE,
+          ElevatorConstants.ELEVATOR_KV_SECOND_STAGE,
+          ElevatorConstants.ELEVATOR_KA_SECOND_STAGE
         )
+
+      elevatorFeedforwardFirstStage =
+        ElevatorFeedforward(
+          ElevatorConstants.REAL_ELEVATOR_KS_FIRST_STAGE,
+          ElevatorConstants.ELEVATOR_KG_FIRST_STAGE,
+          ElevatorConstants.ELEVATOR_KV_FIRST_STAGE,
+          ElevatorConstants.ELEVATOR_KA_FIRST_STAGE
+        )
+
+      io.configPID(kP.get(), kI.get(), kD.get())
     }
   }
 
@@ -389,7 +426,7 @@ class Elevator(val io: ElevatorIO) {
         setOutputVoltage(elevatorVoltageTarget)
 
         // Transitions
-//        nextState = fromElevatorRequestToState(currentRequest)
+        nextState = fromElevatorRequestToState(currentRequest)
       }
       ElevatorState.TARGETING_POSITION -> {
         // Outputs
@@ -402,6 +439,9 @@ class Elevator(val io: ElevatorIO) {
               TrapezoidProfile.State(elevatorPositionTarget, elevatorVelocityTarget),
               TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
             )
+
+          Logger.getInstance().recordOutput("Elevator/initialPosition", elevatorProfile.initial.position.inInches)
+          Logger.getInstance().recordOutput("Elevator/initialVelocity", elevatorProfile.initial.velocity.inInchesPerSecond)
           timeProfileGeneratedAt = Clock.fpgaTime
           lastRequestedPosition = elevatorPositionTarget
           lastRequestedVelocity = elevatorVelocityTarget
@@ -409,12 +449,17 @@ class Elevator(val io: ElevatorIO) {
 
         val timeElapsed = Clock.fpgaTime - timeProfileGeneratedAt
 
-        setPosition(elevatorProfile.calculate(timeElapsed))
+        val profilePosition = elevatorProfile.calculate(timeElapsed)
+
+        setPosition(profilePosition)
 
         Logger.getInstance()
           .recordOutput(
             "Elevator/completedMotionProfile", elevatorProfile.isFinished(timeElapsed)
           )
+
+        Logger.getInstance().recordOutput("Elevator/profileTargetPosition", profilePosition.position.inInches)
+        Logger.getInstance().recordOutput("Elevator/profileTargetVelocity", profilePosition.velocity.inInchesPerSecond)
 
         // Transitions
         nextState = fromElevatorRequestToState(currentRequest)
@@ -427,14 +472,16 @@ class Elevator(val io: ElevatorIO) {
       ElevatorState.HOME -> {
         // Outputs
         if (!isHomed && inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT) {
-          setOutputVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE)
+          setHomeVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE)
         } else {
           zeroEncoder()
           isHomed = true
         }
 
         // Transition
-        nextState = fromElevatorRequestToState(currentRequest)
+        if (isHomed){
+          nextState = fromElevatorRequestToState(currentRequest)
+        }
       }
     }
 
@@ -453,6 +500,16 @@ class Elevator(val io: ElevatorIO) {
     } else {
       io.setOutputVoltage(voltage)
     }
+  }
+
+  private fun setHomeVoltage(voltage: ElectricalPotential){
+    io.setOutputVoltage(voltage)
+  }
+
+  fun regenerateProfileNextLoopCycle(){
+    lastRequestedPosition = -3337.inches
+    lastRequestedVelocity = -3337.inches.perSecond
+    lastRequestedVoltage = -3337.volts
   }
 
   /**
@@ -488,195 +545,6 @@ class Elevator(val io: ElevatorIO) {
   fun zeroEncoder() {
     io.zeroEncoder()
   }
-
-  //  /**
-  //   * Command factory for the elevator idle/hold
-  //   *
-  //   * @return Command which keeps elevator at its current position uses small amount of
-  // feedforward
-  //   * to overcome force of gravity
-  //   */
-  //  fun holdElevatorPosition(): CommandBase {
-  //    var positionToHold = inputs.elevatorPosition
-  //    val holdPositionCommand =
-  //      runOnce {
-  //        positionToHold = inputs.elevatorPosition
-  //        Logger.getInstance().recordOutput("Elevator/holdPosition", positionToHold.inInches)
-  //      }
-  //        .andThen(
-  //          run {
-  //            // check if hold position is close to zero
-  //            if (inputs.elevatorPosition.absoluteValue <
-  //              ElevatorConstants.ELEVATOR_TOLERANCE
-  //            ) {
-  //              io.setOutputVoltage(0.0.volts)
-  //            } else {
-  //              io.setPosition(
-  //                positionToHold, elevatorFeedforward.calculate(0.meters.perSecond)
-  //              )
-  //            }
-  //          }
-  //        )
-  //
-  //    holdPositionCommand.name = "ElevatorHoldPositionCommand"
-  //    return holdPositionCommand
-  //  }
-  //
-  //  /**
-  //   * Inline command to set the elevator to a desired position.
-  //   *
-  //   * @param position The desired position of the elevator in its frame of reference.
-  //   *
-  //   * @return A command that runs the elevator's setPosition function until the profile is
-  // finished
-  //   * running.
-  //   */
-  //  fun raiseElevatorHeight(state: ElevatorConstants.ElevatorStates): CommandBase {
-  //
-  //    // Constructing our elevator profile in here because its internal values are dependent on
-  // the
-  //    // position we want to set the elevator to
-  //    val position = Supplier {
-  //      ElevatorConstants.ElevatorStates.fromHeightToPosition(
-  //        actualElevatorStates[state]?.get() ?: ElevatorConstants.ElevatorStates.MIN_HEIGHT.height
-  //      )
-  //    }
-  //
-  //    // Creates a command that runs continuously until the profile is finished. The run function
-  //    // accepts a lambda which indicates what we want to run every iteration.
-  //    val raiseElevatorHeight = generateElevatorMoveCommand(position, 0.0.inches.perSecond)
-  //
-  //    raiseElevatorHeight.name = "ElevatorRaiseHeightCommand"
-  //    return raiseElevatorHeight
-  //  }
-  //
-  //  fun slamDown(dropDistance: Length): CommandBase {
-  //    val slamDownCommand =
-  //      generateElevatorMoveCommand(
-  //        { inputs.elevatorPosition - dropDistance }, 0.0.inches.perSecond
-  //      )
-  //    slamDownCommand.name = "ElevatorSlamDownCommand"
-  //    return slamDownCommand
-  //  }
-  //
-  //  fun generateElevatorMoveCommand(
-  //    targetPosition: Supplier<Length>,
-  //    targetVelocity: LinearVelocity
-  //  ): CommandBase {
-  //    lateinit var elevatorProfile: TrapezoidProfile<Meter>
-  //
-  //    // Obtaining a start time for this command so that we can pass it into our profile. This is
-  // done
-  //    // here because we need the startTime to represent the time at which the profile began.
-  //    var startTime = Clock.fpgaTime
-  //
-  //    val elevatorMovementCommand =
-  //      runOnce {
-  //        startTime = Clock.fpgaTime
-  //        desiredHeight = targetPosition.get()
-  //        elevatorProfile =
-  //          TrapezoidProfile(
-  //            elevatorConstraints,
-  //            TrapezoidProfile.State(targetPosition.get(), targetVelocity),
-  //            TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
-  //          )
-  //        Logger.getInstance().recordOutput("Elevator/isAtSetpoint", false)
-  //      }
-  //        .andThen(
-  //          run {
-  //            setPosition(
-  //              elevatorProfile.calculate(
-  //                Clock.fpgaTime -
-  //                  startTime
-  //              )
-  //            ) // Every loop cycle we have a different profile state
-  //            // we're
-  //            // calculating. Hence, we want to pass in a different Trapezoidal
-  //            // Profile State into the setPosition function.
-  //            Logger.getInstance()
-  //              .recordOutput(
-  //                "/Elevator/isAtSetpoint",
-  //                (inputs.elevatorPosition - targetPosition.get()).absoluteValue <
-  //                  ElevatorConstants.ELEVATOR_TOLERANCE
-  //              )
-  //          }
-  //            .until { // The following lambda creates a race condition that stops the command
-  //              // we
-  //              // created
-  //              // above when the passed in condition is true. In our case it's checking when
-  //              // elevatorProfile is finished based on elapsed time.
-  //              elevatorProfile.isFinished((Clock.fpgaTime - startTime)) ||
-  //                (
-  //                  forwardLimitReached &&
-  //                    targetPosition.get() >
-  //                    ElevatorConstants.ELEVATOR_SOFTLIMIT_EXTENSION ||
-  //                    reverseLimitReached &&
-  //                    targetPosition.get() <
-  //                    ElevatorConstants.ELEVATOR_SOFTLIMIT_RETRACTION
-  //                  )
-  //              // This is the race condition we're passing in.
-  //            }
-  //        )
-  //    return elevatorMovementCommand
-  //  }
-  //
-  //  /**
-  //   * Command factory for setting elevator motors to desired voltage
-  //   *
-  //   * @return Command which sets output voltage of both motors and ends if elevator reachs its
-  // limit
-  //   */
-  //  fun openLoopControl(voltage: ElectricalPotential): Command {
-  //    val openLoopElevatorCommand =
-  //      run {
-  //        setOutputVoltage(voltage)
-  //        if (voltage > 0.volts) {
-  //          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", true)
-  //        } else {
-  //          Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", true)
-  //        }
-  //      }
-  //        .until {
-  //          (
-  //            forwardOpenLoopLimitReached && voltage > 0.volts ||
-  //              reverseOpenLoopLimitReached && voltage < 0.volts
-  //            )
-  //        }
-  //        .finallyDo {
-  //          setOutputVoltage(0.volts)
-  //          if (voltage > 0.volts) {
-  //            Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopExtend", false)
-  //          } else {
-  //            Logger.getInstance().recordOutput("/ActiveCommands/OpenLoopRetract", false)
-  //          }
-  //        }
-  //
-  //    if (voltage > 0.volts) {
-  //      openLoopElevatorCommand.name = "ElevatorExtendOpenLoopCommand"
-  //    } else if (voltage < 0.volts) {
-  //      openLoopElevatorCommand.name = "ElevatorRetractOpenLoopCommand"
-  //    } else {
-  //      openLoopElevatorCommand.name = "ElevatorZeroVoltageOpenLoopCommand"
-  //    }
-  //
-  //    return openLoopElevatorCommand
-  //  }
-  //
-  //  fun homeElevatorCommand(): CommandBase {
-  //    val maybeHomeElevatorCommand =
-  //      run { io.setOutputVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE) }
-  //        .until {
-  //          isHomed ||
-  //            inputs.elevatorPosition > ElevatorConstants.HOMING_POSITION_THRESHOLD ||
-  //            inputs.leaderStatorCurrent > ElevatorConstants.HOMING_STALL_CURRENT
-  //        }
-  //        .finallyDo {
-  //          io.zeroEncoder()
-  //          isHomed = true
-  //        }
-  //    maybeHomeElevatorCommand.name = "ElevatorHomingCommand"
-  //    return maybeHomeElevatorCommand
-  //  }
 
   fun updateMech2d() {
     // updating carriage attachment based on height of elevator

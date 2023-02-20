@@ -42,12 +42,13 @@ interface ElevatorIO {
       table?.put("elevatorPositionInches", elevatorPosition.inInches)
       table?.put("elevatorVelocityInchesPerSec", elevatorVelocity.inInchesPerSecond)
       table?.put("elevatorLeaderAppliedVolts", leaderAppliedVoltage.inVolts)
+      table?.put("elevatorFollowerAppliedVolts", followerAppliedVoltage.inVolts)
       table?.put("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)
       table?.put("elevatorFollowerStatorCurrentAmps", followerStatorCurrent.inAmperes)
-      table?.put("elevatorLeaderCurrentAmps", leaderSupplyCurrent.inAmperes)
-      table?.put("elevatorFollowerCurrentAmps", followerSupplyCurrent.inAmperes)
-      table?.put("elevatorLeaderTempCelcius", leaderTempCelcius.inCelsius)
-      table?.put("elevatorFollowerTempCelcius", followerTempCelcius.inCelsius)
+      table?.put("elevatorLeaderSupplyCurrentAmps", leaderSupplyCurrent.inAmperes)
+      table?.put("elevatorFollowerSupplyCurrentAmps", followerSupplyCurrent.inAmperes)
+      table?.put("elevatorLeaderTempCelsius", leaderTempCelcius.inCelsius)
+      table?.put("elevatorFollowerTempCelsius", followerTempCelcius.inCelsius)
     }
 
     override fun fromLog(table: LogTable) {
@@ -59,6 +60,9 @@ interface ElevatorIO {
       }
       table?.getDouble("elevatorLeaderAppliedVolts", leaderAppliedVoltage.inVolts)?.let {
         leaderAppliedVoltage = it.volts
+      }
+      table?.getDouble("elevatorFollowerAppliedVolts", followerAppliedVoltage.inVolts)?.let {
+        followerAppliedVoltage = it.volts
       }
       table?.getDouble("elevatorLeaderStatorCurrentAmps", leaderStatorCurrent.inAmperes)?.let {
         leaderStatorCurrent = it.amps

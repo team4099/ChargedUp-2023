@@ -19,6 +19,7 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -27,7 +28,7 @@ object ElevatorIOSim : ElevatorIO {
   val elevatorSim: ElevatorSim =
     ElevatorSim(
       DCMotor.getNEO(2),
-      ElevatorConstants.GEAR_RATIO,
+      ElevatorConstants.GEAR_RATIO.asDrivingOverDriven,
       ElevatorConstants.CARRIAGE_MASS,
       ElevatorConstants.SPOOL_RADIUS,
       ElevatorConstants.ELEVATOR_MAX_RETRACTION,
