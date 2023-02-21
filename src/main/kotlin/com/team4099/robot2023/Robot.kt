@@ -99,7 +99,7 @@ object Robot : LoggedRobot() {
     RobotContainer
     AutonomousSelector
     PathStore
-    // RobotContainer.zeroSensors() UNCOMMENT THIS PLS
+    RobotContainer.zeroSensors()
     RobotContainer.mapDefaultCommands()
   }
 
@@ -108,7 +108,6 @@ object Robot : LoggedRobot() {
   }
 
   override fun autonomousInit() {
-    // autonomousCommand.schedule()
     RobotContainer.setDriveBrakeMode()
     RobotContainer.zeroSteering()
     RobotContainer.getAutonomousCommand().schedule()
@@ -150,7 +149,7 @@ object Robot : LoggedRobot() {
 
   override fun teleopInit() {
     RobotContainer.mapTeleopControls()
-    // RobotContainer.getAutonomousCommand().cancel()
+     RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.setDriveBrakeMode() // change to coast
     RobotContainer.zeroSteering()
     RobotContainer.zeroArm()

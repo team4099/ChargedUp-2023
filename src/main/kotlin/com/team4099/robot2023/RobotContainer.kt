@@ -42,7 +42,7 @@ object RobotContainer {
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIONeo),
+          GroundIntake(GroundIntakeIOSim),
           Manipulator(ManipulatorIOSim)
         )
     } else {
@@ -121,7 +121,7 @@ object RobotContainer {
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
     ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.groundIntakeStowedUpCommand())
-    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeStowedDownCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 //    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 
     //
