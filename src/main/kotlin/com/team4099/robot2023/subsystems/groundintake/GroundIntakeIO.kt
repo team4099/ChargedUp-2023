@@ -42,6 +42,8 @@ interface GroundIntakeIO {
     var rollerStatorCurrent = 0.0.amps
     var rollerTemp = 0.0.celsius
 
+    var isSimulated = false
+
     override fun toLog(table: LogTable?) {
       table?.put("armPositionDegrees", armPosition.inDegrees)
       table?.put("armAbsoluteEncoderPositionDegrees", armAbsoluteEncoderPosition.inDegrees)

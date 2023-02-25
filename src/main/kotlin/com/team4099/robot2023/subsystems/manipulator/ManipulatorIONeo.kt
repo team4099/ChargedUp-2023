@@ -57,22 +57,22 @@ object ManipulatorIONeo : ManipulatorIO {
       ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
     )
     // configure default settings
-    rollerSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+    rollerSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
     rollerSparkMax.inverted = ManipulatorConstants.ROLLER_MOTOR_INVERTED
+//    rollerSparkMax.openLoopRampRate = ManipulatorConstants.ROLLER_RAMP_RATE
     rollerSparkMax.burnFlash()
-    rollerSparkMax.openLoopRampRate = ManipulatorConstants.ROLLER_RAMP_RATE
 
     // set-up voltage and current limits
     armSparkMax.enableVoltageCompensation(ManipulatorConstants.ARM_VOLTAGE_COMPENSATION.inVolts)
     armSparkMax.setSmartCurrentLimit(
-      ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT.inAmperes.toInt()
+      ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT.inAmperes.toInt()
     )
     armSparkMax.inverted = ManipulatorConstants.ARM_MOTOR_INVERTED
-    armSparkMax.burnFlash()
     armSparkMax.openLoopRampRate = ManipulatorConstants.ARM_RAMP_RATE
 
     // set-up voltage and current limits
-    armSparkMax.setIdleMode(CANSparkMax.IdleMode.kBrake)
+    armSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
+    armSparkMax.burnFlash()
   }
 
   /**

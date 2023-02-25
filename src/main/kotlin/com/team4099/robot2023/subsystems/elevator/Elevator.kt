@@ -20,6 +20,7 @@ import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
@@ -92,7 +93,7 @@ class Elevator(val io: ElevatorIO) {
 
     val openLoopExtendVoltage =
       LoggedTunableValue(
-        "Elevator/openLoopExtendVoltage", 6.volts, Pair({ it.inVolts }, { it.volts })
+        "Elevator/openLoopExtendVoltage", 8.volts, Pair({ it.inVolts }, { it.volts })
       )
 
     val openLoopRetractVoltage =
@@ -249,16 +250,16 @@ class Elevator(val io: ElevatorIO) {
   val reverseOpenLoopLimitReached: Boolean
     get() = inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION
 
-  val isStowed: Boolean = true // TODO change back when you unplug motor
-//    get() =
-//      inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
+  val isStowed: Boolean
+    get() =
+      inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
 
   var isHomed = false
 
   var currentState: ElevatorState = ElevatorState.UNINITIALIZED
 
   var currentRequest: ElevatorRequest =
-    ElevatorRequest.TargetingPosition(TunableElevatorHeights.minPosition.get())
+    ElevatorRequest.OpenLoop(0.0.volts)
     set(value) {
         when (value) {
           is ElevatorRequest.OpenLoop -> elevatorVoltageTarget = value.voltage
@@ -288,6 +289,8 @@ class Elevator(val io: ElevatorIO) {
 
   private var timeProfileGeneratedAt = Clock.fpgaTime
 
+  private var lastHomingStatorCurrentTripTime = -1337.seconds
+
   // trapezoidal profile constraints
   private var elevatorConstraints: TrapezoidProfile.Constraints<Meter> =
     TrapezoidProfile.Constraints(
@@ -304,12 +307,12 @@ class Elevator(val io: ElevatorIO) {
       TrapezoidProfile.State(-1337.inches, -1337.inches.perSecond)
     )
 
-  val isAtTargetedPosition: Boolean = true
-//    get() =
-//      currentRequest is ElevatorRequest.TargetingPosition &&
-//        elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
-//        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
-//        ElevatorConstants.ELEVATOR_TOLERANCE
+  val isAtTargetedPosition: Boolean
+    get() =
+      currentRequest is ElevatorRequest.TargetingPosition &&
+        elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
+        ElevatorConstants.ELEVATOR_TOLERANCE
 
   init {
     TunableElevatorHeights
@@ -366,8 +369,6 @@ class Elevator(val io: ElevatorIO) {
 
   fun periodic() {
     io.updateInputs(inputs)
-
-    updateMech2d()
 
     if (kP.hasChanged() || kI.hasChanged() || kD.hasChanged()) {
       io.configPID(kP.get(), kI.get(), kD.get())
@@ -471,7 +472,10 @@ class Elevator(val io: ElevatorIO) {
       }
       ElevatorState.HOME -> {
         // Outputs
-        if (!isHomed && inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT) {
+        if (inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT){
+          lastHomingStatorCurrentTripTime = Clock.fpgaTime
+        }
+        if (!inputs.isSimulating && (!isHomed && inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT && (Clock.fpgaTime - lastHomingStatorCurrentTripTime) < ElevatorConstants.HOMING_STALL_TIME_THRESHOLD)) {
           setHomeVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE)
         } else {
           zeroEncoder()
@@ -524,7 +528,7 @@ class Elevator(val io: ElevatorIO) {
 
     elevatorSetpoint = setpoint
 
-    var feedforward = elevatorFeedforward.calculate(setpoint.velocity, elevatorAccel)
+    val feedforward = elevatorFeedforward.calculate(setpoint.velocity, elevatorAccel)
 
     if (forwardLimitReached && setpoint.position > inputs.elevatorPosition ||
       reverseLimitReached && setpoint.position < inputs.elevatorPosition

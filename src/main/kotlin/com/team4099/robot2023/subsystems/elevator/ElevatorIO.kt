@@ -38,6 +38,8 @@ interface ElevatorIO {
     var leaderTempCelcius = 0.0.celsius
     var followerTempCelcius = 0.0.celsius
 
+    var isSimulating = false
+
     override fun toLog(table: LogTable) {
       table?.put("elevatorPositionInches", elevatorPosition.inInches)
       table?.put("elevatorVelocityInchesPerSec", elevatorVelocity.inInchesPerSecond)

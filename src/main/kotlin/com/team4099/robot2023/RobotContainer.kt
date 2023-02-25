@@ -7,9 +7,11 @@ import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.commands.elevator.ElevatorKvCharacterizeCommand
+import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
+import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIO
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
@@ -22,6 +24,7 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
+import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj.RobotBase
@@ -37,13 +40,13 @@ object RobotContainer {
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
-      drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
+      drivetrain = Drivetrain(object : GyroIO {}, object: DrivetrainIO {})
       //      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIOSim),
-          Manipulator(ManipulatorIOSim)
+          GroundIntake(GroundIntakeIONeo),
+          Manipulator(ManipulatorIONeo)
         )
     } else {
       // Simulation implementations
@@ -84,6 +87,10 @@ object RobotContainer {
     )
   }
 
+  fun requestSuperstructureIdle(){
+    superstructure.currentRequest = Request.SuperstructureRequest.Idle()
+  }
+
   fun zeroArm(){
     superstructure.groundIntakeZeroArm()
   }
@@ -120,8 +127,10 @@ object RobotContainer {
     //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
-    ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.groundIntakeStowedUpCommand())
-    ControlBoard.extendArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.intakeConeFromDoubleSubStationCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.prepscoreConeHighCommand())
+    ControlBoard.retractArm.whileTrue(superstructure.scoreConeHighCommand())
+//    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCubeCommand())
 //    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 
     //

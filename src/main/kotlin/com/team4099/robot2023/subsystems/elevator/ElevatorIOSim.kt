@@ -58,6 +58,8 @@ object ElevatorIOSim : ElevatorIO {
     inputs.followerSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
     inputs.followerAppliedVoltage = lastAppliedVoltage
 
+    inputs.isSimulating = true
+
     RoboRioSim.setVInVoltage(
       BatterySim.calculateDefaultBatteryLoadedVoltage(elevatorSim.currentDrawAmps)
     )

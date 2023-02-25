@@ -19,8 +19,8 @@ import kotlin.math.PI
 object ManipulatorConstants {
 
   // TODO(Maybe tune feedforward constants)
-  val ARM_KS = 0.002.volts
-  val ARM_KV = 0.2.volts / 1.0.inches.perSecond
+  val ARM_KS = 0.4.volts
+  val ARM_KV = 0.16.volts / 1.0.inches.perSecond
   val ARM_KA = 0.0.volts / 1.0.inches.perSecond.perSecond
 
   val SIM_ARM_KP = 20.volts / 1.0.inches
@@ -28,9 +28,9 @@ object ManipulatorConstants {
   val SIM_ARM_KD = 1.0.volts / 1.0.inches.perSecond
 
   // TODO(tune these)
-  val REAL_ARM_KP = 1.0.volts / 1.0.inches
+  val REAL_ARM_KP = 2.0.volts / 1.0.inches
   val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
-  val REAL_ARM_KD = 0.25.volts / 1.0.inches.perSecond
+  val REAL_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
   val ARM_RAMP_RATE = 0.5
   val ROLLER_RAMP_RATE = 0.5
@@ -42,24 +42,25 @@ object ManipulatorConstants {
   val INTAKE_IN_TIME = 0.5.seconds
 
   // TODO(check if these motors are inverted)
-  val ARM_MOTOR_INVERTED = false
+  val ARM_MOTOR_INVERTED = true
   val ROLLER_MOTOR_INVERTED = false
 
   // TODO(figure out what current limit should be)
-  val ARM_STATOR_CURRENT_LIMIT = 25.amps
-  val ROLLER_STATOR_CURRENT_LIMIT = 25.amps
+  val ARM_STATOR_CURRENT_LIMIT = 20.amps
+  val ROLLER_STATOR_CURRENT_LIMIT = 20.amps
 
   val ARM_VOLTAGE_COMPENSATION = 12.volts
   val ROLLER_VOLTAGE_COMPENSATION = 12.volts
 
   val ARM_HOMING_POSITION_THESHOLD = 5.inches
-  val ARM_HOMING_APPLIED_VOLTAGE = -0.5.volts
-  val ARM_HOMING_STALL_CURRENT = 15.amps
+  val ARM_HOMING_APPLIED_VOLTAGE = -1.volts
+  val ARM_HOMING_STALL_CURRENT = 10.amps
+  val HOMING_STALL_TIME_THRESHOLD = 0.15.seconds
 
   const val SENSOR_CPR = 42.0
 
   val ARM_GEAR_RATIO = ((84.0.driven / 29.0.driving) * (60.0.driven / 16.0.driving)).gearRatio
-  val ROLLER_GEAR_RATIO = 18.0.gearRatio
+  val ROLLER_GEAR_RATIO = 20.0.gearRatio
 
   // TODO: Change current thresholds
   val CONE_CURRENT_THRESHOLD = 15.amps
@@ -80,7 +81,7 @@ object ManipulatorConstants {
 
   // TODO(check for accuracy)
   val ARM_MAX_VELOCITY = 30.inches.perSecond
-  val ARM_MAX_ACCELERATION = 15.inches.perSecond.perSecond
+  val ARM_MAX_ACCELERATION = 120.inches.perSecond.perSecond
 
   val MOMENT_INERTIA = 0.0000478.kilo.grams * 1.0.meters.squared
 
@@ -88,12 +89,12 @@ object ManipulatorConstants {
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
   val IDLE_VOLTAGE = 0.0.volts
-  val CONE_IDLE = 2.4.volts
-  val CUBE_IDLE = -1.2.volts
-  val CONE_IN = 12.volts
-  val CUBE_IN = -9.6.volts
-  val CONE_OUT = -12.volts
-  val CUBE_OUT = 9.6.volts
+  val CONE_IDLE = 0.2.volts
+  val CUBE_IDLE = -0.2.volts
+  val CONE_IN = 6.volts
+  val CUBE_IN = -6.volts
+  val CONE_OUT = -6.volts
+  val CUBE_OUT = 6.volts
 
   // TODO(test voltage values)
   enum class RollerStates(val voltage: ElectricalPotential) {
@@ -123,10 +124,10 @@ object ManipulatorConstants {
     }
   }
 
-  val MIN_EXTENSION = 0.0.inches
+  val MIN_EXTENSION = 1.0.inches
   val SINGLE_SUBSTATION_INTAKE_EXTENSION = 4.0.inches
-  val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 4.0.inches
-  val LOW_SCORE_EXTENSION = 0.0.inches
+  val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
+  val LOW_SCORE_EXTENSION = 1.0.inches
   val MID_SCORE_EXTENSION = 4.0.inches
   val HIGH_SCORE_EXTENSION = 8.0.inches
   val INTAKE_CUBE_FROM_GROUND_EXTENSION = 9.0.inches

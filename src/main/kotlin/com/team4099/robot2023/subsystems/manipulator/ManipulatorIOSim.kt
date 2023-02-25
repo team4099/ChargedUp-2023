@@ -85,6 +85,9 @@ object ManipulatorIOSim : ManipulatorIO {
     inputs.armStatorCurrent = armSim.currentDrawAmps.amps
     inputs.armSupplyCurrent = 0.amps
     inputs.armTemp = 0.celsius
+
+    inputs.isSimulating = true
+
     RoboRioSim.setVInVoltage(
       BatterySim.calculateDefaultBatteryLoadedVoltage(armSim.currentDrawAmps)
     )

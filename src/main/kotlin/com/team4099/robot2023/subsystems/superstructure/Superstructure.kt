@@ -4,6 +4,7 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.Robot
 import com.team4099.robot2023.commands.elevator.ElevatorKsCharacterizeCommand
+import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.GamePiece
@@ -277,10 +278,12 @@ class Superstructure(
         // Outputs
         groundIntake.currentRequest = Request.GroundIntakeRequest.ZeroArm()
 
+
         if (groundIntake.isZeroed){
           groundIntake.currentRequest =
             Request.GroundIntakeRequest.TargetingPosition(
-              GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+              //GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+              4.4.degrees,
               GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
             )
         }
@@ -404,6 +407,7 @@ class Superstructure(
           (Clock.fpgaTime - lastTransitionTime) >=
           Manipulator.TunableManipulatorStates.intakeTime.get()
         ) {
+          currentRequest = SuperstructureRequest.Idle()
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -420,16 +424,19 @@ class Superstructure(
               Manipulator.TunableManipulatorStates.doubleSubstationIntakeShelfExtension.get(),
               ManipulatorConstants.IDLE_VOLTAGE
             )
-          val offset =
-            when (usingGamePiece) {
-              GamePiece.CUBE -> Elevator.TunableElevatorHeights.shelfIntakeCubeOffset.get()
-              GamePiece.CONE -> Elevator.TunableElevatorHeights.shelfIntakeConeOffset.get()
-              else -> 0.0.inches
-            }
-          elevator.currentRequest =
-            Request.ElevatorRequest.TargetingPosition(
-              Elevator.TunableElevatorHeights.doubleSubstationHeight.get() + offset
-            )
+
+          if (manipulator.isAtTargetedPosition){
+            val offset =
+              when (usingGamePiece) {
+                GamePiece.CUBE -> Elevator.TunableElevatorHeights.shelfIntakeCubeOffset.get()
+                GamePiece.CONE -> Elevator.TunableElevatorHeights.shelfIntakeConeOffset.get()
+                else -> 0.0.inches
+              }
+            elevator.currentRequest =
+              Request.ElevatorRequest.TargetingPosition(
+                Elevator.TunableElevatorHeights.doubleSubstationHeight.get() + offset
+              )
+          }
         }
 
         // Transition
@@ -462,6 +469,7 @@ class Superstructure(
           Manipulator.TunableManipulatorStates.intakeTime.get()
         ) {
           nextState = SuperstructureStates.IDLE
+          currentRequest = SuperstructureRequest.Idle()
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_PREP -> {
@@ -516,6 +524,7 @@ class Superstructure(
           Manipulator.TunableManipulatorStates.intakeTime.get()
         ) {
           nextState = SuperstructureStates.IDLE
+          currentRequest = SuperstructureRequest.Idle()
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CONE -> {
@@ -532,6 +541,7 @@ class Superstructure(
           Manipulator.TunableManipulatorStates.intakeTime.get()
         ) {
           nextState = SuperstructureStates.IDLE
+          currentRequest = SuperstructureRequest.Idle()
         }
       }
       SuperstructureStates.SCORE_PREP -> {
@@ -589,10 +599,22 @@ class Superstructure(
                 NodeTier.HIGH -> Manipulator.TunableManipulatorStates.highScoreExtension.get()
                 else -> 0.0.inches
               }
-            manipulator.currentRequest =
-              Request.ManipulatorRequest.TargetingPosition(
-                extension, ManipulatorConstants.IDLE_VOLTAGE
-              )
+
+            when (usingGamePiece){
+              Constants.Universal.GamePiece.NONE -> manipulator.currentRequest =
+                Request.ManipulatorRequest.TargetingPosition(
+                  extension, ManipulatorConstants.IDLE_VOLTAGE
+                )
+              Constants.Universal.GamePiece.CONE -> manipulator.currentRequest =
+                Request.ManipulatorRequest.TargetingPosition(
+                  extension, ManipulatorConstants.CONE_IDLE
+                )
+              Constants.Universal.GamePiece.CUBE -> manipulator.currentRequest =
+                Request.ManipulatorRequest.TargetingPosition(
+                  extension, ManipulatorConstants.CUBE_IDLE
+                )
+            }
+
           }
         }
 
@@ -635,9 +657,9 @@ class Superstructure(
         // Outputs
         val dropToPosition =
           when (nodeTier) {
-            NodeTier.HYBRID -> Elevator.TunableElevatorHeights.hybridHeight.get()
-            NodeTier.MID -> Elevator.TunableElevatorHeights.midConeHeight.get()
-            NodeTier.HIGH -> Elevator.TunableElevatorHeights.highConeHeight.get()
+            NodeTier.HYBRID -> Elevator.TunableElevatorHeights.hybridHeight.get()  + Elevator.TunableElevatorHeights.coneDropPosition.get()
+            NodeTier.MID -> Elevator.TunableElevatorHeights.midConeHeight.get()  + Elevator.TunableElevatorHeights.coneDropPosition.get()
+            NodeTier.HIGH -> Elevator.TunableElevatorHeights.highConeHeight.get()  + Elevator.TunableElevatorHeights.coneDropPosition.get()
             else -> elevator.elevatorPositionTarget
           }
         elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(dropToPosition)
@@ -672,7 +694,12 @@ class Superstructure(
           nextState = SuperstructureStates.IDLE
         }
       }
-      SuperstructureStates.TUNING -> {}
+      SuperstructureStates.TUNING -> {
+
+        if (currentRequest is SuperstructureRequest.Idle){
+          nextState = SuperstructureStates.IDLE
+        }
+      }
     }
 
     if (nextState != currentState) {
@@ -683,6 +710,18 @@ class Superstructure(
   }
 
   // Superstructure Commands
+  fun intakeConeFromDoubleSubStationCommand(): CommandBase{
+    val returnCommand =
+      runOnce{
+        currentRequest = SuperstructureRequest.DoubleSubstationIntake(
+          Constants.Universal.GamePiece.CONE
+        )
+      }.until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE }
+
+    returnCommand.name = "IntakeConeFromDoubleSubStationCommand"
+    return returnCommand
+  }
+
   fun prepscoreConeHighCommand(): CommandBase {
     val returnCommand =
       runOnce {
@@ -740,12 +779,8 @@ class Superstructure(
           Elevator.TunableElevatorHeights.openLoopExtendVoltage.get()
         )
       currentRequest = SuperstructureRequest.Tuning()
-      currentState = SuperstructureStates.TUNING
     }.andThen(
-      run { elevator.currentRequest = Request.ElevatorRequest.OpenLoop(0.0.volts)
-        currentRequest = SuperstructureRequest.Tuning()
-        currentState = SuperstructureStates.TUNING
-        }
+      runOnce { elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(elevatorInputs.elevatorPosition) }
     )
 
     returnCommand.name = "ElevatorOpenLoopExtendCommand"
@@ -809,9 +844,8 @@ class Superstructure(
     val returnCommand = runOnce {
       elevator.currentRequest =
         Request.ElevatorRequest.TargetingPosition(
-          32.inches
-//           Elevator.TunableElevatorHeights.midConeHeight.get() +
-//            Elevator.TunableElevatorHeights.coneDropPosition.get()
+           Elevator.TunableElevatorHeights.midConeHeight.get() +
+            Elevator.TunableElevatorHeights.coneDropPosition.get()
         )
       currentRequest = SuperstructureRequest.Tuning()
     }
@@ -933,12 +967,21 @@ class Superstructure(
     return returnCommand
   }
 
+  fun groundIntakeSetArmVoltage(voltage: ElectricalPotential){
+    groundIntake.currentRequest = Request.GroundIntakeRequest.OpenLoop(voltage, 0.0.volts)
+    currentRequest = SuperstructureRequest.Tuning()
+  }
+
+  fun groundIntakeCharacterizeCommand(): CommandBase{
+    return GroundIntakeCharacterizeCommand(this)
+  }
+
   fun groundIntakeStowedUpCommand(): CommandBase {
-    val returnCommand = runOnce {
+    val returnCommand = run {
       groundIntake.currentRequest =
         Request.GroundIntakeRequest.TargetingPosition(
           GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
-          GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+          0.0.volts
         )
       currentRequest = SuperstructureRequest.Tuning()
     }
@@ -948,7 +991,7 @@ class Superstructure(
   }
 
   fun groundIntakeStowedDownCommand(): CommandBase {
-    val returnCommand = runOnce {
+    val returnCommand = run {
       groundIntake.currentRequest =
         Request.GroundIntakeRequest.TargetingPosition(
           GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
@@ -961,12 +1004,71 @@ class Superstructure(
     return returnCommand
   }
 
+  fun groundIntakeOpenLoopRetractCommand(): CommandBase {
+    val returnCommand = run {
+      groundIntake.currentRequest =
+        Request.GroundIntakeRequest.OpenLoop(
+          0.676.volts,
+          0.0.volts
+        )
+      currentRequest = SuperstructureRequest.Tuning()
+    }.andThen (
+      runOnce{
+        currentRequest = SuperstructureRequest.Idle()})
+
+
+    returnCommand.name = "GroundIntakeOpenLoopRetractCommand"
+    return returnCommand
+  }
+
+  fun groundIntakeIntakeCubeCommand(): CommandBase {
+    val returnCommand = run {
+      groundIntake.currentRequest =
+        Request.GroundIntakeRequest.TargetingPosition(
+          GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+          GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
+        )
+      manipulator.currentRequest =
+        Request.ManipulatorRequest.OpenLoop(
+          0.0.volts,
+          Manipulator.TunableManipulatorStates.cubeInVoltage.get()
+
+        )
+      currentRequest = SuperstructureRequest.Tuning()
+    }.andThen (
+      runOnce{
+      currentRequest = SuperstructureRequest.Idle()})
+
+
+    returnCommand.name = "GroundIntakeIntakeCommand"
+    return returnCommand
+  }
+
   fun groundIntakeZeroArm(){
     groundIntake.zeroArm()
   }
 
+  fun manipulatorSetArmVoltage(voltage: ElectricalPotential){
+    manipulator.currentRequest = Request.ManipulatorRequest.OpenLoop(voltage, 0.0.volts)
+    currentRequest = SuperstructureRequest.Tuning()
+  }
+
+  fun manipulatorOpenLoopIntakeConeCommand(): CommandBase {
+    val returnCommand = run {
+      manipulator.currentRequest =
+        Request.ManipulatorRequest.OpenLoop(
+          ManipulatorConstants.IDLE_VOLTAGE,
+          Manipulator.TunableManipulatorStates.coneInVoltage.get()
+        )
+      currentRequest = SuperstructureRequest.Tuning()
+    }
+
+    returnCommand.name = "ManipulatorOpenLoopIntakeConeCommand"
+    return returnCommand
+  }
+
   fun manipulatorOpenLoopExtendCommand(): CommandBase {
-    val returnCommand = runOnce {
+    val returnCommand = run {
       manipulator.currentRequest =
         Request.ManipulatorRequest.OpenLoop(
           Manipulator.TunableManipulatorStates.openLoopExtendVoltage.get(),

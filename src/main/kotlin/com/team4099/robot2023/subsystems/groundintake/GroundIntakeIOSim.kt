@@ -103,6 +103,8 @@ object GroundIntakeIOSim : GroundIntakeIO {
     inputs.armSupplyCurrent = 0.amps
     inputs.armTemp = 0.celsius
 
+    inputs.isSimulated = true
+
     m_arm.angle = armSim.angleRads.radians.inDegrees
 
     Logger.getInstance().recordOutput("GroundIntake/simulatedArm", m_mech2d)

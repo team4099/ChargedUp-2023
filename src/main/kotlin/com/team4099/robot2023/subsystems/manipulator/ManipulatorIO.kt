@@ -40,6 +40,8 @@ interface ManipulatorIO {
     var armSupplyCurrent = 0.amps
     var armTemp = 0.0.celsius
 
+    var isSimulating = false
+
     override fun toLog(table: LogTable?) {
       // TODO: figure out why we did degrees and radians for this
       table?.put("rollerVelocityRPM", rollerVelocity.inRotationsPerMinute)

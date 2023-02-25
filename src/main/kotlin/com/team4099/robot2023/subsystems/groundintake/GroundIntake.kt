@@ -128,9 +128,13 @@ class GroundIntake(private val io: GroundIntakeIO) {
     GroundIntakeRequest.ZeroArm()
     set(value) {
         when (value) {
-          is GroundIntakeRequest.OpenLoop -> armVoltageTarget = value.voltage
+          is GroundIntakeRequest.OpenLoop -> {
+            armVoltageTarget = value.voltage
+            rollerVoltageTarget = value.rollerVoltage
+          }
           is GroundIntakeRequest.TargetingPosition -> {
             armPositionTarget = value.position
+            rollerVoltageTarget = value.rollerVoltage
           }
           else -> {}
         }
@@ -204,6 +208,8 @@ class GroundIntake(private val io: GroundIntakeIO) {
     Logger.getInstance()
       .recordOutput("GroundIntake/requestedState", currentRequest.javaClass.simpleName)
 
+    Logger.getInstance().recordOutput("GroundIntake/isAtTargetedPosition", isAtTargetedPosition)
+
     Logger.getInstance().recordOutput("GroundIntake/isZeroed", isZeroed)
 
     if (Constants.Tuning.DEBUGING_MODE) {
@@ -243,7 +249,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
       GroundIntakeState.ZEROING_ARM -> {
         zeroArm()
 
-        if ((inputs.armPosition - inputs.armAbsoluteEncoderPosition).absoluteValue <= 1.degrees){
+        if (inputs.isSimulated || (inputs.armPosition - inputs.armAbsoluteEncoderPosition).absoluteValue <= 1.degrees){
           isZeroed = true
           lastArmPositionTarget = -1337.degrees
         }
@@ -290,7 +296,9 @@ class GroundIntake(private val io: GroundIntakeIO) {
         val profileOutput = armProfile.calculate(timeElapsed)
 
         setArmPosition(profileOutput)
-        setRollerVoltage(rollerVoltageTarget)
+        if (armProfile.isFinished(timeElapsed)){
+          setRollerVoltage(rollerVoltageTarget)
+        }
 
         Logger.getInstance()
           .recordOutput("GroundIntake/completedMotionProfile", armProfile.isFinished(timeElapsed))

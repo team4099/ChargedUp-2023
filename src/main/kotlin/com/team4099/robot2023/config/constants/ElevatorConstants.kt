@@ -32,7 +32,7 @@ object ElevatorConstants {
 
   val RAMP_RATE = 0.5.percent.perSecond
 
-  val REAL_KP = 0.0.volts / 1.inches
+  val REAL_KP = 0.85.volts / 1.inches
   val REAL_KI = 0.0.volts / (1.inches * 1.seconds)
   val REAL_KD = 0.0.volts / (1.inches.perSecond)
 
@@ -43,13 +43,13 @@ object ElevatorConstants {
   val ELEVATOR_ANGLE = 49.678.degrees
 
   val SIM_ELEVATOR_KS_SECOND_STAGE = 0.0.volts
-  val REAL_ELEVATOR_KS_SECOND_STAGE = 0.56.volts // TODO tune
-  val ELEVATOR_KG_SECOND_STAGE = 1.1066.volts
-  val ELEVATOR_KV_SECOND_STAGE = 1.59.volts / 1.0.meters.perSecond
-  val ELEVATOR_KA_SECOND_STAGE = 0.1.volts / 1.0.meters.perSecond.perSecond
+  val REAL_ELEVATOR_KS_SECOND_STAGE = 0.54.volts // TODO tune
+  val ELEVATOR_KG_SECOND_STAGE = 1.0.volts
+  val ELEVATOR_KV_SECOND_STAGE = 0.037.volts / 1.0.inches.perSecond
+  val ELEVATOR_KA_SECOND_STAGE = 0.0025.volts / 1.0.inches.perSecond.perSecond
 
   val SIM_ELEVATOR_KS_FIRST_STAGE = 0.0.volts
-  val REAL_ELEVATOR_KS_FIRST_STAGE = 0.56.volts
+  val REAL_ELEVATOR_KS_FIRST_STAGE = 0.54.volts
   val ELEVATOR_KG_FIRST_STAGE = 0.0.volts
   val ELEVATOR_KV_FIRST_STAGE = 0.037.volts / 1.0.inches.perSecond
   val ELEVATOR_KA_FIRST_STAGE = 0.0025.volts / 1.0.inches.perSecond.perSecond
@@ -61,6 +61,7 @@ object ElevatorConstants {
   val HOMING_POSITION_THRESHOLD = 30.inches
   val HOMING_APPLIED_VOLTAGE = -1.volts
   val HOMING_STALL_CURRENT = 30.amps
+  val HOMING_STALL_TIME_THRESHOLD = 0.15.seconds
 
   // tooth_width * number_teeth = circumference
   // circumference / 2pi = radius
@@ -81,7 +82,7 @@ object ElevatorConstants {
 
   // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_POSITION_DELTA = 2.0.inches
-  val CONE_DROP_POSITION_DELTA = 0.0.inches
+  val CONE_DROP_POSITION_DELTA = 7.0.inches
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val DOUBLE_SUBSTATION_CONE_OFFSET = 0.0.inches
   val SINGLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
@@ -123,5 +124,5 @@ object ElevatorConstants {
     }
   }
 
-  val ELEVATOR_TOLERANCE = 1.inches
+  val ELEVATOR_TOLERANCE = 0.75.inches
 }

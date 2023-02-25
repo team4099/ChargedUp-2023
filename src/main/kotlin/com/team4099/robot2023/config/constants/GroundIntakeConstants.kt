@@ -21,7 +21,7 @@ import org.team4099.lib.units.perSecond
 object GroundIntakeConstants {
 
   object PID {
-    val NEO_KP = 0.5.volts / 1.degrees
+    val NEO_KP = 0.05.volts / 1.degrees
     val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
     val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
@@ -31,9 +31,9 @@ object GroundIntakeConstants {
 
     val ARM_KS = 0.0.volts
 
-    val ARM_KG = 0.59721.volts
+    val ARM_KG = 0.4.volts
     val ARM_KV = 1.1.volts / 1.0.radians.perSecond
-    val ARM_KA = 0.065.volts / 1.0.radians.perSecond.perSecond
+    val ARM_KA = 0.15.volts / 1.0.radians.perSecond.perSecond
   }
 
   val VOLTAGE_COMPENSATION = 12.0.volts
@@ -41,12 +41,12 @@ object GroundIntakeConstants {
   val ROLLER_CURRENT_LIMIT = 30.amps // TODO TUNE
   val ARM_CURRENT_LIMIT = 80.amps // TODO TUNE
 
-  const val ROLLER_MOTOR_INVERTED = false
+  const val ROLLER_MOTOR_INVERTED = true
   const val ARM_MOTOR_INVERTED = false
 
   val ROLLER_RAMP_RATE = 50.percent.perSecond
 
-  val ABSOLUTE_ENCODER_OFFSET = -33.89.degrees
+  val ABSOLUTE_ENCODER_OFFSET = -52.34.degrees
   // From encoder to intake
   val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).gearRatio
 
@@ -68,7 +68,7 @@ object GroundIntakeConstants {
   val ARM_MOMENT_INERTIA = ARM_MASS * ARM_LENGTH.squared * 1 / 3
 
   val MAX_ARM_VELOCITY =
-    150.degrees
+    95.degrees
       .perSecond // todo mess with velocity and arm to get arm movements to sub 0.25 seconds
   // (ish)
   val MAX_ARM_ACCELERATION = 350.degrees.perSecond.perSecond
@@ -84,7 +84,7 @@ object GroundIntakeConstants {
 
   val INTAKE_ANGLE = 4.4.degrees
   val OUTTAKE_ANGLE = 4.4.degrees
-  val STOWED_UP_ANGLE = 56.6.degrees // TODO change back to 56.6
+  val STOWED_UP_ANGLE = 40.0.degrees
   val INTAKE_VOLTAGE = 3.0.volts
   val OUTTAKE_VOLTAGE = (-3.0).volts
   val STOWED_DOWN_ANGLE = 4.4.degrees
