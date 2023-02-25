@@ -63,8 +63,7 @@ object AutonomousSelector {
     when (mode) {
       AutonomousMode.TEST_AUTO_PATH ->
         return WaitCommand(waitTime.inSeconds).andThen(TestAutoPath(drivetrain))
-      AutonomousMode.ELEVATOR_CHARACTERIZE ->
-        return ElevatorKsCharacterizeCommand(superstructure)
+      AutonomousMode.ELEVATOR_CHARACTERIZE -> return ElevatorKsCharacterizeCommand(superstructure)
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()

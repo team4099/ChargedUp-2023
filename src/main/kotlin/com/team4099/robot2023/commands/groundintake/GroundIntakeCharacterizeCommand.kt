@@ -1,8 +1,5 @@
 package com.team4099.robot2023.commands.elevator
 
-import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
@@ -22,7 +19,7 @@ import org.team4099.lib.units.perSecond
  */
 class GroundIntakeCharacterizeCommand(val superstructure: Superstructure) : CommandBase() {
   init {
-        addRequirements(superstructure)
+    addRequirements(superstructure)
   }
 
   var hasMoved = false

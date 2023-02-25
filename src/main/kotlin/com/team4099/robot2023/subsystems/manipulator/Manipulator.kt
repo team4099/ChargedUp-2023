@@ -3,10 +3,8 @@ package com.team4099.robot2023.subsystems.manipulator
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
-import com.team4099.robot2023.subsystems.elevator.Elevator
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
@@ -246,9 +244,7 @@ class Manipulator(val io: ManipulatorIO) {
   var currentState: ManipulatorState = ManipulatorState.UNINITIALIZED
 
   var currentRequest: ManipulatorRequest =
-    ManipulatorRequest.OpenLoop(
-      0.0.volts, ManipulatorConstants.IDLE_VOLTAGE
-    )
+    ManipulatorRequest.OpenLoop(0.0.volts, ManipulatorConstants.IDLE_VOLTAGE)
     set(value) {
         when (value) {
           is ManipulatorRequest.OpenLoop -> {
@@ -433,10 +429,17 @@ class Manipulator(val io: ManipulatorIO) {
       ManipulatorState.HOME -> {
         // Outputs
 
-        if (inputs.armStatorCurrent < ManipulatorConstants.ARM_HOMING_STALL_CURRENT){
+        if (inputs.armStatorCurrent < ManipulatorConstants.ARM_HOMING_STALL_CURRENT) {
           lastHomingStatorCurrentTripTime = Clock.fpgaTime
         }
-        if (!inputs.isSimulating && (!isHomed && inputs.armStatorCurrent < ManipulatorConstants.ARM_HOMING_STALL_CURRENT && (Clock.fpgaTime - lastHomingStatorCurrentTripTime) < ManipulatorConstants.HOMING_STALL_TIME_THRESHOLD)) {
+        if (!inputs.isSimulating &&
+          (
+            !isHomed &&
+              inputs.armStatorCurrent < ManipulatorConstants.ARM_HOMING_STALL_CURRENT &&
+              (Clock.fpgaTime - lastHomingStatorCurrentTripTime) <
+              ManipulatorConstants.HOMING_STALL_TIME_THRESHOLD
+            )
+        ) {
           setArmVoltage(ManipulatorConstants.ARM_HOMING_APPLIED_VOLTAGE)
         } else {
           zeroEncoder()
@@ -487,7 +490,7 @@ class Manipulator(val io: ManipulatorIO) {
     Logger.getInstance().recordOutput("Manipulator/rollerTargetVoltage", voltage.inVolts)
   }
 
-  fun regenerateProfileNextLoopCycle(){
+  fun regenerateProfileNextLoopCycle() {
     lastArmVoltage = -3337.volts
     lastArmPositionTarget = -3337.inches
     lastIntakeSpikeTime = -3337.seconds
@@ -514,9 +517,12 @@ class Manipulator(val io: ManipulatorIO) {
     } else {
       io.setArmPosition(setpoint.position, feedforward)
     }
-    Logger.getInstance().recordOutput("Manipulator/profilePositionInches", setpoint.position.inInches)
     Logger.getInstance()
-      .recordOutput("Manipulator/profileVelocityInchesPerSecond", setpoint.velocity.inInchesPerSecond)
+      .recordOutput("Manipulator/profilePositionInches", setpoint.position.inInches)
+    Logger.getInstance()
+      .recordOutput(
+        "Manipulator/profileVelocityInchesPerSecond", setpoint.velocity.inInchesPerSecond
+      )
     Logger.getInstance()
       .recordOutput("Manipulator/armAcceleraction", armAcceleration.inInchesPerSecondPerSecond)
     Logger.getInstance().recordOutput("Manipulator/armFeedforward", feedforward.inVolts)
@@ -529,7 +535,9 @@ class Manipulator(val io: ManipulatorIO) {
    * @param voltage The desired voltage of the arm.
    */
   fun setArmVoltage(voltage: ElectricalPotential) {
-    if (isHomed && (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts)) {
+    if (isHomed &&
+      (forwardLimitReached && voltage > 0.volts || reverseLimitReached && voltage < 0.volts)
+    ) {
       io.setArmVoltage(0.volts)
     } else {
       io.setArmVoltage(voltage)

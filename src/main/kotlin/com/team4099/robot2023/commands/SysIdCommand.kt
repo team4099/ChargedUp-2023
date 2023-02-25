@@ -159,5 +159,5 @@ class SysIdCommand : CommandBase {
    * @param posRad Position (radians)
    * @param velRadPerSec Velocity (radians per second)
    */
-    (val posRad: Double, val velRadPerSec: Double)
+  (val posRad: Double, val velRadPerSec: Double)
 }

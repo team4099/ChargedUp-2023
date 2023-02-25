@@ -6,6 +6,8 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.MechanismSimConstants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
+import com.team4099.robot2023.util.FMSData
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
@@ -108,6 +110,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun autonomousInit() {
+    FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.setDriveBrakeMode()
     RobotContainer.zeroSteering()
     RobotContainer.getAutonomousCommand().schedule()
@@ -149,12 +152,12 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopInit() {
+    FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.mapTeleopControls()
-     RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveBrakeMode() // change to coast
+    RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.setDriveCoastMode()
     RobotContainer.zeroSteering()
     RobotContainer.zeroArm()
-    // autonomousCommand.cancel()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }

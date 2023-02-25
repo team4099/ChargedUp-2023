@@ -125,9 +125,16 @@ object GroundIntakeIONeo : GroundIntakeIO {
     Logger.getInstance()
       .recordOutput("GroundIntake/absoluteEncoderRawRotations", throughBoreEncoder.get())
     Logger.getInstance()
-      .recordOutput("GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees)
+      .recordOutput(
+        "GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees
+      )
 
-    Logger.getInstance().recordOutput("GroundIntake/armSensorVelocity", armSparkMax.encoder.velocity * GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving )
+    Logger.getInstance()
+      .recordOutput(
+        "GroundIntake/armSensorVelocity",
+        armSparkMax.encoder.velocity *
+          GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving
+      )
   }
 
   /**
@@ -172,7 +179,10 @@ object GroundIntakeIONeo : GroundIntakeIO {
    */
   override fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {
     armPIDController.setReference(
-      armSensor.positionToRawUnits(armPosition), CANSparkMax.ControlType.kPosition, 0, feedforward.inVolts
+      armSensor.positionToRawUnits(armPosition),
+      CANSparkMax.ControlType.kPosition,
+      0,
+      feedforward.inVolts
     )
   }
 

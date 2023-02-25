@@ -124,22 +124,21 @@ class GroundIntake(private val io: GroundIntakeIO) {
 
   var currentState: GroundIntakeState = GroundIntakeState.UNINITIALIZED
 
-  var currentRequest: GroundIntakeRequest =
-    GroundIntakeRequest.ZeroArm()
+  var currentRequest: GroundIntakeRequest = GroundIntakeRequest.ZeroArm()
     set(value) {
-        when (value) {
-          is GroundIntakeRequest.OpenLoop -> {
-            armVoltageTarget = value.voltage
-            rollerVoltageTarget = value.rollerVoltage
-          }
-          is GroundIntakeRequest.TargetingPosition -> {
-            armPositionTarget = value.position
-            rollerVoltageTarget = value.rollerVoltage
-          }
-          else -> {}
+      when (value) {
+        is GroundIntakeRequest.OpenLoop -> {
+          armVoltageTarget = value.voltage
+          rollerVoltageTarget = value.rollerVoltage
         }
-        field = value
+        is GroundIntakeRequest.TargetingPosition -> {
+          armPositionTarget = value.position
+          rollerVoltageTarget = value.rollerVoltage
+        }
+        else -> {}
       }
+      field = value
+    }
 
   private var armConstraints: TrapezoidProfile.Constraints<Radian> =
     TrapezoidProfile.Constraints(
@@ -218,7 +217,8 @@ class GroundIntake(private val io: GroundIntakeIO) {
           "GroundIntake/isAtCommandedState", currentState.equivalentToRequest(currentRequest)
         )
 
-      Logger.getInstance().recordOutput("GroundIntake/timeProfileGeneratedAt", timeProfileGeneratedAt.inSeconds)
+      Logger.getInstance()
+        .recordOutput("GroundIntake/timeProfileGeneratedAt", timeProfileGeneratedAt.inSeconds)
 
       Logger.getInstance()
         .recordOutput("GroundIntake/armPositionTarget", armPositionTarget.inDegrees)
@@ -249,7 +249,9 @@ class GroundIntake(private val io: GroundIntakeIO) {
       GroundIntakeState.ZEROING_ARM -> {
         zeroArm()
 
-        if (inputs.isSimulated || (inputs.armPosition - inputs.armAbsoluteEncoderPosition).absoluteValue <= 1.degrees){
+        if (inputs.isSimulated ||
+          (inputs.armPosition - inputs.armAbsoluteEncoderPosition).absoluteValue <= 1.degrees
+        ) {
           isZeroed = true
           lastArmPositionTarget = -1337.degrees
         }
@@ -296,15 +298,20 @@ class GroundIntake(private val io: GroundIntakeIO) {
         val profileOutput = armProfile.calculate(timeElapsed)
 
         setArmPosition(profileOutput)
-        if (armProfile.isFinished(timeElapsed)){
+        if (armProfile.isFinished(timeElapsed)) {
           setRollerVoltage(rollerVoltageTarget)
         }
 
         Logger.getInstance()
           .recordOutput("GroundIntake/completedMotionProfile", armProfile.isFinished(timeElapsed))
 
-        Logger.getInstance().recordOutput("GroundIntake/profilePositionDegrees", profileOutput.position.inDegrees)
-        Logger.getInstance().recordOutput("GroundIntake/profileVelocityDegreesPerSecond", profileOutput.velocity.inDegreesPerSecond)
+        Logger.getInstance()
+          .recordOutput("GroundIntake/profilePositionDegrees", profileOutput.position.inDegrees)
+        Logger.getInstance()
+          .recordOutput(
+            "GroundIntake/profileVelocityDegreesPerSecond",
+            profileOutput.velocity.inDegreesPerSecond
+          )
 
         // Transitions
         nextState = fromRequestToState(currentRequest)
@@ -345,7 +352,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
     io.zeroEncoder()
   }
 
-  fun regenerateProfileNextLoopCycle(){
+  fun regenerateProfileNextLoopCycle() {
     lastArmVoltage = -3337.volts
     lastArmPositionTarget = -3337.degrees
     lastIntakeRunTime = -3337.seconds
@@ -386,7 +393,8 @@ class GroundIntake(private val io: GroundIntakeIO) {
       io.setArmPosition(setpoint.position, feedforward)
     }
 
-    Logger.getInstance().recordOutput("GroundIntake/profileIsOutOfBounds", isOutOfBounds(setpoint.velocity))
+    Logger.getInstance()
+      .recordOutput("GroundIntake/profileIsOutOfBounds", isOutOfBounds(setpoint.velocity))
     Logger.getInstance().recordOutput("GroundIntake/armFeedForward", feedforward.inVolts)
     Logger.getInstance().recordOutput("GroundIntake/armTargetPosition", setpoint.position.inDegrees)
     Logger.getInstance()

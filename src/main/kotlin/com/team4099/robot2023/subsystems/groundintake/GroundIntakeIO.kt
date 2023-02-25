@@ -72,9 +72,8 @@ interface GroundIntakeIO {
       table?.getDouble("armPositionDegrees", armPosition.inDegrees)?.let {
         armPosition = it.degrees
       }
-      table?.getDouble("armAbsoluteEncoderPositionDegrees", armAbsoluteEncoderPosition.inDegrees)?.let {
-        armAbsoluteEncoderPosition = it.degrees
-      }
+      table?.getDouble("armAbsoluteEncoderPositionDegrees", armAbsoluteEncoderPosition.inDegrees)
+        ?.let { armAbsoluteEncoderPosition = it.degrees }
       table?.getDouble("armVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)?.let {
         armVelocity = it.degrees.perSecond
       }

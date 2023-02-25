@@ -6,13 +6,10 @@ import com.team4099.robot2023.commands.drivetrain.AutoLevel
 import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
-import com.team4099.robot2023.commands.elevator.ElevatorKvCharacterizeCommand
-import com.team4099.robot2023.commands.manipulator.ArmCharacterizationCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIO
-import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.elevator.Elevator
@@ -28,7 +25,6 @@ import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.base.inSeconds
 
@@ -40,7 +36,7 @@ object RobotContainer {
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
-      drivetrain = Drivetrain(object : GyroIO {}, object: DrivetrainIO {})
+      drivetrain = Drivetrain(object : GyroIO {}, object : DrivetrainIO {})
       //      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
@@ -71,7 +67,7 @@ object RobotContainer {
         drivetrain
       )
 
-//    superstructure.defaultCommand = InstantCommand({}, superstructure)
+    //    superstructure.defaultCommand = InstantCommand({}, superstructure)
   }
 
   //  val measurementsWithTimestamps
@@ -87,15 +83,15 @@ object RobotContainer {
     )
   }
 
-  fun requestSuperstructureIdle(){
+  fun requestSuperstructureIdle() {
     superstructure.currentRequest = Request.SuperstructureRequest.Idle()
   }
 
-  fun zeroArm(){
+  fun zeroArm() {
     superstructure.groundIntakeZeroArm()
   }
 
-  fun regenerateProfiles(){
+  fun regenerateProfiles() {
     superstructure.regenerateProfiles()
   }
 
@@ -127,11 +123,13 @@ object RobotContainer {
     //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
-    ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.intakeConeFromDoubleSubStationCommand())
+    ControlBoard.setArmPositionToShelfIntake.whileTrue(
+      superstructure.intakeConeFromDoubleSubStationCommand()
+    )
     ControlBoard.extendArm.whileTrue(superstructure.prepscoreConeHighCommand())
     ControlBoard.retractArm.whileTrue(superstructure.scoreConeHighCommand())
-//    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCubeCommand())
-//    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
+    //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCubeCommand())
+    //    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 
     //
     // ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())

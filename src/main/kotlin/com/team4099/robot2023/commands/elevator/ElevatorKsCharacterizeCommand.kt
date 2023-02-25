@@ -1,7 +1,6 @@
 package com.team4099.robot2023.commands.elevator
 
 import com.team4099.robot2023.config.constants.ElevatorConstants
-import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
@@ -40,7 +39,9 @@ class ElevatorKsCharacterizeCommand(val superstructure: Superstructure) : Comman
   override fun execute() {
     superstructure.elevatorSetVoltage(appliedVolts)
 
-    if ((superstructure.elevatorInputs.elevatorVelocity - 0.0.inches.perSecond).absoluteValue > moveTolerance) {
+    if ((superstructure.elevatorInputs.elevatorVelocity - 0.0.inches.perSecond).absoluteValue >
+      moveTolerance
+    ) {
       hasMoved = true
       println(appliedVolts.inVolts - ElevatorConstants.ELEVATOR_KG_FIRST_STAGE.inVolts)
     }
@@ -51,7 +52,10 @@ class ElevatorKsCharacterizeCommand(val superstructure: Superstructure) : Comman
       appliedVolts += sim_step
     }
 
-    Logger.getInstance().recordOutput("Elevator/kS", (appliedVolts - ElevatorConstants.ELEVATOR_KG_FIRST_STAGE).inVolts)
+    Logger.getInstance()
+      .recordOutput(
+        "Elevator/kS", (appliedVolts - ElevatorConstants.ELEVATOR_KG_FIRST_STAGE).inVolts
+      )
   }
 
   override fun isFinished(): Boolean {

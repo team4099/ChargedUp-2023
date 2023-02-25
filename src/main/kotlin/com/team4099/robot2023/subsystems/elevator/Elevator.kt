@@ -42,18 +42,20 @@ import com.team4099.robot2023.subsystems.superstructure.Request.ElevatorRequest 
 class Elevator(val io: ElevatorIO) {
   val inputs = ElevatorIO.ElevatorInputs()
 
-  private var elevatorFeedforwardFirstStage: ElevatorFeedforward = ElevatorFeedforward(
-    ElevatorConstants.REAL_ELEVATOR_KS_FIRST_STAGE,
-    ElevatorConstants.ELEVATOR_KG_FIRST_STAGE,
-    ElevatorConstants.ELEVATOR_KV_FIRST_STAGE,
-    ElevatorConstants.ELEVATOR_KA_FIRST_STAGE
-  )
-  private var elevatorFeedforwardSecondStage: ElevatorFeedforward = ElevatorFeedforward(
-    ElevatorConstants.REAL_ELEVATOR_KS_SECOND_STAGE,
-    ElevatorConstants.ELEVATOR_KG_SECOND_STAGE,
-    ElevatorConstants.ELEVATOR_KV_SECOND_STAGE,
-    ElevatorConstants.ELEVATOR_KA_SECOND_STAGE
-  )
+  private var elevatorFeedforwardFirstStage: ElevatorFeedforward =
+    ElevatorFeedforward(
+      ElevatorConstants.REAL_ELEVATOR_KS_FIRST_STAGE,
+      ElevatorConstants.ELEVATOR_KG_FIRST_STAGE,
+      ElevatorConstants.ELEVATOR_KV_FIRST_STAGE,
+      ElevatorConstants.ELEVATOR_KA_FIRST_STAGE
+    )
+  private var elevatorFeedforwardSecondStage: ElevatorFeedforward =
+    ElevatorFeedforward(
+      ElevatorConstants.REAL_ELEVATOR_KS_SECOND_STAGE,
+      ElevatorConstants.ELEVATOR_KG_SECOND_STAGE,
+      ElevatorConstants.ELEVATOR_KV_SECOND_STAGE,
+      ElevatorConstants.ELEVATOR_KA_SECOND_STAGE
+    )
 
   // PID and Feedforward Values
   var elevatorFeedforward: ElevatorFeedforward = elevatorFeedforwardFirstStage
@@ -252,25 +254,25 @@ class Elevator(val io: ElevatorIO) {
 
   val isStowed: Boolean
     get() =
-      inputs.elevatorPosition <= ElevatorConstants.ELEVATOR_MAX_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
+      inputs.elevatorPosition <=
+        ElevatorConstants.ELEVATOR_MAX_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
 
   var isHomed = false
 
   var currentState: ElevatorState = ElevatorState.UNINITIALIZED
 
-  var currentRequest: ElevatorRequest =
-    ElevatorRequest.OpenLoop(0.0.volts)
+  var currentRequest: ElevatorRequest = ElevatorRequest.OpenLoop(0.0.volts)
     set(value) {
-        when (value) {
-          is ElevatorRequest.OpenLoop -> elevatorVoltageTarget = value.voltage
-          is ElevatorRequest.TargetingPosition -> {
-            elevatorPositionTarget = value.position
-            elevatorVelocityTarget = value.finalVelocity
-          }
-          else -> {}
+      when (value) {
+        is ElevatorRequest.OpenLoop -> elevatorVoltageTarget = value.voltage
+        is ElevatorRequest.TargetingPosition -> {
+          elevatorPositionTarget = value.position
+          elevatorVelocityTarget = value.finalVelocity
         }
-        field = value
+        else -> {}
       }
+      field = value
+    }
 
   var elevatorPositionTarget = 0.0.inches
     private set
@@ -441,8 +443,12 @@ class Elevator(val io: ElevatorIO) {
               TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
             )
 
-          Logger.getInstance().recordOutput("Elevator/initialPosition", elevatorProfile.initial.position.inInches)
-          Logger.getInstance().recordOutput("Elevator/initialVelocity", elevatorProfile.initial.velocity.inInchesPerSecond)
+          Logger.getInstance()
+            .recordOutput("Elevator/initialPosition", elevatorProfile.initial.position.inInches)
+          Logger.getInstance()
+            .recordOutput(
+              "Elevator/initialVelocity", elevatorProfile.initial.velocity.inInchesPerSecond
+            )
           timeProfileGeneratedAt = Clock.fpgaTime
           lastRequestedPosition = elevatorPositionTarget
           lastRequestedVelocity = elevatorVelocityTarget
@@ -459,8 +465,12 @@ class Elevator(val io: ElevatorIO) {
             "Elevator/completedMotionProfile", elevatorProfile.isFinished(timeElapsed)
           )
 
-        Logger.getInstance().recordOutput("Elevator/profileTargetPosition", profilePosition.position.inInches)
-        Logger.getInstance().recordOutput("Elevator/profileTargetVelocity", profilePosition.velocity.inInchesPerSecond)
+        Logger.getInstance()
+          .recordOutput("Elevator/profileTargetPosition", profilePosition.position.inInches)
+        Logger.getInstance()
+          .recordOutput(
+            "Elevator/profileTargetVelocity", profilePosition.velocity.inInchesPerSecond
+          )
 
         // Transitions
         nextState = fromElevatorRequestToState(currentRequest)
@@ -472,10 +482,17 @@ class Elevator(val io: ElevatorIO) {
       }
       ElevatorState.HOME -> {
         // Outputs
-        if (inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT){
+        if (inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT) {
           lastHomingStatorCurrentTripTime = Clock.fpgaTime
         }
-        if (!inputs.isSimulating && (!isHomed && inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT && (Clock.fpgaTime - lastHomingStatorCurrentTripTime) < ElevatorConstants.HOMING_STALL_TIME_THRESHOLD)) {
+        if (!inputs.isSimulating &&
+          (
+            !isHomed &&
+              inputs.leaderStatorCurrent < ElevatorConstants.HOMING_STALL_CURRENT &&
+              (Clock.fpgaTime - lastHomingStatorCurrentTripTime) <
+              ElevatorConstants.HOMING_STALL_TIME_THRESHOLD
+            )
+        ) {
           setHomeVoltage(ElevatorConstants.HOMING_APPLIED_VOLTAGE)
         } else {
           zeroEncoder()
@@ -483,7 +500,7 @@ class Elevator(val io: ElevatorIO) {
         }
 
         // Transition
-        if (isHomed){
+        if (isHomed) {
           nextState = fromElevatorRequestToState(currentRequest)
         }
       }
@@ -506,11 +523,11 @@ class Elevator(val io: ElevatorIO) {
     }
   }
 
-  private fun setHomeVoltage(voltage: ElectricalPotential){
+  private fun setHomeVoltage(voltage: ElectricalPotential) {
     io.setOutputVoltage(voltage)
   }
 
-  fun regenerateProfileNextLoopCycle(){
+  fun regenerateProfileNextLoopCycle() {
     lastRequestedPosition = -3337.inches
     lastRequestedVelocity = -3337.inches.perSecond
     lastRequestedVoltage = -3337.volts

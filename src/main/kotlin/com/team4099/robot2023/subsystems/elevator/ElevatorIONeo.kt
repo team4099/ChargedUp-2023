@@ -110,8 +110,7 @@ object ElevatorIONeo : ElevatorIO {
    */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
     // divide by 2 cause full power elevator is scary
-    leaderSparkMax.setVoltage(
-      voltage.inVolts)
+    leaderSparkMax.setVoltage(voltage.inVolts)
   }
 
   /**
