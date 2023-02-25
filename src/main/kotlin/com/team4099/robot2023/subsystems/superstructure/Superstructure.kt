@@ -730,7 +730,7 @@ class Superstructure(
       runOnce {
         currentRequest =
           SuperstructureRequest.PrepScore(
-            Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.MID
+            Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
           )
       }
         .until { currentState == SuperstructureStates.SCORE_PREP }
