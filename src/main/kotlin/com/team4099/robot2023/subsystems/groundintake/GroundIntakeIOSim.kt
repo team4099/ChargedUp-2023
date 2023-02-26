@@ -16,7 +16,6 @@ import org.team4099.lib.controller.PIDController
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inInches
-import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.derived.Angle
@@ -55,8 +54,7 @@ object GroundIntakeIOSim : GroundIntakeIO {
       GroundIntakeConstants.ARM_LENGTH.inMeters,
       -15.degrees.inRadians,
       90.degrees.inRadians,
-      GroundIntakeConstants.ARM_MASS.inKilograms,
-      true
+      true,
     )
 
   private val armController =
