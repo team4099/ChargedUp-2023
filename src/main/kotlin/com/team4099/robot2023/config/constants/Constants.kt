@@ -72,13 +72,13 @@ object Constants {
     const val FRONT_RIGHT_STEERING_ID = 22
     const val FRONT_RIGHT_ANALOG_POTENTIOMETER = 1
 
-    const val BACK_RIGHT_DRIVE_ID = 13
-    const val BACK_RIGHT_STEERING_ID = 23
-    const val BACK_RIGHT_ANALOG_POTENTIOMETER = 3
-
     const val BACK_LEFT_DRIVE_ID = 14
     const val BACK_LEFT_STEERING_ID = 24
     const val BACK_LEFT_ANALOG_POTENTIOMETER = 2
+
+    const val BACK_RIGHT_DRIVE_ID = 13
+    const val BACK_RIGHT_STEERING_ID = 23
+    const val BACK_RIGHT_ANALOG_POTENTIOMETER = 3
   }
 
   // leader is right motor and follower is left

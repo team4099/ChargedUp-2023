@@ -58,13 +58,6 @@ class SwerveModuleIOFalcon(
   private val steeringConfiguration: TalonFXConfiguration = TalonFXConfiguration()
   private val driveConfiguration: TalonFXConfiguration = TalonFXConfiguration()
 
-  private val driveFeedforward =
-    SimpleMotorFeedforward(
-      DrivetrainConstants.PID.DRIVE_KS,
-      DrivetrainConstants.PID.DRIVE_KV,
-      DrivetrainConstants.PID.DRIVE_KA
-    )
-
   init {
     driveFalcon.configFactoryDefault()
     steeringFalcon.configFactoryDefault()
@@ -103,7 +96,7 @@ class SwerveModuleIOFalcon(
       driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
     driveConfiguration.slot0.kD =
       driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
-    driveConfiguration.slot0.kF = DrivetrainConstants.PID.DRIVE_KFF
+    driveConfiguration.slot0.kF = driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
     driveConfiguration.supplyCurrLimit.triggerThresholdCurrent =
@@ -157,7 +150,7 @@ class SwerveModuleIOFalcon(
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
-    val feedforward = driveFeedforward.calculate(speed, acceleration)
+    val feedforward = DrivetrainConstants.PID.DRIVE_KS * speed.sign
     driveFalcon.set(
       ControlMode.Velocity,
       driveSensor.velocityToRawUnits(speed),
