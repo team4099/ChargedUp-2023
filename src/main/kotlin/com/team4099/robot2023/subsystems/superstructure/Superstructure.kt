@@ -414,22 +414,22 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
           )
         if (groundIntake.isAtTargetedPosition) {
-          manipulator.currentRequest =
-            Request.ManipulatorRequest.TargetingPosition(
-              Manipulator.TunableManipulatorStates.doubleSubstationIntakeShelfExtension.get(),
-              ManipulatorConstants.IDLE_VOLTAGE
+          val offset =
+            when (usingGamePiece) {
+              GamePiece.CUBE -> Elevator.TunableElevatorHeights.shelfIntakeCubeOffset.get()
+              GamePiece.CONE -> Elevator.TunableElevatorHeights.shelfIntakeConeOffset.get()
+              else -> 0.0.inches
+            }
+          elevator.currentRequest =
+            Request.ElevatorRequest.TargetingPosition(
+              Elevator.TunableElevatorHeights.doubleSubstationHeight.get() + offset
             )
 
-          if (manipulator.isAtTargetedPosition) {
-            val offset =
-              when (usingGamePiece) {
-                GamePiece.CUBE -> Elevator.TunableElevatorHeights.shelfIntakeCubeOffset.get()
-                GamePiece.CONE -> Elevator.TunableElevatorHeights.shelfIntakeConeOffset.get()
-                else -> 0.0.inches
-              }
-            elevator.currentRequest =
-              Request.ElevatorRequest.TargetingPosition(
-                Elevator.TunableElevatorHeights.doubleSubstationHeight.get() + offset
+          if (elevator.isAtTargetedPosition) {
+            manipulator.currentRequest =
+              Request.ManipulatorRequest.TargetingPosition(
+                Manipulator.TunableManipulatorStates.doubleSubstationIntakeShelfExtension.get(),
+                ManipulatorConstants.IDLE_VOLTAGE
               )
           }
         }

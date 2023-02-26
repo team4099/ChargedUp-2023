@@ -7,10 +7,12 @@ import com.team4099.robot2023.config.constants.MechanismSimConstants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
+import edu.wpi.first.hal.AllianceStationID
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
+import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
@@ -81,6 +83,7 @@ object Robot : LoggedRobot() {
         Constants.Tuning.SimType.SIM -> {
           logger.addDataReceiver(NT4Publisher())
           logSimulationAlert.set(true)
+          DriverStationSim.setAllianceStationId(AllianceStationID.Blue1)
         }
         Constants.Tuning.SimType.REPLAY -> {
           // if in replay mode get file path from command line and read log file

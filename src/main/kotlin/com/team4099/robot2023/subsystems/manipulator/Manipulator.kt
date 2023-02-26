@@ -339,6 +339,8 @@ class Manipulator(val io: ManipulatorIO) {
 
       Logger.getInstance().recordOutput("Manipulator/hasCone", hasCone)
 
+      Logger.getInstance().recordOutput("Manipulator/isAtTargetedPosition", isAtTargetedPosition)
+
       Logger.getInstance()
         .recordOutput("Manipulator/lastRollerRunTime", lastRollerRunTime.inSeconds)
 
