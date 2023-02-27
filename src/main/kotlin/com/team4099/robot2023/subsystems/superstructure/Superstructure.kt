@@ -11,6 +11,8 @@ import com.team4099.robot2023.config.constants.NodeTier
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
+import com.team4099.robot2023.util.AdvantageClock
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -68,28 +70,28 @@ class Superstructure(
   val manipulatorInputs = manipulator.inputs
 
   override fun periodic() {
-    val elevatorLoopStartTime = Clock.fpgaTime
+    val elevatorLoopStartTime = AdvantageClock.realTimestamp
     elevator.periodic()
     Logger.getInstance()
       .recordOutput(
         "LoggedRobot/Subsystems/ElevatorLoopTimeMS",
-        (Clock.fpgaTime - elevatorLoopStartTime).inMilliseconds
+        (AdvantageClock.realTimestamp - elevatorLoopStartTime).inMilliseconds
       )
 
-    val groundIntakeLoopStartTime = Clock.fpgaTime
+    val groundIntakeLoopStartTime = AdvantageClock.realTimestamp
     groundIntake.periodic()
     Logger.getInstance()
       .recordOutput(
         "LoggedRobot/Subsystems/GroundIntakeLoopTimeMS",
-        (Clock.fpgaTime - groundIntakeLoopStartTime).inMilliseconds
+        (AdvantageClock.realTimestamp - groundIntakeLoopStartTime).inMilliseconds
       )
 
-    val manipulatorLoopStartTime = Clock.fpgaTime
+    val manipulatorLoopStartTime = AdvantageClock.realTimestamp
     manipulator.periodic()
     Logger.getInstance()
       .recordOutput(
         "LoggedRobot/Subsystems/ManipulatorLoopTimeMS",
-        (Clock.fpgaTime - manipulatorLoopStartTime).inMilliseconds
+        (AdvantageClock.realTimestamp - manipulatorLoopStartTime).inMilliseconds
       )
 
     Logger.getInstance()
