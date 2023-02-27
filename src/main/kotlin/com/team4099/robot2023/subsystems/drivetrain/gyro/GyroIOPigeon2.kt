@@ -19,7 +19,7 @@ object GyroIOPigeon2 : GyroIO {
   private var pigeon2 = Pigeon2(Constants.Gyro.PIGEON_2_ID, Constants.Universal.CANIVORE_NAME)
   private val xyzDps = DoubleArray(3)
 
-  val isConnected = pigeon2.lastError.equals(ErrorCode.OK)
+  private val isConnected = pigeon2.lastError.equals(ErrorCode.OK)
 
   var gyroYawOffset: Angle = 0.0.degrees
   var gyroPitchOffset: Angle = 0.0.degrees

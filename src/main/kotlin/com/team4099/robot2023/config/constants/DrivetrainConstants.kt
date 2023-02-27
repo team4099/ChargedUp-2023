@@ -61,10 +61,8 @@ object DrivetrainConstants {
   const val DRIVE_SENSOR_CPR = 2048
   const val STEERING_SENSOR_CPR = 2048
 
-  val DRIVE_SENSOR_GEAR_RATIO =
-    ((50.0.driven / 14.0.driving) * (17.0.driven / 27.0.driving) * (45.0.driven / 15.0.driving))
-      .gearRatio
-  val STEERING_SENSOR_GEAR_RATIO = (150.0.driven / 7.0.driving).gearRatio
+  const val DRIVE_SENSOR_GEAR_RATIO = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+  const val STEERING_SENSOR_GEAR_RATIO = 7.0 / 150.0
 
   val ALLOWED_STEERING_ANGLE_ERROR = 1.degrees
 
@@ -77,10 +75,10 @@ object DrivetrainConstants {
   val DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT = 80.0.amps
   val DRIVE_STATOR_TRIGGER_THRESHOLD_TIME = 1.0.seconds
 
-  val FRONT_LEFT_MODULE_ZERO = 1.335.radians
-  val FRONT_RIGHT_MODULE_ZERO = 0.850.radians
-  val BACK_LEFT_MODULE_ZERO = 3.470.radians
-  val BACK_RIGHT_MODULE_ZERO = 0.38.radians
+  val FRONT_LEFT_MODULE_ZERO = 1.318.radians
+  val FRONT_RIGHT_MODULE_ZERO = 0.856.radians
+  val BACK_LEFT_MODULE_ZERO = 3.47.radians
+  val BACK_RIGHT_MODULE_ZERO = 1.36.radians
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
@@ -115,7 +113,7 @@ object DrivetrainConstants {
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
 
-    val STEERING_KP = 8.043569323.volts / 45.degrees
+    val STEERING_KP = 10.0.volts / 45.degrees
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
 

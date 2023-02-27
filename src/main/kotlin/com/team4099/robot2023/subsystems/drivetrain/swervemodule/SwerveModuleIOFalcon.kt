@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.wpilibj.AnalogPotentiometer
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.AngularVelocity
@@ -42,14 +43,14 @@ class SwerveModuleIOFalcon(
     ctreAngularMechanismSensor(
       steeringFalcon,
       DrivetrainConstants.STEERING_SENSOR_CPR,
-      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO.asDrivenOverDriving,
+      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO,
       DrivetrainConstants.STEERING_COMPENSATION_VOLTAGE
     )
   private val driveSensor =
     ctreLinearMechanismSensor(
       driveFalcon,
       DrivetrainConstants.DRIVE_SENSOR_CPR,
-      DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO.asDrivenOverDriving,
+      DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO,
       DrivetrainConstants.WHEEL_DIAMETER,
       DrivetrainConstants.DRIVE_COMPENSATION_VOLTAGE
     )
@@ -180,6 +181,7 @@ class SwerveModuleIOFalcon(
       steeringSensor.positionToRawUnits(
         -(potentiometer.get().radians) + zeroOffset.inRadians.radians
       )
+    Logger.getInstance().recordOutput("${label}/zero", (-(potentiometer.get().radians) + zeroOffset.inRadians.radians).inRadians)
     println(
       "Loading Zero for Module $label (${steeringSensor.positionToRawUnits(
         -(potentiometer.get().radians) + zeroOffset.inRadians.radians
@@ -219,11 +221,19 @@ class SwerveModuleIOFalcon(
     steeringConfiguration.motionAcceleration = steeringSensor.accelerationToRawUnits(maxAccel)
   }
 
-  override fun setBrakeMode(brake: Boolean) {
+  override fun setDriveBrakeMode(brake: Boolean) {
     if (brake) {
       driveFalcon.setNeutralMode(NeutralMode.Brake)
     } else {
       driveFalcon.setNeutralMode(NeutralMode.Coast)
+    }
+  }
+
+  override fun setSteeringBrakeMode(brake: Boolean) {
+    if (brake) {
+      steeringFalcon.setNeutralMode(NeutralMode.Brake)
+    } else {
+      steeringFalcon.setNeutralMode(NeutralMode.Coast)
     }
   }
 }

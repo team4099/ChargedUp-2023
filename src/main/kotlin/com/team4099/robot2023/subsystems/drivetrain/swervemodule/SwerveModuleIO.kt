@@ -127,7 +127,9 @@ interface SwerveModuleIO {
   fun zeroSteering() {}
   fun zeroDrive() {}
 
-  fun setBrakeMode(brake: Boolean) {}
+  fun setDriveBrakeMode(brake: Boolean) {}
+
+  fun setSteeringBrakeMode(brake: Boolean) {}
 
   fun configureDrivePID(
     kP: ProportionalGain<Velocity<Meter>, Volt>,

@@ -13,13 +13,17 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIO
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
+import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
 import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.elevator.ElevatorIO
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIO
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
@@ -37,13 +41,13 @@ object RobotContainer {
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
-      drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOReal)
+      drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       //      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
-          Elevator(ElevatorIOSim),
-          GroundIntake(GroundIntakeIOSim),
-          Manipulator(ManipulatorIOSim)
+          Elevator(object: ElevatorIO {}),
+          GroundIntake(object : GroundIntakeIO {}),
+          Manipulator(object: ManipulatorIO {})
         )
     } else {
       // Simulation implementations
@@ -105,6 +109,13 @@ object RobotContainer {
     zeroArm()
   }
 
+  fun setSteeringCoastMode(){
+    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(false)}
+  }
+  fun setSteeringBrakeMode(){
+    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(true)}
+  }
+
   fun setDriveCoastMode() {
     drivetrain.swerveModules.forEach { it.setDriveBrakeMode(false) }
   }
@@ -114,7 +125,7 @@ object RobotContainer {
   }
 
   fun mapTeleopControls() {
-    ControlBoard.resetGyro.whileActiveOnce(ResetGyroYawCommand(drivetrain))
+    ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
     ControlBoard.autoLevel.whileActiveContinuous(
       GoToAngle(drivetrain).andThen(AutoLevel(drivetrain))
     )

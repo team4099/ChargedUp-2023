@@ -104,7 +104,6 @@ object Robot : LoggedRobot() {
     RobotContainer
     AutonomousSelector
     PathStore
-    RobotContainer.zeroSensors()
     RobotContainer.mapDefaultCommands()
   }
 
@@ -113,15 +112,17 @@ object Robot : LoggedRobot() {
   }
 
   override fun autonomousInit() {
+    RobotContainer.zeroSensors()
     FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.setDriveBrakeMode()
-    RobotContainer.zeroSteering()
+    RobotContainer.setSteeringBrakeMode()
     RobotContainer.getAutonomousCommand().schedule()
   }
 
   override fun disabledInit() {
     RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveBrakeMode()
+    RobotContainer.setSteeringCoastMode()
+    RobotContainer.setDriveCoastMode()
     RobotContainer.requestSuperstructureIdle()
     // autonomousCommand.cancel()
   }
@@ -155,11 +156,12 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopInit() {
+    RobotContainer.zeroSteering()
     FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveCoastMode()
-    RobotContainer.zeroSteering()
+    RobotContainer.setDriveBrakeMode()
+    RobotContainer.setSteeringBrakeMode()
     RobotContainer.zeroArm()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()

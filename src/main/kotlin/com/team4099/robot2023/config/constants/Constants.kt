@@ -44,7 +44,7 @@ object Constants {
   object Tuning {
 
     const val TUNING_MODE = false
-    const val DEBUGING_MODE = true
+    const val DEBUGING_MODE = false
     const val SIMULATE_DRIFT = false
     const val DRIFT_CONSTANT = 0.001
 
@@ -72,12 +72,12 @@ object Constants {
     const val FRONT_RIGHT_STEERING_ID = 22
     const val FRONT_RIGHT_ANALOG_POTENTIOMETER = 1
 
-    const val BACK_LEFT_DRIVE_ID = 14
-    const val BACK_LEFT_STEERING_ID = 24
+    const val BACK_LEFT_DRIVE_ID = 13
+    const val BACK_LEFT_STEERING_ID = 23
     const val BACK_LEFT_ANALOG_POTENTIOMETER = 2
 
-    const val BACK_RIGHT_DRIVE_ID = 13
-    const val BACK_RIGHT_STEERING_ID = 23
+    const val BACK_RIGHT_DRIVE_ID = 14
+    const val BACK_RIGHT_STEERING_ID = 24
     const val BACK_RIGHT_ANALOG_POTENTIOMETER = 3
   }
 
@@ -88,7 +88,7 @@ object Constants {
   }
 
   object Gyro {
-    const val PIGEON_2_ID = 1337
+    const val PIGEON_2_ID = 1
   }
 
   object Manipulator {

@@ -47,14 +47,14 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   private val driveMotorSim: FlywheelSim =
     FlywheelSim(
       DCMotor.getNEO(1),
-      DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO.asDrivingOverDriven,
+      1 / DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO,
       DrivetrainConstants.DRIVE_WHEEL_INERTIA.inKilogramsMeterSquared
     )
 
   private val steerMotorSim =
     FlywheelSim(
       DCMotor.getNEO(1),
-      DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO.asDrivingOverDriven,
+      1 / DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO,
       DrivetrainConstants.STEERING_WHEEL_INERTIA.inKilogramsMeterSquared
     )
 
@@ -234,7 +234,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     steeringFeedback.setPID(kP, kI, kD)
   }
 
-  override fun setBrakeMode(brake: Boolean) {
+  override fun setDriveBrakeMode(brake: Boolean) {
     println("Can't set brake mode in simulation")
   }
 
