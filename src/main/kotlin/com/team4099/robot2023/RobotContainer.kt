@@ -2,6 +2,7 @@ package com.team4099.robot2023
 
 import com.team4099.lib.vision.VisionMeasurement
 import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.commands.PickupFromSubstationCommand
 import com.team4099.robot2023.commands.drivetrain.AutoLevel
 import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
@@ -9,22 +10,18 @@ import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
-import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIO
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.elevator.ElevatorIO
-import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIO
-import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
@@ -45,9 +42,9 @@ object RobotContainer {
       //      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
-          Elevator(object: ElevatorIO {}),
+          Elevator(object : ElevatorIO {}),
           GroundIntake(object : GroundIntakeIO {}),
-          Manipulator(object: ManipulatorIO {})
+          Manipulator(object : ManipulatorIO {})
         )
     } else {
       // Simulation implementations
@@ -109,11 +106,11 @@ object RobotContainer {
     zeroArm()
   }
 
-  fun setSteeringCoastMode(){
-    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(false)}
+  fun setSteeringCoastMode() {
+    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(false) }
   }
-  fun setSteeringBrakeMode(){
-    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(true)}
+  fun setSteeringBrakeMode() {
+    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(true) }
   }
 
   fun setDriveCoastMode() {
@@ -126,8 +123,14 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
-    ControlBoard.autoLevel.whileActiveContinuous(
-      GoToAngle(drivetrain).andThen(AutoLevel(drivetrain))
+    ControlBoard.autoLevel.whileTrue(GoToAngle(drivetrain).andThen(AutoLevel(drivetrain)))
+    ControlBoard.pickupFromSubstation.whileTrue(
+      PickupFromSubstationCommand(
+        drivetrain,
+        superstructure,
+        Constants.Universal.GamePiece.CONE,
+        Constants.Universal.Substation.DOUBLE_SUBSTATION_LEFT
+      )
     )
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))

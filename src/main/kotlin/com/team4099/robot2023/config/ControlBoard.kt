@@ -27,6 +27,8 @@ object ControlBoard {
 
   val autoLevel = Trigger { driver.aButton }
 
+  val pickupFromSubstation = Trigger { driver.bButton }
+
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
 
   val extendArm = Trigger { operator.aButton }

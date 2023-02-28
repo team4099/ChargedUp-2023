@@ -14,10 +14,8 @@ import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.radians
-import java.lang.Double.compare
 import java.util.NavigableMap
 import java.util.TreeMap
-
 
 class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
   private var basePose: Pose2d = Pose2d()
@@ -25,30 +23,29 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
   private val updates: NavigableMap<Double, PoseUpdate> = TreeMap()
   private val q: Matrix<N3?, N1?> = Matrix(Nat.N3(), Nat.N1())
 
-  /** Returns the latest robot pose based on drive and vision data.  */
+  /** Returns the latest robot pose based on drive and vision data. */
   fun getLatestPose(): Pose2d {
     return latestPose
   }
 
-  /** Resets the odometry to a known pose.  */
+  /** Resets the odometry to a known pose. */
   fun resetPose(pose: Pose2d) {
     basePose = pose
     updates.clear()
     update()
   }
 
-  /** Records a new drive movement.  */
+  /** Records a new drive movement. */
   fun addDriveData(timestamp: Double, twist: Twist2d) {
     updates[timestamp] = PoseUpdate(twist, ArrayList<VisionUpdate>())
     update()
   }
 
-  /** Records a new set of vision updates.  */
+  /** Records a new set of vision updates. */
   fun addVisionData(visionData: List<TimestampedVisionUpdate>) {
     for (timestampedVisionUpdate in visionData) {
       val timestamp: Double = timestampedVisionUpdate.timestamp.inSeconds
-      val visionUpdate =
-        VisionUpdate(timestampedVisionUpdate.pose, timestampedVisionUpdate.stdDevs)
+      val visionUpdate = VisionUpdate(timestampedVisionUpdate.pose, timestampedVisionUpdate.stdDevs)
       if (updates.containsKey(timestamp)) {
         // There was already an update at this timestamp, add to it
         val oldVisionUpdates: ArrayList<VisionUpdate> = updates[timestamp]!!.visionUpdates
@@ -64,14 +61,16 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
         }
 
         // Create partial twists (prev -> vision, vision -> next)
-        val twist0 = multiplyTwist(
-          nextUpdate.value.twist2d,
-          (timestamp - prevUpdate.key) / (nextUpdate.key - prevUpdate.key)
-        )
-        val twist1 = multiplyTwist(
-          nextUpdate.value.twist2d,
-          (nextUpdate.key - timestamp) / (nextUpdate.key - prevUpdate.key)
-        )
+        val twist0 =
+          multiplyTwist(
+            nextUpdate.value.twist2d,
+            (timestamp - prevUpdate.key) / (nextUpdate.key - prevUpdate.key)
+          )
+        val twist1 =
+          multiplyTwist(
+            nextUpdate.value.twist2d,
+            (nextUpdate.key - timestamp) / (nextUpdate.key - prevUpdate.key)
+          )
 
         // Add new pose updates
         val newVisionUpdates = ArrayList<VisionUpdate>()
@@ -86,12 +85,10 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
     update()
   }
 
-  /** Clears old data and calculates the latest pose.  */
+  /** Clears old data and calculates the latest pose. */
   private fun update() {
     // Clear old data and update base pose
-    while (updates.size > 1
-      && updates.firstKey() < Timer.getFPGATimestamp() - historyLengthSecs
-    ) {
+    while (updates.size > 1 && updates.firstKey() < Timer.getFPGATimestamp() - historyLengthSecs) {
       val (_, value) = updates.pollFirstEntry()
       basePose = value.apply(basePose, q)
     }
@@ -136,36 +133,39 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
 
         // Multiply by Kalman gain matrix
         val twistMatrix =
-          visionK.times(VecBuilder.fill(visionTwist.dx.inMeters, visionTwist.dy.inMeters, visionTwist.dtheta.inRadians))
+          visionK.times(
+            VecBuilder.fill(
+              visionTwist.dx.inMeters, visionTwist.dy.inMeters, visionTwist.dtheta.inRadians
+            )
+          )
 
         // Apply twist
-        pose = pose.exp(
-          Twist2d(twistMatrix.get(0, 0).meters, twistMatrix.get(1, 0).meters, twistMatrix.get(2, 0).radians)
-        )
+        pose =
+          pose.exp(
+            Twist2d(
+              twistMatrix.get(0, 0).meters,
+              twistMatrix.get(1, 0).meters,
+              twistMatrix.get(2, 0).radians
+            )
+          )
       }
       return pose
     }
   }
 
-  /** Represents a single vision pose with associated standard deviations.  */
+  /** Represents a single vision pose with associated standard deviations. */
   class VisionUpdate(val pose: Pose2d, val stdDevs: Matrix<N3, N1>) {
-    companion object{
-      val compareDescStdDev =
-        Comparator { a: VisionUpdate, b: VisionUpdate ->
-          -(a.stdDevs.get(0, 0) + a.stdDevs.get(1, 0)).compareTo(
-            b.stdDevs.get(
-              0,
-              0
-            ) + b.stdDevs.get(1, 0)
-          )
-        }
+    companion object {
+      val compareDescStdDev = Comparator { a: VisionUpdate, b: VisionUpdate ->
+        -(a.stdDevs.get(0, 0) + a.stdDevs.get(1, 0)).compareTo(
+          b.stdDevs.get(0, 0) + b.stdDevs.get(1, 0)
+        )
+      }
     }
   }
 
-  /** Represents a single vision pose with a timestamp and associated standard deviations.  */
-  class TimestampedVisionUpdate(
-    val timestamp: Time, val pose: Pose2d, val stdDevs: Matrix<N3, N1>
-  )
+  /** Represents a single vision pose with a timestamp and associated standard deviations. */
+  class TimestampedVisionUpdate(val timestamp: Time, val pose: Pose2d, val stdDevs: Matrix<N3, N1>)
   companion object {
     private const val historyLengthSecs = 0.3
   }

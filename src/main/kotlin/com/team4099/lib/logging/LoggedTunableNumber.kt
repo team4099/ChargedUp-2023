@@ -12,7 +12,7 @@ class LoggedTunableNumber(dashboardKey: String) {
   private var hasDefault = false
   private var defaultValue = 0.0
   private var dashboardNumber: LoggedDashboardNumber? = null
-  private var lastHasChangedValue = 0.0
+  private var lastHasChangedValues = mutableMapOf<Int, Double>()
 
   /**
    * Create a new LoggedTunableNumber with the default value
@@ -59,13 +59,21 @@ class LoggedTunableNumber(dashboardKey: String) {
   /**
    * Checks whether the number has changed since our last check
    *
-   * @return True if the number has changed since the last time this method was called, false
-   * otherwise
+   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
+   * ```
+   *     objects. Recommended approach is to pass the result of "hashCode()"
+   * @return
+   * ```
+   * True if the number has changed since the last time this method was called, false
+   * ```
+   *     otherwise.
+   * ```
    */
-  fun hasChanged(): Boolean {
+  fun hasChanged(id: Int = 0): Boolean {
     val currentValue = get()
-    if (currentValue != lastHasChangedValue) {
-      lastHasChangedValue = currentValue
+    val lastValue = lastHasChangedValues[id]
+    if (lastValue == null || currentValue != lastValue) {
+      lastHasChangedValues[id] = currentValue
       return true
     }
     return false

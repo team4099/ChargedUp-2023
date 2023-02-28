@@ -1,15 +1,16 @@
 package com.team4099.robot2023.commands.drivetrain
 
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.lib.pathfollow.Trajectory
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
+import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.controller.ProfiledPIDController
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.hal.Clock
-import org.team4099.lib.pathfollow.Trajectory
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inSeconds
@@ -39,13 +40,20 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.perSecond
+import org.team4099.lib.units.step
 import kotlin.math.PI
 
-class DrivePathCommand(
+class DriveTrajectoryCommand(
   val drivetrain: Drivetrain,
-  private val trajectory: Trajectory,
+  private val trajectorySupplier: () -> Trajectory,
   val resetPose: Boolean = false
 ) : CommandBase() {
+  constructor(
+    drivetrain: Drivetrain,
+    trajectory: Trajectory,
+    resetPose: Boolean = false
+  ) : this(drivetrain, { trajectory }, resetPose) {}
+
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
 
@@ -53,6 +61,8 @@ class DrivePathCommand(
 
   private var trajCurTime = 0.0.seconds
   private var trajStartTime = 0.0.seconds
+
+  private lateinit var trajectory: Trajectory
 
   val thetakP =
     LoggedTunableValue(
@@ -121,6 +131,8 @@ class DrivePathCommand(
   }
 
   override fun initialize() {
+    trajectory = trajectorySupplier()
+
     if (resetPose) {
       drivetrain.odometryPose = trajectory.startingPose
     }
@@ -128,6 +140,12 @@ class DrivePathCommand(
     thetaPID.reset(drivetrain.odometryPose.rotation)
     xPID.reset()
     yPID.reset()
+
+    val trajectoryArray = mutableListOf<Pose2d>()
+    for (timeStep in 0.0.seconds..trajectory.duration step 0.25.seconds) {
+      trajectoryArray.add(trajectory.sample(timeStep).pose.pose2d)
+    }
+    Logger.getInstance().recordOutput("Pathfollow/trajectory", *trajectoryArray.toTypedArray())
   }
 
   override fun execute() {
@@ -151,8 +169,8 @@ class DrivePathCommand(
     drivetrain.targetPose = desiredState.pose
 
     drivetrain.setClosedLoop(
-      -thetaFeedback,
-      Pair(-xFF - xFeedback, yFF + yFeedback),
+      thetaFeedback,
+      Pair(xFF + xFeedback, yFF + yFeedback),
       0.radians.perSecond.perSecond,
       Pair(xAccel, yAccel),
       true,

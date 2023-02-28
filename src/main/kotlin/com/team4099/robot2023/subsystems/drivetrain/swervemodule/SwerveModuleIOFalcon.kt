@@ -8,7 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.wpilibj.AnalogPotentiometer
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearAcceleration
@@ -27,7 +26,6 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -97,7 +95,8 @@ class SwerveModuleIOFalcon(
       driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
     driveConfiguration.slot0.kD =
       driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
-    driveConfiguration.slot0.kF = driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
+    driveConfiguration.slot0.kF =
+      driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
     driveConfiguration.supplyCurrLimit.triggerThresholdCurrent =
@@ -181,7 +180,11 @@ class SwerveModuleIOFalcon(
       steeringSensor.positionToRawUnits(
         -(potentiometer.get().radians) + zeroOffset.inRadians.radians
       )
-    Logger.getInstance().recordOutput("${label}/zero", (-(potentiometer.get().radians) + zeroOffset.inRadians.radians).inRadians)
+    Logger.getInstance()
+      .recordOutput(
+        "$label/zero",
+        (-(potentiometer.get().radians) + zeroOffset.inRadians.radians).inRadians
+      )
     println(
       "Loading Zero for Module $label (${steeringSensor.positionToRawUnits(
         -(potentiometer.get().radians) + zeroOffset.inRadians.radians

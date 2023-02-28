@@ -1,16 +1,14 @@
 package com.team4099.robot2023.auto
 
-import com.pathplanner.lib.PathPlanner
+import com.team4099.lib.pathfollow.TrajectoryConfig
 import com.team4099.robot2023.config.constants.DrivetrainConstants
-import org.team4099.lib.units.inMetersPerSecond
-import org.team4099.lib.units.inMetersPerSecondPerSecond
 
 object PathStore {
-
-  val testAutoPath =
-    PathPlanner.loadPath(
-      "strafeRight",
-      DrivetrainConstants.MAX_AUTO_VEL.inMetersPerSecond,
-      DrivetrainConstants.MAX_AUTO_ACCEL.inMetersPerSecondPerSecond
+  val trajectoryConfig =
+    TrajectoryConfig(
+      DrivetrainConstants.MAX_AUTO_VEL,
+      DrivetrainConstants.MAX_AUTO_ACCEL,
+      DrivetrainConstants.MAX_AUTO_ANGULAR_VEL,
+      DrivetrainConstants.MAX_AUTO_ANGULAR_ACCEL
     )
 }

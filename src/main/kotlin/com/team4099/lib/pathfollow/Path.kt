@@ -2,13 +2,18 @@ package com.team4099.lib.pathfollow
 
 import com.team4099.robot2023.util.Alert
 import edu.wpi.first.math.spline.PoseWithCurvature
+import edu.wpi.first.math.spline.Spline
 import edu.wpi.first.math.spline.SplineHelper
 import edu.wpi.first.math.spline.SplineParameterizer
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.perSecond
 import kotlin.math.PI
 import kotlin.math.atan2
 
@@ -17,7 +22,13 @@ import kotlin.math.atan2
  *
  * Heading of holonomic drivetrains can be controlled at any waypoint.
  */
-class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
+class Path(
+  val startingPose: Pose2d,
+  val endingPose: Pose2d,
+  val startingVelocity: Velocity2d,
+  val endingVelocity: Velocity2d,
+  val useCubic: Boolean = false
+) {
   val headingPointMap = sortedMapOf<Int, Angle>()
   var splinePoints = mutableListOf<PoseWithCurvature>()
   private val headingSplineMap = mutableMapOf<Int, Angle>()
@@ -62,38 +73,92 @@ class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
 
     // Make the starting curvature directly towards the first point
     val startHeading =
-      atan2(
-        ((waypoints.firstOrNull() ?: endingPose.translation).y - startingPose.y).inMeters,
-        ((waypoints.firstOrNull() ?: endingPose.translation).x - startingPose.x).inMeters
-      )
-        .radians
-
-    val endHeading =
-      (
-        (
-          atan2(
-            ((waypoints.lastOrNull() ?: startingPose.translation).y - endingPose.y).inMeters,
-            ((waypoints.lastOrNull() ?: startingPose.translation).x - endingPose.x).inMeters
-          ) +
-            PI
-          ) % (2 * PI)
+      if (startingVelocity.magnitude < velocityThreshold)
+        atan2(
+          ((waypoints.firstOrNull() ?: endingPose.translation).y - startingPose.y)
+            .inMeters,
+          ((waypoints.firstOrNull() ?: endingPose.translation).x - startingPose.x)
+            .inMeters
         )
-        .radians
+          .radians
+      else startingVelocity.heading
 
-    val controlVectors =
-      SplineHelper.getCubicControlVectorsFromWaypoints(
-        startingPose.copy(rotation = startHeading).pose2d,
-        waypointTranslation2ds,
-        endingPose.copy(rotation = endHeading).pose2d
-      )
+    val splines: Array<out Spline>
 
-    // Create a list of splines
-    val splines =
-      listOf(
-        *SplineHelper.getCubicSplinesFromControlVectors(
+    if (useCubic) {
+
+      val endHeading =
+        if (endingVelocity.magnitude < velocityThreshold)
+          (
+            atan2(
+              ((waypoints.lastOrNull() ?: startingPose.translation).y - endingPose.y)
+                .inMeters,
+              ((waypoints.lastOrNull() ?: startingPose.translation).x - endingPose.x)
+                .inMeters
+            )
+            //              + PI
+            //            ) % (2 * PI)
+            )
+            .radians
+        else endingVelocity.heading
+
+      // Cubic spline generation
+      val controlVectors =
+        SplineHelper.getCubicControlVectorsFromWaypoints(
+          startingPose.copy(rotation = startHeading).pose2d,
+          waypointTranslation2ds,
+          endingPose.copy(rotation = endHeading).pose2d
+        )
+
+      // Create a list of splines
+      splines =
+        SplineHelper.getCubicSplinesFromControlVectors(
           controlVectors.first(), waypointTranslation2ds, controlVectors.last()
         )
+    } else {
+
+      // Quintic spline generation
+      val waypointsWithHeadings =
+        mutableListOf<Pose2dWPILIB>(
+          Pose2dWPILIB(startingPose.translation.translation2d, startHeading.inRotation2ds)
+        )
+      for (waypointIndex in 0..waypoints.size) {
+        if (headingSplineMap[waypointIndex] != null) {
+          waypointsWithHeadings.add(
+            Pose2dWPILIB(
+              waypoints[waypointIndex].translation2d,
+              headingSplineMap[waypointIndex]!!.inRotation2ds
+            )
+          )
+        }
+      }
+
+      val lastWayPoint = waypointsWithHeadings.lastOrNull() ?: startingPose.pose2d
+
+      val quinticEndHeading =
+        if (endingVelocity.magnitude < velocityThreshold)
+          (
+            (
+              atan2(
+                (lastWayPoint.y - endingPose.y.inMeters),
+                (lastWayPoint.x - endingPose.x.inMeters)
+              ) + PI
+              ) % (2 * PI)
+            )
+            .radians
+        else endingVelocity.heading
+
+      waypointsWithHeadings.add(
+        Pose2dWPILIB(endingPose.translation.translation2d, quinticEndHeading.inRotation2ds)
       )
+
+      for (waypoint in waypointsWithHeadings) {
+        println(waypoint)
+      }
+
+      // Creates a list of splines
+      splines = SplineHelper.getQuinticSplinesFromWaypoints(waypointsWithHeadings)
+    }
 
     // Create the vector of spline points.
     splinePoints = mutableListOf()
@@ -118,5 +183,9 @@ class Path constructor(val startingPose: Pose2d, val endingPose: Pose2d) {
       }
     }
     built = true
+  }
+
+  companion object {
+    val velocityThreshold = 0.2.meters.perSecond
   }
 }

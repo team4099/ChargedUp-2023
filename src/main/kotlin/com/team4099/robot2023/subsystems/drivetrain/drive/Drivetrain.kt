@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.drivetrain.drive
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.pathfollow.Velocity2d
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.VisionConstants
@@ -157,9 +158,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   var drift: Transform2d = Transform2d(Translation2d(), 0.0.radians)
 
-  var fieldVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+  var fieldVelocity = Velocity2d(0.0.meters.perSecond, 0.0.meters.perSecond)
 
-  var robotVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+  var robotVelocity = Velocity2d(0.0.meters.perSecond, 0.0.meters.perSecond)
 
   var omegaVelocity = 0.0.radians.perSecond
 
@@ -188,10 +189,10 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       Translation2d(
         chassisState.vx.inMetersPerSecond.meters, chassisState.vy.inMetersPerSecond.meters
       )
-        .rotateBy(odometryPose.rotation) // we don't use this but it's there if you want it ig
+        .rotateBy(odometryPose.rotation)
 
-    robotVelocity = Pair(chassisState.vx, chassisState.vy)
-    fieldVelocity = Pair(fieldVelCalculated.x.perSecond, fieldVelCalculated.y.perSecond)
+    robotVelocity = Velocity2d(chassisState.vx, chassisState.vy)
+    fieldVelocity = Velocity2d(fieldVelCalculated.x.perSecond, fieldVelCalculated.y.perSecond)
 
     omegaVelocity = chassisState.omega
     if (!gyroInputs.gyroConnected) {
@@ -201,9 +202,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     }
 
     Logger.getInstance()
-      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.first.inMetersPerSecond)
+      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.x.inMetersPerSecond)
     Logger.getInstance()
-      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.second.inMetersPerSecond)
+      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.y.inMetersPerSecond)
 
     Logger.getInstance().processInputs("Drivetrain/Gyro", gyroInputs)
     Logger.getInstance().recordOutput("Drivetrain/ModuleStates", *measuredStates)
@@ -229,7 +230,11 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         )
       )
 
-    Logger.getInstance().recordOutput("LoggedRobot/Subsystems/DrivetrainLoopTimeMS", (Clock.realTimestamp - startTime).inMilliseconds)
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/DrivetrainLoopTimeMS",
+        (Clock.realTimestamp - startTime).inMilliseconds
+      )
   }
 
   private fun updateOdometry() {

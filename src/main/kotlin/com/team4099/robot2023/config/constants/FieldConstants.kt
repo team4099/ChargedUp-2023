@@ -83,6 +83,10 @@ object FieldConstants {
 
   val wpilibAprilTags = aprilTags.map { it.apriltagWpilib }
 
+  fun idToTagPose(id: Int): Pose3d? {
+    return aprilTags.firstOrNull { it.id == id }?.pose
+  }
+
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By
    * default, all translations and poses in [FieldConstants] are stored with the origin at the
