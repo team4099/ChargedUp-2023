@@ -123,13 +123,23 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
-    ControlBoard.autoLevel.whileTrue(GoToAngle(drivetrain).andThen(AutoLevel(drivetrain)))
-    ControlBoard.pickupFromSubstation.whileTrue(
+//    ControlBoard.autoLevel.whileTrue(GoToAngle(drivetrain).andThen(AutoLevel(drivetrain)))
+
+    ControlBoard.autoLevel.whileTrue(
       PickupFromSubstationCommand(
         drivetrain,
         superstructure,
         Constants.Universal.GamePiece.CONE,
         Constants.Universal.Substation.DOUBLE_SUBSTATION_LEFT
+      )
+    )
+
+    ControlBoard.pickupFromSubstation.whileTrue(
+      PickupFromSubstationCommand(
+        drivetrain,
+        superstructure,
+        Constants.Universal.GamePiece.CONE,
+        Constants.Universal.Substation.SINGLE_SUBSTATION
       )
     )
     //

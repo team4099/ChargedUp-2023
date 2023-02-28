@@ -89,15 +89,15 @@ class Path(
 
       val endHeading =
         if (endingVelocity.magnitude < velocityThreshold)
-          (
+          ((
             atan2(
               ((waypoints.lastOrNull() ?: startingPose.translation).y - endingPose.y)
                 .inMeters,
               ((waypoints.lastOrNull() ?: startingPose.translation).x - endingPose.x)
                 .inMeters
             )
-            //              + PI
-            //            ) % (2 * PI)
+                          + PI
+                        ) % (2 * PI)
             )
             .radians
         else endingVelocity.heading

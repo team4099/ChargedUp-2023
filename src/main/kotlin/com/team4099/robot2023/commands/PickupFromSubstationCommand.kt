@@ -14,11 +14,11 @@ import com.team4099.robot2023.config.constants.Substation
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
+import com.team4099.lib.math.purelyTranslateBy
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
@@ -91,8 +91,7 @@ class PickupFromSubstationCommand(
 
           val preDesiredPose =
             FieldConstants.allianceFlip(
-              desiredPose +
-                Transform2d(
+              desiredPose.purelyTranslateBy(
                   when (substation) {
                     Substation.DOUBLE_SUBSTATION_LEFT,
                     Substation.DOUBLE_SUBSTATION_RIGHT -> {
@@ -105,8 +104,7 @@ class PickupFromSubstationCommand(
                         preDesiredPoseSSXOffset.get(), -preDesiredPoseSSYOffset.get()
                       )
                     }
-                  },
-                  0.0.degrees
+                  }
                 )
             )
 
@@ -176,7 +174,7 @@ class PickupFromSubstationCommand(
     val preDesiredPoseSSXOffset =
       LoggedTunableValue(
         "Drivetrain/preDesiredPoseSSXOffsetInches",
-        1.0.meters,
+        0.0.meters,
         Pair({ it.inInches }, { it.inches })
       )
     val preDesiredPoseSSYOffset =
