@@ -71,21 +71,21 @@ class Path(
     // Create control vectors from the start and end waypoint
     val waypointTranslation2ds = waypoints.map { it.translation2d }.toTypedArray()
 
-    // Make the starting curvature directly towards the first point
-    val startHeading =
-      if (startingVelocity.magnitude < velocityThreshold)
-        atan2(
-          ((waypoints.firstOrNull() ?: endingPose.translation).y - startingPose.y)
-            .inMeters,
-          ((waypoints.firstOrNull() ?: endingPose.translation).x - startingPose.x)
-            .inMeters
-        )
-          .radians
-      else startingVelocity.heading
-
     val splines: Array<out Spline>
 
     if (useCubic) {
+
+      // Make the starting curvature directly towards the first point
+      val startHeading =
+        if (startingVelocity.magnitude < velocityThreshold)
+          atan2(
+            ((waypoints.firstOrNull() ?: endingPose.translation).y - startingPose.y)
+              .inMeters,
+            ((waypoints.firstOrNull() ?: endingPose.translation).x - startingPose.x)
+              .inMeters
+          )
+            .radians
+        else startingVelocity.heading
 
       val endHeading =
         if (endingVelocity.magnitude < velocityThreshold)
@@ -120,7 +120,7 @@ class Path(
       // Quintic spline generation
       val waypointsWithHeadings =
         mutableListOf<Pose2dWPILIB>(
-          Pose2dWPILIB(startingPose.translation.translation2d, startHeading.inRotation2ds)
+          Pose2dWPILIB(startingPose.translation.translation2d, startingPose.rotation.inRotation2ds)
         )
       for (waypointIndex in 0..waypoints.size) {
         if (headingSplineMap[waypointIndex] != null) {
@@ -132,6 +132,20 @@ class Path(
           )
         }
       }
+
+      val firstWaypoint = waypointsWithHeadings.firstOrNull() ?: endingPose.pose2d
+
+      // Make the starting curvature directly towards the first point
+      val quinticStartHeading =
+        if (startingVelocity.magnitude < velocityThreshold)
+          atan2(
+            firstWaypoint.y - startingPose.y.inMeters,
+            firstWaypoint.x - startingPose.x.inMeters
+          )
+            .radians
+        else startingVelocity.heading
+
+      waypointsWithHeadings[0] = Pose2dWPILIB(startingPose.translation.translation2d, quinticStartHeading.inRotation2ds)
 
       val lastWayPoint = waypointsWithHeadings.lastOrNull() ?: startingPose.pose2d
 
