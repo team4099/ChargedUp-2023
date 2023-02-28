@@ -1,10 +1,10 @@
 package com.team4099.robot2023.subsystems.drivetrain.drive
 
+import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
-import com.team4099.robot2023.util.AdvantageClock
 import com.team4099.robot2023.util.Alert
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.Vector
@@ -164,7 +164,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   var omegaVelocity = 0.0.radians.perSecond
 
   override fun periodic() {
-    val startTime = AdvantageClock.realTimestamp
+    val startTime = Clock.realTimestamp
     gyroNotConnectedAlert.set(!gyroInputs.gyroConnected)
     gyroIO.updateInputs(gyroInputs)
 
@@ -229,7 +229,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         )
       )
 
-    Logger.getInstance().recordOutput("LoggedRobot/Subsystems/DrivetrainLoopTimeMS", (AdvantageClock.realTimestamp - startTime).inMilliseconds)
+    Logger.getInstance().recordOutput("LoggedRobot/Subsystems/DrivetrainLoopTimeMS", (Clock.realTimestamp - startTime).inMilliseconds)
   }
 
   private fun updateOdometry() {
