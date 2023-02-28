@@ -6,15 +6,12 @@ import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.util.Alert
-import com.team4099.robot2023.util.Velocity2d
+import com.team4099.robot2023.util.PoseEstimator
 import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.Vector
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -32,6 +29,7 @@ import org.team4099.lib.units.LinearAcceleration
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -64,17 +62,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       return 0.0.degrees
     }
 
-  var stateStdDevs: Vector<N3>
-  var visionStdDevs: Vector<N3>
-
   init {
-    if (RobotBase.isReal()) {
-      stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1)
-      visionStdDevs = VecBuilder.fill(1.0, 1.0, 1.0)
-    } else {
-      stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1)
-      visionStdDevs = VecBuilder.fill(2.0, 2.0, 2.5)
-    }
 
     // Wheel speeds
     zeroSteering()
@@ -97,14 +85,6 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       -DrivetrainConstants.DRIVETRAIN_LENGTH / 2, -DrivetrainConstants.DRIVETRAIN_WIDTH / 2
     )
 
-  val moduleTranslations =
-    listOf(
-      frontLeftWheelLocation,
-      frontRightWheelLocation,
-      backLeftWheelLocation,
-      backRightWheelLocation
-    )
-
   val swerveDriveKinematics =
     SwerveDriveKinematics(
       frontLeftWheelLocation.translation2d,
@@ -113,15 +93,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       backRightWheelLocation.translation2d
     )
 
-  var swerveDrivePoseEstimator =
-    SwerveDrivePoseEstimator(
-      swerveDriveKinematics,
-      gyroInputs.gyroYaw.inRotation2ds,
-      swerveModules.map { it.modulePosition }.toTypedArray(),
-      Pose2d().pose2d, // TODO initialize this with the robot's actual starting pose
-      stateStdDevs,
-      visionStdDevs
-    )
+  var swerveDrivePoseEstimator = PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.002))
 
   var swerveDriveOdometry =
     SwerveDriveOdometry(
@@ -136,13 +108,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     )
 
   var odometryPose: Pose2d
-    get() = Pose2d(swerveDrivePoseEstimator.estimatedPosition)
+    get() = swerveDrivePoseEstimator.getLatestPose()
     set(value) {
-      swerveDrivePoseEstimator.resetPosition(
-        gyroInputs.gyroYaw.inRotation2ds,
-        swerveModules.map { it.modulePosition }.toTypedArray(),
-        value.pose2d
-      )
+      swerveDrivePoseEstimator.resetPose(value)
 
       if (RobotBase.isReal()) {
         zeroGyroYaw(odometryPose.rotation)
@@ -166,11 +134,21 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   var drift: Transform2d = Transform2d(Translation2d(), 0.0.radians)
 
-  var fieldVelocity = Velocity2d(0.0.meters.perSecond, 0.0.meters.perSecond)
+  var fieldVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
 
-  var robotVelocity = Velocity2d(0.0.meters.perSecond, 0.0.meters.perSecond)
+  var robotVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
 
   var omegaVelocity = 0.0.radians.perSecond
+
+  var lastModulePositions =
+    mutableListOf(
+      SwerveModulePosition(),
+      SwerveModulePosition(),
+      SwerveModulePosition(),
+      SwerveModulePosition()
+    )
+
+  var lastGyroYaw = 0.0.radians
 
   override fun periodic() {
     val startTime = Clock.realTimestamp
@@ -199,8 +177,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       )
         .rotateBy(odometryPose.rotation) // we don't use this but it's there if you want it ig
 
-    robotVelocity = Velocity2d(chassisState.vx, chassisState.vy)
-    fieldVelocity = Velocity2d(fieldVelCalculated.x.perSecond, fieldVelCalculated.y.perSecond)
+    robotVelocity = Pair(chassisState.vx, chassisState.vy)
+    fieldVelocity = Pair(fieldVelCalculated.x.perSecond, fieldVelCalculated.y.perSecond)
 
     omegaVelocity = chassisState.omega
     if (!gyroInputs.gyroConnected) {
@@ -210,9 +188,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     }
 
     Logger.getInstance()
-      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.x.inMetersPerSecond)
+      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.first.inMetersPerSecond)
     Logger.getInstance()
-      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.y.inMetersPerSecond)
+      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.second.inMetersPerSecond)
 
     Logger.getInstance().processInputs("Drivetrain/Gyro", gyroInputs)
     Logger.getInstance().recordOutput("Drivetrain/ModuleStates", *measuredStates)
@@ -246,6 +224,37 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   }
 
   private fun updateOdometry() {
+    val wheelDeltas =
+      mutableListOf(
+        SwerveModulePosition(),
+        SwerveModulePosition(),
+        SwerveModulePosition(),
+        SwerveModulePosition()
+      )
+    for (i in 0 until 4) {
+      wheelDeltas[i] =
+        SwerveModulePosition(
+          swerveModules[i].inputs.drivePosition.inMeters -
+            lastModulePositions[i].distanceMeters,
+          swerveModules[i].inputs.steeringPosition.inRotation2ds
+        )
+      lastModulePositions[i] =
+        SwerveModulePosition(
+          swerveModules[i].inputs.drivePosition.inMeters,
+          swerveModules[i].inputs.steeringPosition.inRotation2ds
+        )
+    }
+
+    var driveTwist = swerveDriveKinematics.toTwist2d(*wheelDeltas.toTypedArray())
+
+    if (gyroInputs.gyroConnected) {
+      driveTwist =
+        edu.wpi.first.math.geometry.Twist2d(
+          driveTwist.dx, driveTwist.dy, (gyroInputs.gyroYaw - lastGyroYaw).inRadians
+        )
+    }
+
+    lastGyroYaw = gyroInputs.gyroYaw
     // reversing the drift to store the ground truth pose
     if (RobotBase.isSimulation() && Constants.Tuning.SIMULATE_DRIFT) {
       val undriftedModules = arrayOfNulls<SwerveModulePosition>(4)
@@ -267,9 +276,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       Logger.getInstance().recordOutput(VisionConstants.SIM_POSE_TOPIC_NAME, undriftedPose.pose2d)
     }
 
-    swerveDrivePoseEstimator.update(
-      gyroInputs.gyroYaw.inRotation2ds, swerveModules.map { it.modulePosition }.toTypedArray()
-    )
+    swerveDrivePoseEstimator.addDriveData(Clock.fpgaTime.inSeconds, Twist2d(driveTwist))
   }
 
   /**
@@ -357,7 +364,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     val velSwerveModuleStates: Array<SwerveModuleState>?
     val accelSwerveModuleStates: Array<SwerveModuleState>?
 
-    if (fieldOriented && gyroInputs.gyroConnected) {
+    if (fieldOriented) {
       // Getting velocity and acceleration states from the drive & angular velocity vectors and
       // drive & angular acceleration vectors (respectively)
       // This is with respect to the field, meaning all velocity and acceleration vectors are
@@ -412,8 +419,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   /** Zeros all the sensors on the drivetrain. */
   fun zeroSensors() {
-    //    zeroGyroYaw(0.0.degrees)
-    //    zeroGyroPitch(0.0.degrees)
+    zeroGyroYaw(0.0.degrees)
+    zeroGyroPitch(0.0.degrees)
     zeroSteering()
     zeroDrive()
   }
@@ -425,12 +432,6 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
    */
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
-
-    swerveDrivePoseEstimator.resetPosition(
-      toAngle.inRotation2ds,
-      swerveModules.map { it.modulePosition }.toTypedArray(),
-      odometryPose.pose2d
-    )
 
     if (RobotBase.isSimulation()) {
       swerveDriveOdometry.resetPosition(
@@ -457,5 +458,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   /** Zeros the drive motors for each swerve module. */
   private fun zeroDrive() {
     swerveModules.forEach { it.zeroDrive() }
+  }
+
+  fun addVisionData(visionData: List<PoseEstimator.TimestampedVisionUpdate>) {
+    swerveDrivePoseEstimator.addVisionData(visionData)
   }
 }

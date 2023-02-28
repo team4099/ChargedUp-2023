@@ -3,12 +3,14 @@ package com.team4099.robot2023.config.constants
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.apriltag.AprilTag
+import org.team4099.lib.apriltag.AprilTagFieldLayout
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.feet
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
@@ -27,6 +29,8 @@ object FieldConstants {
   val fieldLength = 651.25.inches
   val fieldWidth = 315.5.inches
   val tapeWidth = 2.0.inches
+
+  val aprilTagLength = 6.0.inches
 
   // AprilTag locations (do not flip for red alliance)
   val aprilTags: List<AprilTag> =
@@ -83,9 +87,10 @@ object FieldConstants {
 
   val wpilibAprilTags = aprilTags.map { it.apriltagWpilib }
 
-  fun idToTagPose(id: Int): Pose3d? {
-    return aprilTags.firstOrNull { it.id == id }?.pose
-  }
+  val wpilibFieldLayout =
+    edu.wpi.first.apriltag.AprilTagFieldLayout(
+      wpilibAprilTags, fieldLength.inMeters, fieldWidth.inMeters
+    )
 
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By
@@ -111,6 +116,10 @@ object FieldConstants {
     } else {
       pose
     }
+  }
+
+  fun getTagPose(id: Int): Pose3d? {
+    return aprilTags.firstOrNull { it.id == id }?.pose
   }
 
   // Dimensions for community and charging station, including the tape.

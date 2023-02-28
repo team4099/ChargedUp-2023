@@ -26,6 +26,9 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
+import com.team4099.robot2023.subsystems.vision.Vision
+import com.team4099.robot2023.subsystems.vision.camera.CameraIO
+import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
@@ -33,14 +36,20 @@ import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
   private val drivetrain: Drivetrain
-  //  private val vision: Vision
+  private val vision: Vision
   private val superstructure: Superstructure
 
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
-      //      vision = Vision(object : VisionIO {})
+      vision =
+        Vision(
+          CameraIONorthstar("forward"),
+          //        CameraIONorthstar("left"),
+          //        CameraIONorthstar("right"),
+          //        CameraIONorthstar("backward")
+        )
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
@@ -51,6 +60,7 @@ object RobotContainer {
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
+      vision = Vision(object : CameraIO {})
       superstructure =
         Superstructure(
           Elevator(ElevatorIOSim),
@@ -73,19 +83,6 @@ object RobotContainer {
       )
 
     //    superstructure.defaultCommand = InstantCommand({}, superstructure)
-  }
-
-  //  val measurementsWithTimestamps
-  //    get() = vision.visionMeasurements
-
-  fun addVisionMeasurement(visionMeasurement: VisionMeasurement) {
-    drivetrain.swerveDrivePoseEstimator.addVisionMeasurement(
-      visionMeasurement.visionPose.pose2d,
-      visionMeasurement.timestamp.inSeconds,
-      VecBuilder.fill(
-        0.1, 0.1, 1.0
-      ) // TODO figure out an actual formula for stdev to make convergence speedy
-    )
   }
 
   fun requestSuperstructureIdle() {
