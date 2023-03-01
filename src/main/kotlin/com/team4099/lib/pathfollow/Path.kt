@@ -89,15 +89,15 @@ class Path(
 
       val endHeading =
         if (endingVelocity.magnitude < velocityThreshold)
-          ((
-            atan2(
-              ((waypoints.lastOrNull() ?: startingPose.translation).y - endingPose.y)
-                .inMeters,
-              ((waypoints.lastOrNull() ?: startingPose.translation).x - endingPose.x)
-                .inMeters
-            )
-                          + PI
-                        ) % (2 * PI)
+          (
+            (
+              atan2(
+                ((waypoints.lastOrNull() ?: startingPose.translation).y - endingPose.y)
+                  .inMeters,
+                ((waypoints.lastOrNull() ?: startingPose.translation).x - endingPose.x)
+                  .inMeters
+              ) + PI
+              ) % (2 * PI)
             )
             .radians
         else endingVelocity.heading
@@ -120,7 +120,9 @@ class Path(
       // Quintic spline generation
       val waypointsWithHeadings =
         mutableListOf<Pose2dWPILIB>(
-          Pose2dWPILIB(startingPose.translation.translation2d, startingPose.rotation.inRotation2ds)
+          Pose2dWPILIB(
+            startingPose.translation.translation2d, startingPose.rotation.inRotation2ds
+          )
         )
       for (waypointIndex in 0..waypoints.size) {
         if (headingSplineMap[waypointIndex] != null) {
@@ -145,7 +147,8 @@ class Path(
             .radians
         else startingVelocity.heading
 
-      waypointsWithHeadings[0] = Pose2dWPILIB(startingPose.translation.translation2d, quinticStartHeading.inRotation2ds)
+      waypointsWithHeadings[0] =
+        Pose2dWPILIB(startingPose.translation.translation2d, quinticStartHeading.inRotation2ds)
 
       val lastWayPoint = waypointsWithHeadings.lastOrNull() ?: startingPose.pose2d
 

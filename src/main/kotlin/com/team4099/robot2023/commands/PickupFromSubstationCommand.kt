@@ -1,6 +1,7 @@
 package com.team4099.robot2023.commands
 
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.lib.math.purelyTranslateBy
 import com.team4099.lib.pathfollow.Path
 import com.team4099.lib.pathfollow.Trajectory
 import com.team4099.lib.pathfollow.Velocity2d
@@ -14,7 +15,6 @@ import com.team4099.robot2023.config.constants.Substation
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
-import com.team4099.lib.math.purelyTranslateBy
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
@@ -92,20 +92,20 @@ class PickupFromSubstationCommand(
           val preDesiredPose =
             FieldConstants.allianceFlip(
               desiredPose.purelyTranslateBy(
-                  when (substation) {
-                    Substation.DOUBLE_SUBSTATION_LEFT,
-                    Substation.DOUBLE_SUBSTATION_RIGHT -> {
-                      Translation2d(
-                        -preDesiredPoseDSXOffset.get(), preDesiredPoseDSYOffset.get()
-                      )
-                    }
-                    Substation.SINGLE_SUBSTATION -> {
-                      Translation2d(
-                        preDesiredPoseSSXOffset.get(), -preDesiredPoseSSYOffset.get()
-                      )
-                    }
+                when (substation) {
+                  Substation.DOUBLE_SUBSTATION_LEFT,
+                  Substation.DOUBLE_SUBSTATION_RIGHT -> {
+                    Translation2d(
+                      -preDesiredPoseDSXOffset.get(), preDesiredPoseDSYOffset.get()
+                    )
                   }
-                )
+                  Substation.SINGLE_SUBSTATION -> {
+                    Translation2d(
+                      preDesiredPoseSSXOffset.get(), -preDesiredPoseSSYOffset.get()
+                    )
+                  }
+                }
+              )
             )
 
           trajectory =

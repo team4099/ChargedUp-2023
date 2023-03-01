@@ -3,8 +3,6 @@ package com.team4099.robot2023
 import com.team4099.lib.vision.VisionMeasurement
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.PickupFromSubstationCommand
-import com.team4099.robot2023.commands.drivetrain.AutoLevel
-import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -123,7 +121,7 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
-//    ControlBoard.autoLevel.whileTrue(GoToAngle(drivetrain).andThen(AutoLevel(drivetrain)))
+    //    ControlBoard.autoLevel.whileTrue(GoToAngle(drivetrain).andThen(AutoLevel(drivetrain)))
 
     ControlBoard.autoLevel.whileTrue(
       PickupFromSubstationCommand(
