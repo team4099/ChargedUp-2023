@@ -149,8 +149,8 @@ object RobotContainer {
     ControlBoard.setArmPositionToShelfIntake.whileTrue(
       superstructure.intakeConeFromDoubleSubStationCommand()
     )
-    ControlBoard.extendArm.whileTrue(superstructure.prepscoreConeHighCommand())
-    ControlBoard.retractArm.whileTrue(superstructure.scoreConeHighCommand())
+    ControlBoard.extendArm.whileTrue(superstructure.prepscoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH))
+    ControlBoard.retractArm.whileTrue(superstructure.scoreConeCommand())
     //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCubeCommand())
     //    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 

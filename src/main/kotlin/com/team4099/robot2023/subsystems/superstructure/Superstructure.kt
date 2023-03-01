@@ -713,6 +713,16 @@ class Superstructure(
   }
 
   // Superstructure Commands
+  fun intakeCubeFromGroundCommand(): CommandBase {
+    val returnCommand =
+      runOnce {
+        currentRequest = SuperstructureRequest.GroundIntakeCube()
+      }.until { currentState == SuperstructureStates.GROUND_INTAKE_CUBE}
+
+    returnCommand.name = "IntakeCubeFromGroundCommand"
+    return returnCommand
+  }
+
   fun intakeConeFromDoubleSubStationCommand(): CommandBase {
     val returnCommand =
       runOnce {
@@ -725,12 +735,12 @@ class Superstructure(
     return returnCommand
   }
 
-  fun prepscoreConeHighCommand(): CommandBase {
+  fun prepscoreCommand(gamePiece: GamePiece, nodeTier: NodeTier): CommandBase {
     val returnCommand =
       runOnce {
         currentRequest =
           SuperstructureRequest.PrepScore(
-            Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
+            gamePiece, nodeTier
           )
       }
         .until { currentState == SuperstructureStates.SCORE_PREP }
@@ -739,13 +749,24 @@ class Superstructure(
     return returnCommand
   }
 
-  fun scoreConeHighCommand(): CommandBase {
+  fun scoreCubeCommand(): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
+        currentState == SuperstructureStates.SCORE_CUBE
+      }
+
+    returnCommand.name = "ScoreCubeCommand"
+    return returnCommand
+  }
+
+
+  fun scoreConeCommand(): CommandBase {
     val returnCommand =
       runOnce { currentRequest = SuperstructureRequest.Score() }.until {
         currentState == SuperstructureStates.SCORE_CONE
       }
 
-    returnCommand.name = "ScoreConeHighCommand"
+    returnCommand.name = "ScoreConeCommand"
     return returnCommand
   }
 

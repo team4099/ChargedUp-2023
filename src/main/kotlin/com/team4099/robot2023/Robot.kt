@@ -102,8 +102,8 @@ object Robot : LoggedRobot() {
 
     // init robot container too
     RobotContainer
-    AutonomousSelector
     PathStore
+    AutonomousSelector
     RobotContainer.mapDefaultCommands()
   }
 
