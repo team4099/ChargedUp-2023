@@ -156,7 +156,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopInit() {
-    RobotContainer.zeroSteering()
+    RobotContainer.zeroSensors()
     FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
