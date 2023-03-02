@@ -31,6 +31,7 @@ import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.volts
 
 class SwerveModuleIOFalcon(
   private val steeringFalcon: TalonFX,
@@ -121,8 +122,8 @@ class SwerveModuleIOFalcon(
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {
-    //    inputs.driveAppliedVoltage = driveFalcon.motorOutputVoltage.volts
-    //    inputs.steeringAppliedVoltage = steeringFalcon.motorOutputVoltage.volts
+    inputs.driveAppliedVoltage = driveFalcon.motorOutputVoltage.volts
+    inputs.steeringAppliedVoltage = steeringFalcon.motorOutputVoltage.volts
 
     inputs.driveStatorCurrent = driveFalcon.statorCurrent.amps
     inputs.driveSupplyCurrent = driveFalcon.supplyCurrent.amps
@@ -140,6 +141,8 @@ class SwerveModuleIOFalcon(
 
     inputs.potentiometerOutputRaw = potentiometer.get()
     inputs.potentiometerOutputRadians = potentiometer.get().radians
+
+    Logger.getInstance().recordOutput("${label}/potentiometerRadiansWithOffset", (inputs.potentiometerOutputRadians - zeroOffset).inRadians)
   }
 
   override fun setSteeringSetpoint(angle: Angle) {
@@ -179,13 +182,10 @@ class SwerveModuleIOFalcon(
   override fun zeroSteering() {
     steeringFalcon.selectedSensorPosition =
       steeringSensor.positionToRawUnits(
-        -(potentiometer.get().radians) + zeroOffset.inRadians.radians
+        (potentiometer.get().radians) - zeroOffset.inRadians.radians
       )
-    Logger.getInstance().recordOutput("${label}/zero", (-(potentiometer.get().radians) + zeroOffset.inRadians.radians).inRadians)
     println(
-      "Loading Zero for Module $label (${steeringSensor.positionToRawUnits(
-        -(potentiometer.get().radians) + zeroOffset.inRadians.radians
-      )})"
+      "Loading Zero for Module $label (${steeringFalcon.selectedSensorPosition})"
     )
   }
 

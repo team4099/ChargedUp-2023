@@ -75,9 +75,9 @@ object DrivetrainConstants {
   val DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT = 80.0.amps
   val DRIVE_STATOR_TRIGGER_THRESHOLD_TIME = 1.0.seconds
 
-  val FRONT_LEFT_MODULE_ZERO = 1.318.radians
-  val FRONT_RIGHT_MODULE_ZERO = 0.856.radians
-  val BACK_LEFT_MODULE_ZERO = 3.47.radians
+  val FRONT_LEFT_MODULE_ZERO = 1.309.radians
+  val FRONT_RIGHT_MODULE_ZERO = 0.9655.radians
+  val BACK_LEFT_MODULE_ZERO = 3.192.radians
   val BACK_RIGHT_MODULE_ZERO = 1.36.radians
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts

@@ -5,6 +5,7 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.Constants.Universal.CANIVORE_NAME
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModule
+import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModuleIO
 import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModuleIOFalcon
 import edu.wpi.first.wpilibj.AnalogPotentiometer
 import java.lang.Math.PI
@@ -46,15 +47,18 @@ object DrivetrainIOReal : DrivetrainIO {
         )
       ),
       SwerveModule(
-        SwerveModuleIOFalcon(
-          TalonFX(Constants.Drivetrain.BACK_RIGHT_STEERING_ID, CANIVORE_NAME),
-          TalonFX(Constants.Drivetrain.BACK_RIGHT_DRIVE_ID, CANIVORE_NAME),
-          AnalogPotentiometer(
-            Constants.Drivetrain.BACK_RIGHT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
-          ),
-          DrivetrainConstants.BACK_RIGHT_MODULE_ZERO,
-          "Back Right Wheel"
-        )
+        object: SwerveModuleIO {
+          override val label: String = "DUMMY_BACK_RIGHT"
+        }
+//        SwerveModuleIOFalcon(
+//          TalonFX(Constants.Drivetrain.BACK_RIGHT_STEERING_ID, CANIVORE_NAME),
+//          TalonFX(Constants.Drivetrain.BACK_RIGHT_DRIVE_ID, CANIVORE_NAME),
+//          AnalogPotentiometer(
+//            Constants.Drivetrain.BACK_RIGHT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
+//          ),
+//          DrivetrainConstants.BACK_RIGHT_MODULE_ZERO,
+//          "Back Right Wheel"
+//        )
       )
     )
   }
