@@ -92,6 +92,8 @@ class Superstructure(
         (Clock.realTimestamp - manipulatorLoopStartTime).inMilliseconds
       )
 
+    val superstructureStateMachineStartTime = Clock.realTimestamp
+
     Logger.getInstance()
       .recordOutput("Superstructure/currentRequest", currentRequest.javaClass.simpleName)
     Logger.getInstance().recordOutput("Superstructure/currentState", currentState.name)
@@ -710,6 +712,12 @@ class Superstructure(
     }
 
     currentState = nextState
+
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/SuperstructureStateMachineLoopTimeMS",
+        (Clock.realTimestamp - superstructureStateMachineStartTime).inMilliseconds
+      )
   }
 
   // Superstructure Commands
