@@ -7,7 +7,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj.AnalogPotentiometer
+import edu.wpi.first.wpilibj.RobotController
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.units.AngularAcceleration
@@ -38,7 +40,7 @@ import java.lang.Math.PI
 class SwerveModuleIOFalcon(
   private val steeringFalcon: TalonFX,
   private val driveFalcon: TalonFX,
-  private val potentiometer: AnalogPotentiometer,
+  private val potentiometer: AnalogInput,
   private val zeroOffset: Angle,
   override val label: String
 ) : SwerveModuleIO {
@@ -65,16 +67,9 @@ class SwerveModuleIOFalcon(
   private val potentiometerOutput: Double
       get(){
         return if (label != Constants.Drivetrain.BACK_RIGHT_MODULE_NAME){
-          potentiometer.get()
+          potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
         } else {
-          val output = potentiometer.get()
-          if (output > PI){
-            return output - PI
-          } else if (output < PI){
-            return output + PI
-          } else {
-            return PI
-          }
+          2 * PI - potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
         }
       }
 
@@ -157,7 +152,7 @@ class SwerveModuleIOFalcon(
     inputs.driveTemp = driveFalcon.temperature.celsius
     inputs.steeringTemp = steeringFalcon.temperature.celsius
 
-    inputs.potentiometerOutputRaw = potentiometer.get()
+    inputs.potentiometerOutputRaw = potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
     inputs.potentiometerOutputRadians = potentiometerOutput.radians
 
     Logger.getInstance().recordOutput("${label}/potentiometerRadiansWithOffset", (inputs.potentiometerOutputRadians - zeroOffset).inRadians)

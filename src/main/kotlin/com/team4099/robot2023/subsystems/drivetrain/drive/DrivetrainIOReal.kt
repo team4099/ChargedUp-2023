@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModule
 import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModuleIO
 import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModuleIOFalcon
+import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj.AnalogPotentiometer
 import java.lang.Math.PI
 
@@ -17,8 +18,8 @@ object DrivetrainIOReal : DrivetrainIO {
         SwerveModuleIOFalcon(
           TalonFX(Constants.Drivetrain.FRONT_LEFT_STEERING_ID, CANIVORE_NAME),
           TalonFX(Constants.Drivetrain.FRONT_LEFT_DRIVE_ID, CANIVORE_NAME),
-          AnalogPotentiometer(
-            Constants.Drivetrain.FRONT_LEFT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
+          AnalogInput(
+            Constants.Drivetrain.FRONT_LEFT_ANALOG_POTENTIOMETER
           ),
           DrivetrainConstants.FRONT_LEFT_MODULE_ZERO,
           Constants.Drivetrain.FRONT_LEFT_MODULE_NAME
@@ -28,8 +29,8 @@ object DrivetrainIOReal : DrivetrainIO {
         SwerveModuleIOFalcon(
           TalonFX(Constants.Drivetrain.FRONT_RIGHT_STEERING_ID, CANIVORE_NAME),
           TalonFX(Constants.Drivetrain.FRONT_RIGHT_DRIVE_ID, CANIVORE_NAME),
-          AnalogPotentiometer(
-            Constants.Drivetrain.FRONT_RIGHT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
+          AnalogInput(
+            Constants.Drivetrain.FRONT_RIGHT_ANALOG_POTENTIOMETER
           ),
           DrivetrainConstants.FRONT_RIGHT_MODULE_ZERO,
           Constants.Drivetrain.FRONT_RIGHT_MODULE_NAME
@@ -39,8 +40,8 @@ object DrivetrainIOReal : DrivetrainIO {
         SwerveModuleIOFalcon(
           TalonFX(Constants.Drivetrain.BACK_LEFT_STEERING_ID, CANIVORE_NAME),
           TalonFX(Constants.Drivetrain.BACK_LEFT_DRIVE_ID, CANIVORE_NAME),
-          AnalogPotentiometer(
-            Constants.Drivetrain.BACK_LEFT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
+          AnalogInput(
+            Constants.Drivetrain.BACK_LEFT_ANALOG_POTENTIOMETER
           ),
           DrivetrainConstants.BACK_LEFT_MODULE_ZERO,
           Constants.Drivetrain.BACK_LEFT_MODULE_NAME
@@ -53,8 +54,8 @@ object DrivetrainIOReal : DrivetrainIO {
         SwerveModuleIOFalcon(
           TalonFX(Constants.Drivetrain.BACK_RIGHT_STEERING_ID, CANIVORE_NAME),
           TalonFX(Constants.Drivetrain.BACK_RIGHT_DRIVE_ID, CANIVORE_NAME),
-          AnalogPotentiometer(
-            Constants.Drivetrain.BACK_RIGHT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
+          AnalogInput(
+            Constants.Drivetrain.BACK_RIGHT_ANALOG_POTENTIOMETER
           ),
           DrivetrainConstants.BACK_RIGHT_MODULE_ZERO,
           Constants.Drivetrain.BACK_RIGHT_MODULE_NAME
