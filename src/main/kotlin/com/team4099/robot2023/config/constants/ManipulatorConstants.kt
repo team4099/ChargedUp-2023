@@ -80,8 +80,8 @@ object ManipulatorConstants {
   val ARM_OPEN_LOOP_SOFTLIMIT_RETRACTION = 0.5.inches
 
   // TODO(check for accuracy)
-  val ARM_MAX_VELOCITY = 30.inches.perSecond
-  val ARM_MAX_ACCELERATION = 120.inches.perSecond.perSecond
+  val ARM_MAX_VELOCITY = 40.inches.perSecond
+  val ARM_MAX_ACCELERATION = 400.inches.perSecond.perSecond
 
   val MOMENT_INERTIA = 0.0000478.kilo.grams * 1.0.meters.squared
 
@@ -132,7 +132,7 @@ object ManipulatorConstants {
   val HIGH_SCORE_EXTENSION = 8.0.inches
   val INTAKE_CUBE_FROM_GROUND_EXTENSION = 9.0.inches
   val INTAKE_CONE_FROM_GROUND_EXTENSION = 9.5.inches
-  val MAX_EXTENSION = 10.0.inches
+  val MAX_EXTENSION = 7.8.inches
 
   // TODO(figure out the values)
   enum class ArmStates(val position: Length) {

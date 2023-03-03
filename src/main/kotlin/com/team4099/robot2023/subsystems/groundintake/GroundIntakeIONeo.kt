@@ -68,7 +68,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
   // uses the absolute encoder position to calculate the arm position
   private val armAbsolutePosition: Angle
     get() {
-      return (encoderAbsolutePosition + GroundIntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees
+      return (encoderAbsolutePosition - GroundIntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees
         .IEEErem(360.0)
         .degrees
     }

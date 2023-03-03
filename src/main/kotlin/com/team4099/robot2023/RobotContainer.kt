@@ -45,9 +45,9 @@ object RobotContainer {
       //      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
-          Elevator(object: ElevatorIO {}),
-          GroundIntake(object : GroundIntakeIO {}),
-          Manipulator(object: ManipulatorIO {})
+          Elevator(ElevatorIOSim),
+          GroundIntake(GroundIntakeIONeo),
+          Manipulator(ManipulatorIOSim)
         )
     } else {
       // Simulation implementations
@@ -135,11 +135,31 @@ object RobotContainer {
     //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
     //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
 
+    /*
     ControlBoard.setArmPositionToShelfIntake.whileTrue(
       superstructure.intakeConeFromDoubleSubStationCommand()
     )
-    ControlBoard.extendArm.whileTrue(superstructure.prepscoreConeHighCommand())
-    ControlBoard.retractArm.whileTrue(superstructure.scoreConeHighCommand())
+    */
+
+    /*elevator test
+    ControlBoard.extendArm.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())
+    ControlBoard.retractArm.whileTrue(superstructure.elevatorGoToLowCubeNodeCommand())
+    */
+
+
+    //manipulator test
+    /*
+    ControlBoard.extendArm.whileTrue(superstructure.manipulatorGoToMaxExtensionCommand())
+    ControlBoard.retractArm.whileTrue(superstructure.manipulatorGoToMinExtensionCommand())
+    */
+
+    //groundintake test
+
+
+    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeStowedDownCommand())
+    ControlBoard.retractArm.whileTrue(superstructure.groundIntakeStowedUpCommand())
+
+
     //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCubeCommand())
     //    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
 

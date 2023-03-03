@@ -42,7 +42,7 @@ object ElevatorConstants {
 
   val ELEVATOR_ANGLE = 49.678.degrees
 
-  val ELEVATOR_GROUND_OFFSET = 5.0.inches
+  val ELEVATOR_GROUND_OFFSET = 6.5.inches
 
   val SIM_ELEVATOR_KS_SECOND_STAGE = 0.0.volts
   val REAL_ELEVATOR_KS_SECOND_STAGE = 0.54.volts // TODO tune
@@ -69,8 +69,8 @@ object ElevatorConstants {
   // circumference / 2pi = radius
   val SPOOL_RADIUS = 0.005.meters * 32.0 / (2 * PI)
 
-  val MAX_VELOCITY = 50.inches.perSecond
-  val MAX_ACCELERATION = 150.inches.perSecond.perSecond
+  val MAX_VELOCITY = 75.inches.perSecond
+  val MAX_ACCELERATION = 500.inches.perSecond.perSecond
 
   val ELEVATOR_MAX_EXTENSION = 54.8.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
@@ -84,7 +84,7 @@ object ElevatorConstants {
 
   // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_POSITION_DELTA = 2.0.inches
-  val CONE_DROP_POSITION_DELTA = 7.0.inches
+  val CONE_DROP_POSITION_DELTA = 0.0.inches
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val DOUBLE_SUBSTATION_CONE_OFFSET = 3.5.inches
   val SINGLE_SUBSTATION_CUBE_OFFSET = 0.0.inches

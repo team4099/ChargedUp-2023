@@ -626,7 +626,7 @@ class Elevator(val io: ElevatorIO) {
     }
 
     inline fun fromHeightToPosition(height: Length): Length {
-      return height / ElevatorConstants.ELEVATOR_ANGLE.sin - ElevatorConstants.ELEVATOR_GROUND_OFFSET
+      return (height - ElevatorConstants.ELEVATOR_GROUND_OFFSET) / ElevatorConstants.ELEVATOR_ANGLE.sin
     }
 
     inline fun fromPositionToHeight(position: Length): Length {

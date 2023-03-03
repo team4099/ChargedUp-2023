@@ -195,8 +195,7 @@ class SwerveModuleIOFalcon(
   override fun zeroSteering() {
     steeringFalcon.selectedSensorPosition =
       steeringSensor.positionToRawUnits(
-        (potentiometerOutput.radians) - zeroOffset
-      )
+        if (label != Constants.Drivetrain.BACK_RIGHT_MODULE_NAME) (potentiometerOutput.radians) - zeroOffset else (2 * PI).radians - (potentiometerOutput.radians - zeroOffset))
     Logger.getInstance().recordOutput("$label/zeroPositionRadians", steeringSensor.position.inRadians)
     println(
       "Loading Zero for Module $label (${steeringFalcon.selectedSensorPosition})"
