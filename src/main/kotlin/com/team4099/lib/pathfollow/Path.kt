@@ -32,7 +32,8 @@ class Path(
   val headingPointMap = sortedMapOf<Int, Angle>()
   var splinePoints = mutableListOf<PoseWithCurvature>()
   private val headingSplineMap = mutableMapOf<Int, Angle>()
-  private val waypoints = mutableListOf<Translation2d>()
+  val waypoints = mutableListOf<Translation2d>()
+  val holonomicWaypoints = mutableListOf<Pose2dWPILIB>()
   var built = false
   val addTranslationAlert: Alert =
     Alert("Failed to add translation to built path", Alert.AlertType.ERROR)
@@ -59,6 +60,8 @@ class Path(
       headingSplineMap[waypoints.size] = heading
     }
     waypoints.add(nextTranslation)
+
+    holonomicWaypoints.add(Pose2dWPILIB(nextTranslation.translation2d, heading?.inRotation2ds))
   }
 
   /** Build the path after all desired waypoints have been added. */
@@ -169,7 +172,7 @@ class Path(
         Pose2dWPILIB(endingPose.translation.translation2d, quinticEndHeading.inRotation2ds)
       )
 
-      for (waypoint in waypointsWithHeadings) {
+      for (waypoint in holonomicWaypoints) {
         println(waypoint)
       }
 
