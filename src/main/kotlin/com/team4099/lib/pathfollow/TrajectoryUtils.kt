@@ -15,6 +15,7 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 import org.team4099.lib.units.unitless
+import java.util.TreeMap
 import kotlin.math.absoluteValue
 
 fun trajectoryFromPath(path: Path, trajectoryConfig: TrajectoryConfig): Trajectory {
@@ -34,7 +35,7 @@ fun trajectoryFromPath(path: Path, trajectoryConfig: TrajectoryConfig): Trajecto
     )
       .states
 
-  val statesWithHolonomicInterpolation = mutableListOf<TrajectoryState>()
+  val holonomicWaypoints: TreeMap<Time, Angle> = TreeMap<Time, Angle>()
   var stateIndex = 0
   for (waypointIndex in waypoints.indices){
     val timestamp: Time = if (waypointIndex == 0){
@@ -49,19 +50,24 @@ fun trajectoryFromPath(path: Path, trajectoryConfig: TrajectoryConfig): Trajecto
     }
 
     if (waypoints[waypointIndex].rotation != null){
-      statesWithHolonomicInterpolation.add(
-        TrajectoryState(
-          timestamp,
-          Pose2d(waypoints[waypointIndex]),
-          wpilibStates[waypointIndex].curvatureRadPerMeter.radians,
-          wpilibStates[waypointIndex].velocityMetersPerSecond.meters.perSecond,
-          wpilibStates[waypointIndex].accelerationMetersPerSecondSq.meters.perSecond.perSecond
-        )
-      )
+      holonomicWaypoints[timestamp] = waypoints[waypointIndex].rotation.angle
     }
   }
 
-  return Trajectory(statesWithHolonomicInterpolation)
+  val rotationSequence = RotationSequence(holonomicWaypoints)
+
+  val states =
+    wpilibStates.map{ state ->
+      TrajectoryState(
+        state.timeSeconds.seconds,
+        Pose2d(Translation2d(state.poseMeters.translation), rotationSequence.sample(state.timeSeconds.seconds).angle),
+        state.poseMeters.rotation.angle,
+        state.velocityMetersPerSecond.meters.perSecond,
+        state.accelerationMetersPerSecondSq.meters.perSecond.perSecond
+      )
+    }
+
+  return Trajectory(states)
 }
 
 fun trajectoryFromPathPlanner(pathPlannerTrajectory: PathPlannerTrajectory): Trajectory {

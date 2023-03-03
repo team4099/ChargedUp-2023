@@ -4,6 +4,7 @@ import org.team4099.lib.units.Acceleration
 import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.Value
+import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.seconds
@@ -21,11 +22,11 @@ class RotationSequence(
 ) {
 
   fun sample(time: Time): State{
-    var position = 0.0.radians
-    var velocity = 0.0.radians.perSecond
+    var position: Angle
+    var velocity: AngularVelocity
 
-    val lastPoint: Map.Entry<Time, Angle> = sequence.floorEntry(time)
-    val nextPoint: Map.Entry<Time, Angle> = sequence.higherEntry(time)
+    val lastPoint = sequence.floorEntry(time)
+    val nextPoint = sequence.higherEntry(time)
 
     if (lastPoint == null && nextPoint == null){
       position = 0.0.radians

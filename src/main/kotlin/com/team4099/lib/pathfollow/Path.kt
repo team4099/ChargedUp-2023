@@ -118,6 +118,10 @@ class Path(
         SplineHelper.getCubicSplinesFromControlVectors(
           controlVectors.first(), waypointTranslation2ds, controlVectors.last()
         )
+
+      // Add starting and ending poses w headings to holonomic waypoints
+      holonomicWaypoints.add(0, startingPose.pose2d)
+      holonomicWaypoints.add(holonomicWaypoints.size-1, endingPose.pose2d)
     } else {
 
       // Quintic spline generation
@@ -178,6 +182,10 @@ class Path(
 
       // Creates a list of splines
       splines = SplineHelper.getQuinticSplinesFromWaypoints(waypointsWithHeadings)
+
+      // Add starting and ending poses w headings to holonomic waypoints
+      holonomicWaypoints.add(0, startingPose.pose2d)
+      holonomicWaypoints.add(holonomicWaypoints.size-1, endingPose.pose2d)
     }
 
     // Create the vector of spline points.
