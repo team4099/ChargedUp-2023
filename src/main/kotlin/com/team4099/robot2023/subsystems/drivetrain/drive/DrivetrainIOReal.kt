@@ -21,7 +21,7 @@ object DrivetrainIOReal : DrivetrainIO {
             Constants.Drivetrain.FRONT_LEFT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
           ),
           DrivetrainConstants.FRONT_LEFT_MODULE_ZERO,
-          "Front Left Wheel"
+          Constants.Drivetrain.FRONT_LEFT_MODULE_NAME
         )
       ),
       SwerveModule(
@@ -32,7 +32,7 @@ object DrivetrainIOReal : DrivetrainIO {
             Constants.Drivetrain.FRONT_RIGHT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
           ),
           DrivetrainConstants.FRONT_RIGHT_MODULE_ZERO,
-          "Front Right Wheel"
+          Constants.Drivetrain.FRONT_RIGHT_MODULE_NAME
         )
       ),
       SwerveModule(
@@ -43,22 +43,22 @@ object DrivetrainIOReal : DrivetrainIO {
             Constants.Drivetrain.BACK_LEFT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
           ),
           DrivetrainConstants.BACK_LEFT_MODULE_ZERO,
-          "Back Left Wheel"
+          Constants.Drivetrain.BACK_LEFT_MODULE_NAME
         )
       ),
       SwerveModule(
-        object: SwerveModuleIO {
-          override val label: String = "DUMMY_BACK_RIGHT"
-        }
-//        SwerveModuleIOFalcon(
-//          TalonFX(Constants.Drivetrain.BACK_RIGHT_STEERING_ID, CANIVORE_NAME),
-//          TalonFX(Constants.Drivetrain.BACK_RIGHT_DRIVE_ID, CANIVORE_NAME),
-//          AnalogPotentiometer(
-//            Constants.Drivetrain.BACK_RIGHT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
-//          ),
-//          DrivetrainConstants.BACK_RIGHT_MODULE_ZERO,
-//          "Back Right Wheel"
-//        )
+//        object: SwerveModuleIO {
+//          override val label: String = Constants.Drivetrain.BACK_RIGHT_MODULE_NAME
+//        }
+        SwerveModuleIOFalcon(
+          TalonFX(Constants.Drivetrain.BACK_RIGHT_STEERING_ID, CANIVORE_NAME),
+          TalonFX(Constants.Drivetrain.BACK_RIGHT_DRIVE_ID, CANIVORE_NAME),
+          AnalogPotentiometer(
+            Constants.Drivetrain.BACK_RIGHT_ANALOG_POTENTIOMETER, 2 * PI, 0.0
+          ),
+          DrivetrainConstants.BACK_RIGHT_MODULE_ZERO,
+          Constants.Drivetrain.BACK_RIGHT_MODULE_NAME
+        )
       )
     )
   }

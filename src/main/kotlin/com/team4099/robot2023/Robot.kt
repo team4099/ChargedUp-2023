@@ -105,6 +105,7 @@ object Robot : LoggedRobot() {
     AutonomousSelector
     PathStore
     RobotContainer.mapDefaultCommands()
+    RobotContainer.zeroSensors()
   }
 
   override fun disabledExit() {

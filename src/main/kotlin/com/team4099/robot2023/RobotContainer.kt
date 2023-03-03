@@ -101,7 +101,7 @@ object RobotContainer {
   }
 
   fun zeroSteering() {
-    drivetrain.zeroGyroYaw()
+    drivetrain.zeroSteering()
   }
 
   fun zeroSensors() {
