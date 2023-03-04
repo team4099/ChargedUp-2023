@@ -3,7 +3,7 @@ package com.team4099.lib.math
 import org.team4099.lib.units.UnitKey
 import org.team4099.lib.units.Value
 import java.util.*
-
+import kotlin.collections.ArrayList
 
 /**
  * A class that implements a moving-window median filter. Useful for reducing measurement noise,
