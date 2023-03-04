@@ -441,7 +441,7 @@ class Superstructure(
         }
 
         // Transition
-        if (currentRequest is SuperstructureRequest.DoubleSubstationIntake &&
+        if (
           groundIntake.isAtTargetedPosition &&
           manipulator.isAtTargetedPosition &&
           elevator.isAtTargetedPosition
@@ -833,23 +833,12 @@ class Superstructure(
     return returnCommand
   }
 
-  fun prepDoubleSubCubeCommand(): CommandBase {
-    val returnCommand =
-      runOnce {
-        currentRequest = SuperstructureRequest.DoubleSubstationIntakePrep(GamePiece.CUBE)
-      }
-        .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE_PREP }
-
-    returnCommand.name = "DoubleSubIntakeCubeCommand"
-    return returnCommand
-  }
-
-  fun prepDoubleSubConeCommand(): CommandBase {
+  fun doubleSubConeCommand(): CommandBase {
     val returnCommand =
       runOnce {
         currentRequest = SuperstructureRequest.DoubleSubstationIntakePrep(GamePiece.CONE)
       }
-        .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE_PREP }
+        .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE }
 
     returnCommand.name = "DoubleSubIntakeConeCommand"
     return returnCommand

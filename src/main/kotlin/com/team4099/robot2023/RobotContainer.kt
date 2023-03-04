@@ -130,12 +130,10 @@ object RobotContainer {
     ControlBoard.setArmConeHybridPrep.whileTrue(superstructure.prepScoreConeHybridCommand())
     ControlBoard.setArmConeMidPrep.whileTrue(superstructure.prepScoreConeMidCommand())
     ControlBoard.setArmConeHighPrep.whileTrue(superstructure.prepScoreConeHighCommand())
-    ControlBoard.setArmDoubleSubCone.whileTrue(superstructure.prepDoubleSubConeCommand())
-    ControlBoard.setArmDoubleSubCube.whileTrue(superstructure.prepDoubleSubCubeCommand())
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
     ControlBoard.doubleSubstationIntake.whileTrue(
-      superstructure.intakeConeFromDoubleSubStationCommand()
+      superstructure.doubleSubConeCommand()
     )
 
     //
