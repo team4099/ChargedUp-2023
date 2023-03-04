@@ -348,7 +348,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     val velSwerveModuleStates: Array<SwerveModuleState>?
     val accelSwerveModuleStates: Array<SwerveModuleState>?
 
-    if (fieldOriented) {
+    if (fieldOriented && gyroInputs.gyroConnected) {
       // Getting velocity and acceleration states from the drive & angular velocity vectors and
       // drive & angular acceleration vectors (respectively)
       // This is with respect to the field, meaning all velocity and acceleration vectors are

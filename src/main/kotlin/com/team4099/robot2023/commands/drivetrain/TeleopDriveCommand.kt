@@ -12,7 +12,7 @@ class TeleopDriveCommand(
   val driveX: () -> Double,
   val driveY: () -> Double,
   val turn: () -> Double,
-  val robotOriented: () -> Boolean,
+  val slowMode: () -> Boolean,
   val drivetrain: Drivetrain
 ) : CommandBase() {
 
@@ -26,21 +26,23 @@ class TeleopDriveCommand(
     val flipDrive = if (FMSData.allianceColor == DriverStation.Alliance.Red) -1 else 1
     val flipTurn = if (FMSData.allianceColor == DriverStation.Alliance.Red) -1 else 1
 
+    val speedMultiplier = if (slowMode()) 0.25 else 1
+
     val speed =
       Pair(
-        DrivetrainConstants.DRIVE_SETPOINT_MAX *
+        DrivetrainConstants.DRIVE_SETPOINT_MAX * speedMultiplier *
           driveX() *
           driveX() *
           sign(driveX()) *
           flipDrive,
-        DrivetrainConstants.DRIVE_SETPOINT_MAX *
+        DrivetrainConstants.DRIVE_SETPOINT_MAX * speedMultiplier *
           driveY() *
           driveY() *
           sign(driveY()) *
           flipDrive
       )
-    val direction = DrivetrainConstants.TURN_SETPOINT_MAX * turn() * turn() * turn() * flipTurn
-    drivetrain.setOpenLoop(direction, speed, fieldOriented = !robotOriented())
+    val direction = DrivetrainConstants.TURN_SETPOINT_MAX * turn() * turn() * turn() * turn() * turn() * flipTurn
+    drivetrain.setOpenLoop(direction, speed)
     Logger.getInstance().recordOutput("ActiveCommands/TeleopDriveCommand", true)
   }
   override fun isFinished(): Boolean {

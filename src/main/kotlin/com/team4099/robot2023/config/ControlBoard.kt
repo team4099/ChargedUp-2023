@@ -22,7 +22,7 @@ object ControlBoard {
   val turn: Double
     get() = driver.rightXAxis
 
-  val robotOriented: Boolean
+  val slowMode: Boolean
     get() = driver.leftShoulderButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
