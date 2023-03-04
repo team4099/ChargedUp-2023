@@ -227,14 +227,17 @@ class Superstructure(
             )
         }
         if (groundIntake.isAtTargetedPosition) {
-          elevator.currentRequest =
-            Request.ElevatorRequest.TargetingPosition(
-              Elevator.TunableElevatorHeights.minPosition.get()
-            )
           manipulator.currentRequest =
             Request.ManipulatorRequest.TargetingPosition(
               Manipulator.TunableManipulatorStates.minExtension.get(), rollerVoltage
             )
+
+          if (manipulator.isAtTargetedPosition){
+            elevator.currentRequest =
+              Request.ElevatorRequest.TargetingPosition(
+                Elevator.TunableElevatorHeights.minPosition.get()
+              )
+          }
         } else {
           manipulator.currentRequest =
             Request.ManipulatorRequest.TargetingPosition(
@@ -312,15 +315,21 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
           )
         if (groundIntake.isAtTargetedPosition) {
-          manipulator.currentRequest =
-            Request.ManipulatorRequest.TargetingPosition(
-              Manipulator.TunableManipulatorStates.groundIntakeCubeExtension.get(),
-              ManipulatorConstants.IDLE_VOLTAGE
-            )
+          elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(
+            Elevator.TunableElevatorHeights.groundIntakeCubeHeight.get()
+          )
+
+          if (elevator.isAtTargetedPosition){
+            manipulator.currentRequest =
+              Request.ManipulatorRequest.TargetingPosition(
+                Manipulator.TunableManipulatorStates.groundIntakeCubeExtension.get(),
+                ManipulatorConstants.IDLE_VOLTAGE
+              )
+          }
         }
 
         // Transition
-        if (groundIntake.isAtTargetedPosition && manipulator.isAtTargetedPosition) {
+        if (groundIntake.isAtTargetedPosition && elevator.isAtTargetedPosition && manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
@@ -342,7 +351,7 @@ class Superstructure(
         // Transition
         if (groundIntake.isAtTargetedPosition &&
           manipulator.isAtTargetedPosition &&
-          currentRequest !is SuperstructureRequest.GroundIntakeCube
+          manipulator.hasCube
         ) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
@@ -354,6 +363,7 @@ class Superstructure(
         // Outputs
 
         // Transition
+        currentRequest = SuperstructureRequest.Idle()
         nextState = SuperstructureStates.IDLE
       }
       SuperstructureStates.GROUND_INTAKE_CONE_PREP -> {
@@ -754,15 +764,6 @@ class Superstructure(
   }
 
   // Superstructure Commands
-  fun intakeConeFromDoubleSubStationCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.DoubleSubstationIntake() }.until {
-        currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE
-      }
-
-    returnCommand.name = "IntakeConeFromDoubleSubStationCommand"
-    return returnCommand
-  }
 
   fun requestIdleCommand(): CommandBase {
     val returnCommand =
@@ -771,6 +772,15 @@ class Superstructure(
       }
 
     returnCommand.name = "RequestIdleCommand"
+    return returnCommand
+  }
+
+  fun groundIntakeCubeCommand(): CommandBase {
+    val returnCommand = runOnce{
+      currentRequest = SuperstructureRequest.GroundIntakeCube()
+    }
+
+    returnCommand.name = "GroundIntakeCubeCommand"
     return returnCommand
   }
 

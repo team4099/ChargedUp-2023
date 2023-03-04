@@ -67,13 +67,13 @@ object ManipulatorConstants {
   val CUBE_CURRENT_THRESHOLD = 18.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
-  val ARM_MAX_EXTENSION = 20.inches
+  val ARM_MAX_EXTENSION = 8.inches
   val ARM_MAX_RETRACTION = 0.inches
   val ARM_TOLERANCE = 0.25.inches
   val ARM_MASS = 10.0.pounds
 
   // soft limits
-  val ARM_SOFTLIMIT_EXTENSION = 10.75.inches
+  val ARM_SOFTLIMIT_EXTENSION = 7.95.inches
   val ARM_SOFTLIMIT_RETRACTION = 0.25.inches
 
   val ARM_OPEN_LOOP_SOFTLIMIT_EXTENSION = 8.inches
@@ -129,9 +129,9 @@ object ManipulatorConstants {
   val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
   val LOW_SCORE_EXTENSION = 1.0.inches
   val MID_SCORE_EXTENSION = 4.0.inches
-  val HIGH_SCORE_EXTENSION = 8.0.inches
-  val INTAKE_CUBE_FROM_GROUND_EXTENSION = 9.0.inches
-  val INTAKE_CONE_FROM_GROUND_EXTENSION = 9.5.inches
+  val HIGH_SCORE_EXTENSION = 7.5.inches
+  val INTAKE_CUBE_FROM_GROUND_EXTENSION = 4.0.inches
+  val INTAKE_CONE_FROM_GROUND_EXTENSION = 4.5.inches
   val MAX_EXTENSION = 7.8.inches
 
   // TODO(figure out the values)

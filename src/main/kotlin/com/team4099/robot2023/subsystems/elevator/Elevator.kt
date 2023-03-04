@@ -124,6 +124,12 @@ class Elevator(val io: ElevatorIO) {
         Pair({ it.inInchesPerSecond }, { it.inches.perSecond })
       )
 
+    val groundIntakeCubeHeight = LoggedTunableValue(
+      "Elevator/groundIntakeCubeHeight",
+      ElevatorConstants.GROUND_INTAKE_CUBE_HEIGHT,
+      Pair({ it.inInches }, { it.inches })
+    )
+
     val shelfIntakeCubeOffset =
       LoggedTunableValue(
         "Elevator/shelfIntakeCubeOffset",
@@ -255,7 +261,7 @@ class Elevator(val io: ElevatorIO) {
   val isStowed: Boolean
     get() =
       inputs.elevatorPosition <=
-        ElevatorConstants.ELEVATOR_MAX_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
+        ElevatorConstants.ELEVATOR_SOFT_LIMIT_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
 
   var isHomed = false
 

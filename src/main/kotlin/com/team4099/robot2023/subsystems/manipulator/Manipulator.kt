@@ -52,7 +52,7 @@ class Manipulator(val io: ManipulatorIO) {
 
   val isStowed: Boolean
     get() =
-      (inputs.armPosition - ManipulatorConstants.ARM_MAX_RETRACTION).absoluteValue <=
+      (inputs.armPosition - ManipulatorConstants.MIN_EXTENSION).absoluteValue <=
         ManipulatorConstants.ARM_TOLERANCE
 
   private var rollerStatorCurrentFilter = MedianFilter(filterSize.get().toInt())
