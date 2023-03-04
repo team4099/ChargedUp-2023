@@ -30,18 +30,27 @@ class TeleopDriveCommand(
 
     val speed =
       Pair(
-        DrivetrainConstants.DRIVE_SETPOINT_MAX * speedMultiplier *
+        DrivetrainConstants.DRIVE_SETPOINT_MAX *
+          speedMultiplier *
           driveX() *
           driveX() *
           sign(driveX()) *
           flipDrive,
-        DrivetrainConstants.DRIVE_SETPOINT_MAX * speedMultiplier *
+        DrivetrainConstants.DRIVE_SETPOINT_MAX *
+          speedMultiplier *
           driveY() *
           driveY() *
           sign(driveY()) *
           flipDrive
       )
-    val direction = DrivetrainConstants.TURN_SETPOINT_MAX * turn() * turn() * turn() * turn() * turn() * flipTurn
+    val direction =
+      DrivetrainConstants.TURN_SETPOINT_MAX *
+        turn() *
+        turn() *
+        turn() *
+        turn() *
+        turn() *
+        flipTurn
     drivetrain.setOpenLoop(direction, speed)
     Logger.getInstance().recordOutput("ActiveCommands/TeleopDriveCommand", true)
   }

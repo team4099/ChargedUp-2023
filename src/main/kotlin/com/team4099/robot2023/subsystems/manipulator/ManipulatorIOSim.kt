@@ -74,9 +74,9 @@ object ManipulatorIOSim : ManipulatorIO {
     rollerSim.update(Constants.Universal.LOOP_PERIOD_TIME.inSeconds)
 
     inputs.rollerVelocity = rollerSim.angularVelocityRPM.radians.perSecond
-    inputs.rollerSupplyCurrent = rollerSim.currentDrawAmps.amps
+    inputs.rollerSupplyCurrent = 0.0.amps
     inputs.rollerAppliedVoltage = 0.volts
-    inputs.rollerStatorCurrent = 0.amps
+    inputs.rollerStatorCurrent = rollerSim.currentDrawAmps.amps
     inputs.rollerTemp = 0.0.celsius
 
     inputs.armPosition = armSim.positionMeters.meters

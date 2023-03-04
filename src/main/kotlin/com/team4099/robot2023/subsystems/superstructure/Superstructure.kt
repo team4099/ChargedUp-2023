@@ -441,8 +441,7 @@ class Superstructure(
         }
 
         // Transition
-        if (
-          groundIntake.isAtTargetedPosition &&
+        if (groundIntake.isAtTargetedPosition &&
           manipulator.isAtTargetedPosition &&
           elevator.isAtTargetedPosition
         ) {
