@@ -1,7 +1,10 @@
 package com.team4099.robot2023.subsystems.manipulator
 
+import org.apache.commons.collections4.queue.CircularFifoQueue
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableNumber
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.lib.math.MedianFilter
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
@@ -9,8 +12,11 @@ import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.units.base.Ampere
+import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
@@ -45,12 +51,20 @@ class Manipulator(val io: ManipulatorIO) {
       "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
+  private val filterSize =
+    LoggedTunableNumber("Manipulator/filterSize", 5.0)
+
   val isStowed: Boolean
     get() =
       (inputs.armPosition - ManipulatorConstants.ARM_MAX_RETRACTION).absoluteValue <=
         ManipulatorConstants.ARM_TOLERANCE
 
+  private var rollerStatorCurrentFilter = MedianFilter<Ampere>(filterSize.get().toInt())
+
+  private var lastRecordedRollerStatorCurrents = CircularFifoQueue<Current>(filterSize.get().toInt())
+
   object TunableManipulatorStates {
+
     val minExtension =
       LoggedTunableValue(
         "Manipulator/minExtension",
@@ -188,7 +202,7 @@ class Manipulator(val io: ManipulatorIO) {
   // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCube: Boolean
     get() {
-      return inputs.rollerStatorCurrent >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD &&
+      return rollerStatorCurrentFilter.calculate(inputs.rollerStatorCurrent) >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD &&
         (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
@@ -198,7 +212,7 @@ class Manipulator(val io: ManipulatorIO) {
   // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCone: Boolean
     get() {
-      return inputs.rollerStatorCurrent >= ManipulatorConstants.CONE_CURRENT_THRESHOLD &&
+      return rollerStatorCurrentFilter.calculate(inputs.rollerStatorCurrent) >= ManipulatorConstants.CONE_CURRENT_THRESHOLD &&
         (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
@@ -316,6 +330,13 @@ class Manipulator(val io: ManipulatorIO) {
       io.configPID(kP.get(), kI.get(), kD.get())
     }
 
+    if (filterSize.hasChanged()){
+      rollerStatorCurrentFilter = MedianFilter(filterSize.get().toInt())
+      lastRecordedRollerStatorCurrents = CircularFifoQueue<Current>(filterSize.get().toInt())
+    }
+
+    lastRecordedRollerStatorCurrents.add(inputs.rollerStatorCurrent)
+
     Logger.getInstance().processInputs("Manipulator", inputs)
 
     Logger.getInstance().recordOutput("Manipulator/currentState", currentState.name)
@@ -361,6 +382,8 @@ class Manipulator(val io: ManipulatorIO) {
       Logger.getInstance().recordOutput("Manipulator/forwardLimitReached", forwardLimitReached)
 
       Logger.getInstance().recordOutput("Manipulator/reverseLimitReached", reverseLimitReached)
+
+      Logger.getInstance().recordOutput("Manipulator/filteredRollerMotorStatorCurrent", rollerStatorCurrentFilter.calculate(inputs.rollerStatorCurrent).inAmperes)
     }
 
     var nextState = currentState
