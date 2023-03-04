@@ -132,7 +132,7 @@ object RobotContainer {
     ControlBoard.setArmConeHighPrep.whileTrue(superstructure.prepScoreConeHighCommand())
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
-    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    ControlBoard.doubleSubstationIntake.whileTrue(ResetGyroYawCommand(drivetrain))
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
 
     //

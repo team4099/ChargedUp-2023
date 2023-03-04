@@ -416,11 +416,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
    */
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
-    //    swerveDrivePoseEstimator.resetPosition(
-    //      toAngle.inRotation2ds,
-    //      swerveModules.map { it.modulePosition }.toTypedArray(),
-    //      odometryPose.pose2d
-    //    )
+
+    swerveDrivePoseEstimator.resetPosition(
+      toAngle.inRotation2ds,
+      swerveModules.map { it.modulePosition }.toTypedArray(),
+      odometryPose.pose2d
+    )
 
     if (RobotBase.isSimulation()) {
       swerveDriveOdometry.resetPosition(
