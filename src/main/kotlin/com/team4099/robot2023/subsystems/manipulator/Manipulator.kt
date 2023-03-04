@@ -6,7 +6,6 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.Timer
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
@@ -187,16 +186,9 @@ class Manipulator(val io: ManipulatorIO) {
 
   // Checks if motor current draw is greater than given threshold and if rollers are intaking
   // Last condition prevents current spikes caused by starting to run intake from triggering this
-  private val hasCube: Boolean
+  val hasCube: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD &&
-        (
-          inputs.rollerAppliedVoltage == ManipulatorConstants.CUBE_IN ||
-            inputs.rollerAppliedVoltage ==
-            ManipulatorConstants
-              .CUBE_IDLE // TODO checking if their equal is gonna be wrong figure out a
-          // better way
-          ) &&
         (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
@@ -204,16 +196,9 @@ class Manipulator(val io: ManipulatorIO) {
   // Checks if motor current draw is greater than the given threshold for cubes and if rollers are
   // intaking
   // Last condition prevents current spikes caused by starting to run intake from triggering this
-  private val hasCone: Boolean
+  val hasCone: Boolean
     get() {
       return inputs.rollerStatorCurrent >= ManipulatorConstants.CONE_CURRENT_THRESHOLD &&
-        (
-          inputs.rollerAppliedVoltage == ManipulatorConstants.CONE_IN ||
-            inputs.rollerAppliedVoltage ==
-            ManipulatorConstants
-              .CONE_IDLE // TODO checking if their equal is gonna be wrong figure out a
-          // better way
-          ) &&
         (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
     }
@@ -270,6 +255,8 @@ class Manipulator(val io: ManipulatorIO) {
   private var lastArmPositionTarget = 0.0.inches
 
   private var lastArmVoltage = 0.0.volts
+
+  private var lastRollerVoltage = 0.0.volts
 
   private var armConstraints: TrapezoidProfile.Constraints<Meter> =
     TrapezoidProfile.Constraints(
@@ -363,6 +350,9 @@ class Manipulator(val io: ManipulatorIO) {
       Logger.getInstance().recordOutput("Manipulator/armVoltageTarget", armVoltageTarget.inVolts)
 
       Logger.getInstance()
+        .recordOutput("Manipulator/lastRollerVoltageTarget", lastRollerVoltage.inVolts)
+
+      Logger.getInstance()
         .recordOutput("Manipulator/rollerVoltageTarget", rollerVoltageTarget.inVolts)
 
       Logger.getInstance()
@@ -387,6 +377,7 @@ class Manipulator(val io: ManipulatorIO) {
         // Outputs
         setArmVoltage(armVoltageTarget)
         setRollerPower(rollerVoltageTarget)
+        lastRollerRunTime = Clock.fpgaTime
 
         // Transitions
         nextState = fromRequestToState(currentRequest)
@@ -412,6 +403,10 @@ class Manipulator(val io: ManipulatorIO) {
         setArmPosition(armProfile.calculate(timeElapsed))
         if (armProfile.isFinished(timeElapsed)) {
           setRollerPower(rollerVoltageTarget)
+          if (lastRollerVoltage != rollerVoltageTarget) {
+            lastRollerRunTime = Clock.fpgaTime
+            lastRollerVoltage = rollerVoltageTarget
+          }
         }
 
         Logger.getInstance()
@@ -427,6 +422,8 @@ class Manipulator(val io: ManipulatorIO) {
           // setting the last target to something unreasonable so the profile is generated next loop
           // cycle
           lastArmPositionTarget = (-1337).inches
+          lastArmVoltage = -1337.volts
+          lastRollerVoltage = -1337.volts
         }
       }
       ManipulatorState.HOME -> {

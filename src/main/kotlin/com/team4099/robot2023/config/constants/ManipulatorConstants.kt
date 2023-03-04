@@ -63,8 +63,8 @@ object ManipulatorConstants {
   val ROLLER_GEAR_RATIO = 20.0.gearRatio
 
   // TODO: Change current thresholds
-  val CONE_CURRENT_THRESHOLD = 15.amps
-  val CUBE_CURRENT_THRESHOLD = 15.amps
+  val CONE_CURRENT_THRESHOLD = 18.amps
+  val CUBE_CURRENT_THRESHOLD = 18.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
   val ARM_MAX_EXTENSION = 20.inches

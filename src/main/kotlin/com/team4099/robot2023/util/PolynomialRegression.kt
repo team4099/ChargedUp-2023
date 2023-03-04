@@ -1,9 +1,9 @@
-//package com.team4099.robot2023.util
+// package com.team4099.robot2023.util
 //
-//import org.ejml.interfaces.decomposition.QRDecomposition
+// import org.ejml.interfaces.decomposition.QRDecomposition
 //
 //
-///**
+// / **
 // * The `PolynomialRegression` class performs a polynomial regression on an set of *N*
 // * data points (*y<sub>i</sub>*, *x<sub>i</sub>*). That is, it fits a polynomial
 // * *y* = <sub>0</sub> + <sub>1</sub> *x* + <sub>2</sub>
@@ -20,11 +20,11 @@
 // * @author Robert Sedgewick
 // * @author Kevin Wayne
 // */
-//class PolynomialRegression(
+// class PolynomialRegression(
 //  x: DoubleArray, y: DoubleArray, // degree of the polynomial regression
 //  private val degree: Int, // name of the predictor variable
 //  private val variableName: String = "n"
-//) :
+// ) :
 //  Comparable<PolynomialRegression?> {
 //  private val beta // the polynomial regression coefficients
 //    : Matrix
@@ -205,4 +205,4 @@
 //    val residuals: Matrix = matrixX.times(beta).minus(matrixY)
 //    sse = residuals.norm2() * residuals.norm2()
 //  }
-//}
+// }

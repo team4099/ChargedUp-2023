@@ -5,6 +5,8 @@ import org.team4099.lib.units.milli
 
 typealias GamePiece = Constants.Universal.GamePiece
 
+typealias Substation = Constants.Universal.Substation
+
 typealias NodeTier = Constants.Universal.NodeTier
 
 object Constants {
@@ -38,6 +40,7 @@ object Constants {
       DOUBLE_SUBSTATION_LEFT,
       DOUBLE_SUBSTATION_RIGHT,
       SINGLE_SUBSTATION,
+      NONE
     }
   }
 

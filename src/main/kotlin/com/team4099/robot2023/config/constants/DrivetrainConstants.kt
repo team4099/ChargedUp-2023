@@ -8,22 +8,17 @@ import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.driven
-import org.team4099.lib.units.derived.driving
-import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
-import org.team4099.lib.units.derived.perRadianPerSecond
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.kilo
 import org.team4099.lib.units.perSecond
-import kotlin.math.PI
 import kotlin.math.sqrt
 
 object DrivetrainConstants {
@@ -130,9 +125,9 @@ object DrivetrainConstants {
     val DRIVE_KV = 0.0.volts / 1.0.meters.perSecond
     val DRIVE_KA = 0.0.volts / 1.0.meters.perSecond.perSecond
 
-//    val DRIVE_KS = 0.23677.volts
-//    val DRIVE_KV = 2.2678.volts / 1.0.meters.perSecond
-//    val DRIVE_KA = 0.40499.volts / 1.0.meters.perSecond.perSecond
+    //    val DRIVE_KS = 0.23677.volts
+    //    val DRIVE_KV = 2.2678.volts / 1.0.meters.perSecond
+    //    val DRIVE_KA = 0.40499.volts / 1.0.meters.perSecond.perSecond
 
     val SIM_DRIVE_KS = 0.116970.volts
     val SIM_DRIVE_KV = 0.133240.volts / 1.0.meters.perSecond

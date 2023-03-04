@@ -25,19 +25,31 @@ object ControlBoard {
   val robotOriented: Boolean
     get() = driver.leftShoulderButton
 
-  val autoLevel = Trigger { driver.aButton }
-
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
 
   val extendArm = Trigger { operator.aButton }
 
   val retractArm = Trigger { operator.bButton }
 
-  //val setArmPositionToShelfIntake = Trigger { operator.xButton }
+  // val setArmPositionToShelfIntake = Trigger { operator.xButton }
 
-  //val toConeLevelOnePrep = Trigger {operator.leftShoulderButton && operator.aButton}
-  val toConeLevelOnePrep = Trigger {operator.leftShoulderButton && operator.aButton}
+  // val toConeLevelOnePrep = Trigger {operator.leftShoulderButton && operator.aButton}
+  val setArmCubeHybridPrep = Trigger { operator.leftShoulderButton && operator.aButton }
+  val setArmCubeMidPrep = Trigger { operator.leftShoulderButton && operator.bButton }
+  val setArmCubeHighPrep = Trigger { operator.leftShoulderButton && operator.yButton }
 
+  val setArmConeHybridPrep = Trigger { operator.rightShoulderButton && operator.aButton }
+  val setArmConeMidPrep = Trigger { operator.rightShoulderButton && operator.bButton }
+  val setArmConeHighPrep = Trigger { operator.rightShoulderButton && operator.yButton }
+
+  val setArmDoubleSubCube = Trigger { operator.dPadLeft }
+  val setArmDoubleSubCone = Trigger { operator.dPadRight }
+
+  val goBackToIdle = Trigger { operator.selectButton && operator.startButton }
+
+  val doubleSubstationIntake = Trigger { driver.aButton }
+  val scoreOuttake = Trigger { driver.xButton }
+  val groundIntakeCube = Trigger { driver.rightShoulderButton }
 
   // val armCharacterization = Trigger { operator.yButton }
 

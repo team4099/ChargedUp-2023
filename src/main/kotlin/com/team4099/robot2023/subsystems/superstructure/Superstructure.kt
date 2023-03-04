@@ -38,12 +38,14 @@ class Superstructure(
       when (value) {
         is SuperstructureRequest.GroundIntakeCone -> usingGamePiece = GamePiece.CONE
         is SuperstructureRequest.GroundIntakeCube -> usingGamePiece = GamePiece.CUBE
-        is SuperstructureRequest.DoubleSubstationIntake -> usingGamePiece = value.gamePiece
+        is SuperstructureRequest.DoubleSubstationIntake -> {}
         is SuperstructureRequest.SingleSubstationIntake -> usingGamePiece = value.gamePiece
         is SuperstructureRequest.PrepScore -> {
           usingGamePiece = value.gamePiece
           nodeTier = value.nodeTier
         }
+        is SuperstructureRequest.DoubleSubstationIntakePrep -> usingGamePiece = value.gamePiece
+        is SuperstructureRequest.SingleSubstationIntakePrep -> usingGamePiece = value.gamePiece
         is SuperstructureRequest.Score -> {}
         else -> {
           usingGamePiece = GamePiece.NONE
@@ -244,6 +246,8 @@ class Superstructure(
         nextState =
           when (currentRequest) {
             is SuperstructureRequest.DoubleSubstationIntake ->
+              SuperstructureStates.DOUBLE_SUBSTATION_INTAKE
+            is SuperstructureRequest.DoubleSubstationIntakePrep ->
               SuperstructureStates.DOUBLE_SUBSTATION_INTAKE_PREP
             is SuperstructureRequest.GroundIntakeCone ->
               SuperstructureStates.GROUND_INTAKE_CONE_PREP
@@ -437,12 +441,15 @@ class Superstructure(
         }
 
         // Transition
-        if (groundIntake.isAtTargetedPosition &&
+        if (currentRequest is SuperstructureRequest.DoubleSubstationIntake &&
+          groundIntake.isAtTargetedPosition &&
           manipulator.isAtTargetedPosition &&
           elevator.isAtTargetedPosition
         ) {
           nextState = SuperstructureStates.DOUBLE_SUBSTATION_INTAKE
-        } else if (currentRequest !is SuperstructureRequest.DoubleSubstationIntake) {
+        } else if (currentRequest !is SuperstructureRequest.DoubleSubstationIntake &&
+          currentRequest !is SuperstructureRequest.DoubleSubstationIntakePrep
+        ) {
           nextState = SuperstructureStates.IDLE
         }
       }
@@ -461,12 +468,16 @@ class Superstructure(
           )
 
         // Transition
-        if (manipulator.isAtTargetedPosition &&
-          (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.intakeTime.get()
+        if ((
+          manipulator.isAtTargetedPosition &&
+            (
+              (manipulator.hasCone && usingGamePiece == GamePiece.CONE) ||
+                (manipulator.hasCube && usingGamePiece == GamePiece.CUBE)
+              )
+          ) ||
+          currentRequest == SuperstructureRequest.Idle()
         ) {
-          nextState = SuperstructureStates.IDLE
-          currentRequest = SuperstructureRequest.Idle()
+          nextState = SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_PREP -> {
@@ -539,6 +550,17 @@ class Superstructure(
         ) {
           nextState = SuperstructureStates.IDLE
           currentRequest = SuperstructureRequest.Idle()
+        }
+      }
+      SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP -> {
+        manipulator.currentRequest =
+          Request.ManipulatorRequest.TargetingPosition(
+            Manipulator.TunableManipulatorStates.minExtension.get(),
+            ManipulatorConstants.IDLE_VOLTAGE
+          )
+
+        if (manipulator.isAtTargetedPosition) {
+          nextState = SuperstructureStates.IDLE
         }
       }
       SuperstructureStates.SCORE_PREP -> {
@@ -699,6 +721,18 @@ class Superstructure(
           nextState = SuperstructureStates.IDLE
         }
       }
+      SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP -> {
+        manipulator.currentRequest =
+          Request.ManipulatorRequest.TargetingPosition(
+            Manipulator.TunableManipulatorStates.minExtension.get(),
+            ManipulatorConstants.IDLE_VOLTAGE
+          )
+
+        if (manipulator.isAtTargetedPosition) {
+          nextState = SuperstructureStates.IDLE
+          currentRequest = SuperstructureRequest.Idle()
+        }
+      }
       SuperstructureStates.TUNING -> {
 
         if (currentRequest is SuperstructureRequest.Idle) {
@@ -723,37 +757,138 @@ class Superstructure(
   // Superstructure Commands
   fun intakeConeFromDoubleSubStationCommand(): CommandBase {
     val returnCommand =
-      runOnce {
-        currentRequest =
-          SuperstructureRequest.DoubleSubstationIntake(Constants.Universal.GamePiece.CONE)
+      runOnce { currentRequest = SuperstructureRequest.DoubleSubstationIntake() }.until {
+        currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE
       }
-        .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE }
 
     returnCommand.name = "IntakeConeFromDoubleSubStationCommand"
     return returnCommand
   }
 
-  fun prepscoreConeHighCommand(): CommandBase {
+  fun requestIdleCommand(): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.Idle() }.until {
+        currentState == SuperstructureStates.IDLE
+      }
+
+    returnCommand.name = "RequestIdleCommand"
+    return returnCommand
+  }
+
+  fun prepScoreCubeHybridCommand(): CommandBase {
     val returnCommand =
       runOnce {
-        currentRequest =
-          SuperstructureRequest.PrepScore(
-            Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
-          )
+        currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.HYBRID)
       }
+        .until { currentState == SuperstructureStates.SCORE_PREP }
+
+    returnCommand.name = "PrepscoreCubeHybridCommand"
+    return returnCommand
+  }
+
+  fun prepScoreCubeMidCommand(): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.MID) }
+        .until { currentState == SuperstructureStates.SCORE_PREP }
+
+    returnCommand.name = "PrepscoreCubeMidCommand"
+    return returnCommand
+  }
+
+  fun prepScoreCubeHighCommand(): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.HIGH) }
+        .until { currentState == SuperstructureStates.SCORE_PREP }
+
+    returnCommand.name = "PrepscoreCubeHighCommand"
+    return returnCommand
+  }
+
+  fun prepScoreConeHybridCommand(): CommandBase {
+    val returnCommand =
+      runOnce {
+        currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.HYBRID)
+      }
+        .until { currentState == SuperstructureStates.SCORE_PREP }
+
+    returnCommand.name = "PrepscoreConeHybridCommand"
+    return returnCommand
+  }
+
+  fun prepScoreConeMidCommand(): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.MID) }
+        .until { currentState == SuperstructureStates.SCORE_PREP }
+
+    returnCommand.name = "PrepscoreConeMidCommand"
+    return returnCommand
+  }
+
+  fun prepScoreConeHighCommand(): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.HIGH) }
         .until { currentState == SuperstructureStates.SCORE_PREP }
 
     returnCommand.name = "PrepscoreConeHighCommand"
     return returnCommand
   }
 
-  fun scoreConeHighCommand(): CommandBase {
+  fun prepDoubleSubCubeCommand(): CommandBase {
+    val returnCommand =
+      runOnce {
+        currentRequest = SuperstructureRequest.DoubleSubstationIntakePrep(GamePiece.CUBE)
+      }
+        .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE_PREP }
+
+    returnCommand.name = "DoubleSubIntakeCubeCommand"
+    return returnCommand
+  }
+
+  fun prepDoubleSubConeCommand(): CommandBase {
+    val returnCommand =
+      runOnce {
+        currentRequest = SuperstructureRequest.DoubleSubstationIntakePrep(GamePiece.CONE)
+      }
+        .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_INTAKE_PREP }
+
+    returnCommand.name = "DoubleSubIntakeConeCommand"
+    return returnCommand
+  }
+
+  fun scoreConeCommand(): CommandBase {
     val returnCommand =
       runOnce { currentRequest = SuperstructureRequest.Score() }.until {
         currentState == SuperstructureStates.SCORE_CONE
       }
 
-    returnCommand.name = "ScoreConeHighCommand"
+    returnCommand.name = "ScoreConeCommand"
+    return returnCommand
+  }
+
+  fun scoreCubeCommand(): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
+        currentState == SuperstructureStates.SCORE_CUBE
+      }
+
+    returnCommand.name = "ScoreCubeCommand"
+    return returnCommand
+  }
+
+  fun score(): CommandBase {
+    var stateToBeChecked: SuperstructureStates
+    if (usingGamePiece == GamePiece.CUBE) {
+      stateToBeChecked = SuperstructureStates.SCORE_CUBE
+    } else {
+      stateToBeChecked = SuperstructureStates.SCORE_CONE
+    }
+
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
+        currentState == stateToBeChecked
+      }
+
+    returnCommand.name = "ScoreCommand"
     return returnCommand
   }
 
@@ -1259,13 +1394,15 @@ class Superstructure(
       GROUND_INTAKE_CONE_CLEANUP,
       DOUBLE_SUBSTATION_INTAKE_PREP,
       DOUBLE_SUBSTATION_INTAKE,
+      DOUBLE_SUBSTATION_CLEANUP,
       SINGLE_SUBSTATION_INTAKE_PREP,
       SINGLE_SUBSTATION_INTAKE_CUBE,
       SINGLE_SUBSTATION_INTAKE_CONE,
+      SINGLE_SUBSTATION_INTAKE_CLEANUP,
       SCORE_PREP,
       SCORE_CUBE,
       SCORE_CONE,
-      SCORE_CLEANUP
+      SCORE_CLEANUP,
     }
   }
 }

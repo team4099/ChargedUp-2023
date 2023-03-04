@@ -8,10 +8,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import edu.wpi.first.wpilibj.AnalogInput
-import edu.wpi.first.wpilibj.AnalogPotentiometer
 import edu.wpi.first.wpilibj.RobotController
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearAcceleration
@@ -30,7 +28,6 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -65,13 +62,13 @@ class SwerveModuleIOFalcon(
   private val driveConfiguration: TalonFXConfiguration = TalonFXConfiguration()
 
   private val potentiometerOutput: Double
-      get(){
-        return if (label != Constants.Drivetrain.BACK_RIGHT_MODULE_NAME){
-          potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
-        } else {
-          2 * PI - potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
-        }
+    get() {
+      return if (label != Constants.Drivetrain.BACK_RIGHT_MODULE_NAME) {
+        potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
+      } else {
+        2 * PI - potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
       }
+    }
 
   init {
     driveFalcon.configFactoryDefault()
@@ -111,7 +108,8 @@ class SwerveModuleIOFalcon(
       driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
     driveConfiguration.slot0.kD =
       driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
-    driveConfiguration.slot0.kF = driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
+    driveConfiguration.slot0.kF =
+      driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
     driveConfiguration.supplyCurrLimit.triggerThresholdCurrent =
@@ -152,10 +150,15 @@ class SwerveModuleIOFalcon(
     inputs.driveTemp = driveFalcon.temperature.celsius
     inputs.steeringTemp = steeringFalcon.temperature.celsius
 
-    inputs.potentiometerOutputRaw = potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
+    inputs.potentiometerOutputRaw =
+      potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
     inputs.potentiometerOutputRadians = potentiometerOutput.radians
 
-    Logger.getInstance().recordOutput("${label}/potentiometerRadiansWithOffset", (inputs.potentiometerOutputRadians - zeroOffset).inRadians)
+    Logger.getInstance()
+      .recordOutput(
+        "$label/potentiometerRadiansWithOffset",
+        (inputs.potentiometerOutputRadians - zeroOffset).inRadians
+      )
   }
 
   override fun setSteeringSetpoint(angle: Angle) {
@@ -189,17 +192,19 @@ class SwerveModuleIOFalcon(
   }
 
   override fun resetModuleZero() {
-    println("Absolute Potentiometer Value $label (${potentiometerOutput}")
+    println("Absolute Potentiometer Value $label ($potentiometerOutput")
   }
 
   override fun zeroSteering() {
     steeringFalcon.selectedSensorPosition =
       steeringSensor.positionToRawUnits(
-        if (label != Constants.Drivetrain.BACK_RIGHT_MODULE_NAME) (potentiometerOutput.radians) - zeroOffset else (2 * PI).radians - (potentiometerOutput.radians - zeroOffset))
-    Logger.getInstance().recordOutput("$label/zeroPositionRadians", steeringSensor.position.inRadians)
-    println(
-      "Loading Zero for Module $label (${steeringFalcon.selectedSensorPosition})"
-    )
+        if (label != Constants.Drivetrain.BACK_RIGHT_MODULE_NAME)
+          (potentiometerOutput.radians) - zeroOffset
+        else (2 * PI).radians - (potentiometerOutput.radians - zeroOffset)
+      )
+    Logger.getInstance()
+      .recordOutput("$label/zeroPositionRadians", steeringSensor.position.inRadians)
+    println("Loading Zero for Module $label (${steeringFalcon.selectedSensorPosition})")
   }
 
   override fun zeroDrive() {

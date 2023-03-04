@@ -23,7 +23,10 @@ sealed interface Request {
     class GroundIntakeCube() : SuperstructureRequest
     class GroundIntakeCone() : SuperstructureRequest
 
-    class DoubleSubstationIntake(val gamePiece: GamePiece) : SuperstructureRequest
+    class DoubleSubstationIntakePrep(val gamePiece: GamePiece) : SuperstructureRequest
+    class SingleSubstationIntakePrep(val gamePiece: GamePiece) : SuperstructureRequest
+
+    class DoubleSubstationIntake() : SuperstructureRequest
     class SingleSubstationIntake(val gamePiece: GamePiece) : SuperstructureRequest
 
     class PrepScore(val gamePiece: GamePiece, val nodeTier: NodeTier) : SuperstructureRequest

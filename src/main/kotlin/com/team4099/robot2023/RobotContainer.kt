@@ -2,28 +2,22 @@ package com.team4099.robot2023
 
 import com.team4099.lib.vision.VisionMeasurement
 import com.team4099.robot2023.auto.AutonomousSelector
-import com.team4099.robot2023.commands.drivetrain.AutoLevel
-import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
-import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIO
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
 import com.team4099.robot2023.subsystems.elevator.Elevator
-import com.team4099.robot2023.subsystems.elevator.ElevatorIO
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
-import com.team4099.robot2023.subsystems.manipulator.ManipulatorIO
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
@@ -45,9 +39,9 @@ object RobotContainer {
       //      vision = Vision(object : VisionIO {})
       superstructure =
         Superstructure(
-          Elevator(ElevatorIOSim),
+          Elevator(ElevatorIONeo),
           GroundIntake(GroundIntakeIONeo),
-          Manipulator(ManipulatorIOSim)
+          Manipulator(ManipulatorIONeo)
         )
     } else {
       // Simulation implementations
@@ -109,11 +103,11 @@ object RobotContainer {
     zeroArm()
   }
 
-  fun setSteeringCoastMode(){
-    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(false)}
+  fun setSteeringCoastMode() {
+    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(false) }
   }
-  fun setSteeringBrakeMode(){
-    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(true)}
+  fun setSteeringBrakeMode() {
+    drivetrain.swerveModules.forEach { it.setSteeringBrakeMode(true) }
   }
 
   fun setDriveCoastMode() {
@@ -126,9 +120,24 @@ object RobotContainer {
 
   fun mapTeleopControls() {
     ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain))
-    ControlBoard.autoLevel.whileActiveContinuous(
-      GoToAngle(drivetrain).andThen(AutoLevel(drivetrain))
+    //    ControlBoard.autoLevel.whileActiveContinuous(
+    //      GoToAngle(drivetrain).andThen(AutoLevel(drivetrain))
+    //    )
+
+    ControlBoard.setArmCubeHybridPrep.whileTrue(superstructure.prepScoreCubeHybridCommand())
+    ControlBoard.setArmCubeMidPrep.whileTrue(superstructure.prepScoreCubeMidCommand())
+    ControlBoard.setArmCubeHighPrep.whileTrue(superstructure.prepScoreCubeHighCommand())
+    ControlBoard.setArmConeHybridPrep.whileTrue(superstructure.prepScoreConeHybridCommand())
+    ControlBoard.setArmConeMidPrep.whileTrue(superstructure.prepScoreConeMidCommand())
+    ControlBoard.setArmConeHighPrep.whileTrue(superstructure.prepScoreConeHighCommand())
+    ControlBoard.setArmDoubleSubCone.whileTrue(superstructure.prepDoubleSubConeCommand())
+    ControlBoard.setArmDoubleSubCube.whileTrue(superstructure.prepDoubleSubCubeCommand())
+    ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
+    ControlBoard.scoreOuttake.whileTrue(superstructure.score())
+    ControlBoard.doubleSubstationIntake.whileTrue(
+      superstructure.intakeConeFromDoubleSubStationCommand()
     )
+
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
     //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
@@ -146,19 +155,16 @@ object RobotContainer {
     ControlBoard.retractArm.whileTrue(superstructure.elevatorGoToLowCubeNodeCommand())
     */
 
-
-    //manipulator test
+    // manipulator test
     /*
     ControlBoard.extendArm.whileTrue(superstructure.manipulatorGoToMaxExtensionCommand())
     ControlBoard.retractArm.whileTrue(superstructure.manipulatorGoToMinExtensionCommand())
     */
 
-    //groundintake test
+    // groundintake test
 
-
-    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeStowedDownCommand())
-    ControlBoard.retractArm.whileTrue(superstructure.groundIntakeStowedUpCommand())
-
+    //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeStowedDownCommand())
+    //    ControlBoard.retractArm.whileTrue(superstructure.groundIntakeStowedUpCommand())
 
     //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCubeCommand())
     //    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
