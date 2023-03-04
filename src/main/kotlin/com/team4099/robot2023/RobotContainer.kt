@@ -132,8 +132,8 @@ object RobotContainer {
     ControlBoard.setArmConeHighPrep.whileTrue(superstructure.prepScoreConeHighCommand())
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
-    ControlBoard.groundIntakeCube.whileTrue(superstructure.doubleSubConeCommand())
-    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.groundIntakeCubeCommand())
+    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
 
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
