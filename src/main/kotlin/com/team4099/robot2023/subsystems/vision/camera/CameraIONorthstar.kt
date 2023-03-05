@@ -93,4 +93,10 @@ class CameraIONorthstar(val identifier: String) : CameraIO {
     }
     disconnectedAlert.set(disconnectedTimer.hasElapsed(disconnectedTimeout))
   }
+
+  private fun printDoubleArray(a: DoubleArray){
+    for (b in a){
+      println(b)
+    }
+  }
 }

@@ -60,7 +60,7 @@ object RobotContainer {
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
-      vision = Vision(object : CameraIO {})
+      vision = Vision(CameraIONorthstar("northstar"))
       superstructure =
         Superstructure(
           Elevator(ElevatorIOSim),
