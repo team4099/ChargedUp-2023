@@ -105,7 +105,6 @@ object Robot : LoggedRobot() {
     AutonomousSelector
     PathStore
     RobotContainer.mapDefaultCommands()
-    RobotContainer.zeroSensors()
   }
 
   override fun disabledExit() {
@@ -150,6 +149,9 @@ object Robot : LoggedRobot() {
     CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
       Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
+
+    Logger.getInstance()
+      .recordOutput("LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
 
     if (!RobotBase.isReal()) {
       SmartDashboard.putData("Arm Sim", MechanismSimConstants.m_mech2d)

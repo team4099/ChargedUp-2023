@@ -170,8 +170,8 @@ object FieldConstants {
 
     // Z layout
     val cubeEdgeHigh = (3.0).inches
-    val highCubeZ = (35.5).inches - cubeEdgeHigh
-    val midCubeZ = (23.5).inches - cubeEdgeHigh
+    val highCubeZ = (48.5).inches - cubeEdgeHigh
+    val midCubeZ = (34.5).inches - cubeEdgeHigh
     val highConeZ = (46.0).inches
     val midConeZ = (34.0).inches
 

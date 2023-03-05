@@ -42,10 +42,10 @@ object ControlBoard {
   val setArmConeMidPrep = Trigger { operator.rightShoulderButton && operator.bButton }
   val setArmConeHighPrep = Trigger { operator.rightShoulderButton && operator.yButton }
 
+  val goBackToIdle = Trigger { operator.selectButton && operator.startButton }
+
   val setArmDoubleSubCube = Trigger { operator.dPadLeft }
   val setArmDoubleSubCone = Trigger { operator.dPadRight }
-
-  val goBackToIdle = Trigger { operator.selectButton && operator.startButton }
 
   val doubleSubstationIntake = Trigger { driver.aButton }
   val scoreOuttake = Trigger { driver.xButton }

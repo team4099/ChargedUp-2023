@@ -48,7 +48,7 @@ class Manipulator(val io: ManipulatorIO) {
       "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
-  private val filterSize = LoggedTunableNumber("Manipulator/filterSize", 5.0)
+  private val filterSize = LoggedTunableNumber("Manipulator/filterSize", 9.0)
 
   val isStowed: Boolean
     get() =
@@ -332,6 +332,9 @@ class Manipulator(val io: ManipulatorIO) {
       io.configPID(kP.get(), kI.get(), kD.get())
     }
 
+    var updateCone = hasCone
+    var updateCube = hasCube
+
     if (filterSize.hasChanged()) {
       rollerStatorCurrentFilter = MedianFilter(filterSize.get().toInt())
     }
@@ -411,12 +414,21 @@ class Manipulator(val io: ManipulatorIO) {
       ManipulatorState.TARGETING_POSITION -> {
         // Outputs
         if (armPositionTarget != lastArmPositionTarget) {
+
+          val preProfileGenerate = Clock.realTimestamp
           armProfile =
             TrapezoidProfile(
               armConstraints,
               TrapezoidProfile.State(armPositionTarget, 0.0.inches.perSecond),
               TrapezoidProfile.State(inputs.armPosition, inputs.armVelocity)
             )
+          val postProfileGenerate = Clock.realTimestamp
+          Logger.getInstance()
+            .recordOutput(
+              "/Manipulator/ProfileGenerationMS",
+              postProfileGenerate.inSeconds - preProfileGenerate.inSeconds
+            )
+
           timeProfileGeneratedAt = Clock.fpgaTime
 
           // This statement is only run when the armPositionTarget is first noticed to be different

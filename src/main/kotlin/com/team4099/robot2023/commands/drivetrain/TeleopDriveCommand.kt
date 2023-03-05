@@ -16,28 +16,29 @@ class TeleopDriveCommand(
   val drivetrain: Drivetrain
 ) : CommandBase() {
 
+  val speedMultiplier: () -> Double
+
   init {
     addRequirements(drivetrain)
+    speedMultiplier = { if (slowMode()) 0.25 else 1.0 }
   }
 
   override fun initialize() {}
 
   override fun execute() {
     val flipDrive = if (FMSData.allianceColor == DriverStation.Alliance.Red) -1 else 1
-    val flipTurn = if (FMSData.allianceColor == DriverStation.Alliance.Red) -1 else 1
-
-    val speedMultiplier = if (slowMode()) 0.25 else 1
+    val flipTurn = -1
 
     val speed =
       Pair(
         DrivetrainConstants.DRIVE_SETPOINT_MAX *
-          speedMultiplier *
+          speedMultiplier() *
           driveX() *
           driveX() *
           sign(driveX()) *
           flipDrive,
         DrivetrainConstants.DRIVE_SETPOINT_MAX *
-          speedMultiplier *
+          speedMultiplier() *
           driveY() *
           driveY() *
           sign(driveY()) *
@@ -45,6 +46,7 @@ class TeleopDriveCommand(
       )
     val direction =
       DrivetrainConstants.TURN_SETPOINT_MAX *
+        speedMultiplier() *
         turn() *
         turn() *
         turn() *

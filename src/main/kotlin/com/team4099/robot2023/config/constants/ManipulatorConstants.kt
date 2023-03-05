@@ -64,7 +64,7 @@ object ManipulatorConstants {
 
   // TODO: Change current thresholds
   val CONE_CURRENT_THRESHOLD = 18.amps
-  val CUBE_CURRENT_THRESHOLD = 18.amps
+  val CUBE_CURRENT_THRESHOLD = 23.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
   val ARM_MAX_EXTENSION = 8.inches
@@ -90,8 +90,8 @@ object ManipulatorConstants {
 
   val IDLE_VOLTAGE = 0.0.volts
   val CONE_IDLE = 0.2.volts
-  val CUBE_IDLE = -0.2.volts
-  val CONE_IN = 6.volts
+  val CUBE_IDLE = -3.volts
+  val CONE_IN = 7.5.volts
   val CUBE_IN = -6.volts
   val CONE_OUT = -6.volts
   val CUBE_OUT = 6.volts
@@ -128,9 +128,9 @@ object ManipulatorConstants {
   val SINGLE_SUBSTATION_INTAKE_EXTENSION = 4.0.inches
   val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
   val LOW_SCORE_EXTENSION = 1.0.inches
-  val MID_SCORE_EXTENSION = 4.0.inches
+  val MID_SCORE_EXTENSION = 7.0.inches
   val HIGH_SCORE_EXTENSION = 7.5.inches
-  val INTAKE_CUBE_FROM_GROUND_EXTENSION = 4.0.inches
+  val INTAKE_CUBE_FROM_GROUND_EXTENSION = 1.0.inches
   val INTAKE_CONE_FROM_GROUND_EXTENSION = 4.5.inches
   val MAX_EXTENSION = 7.8.inches
 

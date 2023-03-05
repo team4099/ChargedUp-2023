@@ -83,11 +83,12 @@ object GroundIntakeConstants {
 
   val INTAKE_ANGLE = 4.4.degrees
   val OUTTAKE_ANGLE = 4.4.degrees
-  val STOWED_UP_ANGLE = 29.0.degrees
-  val INTAKE_VOLTAGE = 3.0.volts
+  val STOWED_UP_ANGLE = 59.0.degrees
+  val INTAKE_VOLTAGE = 5.0.volts
   val OUTTAKE_VOLTAGE = (-3.0).volts
   val STOWED_DOWN_ANGLE = 4.4.degrees
   val NEUTRAL_VOLTAGE = 0.0.volts
+  val HELP_SCORE_VOLTAGE = 2.5.volts
 
   enum class RollerStates(val voltage: ElectricalPotential) {
     INTAKE(3.0.volts),

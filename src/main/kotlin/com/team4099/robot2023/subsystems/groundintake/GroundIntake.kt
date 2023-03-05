@@ -95,6 +95,13 @@ class GroundIntake(private val io: GroundIntakeIO) {
         GroundIntakeConstants.NEUTRAL_VOLTAGE,
         Pair({ it.inVolts }, { it.volts })
       )
+
+    val helpScoreVoltage =
+      LoggedTunableValue(
+        "GroundIntake/helpScoreVoltage",
+        GroundIntakeConstants.HELP_SCORE_VOLTAGE,
+        Pair({ it.inVolts }, { it.volts })
+      )
   }
 
   var armPositionTarget: Angle = 0.0.degrees
@@ -279,11 +286,18 @@ class GroundIntake(private val io: GroundIntakeIO) {
       GroundIntakeState.TARGETING_POSITION -> {
         // Outputs
         if (armPositionTarget != lastArmPositionTarget) {
+          val preProfileGenerate = Clock.realTimestamp
           armProfile =
             TrapezoidProfile(
               armConstraints,
               TrapezoidProfile.State(armPositionTarget, 0.0.degrees.perSecond),
               TrapezoidProfile.State(inputs.armPosition, 0.0.degrees.perSecond)
+            )
+          val postProfileGenerate = Clock.realTimestamp
+          Logger.getInstance()
+            .recordOutput(
+              "/GroundIntake/ProfileGenerationMS",
+              postProfileGenerate.inSeconds - preProfileGenerate.inSeconds
             )
           timeProfileGeneratedAt = Clock.fpgaTime
 

@@ -124,11 +124,12 @@ class Elevator(val io: ElevatorIO) {
         Pair({ it.inInchesPerSecond }, { it.inches.perSecond })
       )
 
-    val groundIntakeCubeHeight = LoggedTunableValue(
-      "Elevator/groundIntakeCubeHeight",
-      ElevatorConstants.GROUND_INTAKE_CUBE_HEIGHT,
-      Pair({ it.inInches }, { it.inches })
-    )
+    val groundIntakeCubeHeight =
+      LoggedTunableValue(
+        "Elevator/groundIntakeCubeHeight",
+        ElevatorConstants.GROUND_INTAKE_CUBE_HEIGHT,
+        Pair({ it.inInches }, { it.inches })
+      )
 
     val shelfIntakeCubeOffset =
       LoggedTunableValue(
@@ -442,11 +443,20 @@ class Elevator(val io: ElevatorIO) {
         if (elevatorPositionTarget != lastRequestedPosition ||
           elevatorVelocityTarget != lastRequestedVelocity
         ) {
+          val preProfileGenerate = Clock.realTimestamp
+
           elevatorProfile =
             TrapezoidProfile(
               elevatorConstraints,
               TrapezoidProfile.State(elevatorPositionTarget, elevatorVelocityTarget),
               TrapezoidProfile.State(inputs.elevatorPosition, inputs.elevatorVelocity)
+            )
+
+          val postProfileGenerate = Clock.realTimestamp
+          Logger.getInstance()
+            .recordOutput(
+              "/Elevator/ProfileGenerationMS",
+              postProfileGenerate.inSeconds - preProfileGenerate.inSeconds
             )
 
           Logger.getInstance()

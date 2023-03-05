@@ -232,7 +232,7 @@ class Superstructure(
               Manipulator.TunableManipulatorStates.minExtension.get(), rollerVoltage
             )
 
-          if (manipulator.isAtTargetedPosition){
+          if (manipulator.isAtTargetedPosition) {
             elevator.currentRequest =
               Request.ElevatorRequest.TargetingPosition(
                 Elevator.TunableElevatorHeights.minPosition.get()
@@ -312,24 +312,35 @@ class Superstructure(
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.intakeAngle.get(),
-            GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+            GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
           )
         if (groundIntake.isAtTargetedPosition) {
-          elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(
-            Elevator.TunableElevatorHeights.groundIntakeCubeHeight.get()
-          )
+          val rollerCommandedVoltage =
+            when (usingGamePiece) {
+              GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
+              GamePiece.CUBE -> ManipulatorConstants.CUBE_IDLE
+              else -> 0.0.volts
+            }
 
-          if (elevator.isAtTargetedPosition){
+          elevator.currentRequest =
+            Request.ElevatorRequest.TargetingPosition(
+              Elevator.TunableElevatorHeights.groundIntakeCubeHeight.get()
+            )
+
+          if (elevator.isAtTargetedPosition) {
             manipulator.currentRequest =
               Request.ManipulatorRequest.TargetingPosition(
                 Manipulator.TunableManipulatorStates.groundIntakeCubeExtension.get(),
-                ManipulatorConstants.IDLE_VOLTAGE
+                rollerCommandedVoltage
               )
           }
         }
 
         // Transition
-        if (groundIntake.isAtTargetedPosition && elevator.isAtTargetedPosition && manipulator.isAtTargetedPosition) {
+        if (groundIntake.isAtTargetedPosition &&
+          elevator.isAtTargetedPosition &&
+          manipulator.isAtTargetedPosition
+        ) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
@@ -371,13 +382,20 @@ class Superstructure(
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
-            GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+            GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
           )
         if (groundIntake.isAtTargetedPosition) {
+          val rollerCommandedVoltage =
+            when (usingGamePiece) {
+              GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
+              GamePiece.CUBE -> ManipulatorConstants.CUBE_IDLE
+              else -> 0.0.volts
+            }
+
           manipulator.currentRequest =
             Request.ManipulatorRequest.TargetingPosition(
               Manipulator.TunableManipulatorStates.groundIntakeConeExtension.get(),
-              ManipulatorConstants.IDLE_VOLTAGE
+              rollerCommandedVoltage
             )
         }
 
@@ -576,9 +594,21 @@ class Superstructure(
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-            GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+            GroundIntake.TunableGroundIntakeStates.helpScoreVoltage.get()
           )
         if (groundIntake.isAtTargetedPosition) {
+          val rollerCommandedVoltage =
+            when (usingGamePiece) {
+              GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
+              GamePiece.CUBE -> ManipulatorConstants.CUBE_IDLE
+              else -> 0.0.volts
+            }
+
+          manipulator.currentRequest =
+            Request.ManipulatorRequest.TargetingPosition(
+              Manipulator.TunableManipulatorStates.minExtension.get(), rollerCommandedVoltage
+            )
+
           val scoreHeight =
             when (nodeTier) {
               NodeTier.HYBRID -> {
@@ -620,6 +650,12 @@ class Superstructure(
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(scoreHeight)
 
           if (elevator.isAtTargetedPosition) {
+            groundIntake.currentRequest =
+              Request.GroundIntakeRequest.TargetingPosition(
+                GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+                GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+              )
+
             val extension =
               when (nodeTier) {
                 NodeTier.HYBRID -> Manipulator.TunableManipulatorStates.lowScoreExtension.get()
@@ -776,9 +812,7 @@ class Superstructure(
   }
 
   fun groundIntakeCubeCommand(): CommandBase {
-    val returnCommand = runOnce{
-      currentRequest = SuperstructureRequest.GroundIntakeCube()
-    }
+    val returnCommand = runOnce { currentRequest = SuperstructureRequest.GroundIntakeCube() }
 
     returnCommand.name = "GroundIntakeCubeCommand"
     return returnCommand
