@@ -12,11 +12,7 @@ import edu.wpi.first.wpilibj.Timer
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.seconds
-<<<<<<< HEAD
 import org.team4099.lib.units.micro
-=======
-
->>>>>>> 1d91b57 (working pose estimator)
 
 class CameraIONorthstar(val identifier: String) : CameraIO {
   private var cameraId = 0
@@ -96,11 +92,5 @@ class CameraIONorthstar(val identifier: String) : CameraIO {
       disconnectedTimer.reset()
     }
     disconnectedAlert.set(disconnectedTimer.hasElapsed(disconnectedTimeout))
-  }
-
-  private fun printDoubleArray(a: DoubleArray){
-    for (b in a){
-      println(b)
-    }
   }
 }

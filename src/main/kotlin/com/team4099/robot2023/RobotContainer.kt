@@ -1,6 +1,5 @@
 package com.team4099.robot2023
 
-import com.team4099.lib.vision.VisionMeasurement
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.drivetrain.PositionAutoLevel
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
@@ -27,12 +26,9 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
-import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.inSeconds
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -71,7 +67,7 @@ object RobotContainer {
       //       vision = Vision(VisionIOSim)
     }
 
-    vision.setDataInterfaces({ drivetrain.odometryPose }, {drivetrain::addVisionData})
+    vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
   }
 
   fun mapDefaultCommands() {
