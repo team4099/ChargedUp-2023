@@ -70,6 +70,8 @@ object RobotContainer {
         )
       //       vision = Vision(VisionIOSim)
     }
+
+    vision.setDataInterfaces({ drivetrain.odometryPose }, {drivetrain::addVisionData})
   }
 
   fun mapDefaultCommands() {
