@@ -24,5 +24,5 @@ object VisionConstants {
       )
     )
 
-  val CAMERA_NAMES = listOf("Barry", "Wells", "Cisco", "Caitlin")
+  val CAMERA_NAMES = listOf("northstar")
 }

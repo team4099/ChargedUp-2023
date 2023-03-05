@@ -34,10 +34,6 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
 
     val xyStdDevCoeffecient = 0.01
     val thetaStdDevCoefficient = 0.01
-<<<<<<< HEAD
-=======
-
->>>>>>> 1b2ee37 (working northstar pose estimation)
   }
 
   private var poseSupplier = Supplier<Pose2d> { Pose2d() }
