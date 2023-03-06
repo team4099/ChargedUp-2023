@@ -60,7 +60,7 @@ fun trajectoryFromPath(path: Path, trajectoryConfig: TrajectoryConfig): Trajecto
     wpilibStates.map{ state ->
       TrajectoryState(
         state.timeSeconds.seconds,
-        Pose2d(Translation2d(state.poseMeters.translation), rotationSequence.sample(state.timeSeconds.seconds).angle),
+        Pose2d(Translation2d(state.poseMeters.translation), state.poseMeters.rotation.angle),
         state.poseMeters.rotation.angle,
         state.velocityMetersPerSecond.meters.perSecond,
         state.accelerationMetersPerSecondSq.meters.perSecond.perSecond

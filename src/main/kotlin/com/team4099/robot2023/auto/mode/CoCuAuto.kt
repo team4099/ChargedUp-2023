@@ -28,6 +28,7 @@ class CoCuAuto(val drivetrain: Drivetrain, val superstructure: Superstructure): 
       ResetPoseCommand(drivetrain, startingPosToFirstStage.startingPose),
       superstructure.prepscoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH),
       superstructure.scoreConeCommand(),
+      WaitCommand(2.0),
       ParallelCommandGroup(
         DriveTrajectoryCommand(drivetrain, startingPosToFirstStage),
         WaitCommand((startingPosToFirstStage.duration - 1.0.seconds).inSeconds).andThen(superstructure.intakeCubeFromGroundCommand())
@@ -46,6 +47,6 @@ class CoCuAuto(val drivetrain: Drivetrain, val superstructure: Superstructure): 
 
     val endingPosX = LoggedTunableValue("Drivetrain/endingPosX", 1.9.meters, Pair({it.inMeters}, {it.meters}))
     val endingPosY = LoggedTunableValue("Drivetrain/endingPosY", 4.97.meters, Pair({it.inMeters}, {it.meters}))
-    val endingPosTheta = LoggedTunableValue("Drivetrain/endingPosTheta", 180.degrees, Pair({it.inDegrees}, {it.degrees}))
+    val endingPosTheta = LoggedTunableValue("Drivetrain/endingPosTheta", 180.0.degrees, Pair({it.inDegrees}, {it.degrees}))
   }
 }
