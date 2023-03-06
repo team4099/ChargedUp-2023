@@ -1,5 +1,6 @@
 package com.team4099.robot2023
 
+import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.constants.Constants
@@ -28,6 +29,7 @@ import org.littletonrobotics.junction.inputs.LoggedPowerDistribution
 import org.littletonrobotics.junction.networktables.NT4Publisher
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
+import org.team4099.lib.units.base.inMilliseconds
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -105,6 +107,19 @@ object Robot : LoggedRobot() {
     AutonomousSelector
     PathStore
     RobotContainer.mapDefaultCommands()
+
+    // Set the scheduler to log events for command initialize, interrupt, finish
+    CommandScheduler.getInstance().onCommandInitialize { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
+    }
+
+    CommandScheduler.getInstance().onCommandFinish { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
+    }
+
+    CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
+      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
+    }
   }
 
   override fun disabledExit() {
@@ -131,24 +146,13 @@ object Robot : LoggedRobot() {
     //    RobotContainer.measurementsWithTimestamps.forEach {
     // RobotContainer.addVisionMeasurement(it) }
 
+    var startTime = Clock.realTimestamp
+
     // begin scheduling all commands
     CommandScheduler.getInstance().run()
 
     // checking for logging errors
     logReceiverQueueAlert.set(Logger.getInstance().receiverQueueFault)
-
-    // Set the scheduler to log events for command initialize, interrupt, finish
-    CommandScheduler.getInstance().onCommandInitialize { command: Command ->
-      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", true)
-    }
-
-    CommandScheduler.getInstance().onCommandFinish { command: Command ->
-      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
-    }
-
-    CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
-      Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
-    }
 
     Logger.getInstance()
       .recordOutput("LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
@@ -156,6 +160,9 @@ object Robot : LoggedRobot() {
     if (!RobotBase.isReal()) {
       SmartDashboard.putData("Arm Sim", MechanismSimConstants.m_mech2d)
     }
+
+    Logger.getInstance()
+      .recordOutput("LoggedRobot/totalMS", (Clock.realTimestamp - startTime).inMilliseconds)
   }
 
   override fun teleopInit() {

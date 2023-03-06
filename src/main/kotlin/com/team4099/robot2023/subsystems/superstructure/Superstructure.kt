@@ -24,6 +24,7 @@ import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRequest as SuperstructureRequest
 
@@ -460,10 +461,20 @@ class Superstructure(
             )
 
           if (elevator.isAtTargetedPosition) {
+            val rollerCommandedVoltage =
+              when (usingGamePiece) {
+                GamePiece.CONE -> ManipulatorConstants.CONE_IN
+                GamePiece.CUBE -> ManipulatorConstants.CUBE_IN
+                else -> -1.0.volts
+              }
+
+            Logger.getInstance()
+              .recordOutput("Manipulator/SussyVoltage", rollerCommandedVoltage.inVolts)
+
             manipulator.currentRequest =
               Request.ManipulatorRequest.TargetingPosition(
                 Manipulator.TunableManipulatorStates.doubleSubstationIntakeShelfExtension.get(),
-                ManipulatorConstants.IDLE_VOLTAGE
+                rollerCommandedVoltage
               )
           }
         }
@@ -601,7 +612,7 @@ class Superstructure(
             when (usingGamePiece) {
               GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
               GamePiece.CUBE -> ManipulatorConstants.CUBE_IDLE
-              else -> 0.0.volts
+              else -> -1.0.volts
             }
 
           manipulator.currentRequest =
@@ -658,9 +669,33 @@ class Superstructure(
 
             val extension =
               when (nodeTier) {
-                NodeTier.HYBRID -> Manipulator.TunableManipulatorStates.lowScoreExtension.get()
-                NodeTier.MID -> Manipulator.TunableManipulatorStates.midScoreExtension.get()
-                NodeTier.HIGH -> Manipulator.TunableManipulatorStates.highScoreExtension.get()
+                NodeTier.HYBRID -> {
+                  when (usingGamePiece) {
+                    GamePiece.CONE ->
+                      Manipulator.TunableManipulatorStates.lowConeScoreExtension.get()
+                    GamePiece.CUBE ->
+                      Manipulator.TunableManipulatorStates.lowCubeScoreExtension.get()
+                    else -> 0.0.inches
+                  }
+                }
+                NodeTier.MID -> {
+                  when (usingGamePiece) {
+                    GamePiece.CONE ->
+                      Manipulator.TunableManipulatorStates.midConeScoreExtension.get()
+                    GamePiece.CUBE ->
+                      Manipulator.TunableManipulatorStates.midCubeScoreExtension.get()
+                    else -> 0.0.inches
+                  }
+                }
+                NodeTier.HIGH -> {
+                  when (usingGamePiece) {
+                    GamePiece.CONE ->
+                      Manipulator.TunableManipulatorStates.highConeScoreExtension.get()
+                    GamePiece.CUBE ->
+                      Manipulator.TunableManipulatorStates.highCubeScoreExtension.get()
+                    else -> 0.0.inches
+                  }
+                }
                 else -> 0.0.inches
               }
 
@@ -767,10 +802,16 @@ class Superstructure(
         }
       }
       SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP -> {
+        val rollerCommandedVoltage =
+          when (usingGamePiece) {
+            GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
+            GamePiece.CUBE -> ManipulatorConstants.CUBE_IDLE
+            else -> -1.0.volts
+          }
+
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
-            Manipulator.TunableManipulatorStates.minExtension.get(),
-            ManipulatorConstants.IDLE_VOLTAGE
+            Manipulator.TunableManipulatorStates.minExtension.get(), rollerCommandedVoltage
           )
 
         if (manipulator.isAtTargetedPosition) {
@@ -1331,7 +1372,7 @@ class Superstructure(
     val returnCommand = runOnce {
       manipulator.currentRequest =
         Request.ManipulatorRequest.TargetingPosition(
-          Manipulator.TunableManipulatorStates.lowScoreExtension.get(),
+          Manipulator.TunableManipulatorStates.lowConeScoreExtension.get(),
           Manipulator.TunableManipulatorStates.cubeOutVoltage.get()
         )
       currentRequest = SuperstructureRequest.Tuning()
@@ -1345,7 +1386,7 @@ class Superstructure(
     val returnCommand = runOnce {
       manipulator.currentRequest =
         Request.ManipulatorRequest.TargetingPosition(
-          Manipulator.TunableManipulatorStates.lowScoreExtension.get(),
+          Manipulator.TunableManipulatorStates.lowConeScoreExtension.get(),
           Manipulator.TunableManipulatorStates.coneOutVoltage.get()
         )
       currentRequest = SuperstructureRequest.Tuning()
@@ -1359,7 +1400,7 @@ class Superstructure(
     val returnCommand = runOnce {
       manipulator.currentRequest =
         Request.ManipulatorRequest.TargetingPosition(
-          Manipulator.TunableManipulatorStates.midScoreExtension.get(),
+          Manipulator.TunableManipulatorStates.midCubeScoreExtension.get(),
           Manipulator.TunableManipulatorStates.coneOutVoltage.get()
         )
       currentRequest = SuperstructureRequest.Tuning()
@@ -1373,7 +1414,7 @@ class Superstructure(
     val returnCommand = runOnce {
       manipulator.currentRequest =
         Request.ManipulatorRequest.TargetingPosition(
-          Manipulator.TunableManipulatorStates.midScoreExtension.get(),
+          Manipulator.TunableManipulatorStates.midCubeScoreExtension.get(),
           Manipulator.TunableManipulatorStates.cubeOutVoltage.get()
         )
       currentRequest = SuperstructureRequest.Tuning()
@@ -1387,7 +1428,7 @@ class Superstructure(
     val returnCommand = runOnce {
       manipulator.currentRequest =
         Request.ManipulatorRequest.TargetingPosition(
-          Manipulator.TunableManipulatorStates.highScoreExtension.get(),
+          Manipulator.TunableManipulatorStates.highCubeScoreExtension.get(),
           Manipulator.TunableManipulatorStates.cubeOutVoltage.get()
         )
       currentRequest = SuperstructureRequest.Tuning()
@@ -1401,7 +1442,7 @@ class Superstructure(
     val returnCommand = runOnce {
       manipulator.currentRequest =
         Request.ManipulatorRequest.TargetingPosition(
-          Manipulator.TunableManipulatorStates.highScoreExtension.get(),
+          Manipulator.TunableManipulatorStates.highCubeScoreExtension.get(),
           Manipulator.TunableManipulatorStates.coneOutVoltage.get()
         )
       currentRequest = SuperstructureRequest.Tuning()

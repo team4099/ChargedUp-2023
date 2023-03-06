@@ -48,7 +48,7 @@ class Manipulator(val io: ManipulatorIO) {
       "Manipulator/kD", Pair({ it.inVoltsPerInchPerSecond }, { it.volts.perInchPerSecond })
     )
 
-  private val filterSize = LoggedTunableNumber("Manipulator/filterSize", 9.0)
+  private val filterSize = LoggedTunableNumber("Manipulator/filterSize", 5.0)
 
   val isStowed: Boolean
     get() =
@@ -114,24 +114,45 @@ class Manipulator(val io: ManipulatorIO) {
         Pair({ it.inInches }, { it.inches })
       )
 
-    val lowScoreExtension =
+    val lowCubeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/lowScoreExtension",
-        ManipulatorConstants.LOW_SCORE_EXTENSION,
+        "Manipulator/lowCubeScoreExtension",
+        ManipulatorConstants.LOW_CUBE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
-    val midScoreExtension =
+    val midCubeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/midScoreExtension",
-        ManipulatorConstants.MID_SCORE_EXTENSION,
+        "Manipulator/midCubeScoreExtension",
+        ManipulatorConstants.MID_CUBE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
-    val highScoreExtension =
+    val highCubeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/highScoreExtension",
-        ManipulatorConstants.HIGH_SCORE_EXTENSION,
+        "Manipulator/highCubeScoreExtension",
+        ManipulatorConstants.HIGH_CUBE_SCORE_EXTENSION,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val lowConeScoreExtension =
+      LoggedTunableValue(
+        "Manipulator/lowCubeScoreExtension",
+        ManipulatorConstants.LOW_CONE_SCORE_EXTENSION,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val midConeScoreExtension =
+      LoggedTunableValue(
+        "Manipulator/midCubeScoreExtension",
+        ManipulatorConstants.MID_CONE_SCORE_EXTENSION,
+        Pair({ it.inInches }, { it.inches })
+      )
+
+    val highConeScoreExtension =
+      LoggedTunableValue(
+        "Manipulator/highCubeScoreExtension",
+        ManipulatorConstants.HIGH_CONE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
@@ -412,6 +433,12 @@ class Manipulator(val io: ManipulatorIO) {
         nextState = fromRequestToState(currentRequest)
       }
       ManipulatorState.TARGETING_POSITION -> {
+        setRollerPower(rollerVoltageTarget)
+        if (lastRollerVoltage != rollerVoltageTarget) {
+          lastRollerRunTime = Clock.fpgaTime
+          lastRollerVoltage = rollerVoltageTarget
+        }
+
         // Outputs
         if (armPositionTarget != lastArmPositionTarget) {
 
@@ -439,13 +466,6 @@ class Manipulator(val io: ManipulatorIO) {
         val timeElapsed = Clock.fpgaTime - timeProfileGeneratedAt
 
         setArmPosition(armProfile.calculate(timeElapsed))
-        if (armProfile.isFinished(timeElapsed)) {
-          setRollerPower(rollerVoltageTarget)
-          if (lastRollerVoltage != rollerVoltageTarget) {
-            lastRollerRunTime = Clock.fpgaTime
-            lastRollerVoltage = rollerVoltageTarget
-          }
-        }
 
         Logger.getInstance()
           .recordOutput("GroundIntake/completedMotionProfile", armProfile.isFinished(timeElapsed))

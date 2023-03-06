@@ -43,13 +43,13 @@ object GroundIntakeConstants {
   const val ROLLER_MOTOR_INVERTED = true
   const val ARM_MOTOR_INVERTED = false
 
-  val ROLLER_RAMP_RATE = 50.percent.perSecond
+  val ROLLER_RAMP_RATE = 75.percent.perSecond
 
   val ABSOLUTE_ENCODER_OFFSET = 20.9.degrees
   // From encoder to intake
   val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).gearRatio
 
-  // units are kg * m^2
+  // units are kg * m^2'
   val ROLLER_MOMENT_INERTIA = 0.00313.kilo.grams * 1.0.meters.squared
 
   // gear reduction from absolute encoder to output

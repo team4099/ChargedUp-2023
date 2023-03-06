@@ -284,6 +284,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
         }
       }
       GroundIntakeState.TARGETING_POSITION -> {
+        setRollerVoltage(rollerVoltageTarget)
         // Outputs
         if (armPositionTarget != lastArmPositionTarget) {
           val preProfileGenerate = Clock.realTimestamp
@@ -312,9 +313,6 @@ class GroundIntake(private val io: GroundIntakeIO) {
         val profileOutput = armProfile.calculate(timeElapsed)
 
         setArmPosition(profileOutput)
-        if (armProfile.isFinished(timeElapsed)) {
-          setRollerVoltage(rollerVoltageTarget)
-        }
 
         Logger.getInstance()
           .recordOutput("GroundIntake/completedMotionProfile", armProfile.isFinished(timeElapsed))

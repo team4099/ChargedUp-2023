@@ -33,11 +33,11 @@ object ManipulatorConstants {
   val REAL_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
   val ARM_RAMP_RATE = 0.5
-  val ROLLER_RAMP_RATE = 0.5
+  val ROLLER_RAMP_RATE = 0.75
 
   // used to detect intake/outake, values need testing
   // TODO(test this)
-  val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.75.seconds
+  val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.3.seconds
   val SPIT_OUT_TIME = 0.8.seconds
   val INTAKE_IN_TIME = 0.5.seconds
 
@@ -63,7 +63,7 @@ object ManipulatorConstants {
   val ROLLER_GEAR_RATIO = 20.0.gearRatio
 
   // TODO: Change current thresholds
-  val CONE_CURRENT_THRESHOLD = 18.amps
+  val CONE_CURRENT_THRESHOLD = 28.amps
   val CUBE_CURRENT_THRESHOLD = 23.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
@@ -89,8 +89,8 @@ object ManipulatorConstants {
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
   val IDLE_VOLTAGE = 0.0.volts
-  val CONE_IDLE = 0.2.volts
-  val CUBE_IDLE = -3.volts
+  val CONE_IDLE = 3.volts
+  val CUBE_IDLE = -4.volts
   val CONE_IN = 7.5.volts
   val CUBE_IN = -6.volts
   val CONE_OUT = -6.volts
@@ -127,9 +127,12 @@ object ManipulatorConstants {
   val MIN_EXTENSION = 1.0.inches
   val SINGLE_SUBSTATION_INTAKE_EXTENSION = 4.0.inches
   val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
-  val LOW_SCORE_EXTENSION = 1.0.inches
-  val MID_SCORE_EXTENSION = 7.0.inches
-  val HIGH_SCORE_EXTENSION = 7.5.inches
+  val LOW_CUBE_SCORE_EXTENSION = 3.5.inches
+  val MID_CUBE_SCORE_EXTENSION = 3.0.inches
+  val HIGH_CUBE_SCORE_EXTENSION = 7.7.inches
+  val LOW_CONE_SCORE_EXTENSION = 3.5.inches
+  val MID_CONE_SCORE_EXTENSION = 5.0.inches
+  val HIGH_CONE_SCORE_EXTENSION = 7.5.inches
   val INTAKE_CUBE_FROM_GROUND_EXTENSION = 1.0.inches
   val INTAKE_CONE_FROM_GROUND_EXTENSION = 4.5.inches
   val MAX_EXTENSION = 7.8.inches
