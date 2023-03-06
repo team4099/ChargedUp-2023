@@ -16,6 +16,7 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
@@ -128,11 +129,14 @@ class PickupFromSubstationCommand(
 
     addCommands(
       setupCommand,
-      DriveTrajectoryCommand(drivetrain, { trajectory }),
-      WaitCommand(1.5.seconds.inSeconds)
-        .andThen(
-          runOnce({ superstructure.currentRequest = superstructureRequest }, superstructure)
-        )
+      ParallelCommandGroup(
+        DriveTrajectoryCommand(drivetrain, { trajectory }),
+        WaitCommand(5.0)
+          .andThen(
+            runOnce({ superstructure.currentRequest = superstructureRequest }, superstructure)
+          )
+      ),
+      WaitCommand(3.0).andThen(runOnce({ superstructure.currentRequest = Request.SuperstructureRequest.Idle() }, superstructure))
     )
   }
 
