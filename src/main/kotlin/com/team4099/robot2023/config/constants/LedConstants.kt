@@ -1,6 +1,7 @@
 package com.team4099.robot2023.config.constants
 
 import com.ctre.phoenix.led.Animation
+import com.ctre.phoenix.led.StrobeAnimation
 import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj.util.Color8Bit
 import org.team4099.lib.drivers.BlinkinLedDriver as Blinkin
@@ -8,46 +9,44 @@ import org.team4099.lib.drivers.BlinkinLedDriver as Blinkin
 class LedConstants {
   enum class LEDMode {
     IDLE,
-    ITEM,
-    FORWARD_TO_LEVEL,
-    BACKWARD_TO_LEVEL,
     OUTTAKE,
+    INTAKE,
     AUTO,
     TELEOP,
-    DISABLED
+    CUBE,
+    CONE,
+    SINGLE_SUBSTATION,
+    DOUBLE_SUBSTATION,
+    SCORE
   }
 
   enum class BlinkenMode(val blinkenMode: Blinkin.BlinkinLedMode) {
-    IDLE(Blinkin.BlinkinLedMode.SOLID_ORANGE),
-    ALERT(Blinkin.BlinkinLedMode.SOLID_DARK_RED),
-    ITEM(Blinkin.BlinkinLedMode.SOLID_AQUA),
-    FORWARD_TO_LEVEL(Blinkin.BlinkinLedMode.SOLID_AQUA),
-    BACKWARD_TO_LEVEL(Blinkin.BlinkinLedMode.SOLID_AQUA),
-    OUTTAKE(Blinkin.BlinkinLedMode.SOLID_AQUA),
-    AUTO(Blinkin.BlinkinLedMode.SOLID_AQUA),
-    TELEOP(Blinkin.BlinkinLedMode.SOLID_AQUA),
-    DISABLED(Blinkin.BlinkinLedMode.SOLID_AQUA)
+    IDLE(Blinkin.BlinkinLedMode.SOLID_RED),
+    OUTTAKE(Blinkin.BlinkinLedMode.SOLID_BLUE),
+    INTAKE(Blinkin.BlinkinLedMode.SOLID_GREEN),
+    AUTO(Blinkin.BlinkinLedMode.SOLID_GOLD),
+    TELEOP(Blinkin.BlinkinLedMode.SOLID_WHITE),
+    CUBE(Blinkin.BlinkinLedMode.SOLID_VIOLET),
+    CONE(Blinkin.BlinkinLedMode.SOLID_YELLOW),
+    SINGLE_SUBSTATION(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE),
+    DOUBLE_SUBSTATION(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE),
+    SCORE(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE)
   }
 
   enum class CandleMode(val animation: Animation?, val r: Int, val g: Int, val b: Int) {
-    IDLE(null, 0, 0, 0),
-    ITEM(null, 0, 0, 0),
-    FORWARD_TO_LEVEL(null, 0, 0, 0),
-    BACKWARD_TO_LEVEL(null, 0, 0, 0),
-    OUTTAKE(null, 0, 0, 0),
-    AUTO(null, 0, 0, 0),
-    TELEOP(null, 0, 0, 0),
-    DISABLED(null, 0, 0, 0)
+    IDLE(null, 255, 0, 0),
+    OUTTAKE(null, 0, 0, 255),
+    INTAKE(null, 64, 255, 51),
+    AUTO(null, 255, 215, 0),
+    TELEOP(null, 255, 255, 255),
+    CUBE(null, 162, 25, 255),
+    CONE(null, 0, 0, 0),
+    SINGLE_SUBSTATION(StrobeAnimation(255, 255, 255), 0, 0, 0),
+    DOUBLE_SUBSTATION(StrobeAnimation(255, 255, 255), 0, 0, 0),
+    SCORE(StrobeAnimation(255, 255, 255), 0, 0, 0)
   }
 
   enum class SimMode(val color: Color8Bit) {
-    IDLE(Color8Bit(Color.kOrange)),
-    ITEM(Color8Bit(Color.kAqua)),
-    FORWARD_TO_LEVEL(Color8Bit(Color.kAqua)),
-    BACKWARD_TO_LEVEL(Color8Bit(Color.kAqua)),
-    OUTTAKE(Color8Bit(Color.kAqua)),
-    AUTO(Color8Bit(Color.kAqua)),
-    TELEOP(Color8Bit(Color.kAqua)),
-    DISABLED(Color8Bit(Color.kAqua))
+    IDLE(Color8Bit(Color.kOrange))
   }
 }

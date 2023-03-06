@@ -17,13 +17,15 @@ object LedIOCandle : LedIO {
   override fun setState(newState: LEDMode) {
     lastState = newState
     when (newState) {
-      LEDMode.ITEM -> setCANdleState(CandleMode.ITEM)
-      LEDMode.FORWARD_TO_LEVEL -> setCANdleState(CandleMode.FORWARD_TO_LEVEL)
-      LEDMode.BACKWARD_TO_LEVEL -> setCANdleState(CandleMode.BACKWARD_TO_LEVEL)
+      LEDMode.IDLE -> setCANdleState(CandleMode.IDLE)
       LEDMode.OUTTAKE -> setCANdleState(CandleMode.OUTTAKE)
-      LEDMode.AUTO -> setCANdleState(CandleMode.AUTO)
-      LEDMode.TELEOP -> setCANdleState(CandleMode.TELEOP)
-      LEDMode.DISABLED -> setCANdleState(CandleMode.DISABLED)
+      LEDMode.INTAKE -> setCANdleState(CandleMode.INTAKE)
+      LEDMode.AUTO -> setCANdleState(CandleMode.OUTTAKE)
+      LEDMode.TELEOP -> setCANdleState(CandleMode.AUTO)
+      LEDMode.CUBE -> setCANdleState(CandleMode.TELEOP)
+      LEDMode.CONE -> setCANdleState(CandleMode.CONE)
+      LEDMode.SINGLE_SUBSTATION -> setCANdleState(CandleMode.SINGLE_SUBSTATION)
+      LEDMode.DOUBLE_SUBSTATION -> setCANdleState(CandleMode.DOUBLE_SUBSTATION)
     }
   }
 

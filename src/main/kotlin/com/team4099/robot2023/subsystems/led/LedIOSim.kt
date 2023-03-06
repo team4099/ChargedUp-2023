@@ -1,5 +1,6 @@
 package com.team4099.robot2023.subsystems.led
 
+import com.team4099.robot2023.config.constants.LedConstants
 import com.team4099.robot2023.config.constants.LedConstants.LEDMode
 import com.team4099.robot2023.config.constants.LedConstants.SimMode
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
@@ -18,14 +19,7 @@ object LedIOSim : LedIO {
     state = newState
 
     when (state) {
-      LEDMode.IDLE -> setWidget(SimMode.IDLE)
-      LEDMode.ITEM -> setWidget(SimMode.ITEM)
-      LEDMode.FORWARD_TO_LEVEL -> setWidget(SimMode.FORWARD_TO_LEVEL)
-      LEDMode.BACKWARD_TO_LEVEL -> setWidget(SimMode.BACKWARD_TO_LEVEL)
-      LEDMode.OUTTAKE -> setWidget(SimMode.OUTTAKE)
-      LEDMode.AUTO -> setWidget(SimMode.AUTO)
-      LEDMode.TELEOP -> setWidget(SimMode.TELEOP)
-      LEDMode.DISABLED -> setWidget(SimMode.DISABLED)
+      else -> LedConstants.BlinkenMode.IDLE
     }
   }
 
