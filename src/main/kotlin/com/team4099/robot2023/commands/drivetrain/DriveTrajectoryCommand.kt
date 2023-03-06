@@ -93,22 +93,43 @@ class DriveTrajectoryCommand(
   val thetaMaxAccel =
     LoggedTunableValue("Pathfollow/thetaMaxAccel", DrivetrainConstants.PID.MAX_AUTO_ANGULAR_ACCEL)
 
-  val poskP =
+  val posXkP =
     LoggedTunableValue(
-      "Pathfollow/poskP",
-      DrivetrainConstants.PID.AUTO_POS_KP,
+      "Pathfollow/posXkP",
+      DrivetrainConstants.PID.AUTO_POSX_KP,
       Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
     )
-  val poskI =
+  val posXkI =
     LoggedTunableValue(
-      "Pathfollow/poskI",
-      DrivetrainConstants.PID.AUTO_POS_KI,
+      "Pathfollow/posXkI",
+      DrivetrainConstants.PID.AUTO_POSX_KI,
       Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
     )
-  val poskD =
+  val posXkD =
     LoggedTunableValue(
-      "Pathfollow/poskD",
-      DrivetrainConstants.PID.AUTO_POS_KD,
+      "Pathfollow/posXkD",
+      DrivetrainConstants.PID.AUTO_POSX_KD,
+      Pair(
+        { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
+      )
+    )
+
+  val posYkP =
+    LoggedTunableValue(
+      "Pathfollow/posYkP",
+      DrivetrainConstants.PID.AUTO_POSY_KP,
+      Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
+    )
+  val posYkI =
+    LoggedTunableValue(
+      "Pathfollow/posYkI",
+      DrivetrainConstants.PID.AUTO_POSY_KI,
+      Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+    )
+  val posYkD =
+    LoggedTunableValue(
+      "Pathfollow/posYkD",
+      DrivetrainConstants.PID.AUTO_POSY_KD,
       Pair(
         { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
       )
@@ -117,8 +138,8 @@ class DriveTrajectoryCommand(
   init {
     addRequirements(drivetrain)
 
-    xPID = PIDController(poskP.get(), poskI.get(), poskD.get())
-    yPID = PIDController(poskP.get(), poskI.get(), poskD.get())
+    xPID = PIDController(posXkP.get(), posXkI.get(), posXkD.get())
+    yPID = PIDController(posYkP.get(), posYkI.get(), posYkD.get())
     thetaPID =
       ProfiledPIDController(
         thetakP.get(),
@@ -218,17 +239,25 @@ class DriveTrajectoryCommand(
     if (thetakI.hasChanged()) thetaPID.integralGain = thetakI.get()
     if (thetakD.hasChanged()) thetaPID.derivativeGain = thetakD.get()
 
-    if (poskP.hasChanged()) {
-      xPID.proportionalGain = poskP.get()
-      yPID.proportionalGain = poskP.get()
+    if (posXkP.hasChanged()) {
+      xPID.proportionalGain = posXkP.get()
     }
-    if (poskI.hasChanged()) {
-      xPID.integralGain = poskI.get()
-      yPID.integralGain = poskI.get()
+    if (posXkI.hasChanged()) {
+      xPID.integralGain = posXkI.get()
     }
-    if (poskD.hasChanged()) {
-      xPID.derivativeGain = poskD.get()
-      yPID.derivativeGain = poskD.get()
+    if (posXkD.hasChanged()) {
+      xPID.derivativeGain = posXkD.get()
+    }
+
+    if (posYkP.hasChanged()) {
+      yPID.proportionalGain = posYkP.get()
+
+    }
+    if (posYkI.hasChanged()) {
+      yPID.integralGain = posYkI.get()
+    }
+    if (posYkD.hasChanged()) {
+      yPID.derivativeGain = posYkD.get()
     }
 
     if (thetaMaxAccel.hasChanged() || thetaMaxVel.hasChanged()) {
@@ -242,6 +271,7 @@ class DriveTrajectoryCommand(
   }
 
   override fun end(interrupted: Boolean) {
+    Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", false)
     if (interrupted) {
       // Stop where we are if interrupted
       drivetrain.setClosedLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))

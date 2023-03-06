@@ -29,6 +29,7 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotations
@@ -165,6 +166,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   // helper functions to clamp all inputs and set sim motor voltages properly
   private fun setDriveVoltage(volts: ElectricalPotential) {
     val driveAppliedVolts = clamp(volts, -12.0.volts, 12.0.volts)
+    Logger.getInstance().recordOutput("Drivetrain/appliedVolts", driveAppliedVolts.inVolts)
     driveMotorSim.setInputVoltage(driveAppliedVolts.inVolts)
   }
 
@@ -175,6 +177,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
 
   override fun setSteeringSetpoint(angle: Angle) {
     val feedback = steeringFeedback.calculate(turnAbsolutePosition, angle)
+    Logger.getInstance().recordOutput("Drivetrain/PID/angleSetpoint", angle.inRadians)
     Logger.getInstance().recordOutput("Drivetrain/PID/steeringFeedback", feedback.inVolts)
     Logger.getInstance()
       .recordOutput("Drivetrain/PID/kP", steeringFeedback.proportionalGain.inVoltsPerDegree)

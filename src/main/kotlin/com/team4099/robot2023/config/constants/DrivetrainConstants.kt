@@ -1,5 +1,8 @@
 package com.team4099.robot2023.config.constants
 
+import edu.wpi.first.wpilibj.RobotBase
+import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.grams
@@ -7,12 +10,16 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.DerivativeGain
+import org.team4099.lib.units.derived.IntegralGain
+import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
+import org.team4099.lib.units.derived.perRadian
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.radiansPerSecondPerRadiansPerSecond
 import org.team4099.lib.units.derived.volts
@@ -85,10 +92,57 @@ object DrivetrainConstants {
   val STEERING_WHEEL_INERTIA = 0.004096955.kilo.grams.meterSquared
 
   object PID {
-    val AUTO_POS_KP = 2.0.meters.perSecond / 1.0.meters
-    val AUTO_POS_KI = 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
-    val AUTO_POS_KD =
-      (0.75.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+    val AUTO_POSX_KP: ProportionalGain<Meter, Velocity<Meter>>
+      get(){
+        if (RobotBase.isReal()){
+        return 2.0.meters.perSecond / 1.0.meters
+        } else {
+          return 60.0.meters.perSecond / 1.0.meters
+        }
+      }
+    val AUTO_POSX_KI: IntegralGain<Meter, Velocity<Meter>>
+      get(){
+        if (RobotBase.isReal()){
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        } else {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        }
+      }
+
+    val AUTO_POSX_KD: DerivativeGain<Meter, Velocity<Meter>>
+      get(){
+        if (RobotBase.isReal()){
+          return (0.75.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        } else {
+          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        }
+      }
+
+    val AUTO_POSY_KP: ProportionalGain<Meter, Velocity<Meter>>
+      get(){
+        if (RobotBase.isReal()){
+          return 2.0.meters.perSecond / 1.0.meters
+        } else {
+          return 60.0.meters.perSecond / 1.0.meters
+        }
+      }
+    val AUTO_POSY_KI: IntegralGain<Meter, Velocity<Meter>>
+      get(){
+        if (RobotBase.isReal()){
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        } else {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        }
+      }
+
+    val AUTO_POSY_KD: DerivativeGain<Meter, Velocity<Meter>>
+      get(){
+        if (RobotBase.isReal()){
+          return (0.75.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        } else {
+          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        }
+      }
 
     val AUTO_THETA_ALLOWED_ERROR = 3.degrees
 
@@ -138,7 +192,7 @@ object DrivetrainConstants {
     val SIM_DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
     val SIM_DRIVE_KD = 0.0.volts / 1.meters.perSecond.perSecond
 
-    val SIM_STEERING_KP = 0.4.volts.perDegree
+    val SIM_STEERING_KP = 0.1.volts.perDegree
     val SIM_STEERING_KI = 0.0.volts.perDegreeSeconds
     val SIM_STEERING_KD = 0.0.volts.perDegreePerSecond
   }

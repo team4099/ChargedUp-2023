@@ -346,8 +346,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       Pair(0.0.meters.perSecond.perSecond, 0.0.meters.perSecond.perSecond),
     fieldOriented: Boolean = true,
   ) {
-    val velSwerveModuleStates: Array<SwerveModuleState>?
-    val accelSwerveModuleStates: Array<SwerveModuleState>?
+    val velSwerveModuleStates: Array<SwerveModuleState>
+    val accelSwerveModuleStates: Array<SwerveModuleState>
 
     if (fieldOriented) {
       // Getting velocity and acceleration states from the drive & angular velocity vectors and
@@ -388,6 +388,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
             .chassisAccelsWPILIB
         )
     }
+
+    setPointStates = velSwerveModuleStates.toMutableList()
 
     // Once we have all of our states obtained for both velocity and acceleration, apply these
     // states to each swerve module
