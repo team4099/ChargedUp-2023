@@ -17,6 +17,9 @@ import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
+import com.team4099.robot2023.subsystems.led.Led
+import com.team4099.robot2023.subsystems.led.LedIOCandle
+import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
@@ -41,7 +44,8 @@ object RobotContainer {
         Superstructure(
           Elevator(ElevatorIONeo),
           GroundIntake(GroundIntakeIONeo),
-          Manipulator(ManipulatorIONeo)
+          Manipulator(ManipulatorIONeo),
+          Led(LedIOCandle)
         )
     } else {
       // Simulation implementations
@@ -50,7 +54,8 @@ object RobotContainer {
         Superstructure(
           Elevator(ElevatorIOSim),
           GroundIntake(GroundIntakeIOSim),
-          Manipulator(ManipulatorIOSim)
+          Manipulator(ManipulatorIOSim),
+          Led(LedIOSim)
         )
       //       vision = Vision(VisionIOSim)
     }

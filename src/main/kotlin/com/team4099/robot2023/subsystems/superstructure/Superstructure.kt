@@ -10,6 +10,7 @@ import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.config.constants.NodeTier
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -31,7 +32,8 @@ import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRe
 class Superstructure(
   private val elevator: Elevator,
   private val groundIntake: GroundIntake,
-  private val manipulator: Manipulator
+  private val manipulator: Manipulator,
+  private val led: Led
 ) : SubsystemBase() {
 
   var currentRequest: SuperstructureRequest = SuperstructureRequest.Idle()
