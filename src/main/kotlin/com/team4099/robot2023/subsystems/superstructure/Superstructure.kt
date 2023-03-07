@@ -6,12 +6,14 @@ import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.GamePiece
+import com.team4099.robot2023.config.constants.LedConstants.LEDMode
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.config.constants.NodeTier
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -198,6 +200,14 @@ class Superstructure(
         nextState = SuperstructureStates.HOME_PREP
       }
       SuperstructureStates.IDLE -> {
+        if (DriverStation.isAutonomous()) {
+          led.state = LEDMode.AUTO
+        } else if (DriverStation.isDisabled()) {
+          led.state = LEDMode.IDLE
+        } else {
+          led.state = LEDMode.TELEOP
+        }
+
         // Outputs
         val rollerVoltage =
           when (manipulator.holdingGamePiece) {
@@ -283,6 +293,9 @@ class Superstructure(
           }
       }
       SuperstructureStates.HOME_PREP -> {
+
+        led.state = LEDMode.MOVEMENT
+
         // Outputs
         groundIntake.currentRequest = Request.GroundIntakeRequest.ZeroArm()
 
@@ -301,6 +314,9 @@ class Superstructure(
         }
       }
       SuperstructureStates.HOME -> {
+
+        led.state = LEDMode.MOVEMENT
+
         // Outputs
         elevator.currentRequest = Request.ElevatorRequest.Home()
         manipulator.currentRequest = Request.ManipulatorRequest.Home()
@@ -311,6 +327,8 @@ class Superstructure(
         }
       }
       SuperstructureStates.GROUND_INTAKE_CUBE_PREP -> {
+        led.state = LEDMode.INTAKE
+
         // Outputs
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
@@ -376,11 +394,16 @@ class Superstructure(
         // Goes immediately to IDLE
         // Outputs
 
+        led.state = LEDMode.CUBE
+
         // Transition
         currentRequest = SuperstructureRequest.Idle()
         nextState = SuperstructureStates.IDLE
       }
       SuperstructureStates.GROUND_INTAKE_CONE_PREP -> {
+
+        led.state = LEDMode.INTAKE
+
         // Outputs
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
@@ -439,11 +462,16 @@ class Superstructure(
           (Clock.fpgaTime - lastTransitionTime) >=
           Manipulator.TunableManipulatorStates.intakeTime.get()
         ) {
+          led.state = LEDMode.CONE
+
           currentRequest = SuperstructureRequest.Idle()
           nextState = SuperstructureStates.IDLE
         }
       }
       SuperstructureStates.DOUBLE_SUBSTATION_INTAKE_PREP -> {
+
+        led.state = LEDMode.DOUBLE_SUBSTATION
+
         // Outputs
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
@@ -494,6 +522,9 @@ class Superstructure(
         }
       }
       SuperstructureStates.DOUBLE_SUBSTATION_INTAKE -> {
+
+        led.state = LEDMode.INTAKE
+
         // Outputs
         val gripperVoltage =
           when (usingGamePiece) {
@@ -521,6 +552,9 @@ class Superstructure(
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_PREP -> {
+
+        led.state = LEDMode.SINGLE_SUBSTATION
+
         // Outputs
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
@@ -559,6 +593,9 @@ class Superstructure(
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CUBE -> {
+
+        led.state = LEDMode.INTAKE
+
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
             Manipulator.TunableManipulatorStates.singleSubstationIntakeShelfExtension.get(),
@@ -576,6 +613,9 @@ class Superstructure(
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CONE -> {
+
+        led.state = LEDMode.INTAKE
+
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
             Manipulator.TunableManipulatorStates.singleSubstationIntakeShelfExtension.get(),
@@ -593,6 +633,8 @@ class Superstructure(
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP -> {
+        led.state = LEDMode.SINGLE_SUBSTATION
+
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
             Manipulator.TunableManipulatorStates.minExtension.get(),
@@ -602,8 +644,16 @@ class Superstructure(
         if (manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.IDLE
         }
+
+        if (usingGamePiece == GamePiece.CONE) {
+          led.state = LEDMode.CONE
+        } else {
+          led.state = LEDMode.CUBE
+        }
       }
       SuperstructureStates.SCORE_PREP -> {
+        led.state = LEDMode.SCORE
+
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
@@ -738,6 +788,7 @@ class Superstructure(
         }
       }
       SuperstructureStates.SCORE_CUBE -> {
+        led.state = LEDMode.OUTTAKE
         // Outputs
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
@@ -757,6 +808,7 @@ class Superstructure(
         }
       }
       SuperstructureStates.SCORE_CONE -> {
+        led.state = LEDMode.OUTTAKE
         // Outputs
         val dropToPosition =
           when (nodeTier) {
@@ -793,6 +845,7 @@ class Superstructure(
         }
       }
       SuperstructureStates.SCORE_CLEANUP -> {
+        led.state = LEDMode.MOVEMENT
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
             Manipulator.TunableManipulatorStates.minExtension.get(),
@@ -804,6 +857,8 @@ class Superstructure(
         }
       }
       SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP -> {
+        led.state = LEDMode.MOVEMENT
+
         val rollerCommandedVoltage =
           when (usingGamePiece) {
             GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
@@ -817,6 +872,12 @@ class Superstructure(
           )
 
         if (manipulator.isAtTargetedPosition) {
+          if (usingGamePiece == GamePiece.CONE) {
+            led.state = LEDMode.CONE
+          } else {
+            led.state = LEDMode.CUBE
+          }
+
           nextState = SuperstructureStates.IDLE
           currentRequest = SuperstructureRequest.Idle()
         }

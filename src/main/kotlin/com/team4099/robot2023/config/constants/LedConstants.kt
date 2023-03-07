@@ -17,6 +17,7 @@ class LedConstants {
     CONE,
     SINGLE_SUBSTATION,
     DOUBLE_SUBSTATION,
+    MOVEMENT,
     SCORE
   }
 
@@ -30,7 +31,8 @@ class LedConstants {
     CONE(Blinkin.BlinkinLedMode.SOLID_YELLOW),
     SINGLE_SUBSTATION(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE),
     DOUBLE_SUBSTATION(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE),
-    SCORE(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE)
+    SCORE(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE),
+    MOVEMENT(Blinkin.BlinkinLedMode.FIXED_STROBE_WHITE)
   }
 
   enum class CandleMode(val animation: Animation?, val r: Int, val g: Int, val b: Int) {
@@ -43,7 +45,8 @@ class LedConstants {
     CONE(null, 0, 0, 0),
     SINGLE_SUBSTATION(StrobeAnimation(255, 255, 255), 0, 0, 0),
     DOUBLE_SUBSTATION(StrobeAnimation(255, 255, 255), 0, 0, 0),
-    SCORE(StrobeAnimation(255, 255, 255), 0, 0, 0)
+    SCORE(StrobeAnimation(255, 255, 255), 0, 0, 0),
+    MOVEMENT(StrobeAnimation(255, 255, 255), 0, 0, 0)
   }
 
   enum class SimMode(val color: Color8Bit) {

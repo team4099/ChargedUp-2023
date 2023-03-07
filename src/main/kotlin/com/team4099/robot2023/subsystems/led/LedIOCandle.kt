@@ -20,12 +20,14 @@ object LedIOCandle : LedIO {
       LEDMode.IDLE -> setCANdleState(CandleMode.IDLE)
       LEDMode.OUTTAKE -> setCANdleState(CandleMode.OUTTAKE)
       LEDMode.INTAKE -> setCANdleState(CandleMode.INTAKE)
-      LEDMode.AUTO -> setCANdleState(CandleMode.OUTTAKE)
-      LEDMode.TELEOP -> setCANdleState(CandleMode.AUTO)
-      LEDMode.CUBE -> setCANdleState(CandleMode.TELEOP)
+      LEDMode.AUTO -> setCANdleState(CandleMode.AUTO)
+      LEDMode.TELEOP -> setCANdleState(CandleMode.TELEOP)
+      LEDMode.CUBE -> setCANdleState(CandleMode.CUBE)
       LEDMode.CONE -> setCANdleState(CandleMode.CONE)
       LEDMode.SINGLE_SUBSTATION -> setCANdleState(CandleMode.SINGLE_SUBSTATION)
       LEDMode.DOUBLE_SUBSTATION -> setCANdleState(CandleMode.DOUBLE_SUBSTATION)
+      LEDMode.SCORE -> setCANdleState(CandleMode.SCORE)
+      LEDMode.MOVEMENT -> setCANdleState(CandleMode.MOVEMENT)
     }
   }
 
