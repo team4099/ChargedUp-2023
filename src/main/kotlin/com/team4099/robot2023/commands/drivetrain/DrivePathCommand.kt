@@ -57,7 +57,8 @@ class DrivePathCommand(
   private val waypoints: Supplier<List<Waypoint>>,
   val resetPose: Boolean = false,
   val keepTrapping: Boolean = false,
-  val endVelocity: Velocity2d = Velocity2d()
+  val flipForAlliances: Boolean = true,
+  val endVelocity: Velocity2d = Velocity2d(),
 ) : CommandBase() {
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
@@ -202,8 +203,10 @@ class DrivePathCommand(
     var desiredRotation =
       trajectoryGenerator.holonomicRotationSequence.sample(trajCurTime.inSeconds)
 
-    desiredState = AllianceFlipUtil.apply(desiredState)
-    desiredRotation = AllianceFlipUtil.apply(desiredRotation)
+    if (flipForAlliances) {
+      desiredState = AllianceFlipUtil.apply(desiredState)
+      desiredRotation = AllianceFlipUtil.apply(desiredRotation)
+    }
 
     val xAccel =
       desiredState.accelerationMetersPerSecondSq.meters.perSecond.perSecond *

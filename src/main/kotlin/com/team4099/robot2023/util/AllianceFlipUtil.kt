@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
+import org.team4099.lib.geometry.Translation2dWPILIB
 import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
@@ -24,6 +26,14 @@ object AllianceFlipUtil {
   fun apply(translation: Translation2d): Translation2d {
     return if (shouldFlip()) {
       Translation2d(FieldConstants.fieldLength - translation.x, translation.y)
+    } else {
+      translation
+    }
+  }
+
+  fun apply(translation: Translation2dWPILIB): Translation2dWPILIB {
+    return if (shouldFlip()) {
+      Translation2dWPILIB(FieldConstants.fieldLength.inMeters - translation.x, translation.y)
     } else {
       translation
     }

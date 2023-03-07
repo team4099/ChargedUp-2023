@@ -110,7 +110,9 @@ class PickupFromSubstationCommand(
                 desiredPose.rotation.inRotation2ds
               )
             )
-          }
+          },
+          keepTrapping = true,
+          flipForAlliances = false
         ),
         WaitCommand(5.0)
           .andThen(

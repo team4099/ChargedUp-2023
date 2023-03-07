@@ -23,7 +23,7 @@ class Waypoint {
   constructor(
     translation: Translation2d,
     heading: Rotation2d? = null,
-    holonomicRotation: Rotation2d? = null
+    holonomicRotation: Rotation2d? = null,
   ) {
     this.translation = ErrorMessages.requireNonNullParam(translation, "translation", "Waypoint")
     this.driveRotation = heading
