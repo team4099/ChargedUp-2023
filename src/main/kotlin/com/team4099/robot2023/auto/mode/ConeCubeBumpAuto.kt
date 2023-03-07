@@ -41,10 +41,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
               ),
               // middle of bump
               Waypoint(
-                Translation2d(
-                  4.59.meters, 0.65.meters
-                )
-                  .translation2d,
+                Translation2d(4.59.meters, 0.65.meters).translation2d,
                 null,
                 180.0.degrees.inRotation2ds
               ),
@@ -79,19 +76,13 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
             ),
             // middle of bump
             Waypoint(
-              Translation2d(
-                5.26.meters, 0.65.meters
-              )
-                .translation2d,
+              Translation2d(5.26.meters, 0.65.meters).translation2d,
               null,
               180.0.degrees.inRotation2ds
             ),
             // scoring cube
             Waypoint(
-              Translation2d(
-                endingPosX.get(), endingPosY.get()
-              )
-                .translation2d,
+              Translation2d(endingPosX.get(), endingPosY.get()).translation2d,
               null,
               180.0.degrees.inRotation2ds
             )
@@ -124,7 +115,9 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
       )
     val endingPosY =
       LoggedTunableValue(
-        "Drivetrain/endingPosY", FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/endingPosY",
+        FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY,
+        Pair({ it.inMeters }, { it.meters })
       )
     val endingPosTheta =
       LoggedTunableValue(
