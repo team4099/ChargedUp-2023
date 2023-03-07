@@ -118,7 +118,7 @@ object Constants {
   }
 
   object Led {
-    const val LED_CANDLE_ID = 1
+    const val LED_CANDLE_ID = 61
     const val LED_BLINKEN_ID = 1
   }
 }

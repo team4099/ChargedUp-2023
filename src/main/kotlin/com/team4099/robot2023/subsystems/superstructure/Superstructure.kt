@@ -213,7 +213,11 @@ class Superstructure(
         } else if (DriverStation.isDisabled()) {
           led.state = LEDMode.IDLE
         } else {
-          led.state = LEDMode.TELEOP
+          when (manipulator.holdingGamePiece) {
+            GamePiece.CONE -> led.state = LEDMode.CONE
+            GamePiece.CUBE -> led.state = LEDMode.CUBE
+            else -> LEDMode.TELEOP
+          }
         }
 
         // Outputs
@@ -402,8 +406,6 @@ class Superstructure(
         // Goes immediately to IDLE
         // Outputs
 
-        led.state = LEDMode.CUBE
-
         // Transition
         currentRequest = SuperstructureRequest.Idle()
         nextState = SuperstructureStates.IDLE
@@ -470,7 +472,6 @@ class Superstructure(
           (Clock.fpgaTime - lastTransitionTime) >=
           Manipulator.TunableManipulatorStates.intakeTime.get()
         ) {
-          led.state = LEDMode.CONE
 
           currentRequest = SuperstructureRequest.Idle()
           nextState = SuperstructureStates.IDLE
@@ -641,7 +642,7 @@ class Superstructure(
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP -> {
-        led.state = LEDMode.SINGLE_SUBSTATION
+        led.state = LEDMode.MOVEMENT
 
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
@@ -651,12 +652,6 @@ class Superstructure(
 
         if (manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.IDLE
-        }
-
-        if (usingGamePiece == GamePiece.CONE) {
-          led.state = LEDMode.CONE
-        } else {
-          led.state = LEDMode.CUBE
         }
       }
       SuperstructureStates.SCORE_PREP -> {

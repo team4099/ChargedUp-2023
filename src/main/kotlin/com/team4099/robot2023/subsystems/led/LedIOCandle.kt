@@ -7,7 +7,7 @@ import com.team4099.robot2023.config.constants.LedConstants.LEDMode
 
 object LedIOCandle : LedIO {
 
-  private val ledController = CANdle(Constants.Led.LED_CANDLE_ID, Constants.Universal.CANIVORE_NAME)
+  private val ledController = CANdle(Constants.Led.LED_CANDLE_ID)
   private var lastState: LEDMode = LEDMode.IDLE
 
   override fun updateInputs(inputs: LedIO.LedIOInputs) {
@@ -33,7 +33,13 @@ object LedIOCandle : LedIO {
 
   private fun setCANdleState(state: CandleMode) {
     if (state.animation == null) {
-      ledController.setLEDs(state.r, state.g, state.b)
+      if (state.address != null) {
+        ledController.setLEDs(
+          state.r, state.g, state.b, 255, state.address.first, state.address.second
+        )
+      } else {
+        ledController.setLEDs(state.r, state.g, state.b)
+      }
     } else {
       ledController.animate(state.animation)
     }
