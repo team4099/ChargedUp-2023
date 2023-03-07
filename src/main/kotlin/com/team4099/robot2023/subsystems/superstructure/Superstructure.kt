@@ -75,6 +75,14 @@ class Superstructure(
   val manipulatorInputs = manipulator.inputs
 
   override fun periodic() {
+    val ledLoopStartTime = Clock.realTimestamp
+    led.periodic()
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/LedLoopTimeMS",
+        (Clock.realTimestamp - ledLoopStartTime).inMilliseconds
+      )
+
     val elevatorLoopStartTime = Clock.realTimestamp
     elevator.periodic()
     Logger.getInstance()
