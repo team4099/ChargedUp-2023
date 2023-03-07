@@ -16,18 +16,22 @@ object LedIOBlinken : LedIO {
   override fun setState(newState: LEDMode) {
     lastLedState = newState
     when (newState) {
-      LEDMode.IDLE -> setBlinken(BlinkenMode.IDLE.blinkenMode)
-      LEDMode.ITEM -> setBlinken(BlinkenMode.ITEM.blinkenMode)
-      LEDMode.FORWARD_TO_LEVEL -> setBlinken(BlinkenMode.FORWARD_TO_LEVEL.blinkenMode)
-      LEDMode.BACKWARD_TO_LEVEL -> setBlinken(BlinkenMode.BACKWARD_TO_LEVEL.blinkenMode)
-      LEDMode.OUTTAKE -> setBlinken(BlinkenMode.OUTTAKE.blinkenMode)
-      LEDMode.AUTO -> setBlinken(BlinkenMode.AUTO.blinkenMode)
-      LEDMode.TELEOP -> setBlinken(BlinkenMode.TELEOP.blinkenMode)
-      LEDMode.DISABLED -> setBlinken(BlinkenMode.DISABLED.blinkenMode)
+      LEDMode.IDLE -> setBlinken(BlinkenMode.IDLE)
+      LEDMode.OUTTAKE -> setBlinken(BlinkenMode.OUTTAKE)
+      LEDMode.INTAKE -> setBlinken(BlinkenMode.INTAKE)
+      LEDMode.AUTO -> setBlinken(BlinkenMode.AUTO)
+      LEDMode.TELEOP -> setBlinken(BlinkenMode.TELEOP)
+      LEDMode.CUBE -> setBlinken(BlinkenMode.CUBE)
+      LEDMode.CONE -> setBlinken(BlinkenMode.CONE)
+      LEDMode.SINGLE_SUBSTATION -> setBlinken(BlinkenMode.SINGLE_SUBSTATION)
+      LEDMode.DOUBLE_SUBSTATION -> setBlinken(BlinkenMode.DOUBLE_SUBSTATION)
+      LEDMode.SCORE -> setBlinken(BlinkenMode.SCORE)
+      LEDMode.MOVEMENT -> setBlinken(BlinkenMode.MOVEMENT)
+      else -> setBlinken(BlinkenMode.IDLE)
     }
   }
 
-  private fun setBlinken(state: BlinkinLedDriver.BlinkinLedMode) {
-    ledController.setMode(state)
+  private fun setBlinken(state: BlinkenMode) {
+    ledController.setMode(state.blinkenMode)
   }
 }
