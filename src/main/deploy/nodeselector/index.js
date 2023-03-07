@@ -2,10 +2,10 @@ import { NT4_Client } from "./NT4.js";
 
 const nodeRobotToDashboardTopic = "/nodeselector/node_robot_to_dashboard";
 const nodeDashboardToRobotTopic = "/nodeselector/node_dashboard_to_robot";
-const coneTippedRobotToDashboardTopic =
-  "/nodeselector/cone_tipped_robot_to_dashboard";
-const coneTippedDashboardToRobotTopic =
-  "/nodeselector/cone_tipped_dashboard_to_robot";
+const substationSelectionRobotToDashboard =
+  "/nodeselector/substation_selection_robot_to_dashboard";
+const substationSelectionDashboardToRobot =
+  "/nodeselector/substation_selection_dashboard_to_robot";
 
 let active = null;
 let tipped = null;
@@ -17,9 +17,8 @@ function displayActive(index) {
     element.classList.remove("active");
   });
   if (index !== null) {
-    console.log(index)
     document.getElementsByTagName("td")[index].classList.add("active");
-    displayTipped(null)
+//    displayActiveSubstation(null)
   } else {
     sendActive(-1)
   }
@@ -32,7 +31,7 @@ function sendActive(index) {
   }
 }
 
-function displayTipped(index) {
+function displayActiveSubstation(index) {
     tipped = index
     Array.from(document.getElementsByClassName("substation")).forEach((element) => {
         element.classList.remove("tipped");
@@ -40,15 +39,15 @@ function displayTipped(index) {
 
     if (index !== null) {
         document.getElementsByClassName("substation")[index].classList.add("tipped");
-        displayActive(null)
+//        displayActive(null)
     } else {
-        toggleTipped(-1)
+        sendSelectedSubstation(-1)
     }
 }
 
-function toggleTipped(index) {
+function sendSelectedSubstation(index) {
   if (index !== tipped){
-    client.addSample(coneTippedDashboardToRobotTopic, index);
+    client.addSample(substationSelectionDashboardToRobot, index);
   }
 
 }
@@ -70,11 +69,11 @@ let client = new NT4_Client(
         value = null
       }
       displayActive(value);
-    } else if (topic.name == coneTippedRobotToDashboardTopic) {
+    } else if (topic.name == substationSelectionRobotToDashboard) {
     if (value == -1){
             value = null
           }
-      displayTipped(value);
+      displayActiveSubstation(value);
     }
   },
   () => {
@@ -84,20 +83,20 @@ let client = new NT4_Client(
     // Disconnected
     document.body.style.backgroundColor = "red";
     displayActive(null);
-    displayTipped(null);
+    displayActiveSubstation(null);
   }
 );
 
 window.addEventListener("load", () => {
   // Start NT connection
   client.subscribe(
-    [nodeRobotToDashboardTopic, coneTippedRobotToDashboardTopic],
+    [nodeRobotToDashboardTopic, substationSelectionRobotToDashboard],
     false,
     false,
     0.02
   );
   client.publishTopic(nodeDashboardToRobotTopic, "int");
-  client.publishTopic(coneTippedDashboardToRobotTopic, "int");
+  client.publishTopic(substationSelectionDashboardToRobot, "int");
   client.connect();
 
   // Add node click listeners
@@ -138,24 +137,24 @@ window.addEventListener("load", () => {
 //  const coneOrientationDiv =
 //    document.getElementsByClassName("cone-orientation")[0];
 //  coneOrientationDiv.addEventListener("click", () => {
-//    toggleTipped(coneOrientationDiv.index());
+//    sendSelectedSubstation(coneOrientationDiv.index());
 //  });
 //  coneOrientationDiv.addEventListener("contextmenu", (event) => {
 //    event.preventDefault();
-//    toggleTipped(coneOrientationDiv.index());
+//    sendSelectedSubstation(coneOrientationDiv.index());
 //  });
 //  coneOrientationDiv.addEventListener("touchstart", () => {
 //    event.preventDefault();
-//    toggleTipped(coneOrientationDiv.index());
+//    sendSelectedSubstation(coneOrientationDiv.index());
 //  });
 
   Array.from(document.getElementsByClassName("substation")).forEach((cell, index) => {
       cell.addEventListener("click", () => {
-        toggleTipped(index);
+        sendSelectedSubstation(index);
       });
       cell.addEventListener("contextmenu", (event) => {
         event.preventDefault();
-        toggleTipped(index);
+        sendSelectedSubstation(index);
       });
     });
 
@@ -174,7 +173,7 @@ window.addEventListener("load", () => {
                 y >= rect.top &&
                 y <= rect.bottom
               ) {
-                toggleTipped(index);
+                sendSelectedSubstation(index);
               }
             }
           );

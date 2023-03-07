@@ -24,9 +24,15 @@ object GameboyIOServer : GameboyIO {
     // Create publisher and subscriber
     val table = NetworkTableInstance.getDefault().getTable("nodeselector")
     nodePublisher = table.getIntegerTopic("node_robot_to_dashboard").publish()
-    nodeSubscriber = table.getIntegerTopic("node_dashboard_to_robot").subscribe(-1)
-    coneTippedPublisher = table.getIntegerTopic("cone_tipped_robot_to_dashboard").publish()
-    coneTippedSubscriber = table.getIntegerTopic("cone_tipped_dashboard_to_robot").subscribe(-1)
+    nodeSubscriber =
+      table
+        .getIntegerTopic("node_dashboard_to_robot")
+        .subscribe(-1) // needs to be -1 so nothing is displayed
+    coneTippedPublisher = table.getIntegerTopic("substation_selection_robot_to_dashboard").publish()
+    coneTippedSubscriber =
+      table
+        .getIntegerTopic("substation_selection_dashboard_to_robot")
+        .subscribe(-1) // needs to be -1 so nothing is displayed
 
     // Start server
     val app =
@@ -42,40 +48,41 @@ object GameboyIOServer : GameboyIO {
 
   override fun updateInputs(inputs: GameboyIO.GameboyIOInputs) {
 
+    val objective = inputs.objective
+
     for (value in nodeSubscriber!!.readQueueValues()) {
       if (value.toInt() != -1) {
-        inputs.objective = positionIndexToSelectedNode(value.toInt())
+        val selectedNode = positionIndexToSelectedNode(value.toInt())
+        objective.nodeColumn = selectedNode.first
+        objective.nodeTier = selectedNode.second
       }
     }
     for (value in coneTippedSubscriber!!.readQueueValues()) {
       if (value.toInt() != -1) {
-        inputs.objective = substationIndexToObjective(value.toInt())
+        objective.substation = substationIndexToObjective(value.toInt())
       }
     }
+
+    inputs.objective = objective
   }
 
   override fun setSelected(objective: Objective) {
 
-    if (objective.nodeTier != Constants.Universal.NodeTier.NONE) {
-      var selected = 0
-      if (FMSData.allianceColor == DriverStation.Alliance.Blue) {
-        selected += (8 - objective.nodeColumn)
-      } else {
-        selected += objective.nodeColumn
-      }
-      when (objective.nodeTier) {
-        Constants.Universal.NodeTier.HYBRID -> selected += 0
-        Constants.Universal.NodeTier.MID -> selected += 9
-        Constants.Universal.NodeTier.HIGH -> selected += 18
-        else -> selected += 0
-      }
-
-      nodePublisher!!.set(selected.toLong())
-      setConeOrientation(Constants.Universal.Substation.NONE)
+    var selected = 0
+    if (FMSData.allianceColor == DriverStation.Alliance.Blue) {
+      selected += (8 - objective.nodeColumn)
     } else {
-      setConeOrientation(objective.substation)
-      nodePublisher!!.set((-1).toLong())
+      selected += objective.nodeColumn
     }
+    when (objective.nodeTier) {
+      Constants.Universal.NodeTier.HYBRID -> selected += 0
+      Constants.Universal.NodeTier.MID -> selected += 9
+      Constants.Universal.NodeTier.HIGH -> selected += 18
+      else -> selected += 0
+    }
+
+    nodePublisher!!.set(selected.toLong())
+    setConeOrientation(objective.substation)
   }
 
   fun setConeOrientation(substation: Substation) {
@@ -86,9 +93,9 @@ object GameboyIOServer : GameboyIO {
     coneTippedPublisher!!.set(index.toLong())
   }
 
-  private fun positionIndexToSelectedNode(position: Int): Objective {
-    var column = -1
-    var nodeLevel = NodeTier.NONE
+  private fun positionIndexToSelectedNode(position: Int): Pair<Int, NodeTier> {
+    var column: Int
+    var nodeLevel: Constants.Universal.NodeTier
     if (FMSData.allianceColor == DriverStation.Alliance.Blue) {
       column = 8 - position % 9
     } else {
@@ -103,10 +110,10 @@ object GameboyIOServer : GameboyIO {
       nodeLevel = Constants.Universal.NodeTier.HIGH
     }
 
-    return Objective(column, nodeLevel)
+    return Pair(column, nodeLevel)
   }
 
-  private fun substationIndexToObjective(index: Int): Objective {
+  private fun substationIndexToObjective(index: Int): Substation {
     val substation =
       if (index == 0) {
         Substation.SINGLE_SUBSTATION
@@ -116,6 +123,6 @@ object GameboyIOServer : GameboyIO {
         Substation.DOUBLE_SUBSTATION_RIGHT
       } else Substation.NONE
 
-    return Objective(substation = substation)
+    return substation
   }
 }

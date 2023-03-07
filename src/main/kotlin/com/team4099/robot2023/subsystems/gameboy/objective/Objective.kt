@@ -5,8 +5,8 @@ import com.team4099.robot2023.config.constants.NodeTier
 import com.team4099.robot2023.config.constants.Substation
 
 data class Objective(
-  val nodeColumn: Int = -1,
-  val nodeTier: NodeTier = NodeTier.NONE,
+  var nodeColumn: Int = -1,
+  var nodeTier: NodeTier = NodeTier.NONE,
   var substation: Substation = Substation.NONE
 )
 
