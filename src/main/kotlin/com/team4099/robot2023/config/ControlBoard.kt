@@ -34,6 +34,9 @@ object ControlBoard {
   // val setArmPositionToShelfIntake = Trigger { operator.xButton }
 
   // val toConeLevelOnePrep = Trigger {operator.leftShoulderButton && operator.aButton}
+
+  val prepScore = Trigger { operator.leftTriggerAxis > 0.5 }
+
   val setArmCubeHybridPrep = Trigger { operator.leftShoulderButton && operator.aButton }
   val setArmCubeMidPrep = Trigger { operator.leftShoulderButton && operator.bButton }
   val setArmCubeHighPrep = Trigger { operator.leftShoulderButton && operator.yButton }

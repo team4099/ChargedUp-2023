@@ -73,6 +73,8 @@ class Superstructure(
 
   val manipulatorInputs = manipulator.inputs
 
+  val objective = gameboy.inputs.objective
+
   var isAtRequestedState: Boolean = false
 
   var checkAtRequestedStateNextLoopCycle = false
@@ -885,65 +887,14 @@ class Superstructure(
     return returnCommand
   }
 
-  fun prepScoreCubeHybridCommand(): CommandBase {
+  fun prepScoreCommand( gamePiece: GamePiece,  nodeTier: NodeTier): CommandBase {
     val returnCommand =
       runOnce {
-        currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.HYBRID)
+        currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier)
       }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
+        .until { currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState }
 
-    returnCommand.name = "PrepscoreCubeHybridCommand"
-    return returnCommand
-  }
-
-  fun prepScoreCubeMidCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.MID) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreCubeMidCommand"
-    return returnCommand
-  }
-
-  fun prepScoreCubeHighCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.HIGH) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreCubeHighCommand"
-    return returnCommand
-  }
-
-  fun prepScoreConeHybridCommand(): CommandBase {
-    val returnCommand =
-      runOnce {
-        currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.HYBRID)
-      }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreConeHybridCommand"
-    return returnCommand
-  }
-
-  fun prepScoreConeMidCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.MID) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreConeMidCommand"
-    return returnCommand
-  }
-
-  fun prepScoreConeHighCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.HIGH) }
-        .andThen(
-          run {}.until {
-            isAtRequestedState && currentState == SuperstructureStates.SCORE_PREP
-          }
-        )
-
-    returnCommand.name = "PrepscoreConeHighCommand"
+    returnCommand.name = "PrepScore${gamePiece.name}${nodeTier.name}Command"
     return returnCommand
   }
 

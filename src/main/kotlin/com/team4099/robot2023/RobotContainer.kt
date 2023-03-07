@@ -17,6 +17,7 @@ import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.gameboy.GameboyIOServer
+import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
@@ -129,19 +130,19 @@ object RobotContainer {
     //      GoToAngle(drivetrain).andThen(AutoLevel(drivetrain))
     //    )
 
-    ControlBoard.setArmCubeHybridPrep.whileTrue(superstructure.prepScoreCubeHybridCommand())
-    ControlBoard.setArmCubeMidPrep.whileTrue(superstructure.prepScoreCubeMidCommand())
-    ControlBoard.setArmCubeHighPrep.whileTrue(superstructure.prepScoreCubeHighCommand())
-    ControlBoard.setArmConeHybridPrep.whileTrue(superstructure.prepScoreConeHybridCommand())
-    ControlBoard.setArmConeMidPrep.whileTrue(superstructure.prepScoreConeMidCommand())
-    ControlBoard.setArmConeHighPrep.whileTrue(superstructure.prepScoreConeHighCommand())
+    ControlBoard.setArmCubeHybridPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HYBRID))
+    ControlBoard.setArmCubeMidPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.MID))
+    ControlBoard.setArmCubeHighPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH))
+    ControlBoard.setArmConeHybridPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HYBRID))
+    ControlBoard.setArmConeMidPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.MID))
+    ControlBoard.setArmConeHighPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH))
 
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
-    //    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
 
-    ControlBoard.doubleSubstationIntake.whileTrue(PositionAutoLevel(drivetrain))
+    ControlBoard.prepScore.whileTrue(superstructure.prepScoreCommand(if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE else Constants.Universal.GamePiece.CUBE, superstructure.objective.nodeTier))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(
     //      PickupFromSubstationCommand(

@@ -48,6 +48,7 @@ object GameboyIOServer : GameboyIO {
 
   override fun updateInputs(inputs: GameboyIO.GameboyIOInputs) {
 
+    // getting the previous objective so we can update it with new operator selections
     val objective = inputs.objective
 
     for (value in nodeSubscriber!!.readQueueValues()) {
