@@ -26,6 +26,7 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
+import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
@@ -41,7 +42,7 @@ object RobotContainer {
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       vision =
         Vision(
-          CameraIONorthstar("forward"),
+          object: CameraIO {},
           //        CameraIONorthstar("left"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
@@ -64,7 +65,6 @@ object RobotContainer {
           Manipulator(ManipulatorIOSim),
           GameBoy(GameboyIOServer)
         )
-      //       vision = Vision(VisionIOSim)
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
@@ -79,8 +79,6 @@ object RobotContainer {
         { ControlBoard.slowMode },
         drivetrain
       )
-
-    //    superstructure.defaultCommand = InstantCommand({}, superstructure)
   }
 
   fun requestSuperstructureIdle() {
@@ -148,113 +146,11 @@ object RobotContainer {
     //      )
     //    )
 
-    //
-    // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
-    //        ControlBoard.climbWithoutAdvance.whileActiveOnce(RunClimbCommand())
-    //    ControlBoard.extendArm.whileTrue(manipulator.openLoopControl(12.0.volts))
-    //    ControlBoard.retractArm.whileTrue(manipulator.openLoopControl(-12.0.volts))
-
-    /*
-    ControlBoard.setArmPositionToShelfIntake.whileTrue(
-      superstructure.intakeConeFromDoubleSubStationCommand()
-    )
-    */
-
-    /*elevator test
-    ControlBoard.extendArm.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())
-    ControlBoard.retractArm.whileTrue(superstructure.elevatorGoToLowCubeNodeCommand())
-    */
-
-    // manipulator test
-    /*
-    ControlBoard.extendArm.whileTrue(superstructure.manipulatorGoToMaxExtensionCommand())
-    ControlBoard.retractArm.whileTrue(superstructure.manipulatorGoToMinExtensionCommand())
-    */
-
-    // groundintake test
-
-    //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeStowedDownCommand())
-    //    ControlBoard.retractArm.whileTrue(superstructure.groundIntakeStowedUpCommand())
-
-    //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCubeCommand())
-    //    ControlBoard.retractArm.whileTrue(superstructure.elevatorOpenLoopExtendCommand())
-
-    //
-    // ControlBoard.setArmPositionToShelfIntake.whileTrue(superstructure.elevatorGoToHighConeNodeCommand())
-    //    ControlBoard.extendArm.whileTrue(superstructure.groundIntakeIntakeCommand())
-    //    ControlBoard.retractArm.whileTrue(superstructure.manipulatorGoToMaxExtensionCommand())
-
-    /*
-    ControlBoard.intakeCone.whileTrue(
-      manipulator.manipulatorCommand(
-        ManipulatorConstants.RollerStates.CONE_IN,
-        ManipulatorConstants.ArmStates.MIN_EXTENSION)
-    )
-    ControlBoard.intakeCube.whileTrue(
-      manipulator.manipulatorCommand(
-        ManipulatorConstants.RollerStates.CUBE_IN,
-        ManipulatorConstants.ArmStates.MIN_EXTENSION)
-    )
-    ControlBoard.outtakeCone.whileTrue(
-      manipulator.manipulatorCommand(
-        ManipulatorConstants.RollerStates.CONE_OUT,
-        ManipulatorConstants.ArmStates.MIN_EXTENSION
-      )
-    )
-    ControlBoard.outtakeCube.whileTrue(
-      manipulator.manipulatorCommand(
-        ManipulatorConstants.RollerStates.CUBE_OUT,
-        ManipulatorConstants.ArmStates.MIN_EXTENSION
-      )
-    )
-     */
-
-    //    ControlBoard.runElevatorToHighNode.whileTrue(elevator.goToHighConeNodeCommand())
-    //
-    //    ControlBoard.openLoopExtend.whileTrue(elevator.openLoopExtendCommand())
-    //    ControlBoard.openLoopRetract.whileTrue(elevator.openLoopRetractCommand())
-    //
-    //    ControlBoard.extendIntake.whileTrue(groundIntake.intakeCommand())
-    //    ControlBoard.retractIntake.whileTrue(groundIntake.stowedUpCommand())
-    //    //    ControlBoard.characterizeIntake.whileTrue(
-    //    //
-    // groundIntake.groundIntakeDeployCommand(GroundIntakeConstants.ArmStates.TUNABLE_STATE) //
-    //    // TODO make legit
-    //    //    )
-    //
-    //    ControlBoard.setArmCommand.whileTrue(groundIntake.stowedDownCommand())
   }
 
   fun mapTestControls() {}
 
-  //  fun getAutonomousCommand() =
-  //    AutonomousSelector.getCommand(
-  //      drivetrain, intake, feeder, shooter, telescopingClimber, pivotClimber
-  //    )"
-
   fun getAutonomousCommand() = AutonomousSelector.getCommand(drivetrain, superstructure)
 
-  fun mapTunableCommands() {
-    //    val commandsTab = Shuffleboard.getTab("TunableCommands")
-    //    commandsTab.add(manipulator)
-    //    SendableRegistry.setName(manipulator, "manipulator")
-    //    commandsTab.add("ManipulatorArmCharacterization", ArmCharacterizationCommand(manipulator))
-    //    commandsTab.add(
-    //      "ManipulatorArmTuning",
-    //      manipulator.scoreConeAtHighNodeCommand( // TODO fix
-    //      )
-    //    )
-    //    commandsTab.add(RobotContainer.elevator)
-    //    SendableRegistry.setName(RobotContainer.elevator, "elevator")
-    //    commandsTab.add("ElevatorCharacterization", ElevatorCharacterizeCommand(elevator))
-    //    commandsTab.add(
-    //      "ElevatorTuning", elevator.goToMidConeNodeCommand() // TODO FIX
-    //    )
-    //    commandsTab.add(groundIntake)
-    //    SendableRegistry.setName(groundIntake, "groundIntake")
-    //    commandsTab.add(
-    //      "GroundIntakeArmCharacterization", GroundIntakeCharacterizeCommand(groundIntake)
-    //    )
-    //    commandsTab.add("GroundIntakeArmTuning", groundIntake.stowedUpCommand())
-  }
+  fun mapTunableCommands() {}
 }
