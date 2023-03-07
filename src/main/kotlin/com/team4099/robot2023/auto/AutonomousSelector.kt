@@ -1,5 +1,6 @@
 package com.team4099.robot2023.auto
 
+import com.team4099.robot2023.auto.mode.ConeCubeBumpAuto
 import com.team4099.robot2023.auto.mode.ConeCubeAuto
 import com.team4099.robot2023.auto.mode.TestAutoPath
 import com.team4099.robot2023.commands.elevator.ElevatorKsCharacterizeCommand
@@ -34,6 +35,7 @@ object AutonomousSelector {
     autonomousModeChooser.addOption("Test", AutonomousMode.TEST_AUTO_PATH)
     autonomousModeChooser.addOption("Characterize Elevator", AutonomousMode.ELEVATOR_CHARACTERIZE)
     autonomousModeChooser.addOption("1 Cone + 1 Cube Auto", AutonomousMode.CO_CU_AUTO)
+    autonomousModeChooser.addOption("1 Cone + 1 Cube Auto, Cable Carrier Side", AutonomousMode.CO_CU_BUMP_AUTO)
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(5, 2).withPosition(3, 0)
     waitBeforeCommandSlider =
@@ -68,6 +70,8 @@ object AutonomousSelector {
       AutonomousMode.ELEVATOR_CHARACTERIZE -> return ElevatorKsCharacterizeCommand(superstructure)
       AutonomousMode.CO_CU_AUTO ->
         return WaitCommand(waitTime.inSeconds).andThen(ConeCubeAuto(drivetrain, superstructure))
+      AutonomousMode.CO_CU_BUMP_AUTO ->
+        return WaitCommand(waitTime.inSeconds).andThen(ConeCubeBumpAuto(drivetrain, superstructure))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()
@@ -77,5 +81,6 @@ object AutonomousSelector {
     TEST_AUTO_PATH,
     ELEVATOR_CHARACTERIZE,
     CO_CU_AUTO,
+    CO_CU_BUMP_AUTO,
   }
 }
