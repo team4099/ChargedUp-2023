@@ -6,6 +6,7 @@ import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.util.Alert
+import com.team4099.robot2023.util.Velocity2d
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.Vector
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
@@ -96,6 +97,14 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       -DrivetrainConstants.DRIVETRAIN_LENGTH / 2, -DrivetrainConstants.DRIVETRAIN_WIDTH / 2
     )
 
+  val moduleTranslations =
+    listOf(
+      frontLeftWheelLocation,
+      frontRightWheelLocation,
+      backLeftWheelLocation,
+      backRightWheelLocation
+    )
+
   val swerveDriveKinematics =
     SwerveDriveKinematics(
       frontLeftWheelLocation.translation2d,
@@ -157,9 +166,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   var drift: Transform2d = Transform2d(Translation2d(), 0.0.radians)
 
-  var fieldVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+  var fieldVelocity = Velocity2d(0.0.meters.perSecond, 0.0.meters.perSecond)
 
-  var robotVelocity = Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+  var robotVelocity = Velocity2d(0.0.meters.perSecond, 0.0.meters.perSecond)
 
   var omegaVelocity = 0.0.radians.perSecond
 
@@ -190,8 +199,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       )
         .rotateBy(odometryPose.rotation) // we don't use this but it's there if you want it ig
 
-    robotVelocity = Pair(chassisState.vx, chassisState.vy)
-    fieldVelocity = Pair(fieldVelCalculated.x.perSecond, fieldVelCalculated.y.perSecond)
+    robotVelocity = Velocity2d(chassisState.vx, chassisState.vy)
+    fieldVelocity = Velocity2d(fieldVelCalculated.x.perSecond, fieldVelCalculated.y.perSecond)
 
     omegaVelocity = chassisState.omega
     if (!gyroInputs.gyroConnected) {
@@ -201,9 +210,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     }
 
     Logger.getInstance()
-      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.first.inMetersPerSecond)
+      .recordOutput("Drivetrain/xVelocityMetersPerSecond", fieldVelocity.x.inMetersPerSecond)
     Logger.getInstance()
-      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.second.inMetersPerSecond)
+      .recordOutput("Drivetrain/yVelocityMetersPerSecond", fieldVelocity.y.inMetersPerSecond)
 
     Logger.getInstance().processInputs("Drivetrain/Gyro", gyroInputs)
     Logger.getInstance().recordOutput("Drivetrain/ModuleStates", *measuredStates)
@@ -403,8 +412,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   /** Zeros all the sensors on the drivetrain. */
   fun zeroSensors() {
-    zeroGyroYaw(0.0.degrees)
-    zeroGyroPitch(0.0.degrees)
+    //    zeroGyroYaw(0.0.degrees)
+    //    zeroGyroPitch(0.0.degrees)
     zeroSteering()
     zeroDrive()
   }

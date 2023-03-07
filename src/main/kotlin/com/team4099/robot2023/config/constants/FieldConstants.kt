@@ -83,6 +83,10 @@ object FieldConstants {
 
   val wpilibAprilTags = aprilTags.map { it.apriltagWpilib }
 
+  fun idToTagPose(id: Int): Pose3d? {
+    return aprilTags.firstOrNull { it.id == id }?.pose
+  }
+
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By
    * default, all translations and poses in [FieldConstants] are stored with the origin at the
@@ -170,10 +174,10 @@ object FieldConstants {
 
     // Z layout
     val cubeEdgeHigh = (3.0).inches
-    val highCubeZ = (45.5).inches - cubeEdgeHigh
-    val midCubeZ = (34.5).inches - cubeEdgeHigh
-    val highConeZ = (43.0).inches
-    val midConeZ = (29.0).inches
+    val highCubeZ = (35.5).inches - cubeEdgeHigh
+    val midCubeZ = (23.5).inches - cubeEdgeHigh
+    val highConeZ = (46.0).inches
+    val midConeZ = (34.0).inches
 
     // Translations (all nodes in the same column/row have the same X/Y coordinate)
     val lowTranslations: Array<Translation2d?> = arrayOfNulls<Translation2d>(nodeRowCount)

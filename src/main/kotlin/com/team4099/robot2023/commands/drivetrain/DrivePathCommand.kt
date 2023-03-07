@@ -1,24 +1,33 @@
 package com.team4099.robot2023.commands.drivetrain
 
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.lib.trajectory.CustomHolonomicDriveController
+import com.team4099.lib.trajectory.CustomTrajectoryGenerator
+import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
+import com.team4099.robot2023.util.AllianceFlipUtil
+import com.team4099.robot2023.util.Velocity2d
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import edu.wpi.first.math.trajectory.TrajectoryParameterizer.TrajectoryGenerationException
+import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint
+import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
-import org.team4099.lib.controller.ProfiledPIDController
-import org.team4099.lib.controller.TrapezoidProfile
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.hal.Clock
-import org.team4099.lib.pathfollow.Trajectory
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegree
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreeSeconds
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreesPerSecond
@@ -38,21 +47,29 @@ import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
+import org.team4099.lib.units.inRadiansPerSecondPerSecond
 import org.team4099.lib.units.perSecond
+import java.util.function.Supplier
 import kotlin.math.PI
 
 class DrivePathCommand(
   val drivetrain: Drivetrain,
-  private val trajectory: Trajectory,
-  val resetPose: Boolean = false
+  private val waypoints: Supplier<List<Waypoint>>,
+  val resetPose: Boolean = false,
+  val keepTrapping: Boolean = false,
+  val endVelocity: Velocity2d = Velocity2d()
 ) : CommandBase() {
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
 
-  private val thetaPID: ProfiledPIDController<Radian, Velocity<Radian>>
+  private val thetaPID: PIDController<Radian, Velocity<Radian>>
+
+  private val swerveDriveController: CustomHolonomicDriveController
 
   private var trajCurTime = 0.0.seconds
   private var trajStartTime = 0.0.seconds
+
+  var trajectoryGenerator = CustomTrajectoryGenerator()
 
   val thetakP =
     LoggedTunableValue(
@@ -104,69 +121,121 @@ class DrivePathCommand(
       )
     )
 
+  private fun generate(
+    waypoints: List<Waypoint>,
+    constraints: List<TrajectoryConstraint> = listOf()
+  ) {
+    // Set up trajectory configuration
+    val config =
+      edu.wpi.first.math.trajectory.TrajectoryConfig(
+        DrivetrainConstants.MAX_AUTO_VEL.inMetersPerSecond,
+        DrivetrainConstants.MAX_AUTO_ACCEL.inMetersPerSecondPerSecond
+      )
+        .setKinematics(
+          SwerveDriveKinematics(
+            *(drivetrain.moduleTranslations.map { it.translation2d }).toTypedArray()
+          )
+        )
+        .setStartVelocity(drivetrain.fieldVelocity.magnitude.inMetersPerSecond)
+        .setEndVelocity(endVelocity.magnitude.inMetersPerSecond)
+        .addConstraint(
+          CentripetalAccelerationConstraint(
+            DrivetrainConstants.STEERING_ACCEL_MAX.inRadiansPerSecondPerSecond
+          )
+        )
+        .addConstraints(constraints)
+
+    try {
+      trajectoryGenerator.generate(config, waypoints)
+    } catch (exception: TrajectoryGenerationException) {
+      DriverStation.reportError("Failed to generate trajectory.", true)
+    }
+  }
+
   init {
     addRequirements(drivetrain)
 
     xPID = PIDController(poskP.get(), poskI.get(), poskD.get())
     yPID = PIDController(poskP.get(), poskI.get(), poskD.get())
     thetaPID =
-      ProfiledPIDController(
+      PIDController(
         thetakP.get(),
         thetakI.get(),
         thetakD.get(),
-        TrapezoidProfile.Constraints(thetaMaxVel.get(), thetaMaxAccel.get())
       )
 
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
+
+    swerveDriveController =
+      CustomHolonomicDriveController(
+        xPID.wpiPidController, yPID.wpiPidController, thetaPID.wpiPidController
+      )
+
+    swerveDriveController.setTolerance(Pose2d(0.5.inches, 0.5.inches, 2.5.degrees).pose2d)
   }
 
   override fun initialize() {
+    // trajectory generation!
+    generate(waypoints.get())
+
+    val trajectory = trajectoryGenerator.driveTrajectory
+
     if (resetPose) {
-      drivetrain.odometryPose = trajectory.startingPose
+      drivetrain.odometryPose = AllianceFlipUtil.apply(Pose2d(trajectory.initialPose))
     }
-    trajStartTime = Clock.fpgaTime + trajectory.startTime
-    thetaPID.reset(drivetrain.odometryPose.rotation)
+    trajStartTime = Clock.fpgaTime + trajectory.states[0].timeSeconds.seconds
+    thetaPID.reset()
     xPID.reset()
     yPID.reset()
   }
 
   override fun execute() {
+    val trajectory = trajectoryGenerator.driveTrajectory
+
+    if (trajectory.states.size <= 1) {
+      return
+    }
+
     trajCurTime = Clock.fpgaTime - trajStartTime
-    val desiredState = trajectory.sample(trajCurTime)
-    val xFF = desiredState.linearVelocity * desiredState.curvature.cos
-    val yFF = desiredState.linearVelocity * desiredState.curvature.sin
-    val thetaFeedback =
-      thetaPID.calculate(
-        drivetrain.odometryPose.rotation,
-        TrapezoidProfile.State(desiredState.pose.rotation, desiredState.angularVelocity)
+    var desiredState = trajectory.sample(trajCurTime.inSeconds)
+
+    var desiredRotation =
+      trajectoryGenerator.holonomicRotationSequence.sample(trajCurTime.inSeconds)
+
+    desiredState = AllianceFlipUtil.apply(desiredState)
+    desiredRotation = AllianceFlipUtil.apply(desiredRotation)
+
+    val xAccel =
+      desiredState.accelerationMetersPerSecondSq.meters.perSecond.perSecond *
+        desiredState.curvatureRadPerMeter.radians.cos
+    val yAccel =
+      desiredState.accelerationMetersPerSecondSq.meters.perSecond.perSecond *
+        desiredState.curvatureRadPerMeter.radians.sin
+
+    val nextDriveState =
+      swerveDriveController.calculate(
+        drivetrain.odometryPose.pose2d, desiredState, desiredRotation
       )
 
-    // Calculate feedback velocities (based on position error).
-    val xFeedback = xPID.calculate(drivetrain.odometryPose.x, desiredState.pose.x)
-    val yFeedback = yPID.calculate(drivetrain.odometryPose.y, desiredState.pose.y)
+    drivetrain.targetPose =
+      Pose2d(Pose2dWPILIB(desiredState.poseMeters.translation, desiredRotation.position))
 
-    val xAccel = desiredState.linearAcceleration * desiredState.curvature.cos
-    val yAccel = desiredState.linearAcceleration * desiredState.curvature.sin
-
-    drivetrain.targetPose = desiredState.pose
+    Logger.getInstance()
+      .recordOutput(
+        "Pathfollow/target",
+        Pose2dWPILIB(desiredState.poseMeters.translation, desiredRotation.position)
+      )
 
     drivetrain.setClosedLoop(
-      -thetaFeedback,
-      Pair(-xFF - xFeedback, yFF + yFeedback),
+      nextDriveState.omegaRadiansPerSecond.radians.perSecond,
+      Pair(
+        nextDriveState.vxMetersPerSecond.meters.perSecond,
+        nextDriveState.vyMetersPerSecond.meters.perSecond
+      ),
       0.radians.perSecond.perSecond,
       Pair(xAccel, yAccel),
-      true,
+      fieldOriented = true
     )
-
-    Logger.getInstance().recordOutput("Pathfollow/xFFMetersPerSec", xFF.inMetersPerSecond)
-    Logger.getInstance().recordOutput("Pathfollow/yFFMetersPerSec", yFF.inMetersPerSecond)
-    Logger.getInstance()
-      .recordOutput("Pathfollow/thetaFeedbackDegreesPerSec", thetaFeedback.inDegreesPerSecond)
-
-    Logger.getInstance()
-      .recordOutput("Pathfollow/xFeedbackMetersPerSec", xFeedback.inMetersPerSecond)
-    Logger.getInstance()
-      .recordOutput("Pathfollow/yFeedbackMetersPerSec", yFeedback.inMetersPerSecond)
 
     Logger.getInstance()
       .recordOutput("Pathfollow/thetaPIDPositionErrorRadians", thetaPID.error.inRadians)
@@ -187,12 +256,16 @@ class DrivePathCommand(
     Logger.getInstance().recordOutput("Pathfollow/Start Time", trajStartTime.inSeconds)
     Logger.getInstance().recordOutput("Pathfollow/Current Time", trajCurTime.inSeconds)
     Logger.getInstance()
-      .recordOutput("Pathfollow/Desired Angle in Degrees", desiredState.pose.rotation.inDegrees)
+      .recordOutput(
+        "Pathfollow/Desired Angle in Degrees", desiredState.poseMeters.rotation.degrees
+      )
     Logger.getInstance()
       .recordOutput(
         "Pathfollow/Desired Angular Velocity in Degrees",
-        desiredState.angularVelocity.inDegreesPerSecond
+        desiredRotation.velocityRadiansPerSec.radians.perSecond.inDegreesPerSecond
       )
+
+    Logger.getInstance().recordOutput("Pathfollow/trajectory", trajectory)
 
     Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", true)
 
@@ -212,26 +285,23 @@ class DrivePathCommand(
       xPID.derivativeGain = poskD.get()
       yPID.derivativeGain = poskD.get()
     }
-
-    if (thetaMaxAccel.hasChanged() || thetaMaxVel.hasChanged()) {
-      thetaPID.setConstraints(TrapezoidProfile.Constraints(thetaMaxVel.get(), thetaMaxAccel.get()))
-    }
   }
 
   override fun isFinished(): Boolean {
     trajCurTime = Clock.fpgaTime - trajStartTime
-    return trajCurTime > trajectory.endTime
+    return (!keepTrapping || swerveDriveController.atReference()) &&
+      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds
   }
 
   override fun end(interrupted: Boolean) {
     if (interrupted) {
       // Stop where we are if interrupted
-      drivetrain.setClosedLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
+      drivetrain.setOpenLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
     } else {
       // Execute one last time to end up in the final state of the trajectory
       // Since we weren't interrupted, we know curTime > endTime
       execute()
-      drivetrain.setClosedLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
+      drivetrain.setOpenLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
     }
   }
 }
