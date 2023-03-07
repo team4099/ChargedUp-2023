@@ -203,8 +203,20 @@ class SwerveModuleIOFalcon(
         else (2 * PI).radians - (potentiometerOutput.radians - zeroOffset)
       )
     Logger.getInstance()
+<<<<<<< HEAD
       .recordOutput("$label/zeroPositionRadians", steeringSensor.position.inRadians)
     println("Loading Zero for Module $label (${steeringFalcon.selectedSensorPosition})")
+=======
+      .recordOutput(
+        "$label/zero",
+        (-(potentiometer.get().radians) + zeroOffset.inRadians.radians).inRadians
+      )
+    println(
+      "Loading Zero for Module $label (${steeringSensor.positionToRawUnits(
+        -(potentiometer.get().radians) + zeroOffset.inRadians.radians
+      )})"
+    )
+>>>>>>> 9786ba9 (add robot side vision processing)
   }
 
   override fun zeroDrive() {

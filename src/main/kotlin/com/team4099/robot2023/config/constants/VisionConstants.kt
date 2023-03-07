@@ -23,4 +23,6 @@ object VisionConstants {
         Rotation3d(180.degrees, 0.degrees, 0.degrees)
       )
     )
+
+  val CAMERA_NAMES = listOf("northstar")
 }

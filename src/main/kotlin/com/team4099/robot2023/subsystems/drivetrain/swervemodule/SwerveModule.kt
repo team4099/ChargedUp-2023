@@ -229,7 +229,11 @@ class SwerveModule(val io: SwerveModuleIO) {
         // from drivetrain
       )
       Logger.getInstance()
+<<<<<<< HEAD
         .recordOutput("${io.label}/steeringSetpointOptimized", optimizedState.angle.degrees)
+=======
+        .recordOutput("${io.label}/steeringSetpoint", optimizedState.angle.degrees)
+>>>>>>> 9786ba9 (add robot side vision processing)
     } else {
       io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond.meters.perSecond)
       Logger.getInstance()
