@@ -36,6 +36,7 @@ class PickupFromSubstationCommand(
         Request.SuperstructureRequest.DoubleSubstationIntakePrep(gamePiece)
       Substation.SINGLE_SUBSTATION ->
         Request.SuperstructureRequest.SingleSubstationIntake(gamePiece)
+      Substation.NONE -> Request.SuperstructureRequest.Idle()
     }
 
   val desiredPose =
@@ -66,6 +67,7 @@ class PickupFromSubstationCommand(
             90.0.degrees
           )
         }
+        Substation.NONE -> Pose2d()
       }
     )
 
@@ -78,6 +80,9 @@ class PickupFromSubstationCommand(
           }
           Substation.SINGLE_SUBSTATION -> {
             Translation2d(preDesiredPoseSSXOffset.get(), -preDesiredPoseSSYOffset.get())
+          }
+          else -> {
+            Translation2d()
           }
         }
       )

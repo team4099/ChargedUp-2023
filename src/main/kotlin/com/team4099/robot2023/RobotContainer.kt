@@ -15,6 +15,8 @@ import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
+import com.team4099.robot2023.subsystems.gameboy.GameBoy
+import com.team4099.robot2023.subsystems.gameboy.GameboyIOServer
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
@@ -42,7 +44,8 @@ object RobotContainer {
         Superstructure(
           Elevator(ElevatorIONeo),
           GroundIntake(GroundIntakeIONeo),
-          Manipulator(ManipulatorIONeo)
+          Manipulator(ManipulatorIONeo),
+          GameBoy(GameboyIOServer)
         )
     } else {
       // Simulation implementations
@@ -51,7 +54,8 @@ object RobotContainer {
         Superstructure(
           Elevator(ElevatorIOSim),
           GroundIntake(GroundIntakeIOSim),
-          Manipulator(ManipulatorIOSim)
+          Manipulator(ManipulatorIOSim),
+          GameBoy(GameboyIOServer)
         )
       //       vision = Vision(VisionIOSim)
     }

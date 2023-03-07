@@ -9,6 +9,7 @@ import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.config.constants.NodeTier
 import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
@@ -32,7 +33,8 @@ import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRe
 class Superstructure(
   private val elevator: Elevator,
   private val groundIntake: GroundIntake,
-  private val manipulator: Manipulator
+  private val manipulator: Manipulator,
+  private val gameboy: GameBoy
 ) : SubsystemBase() {
 
   var currentRequest: SuperstructureRequest = SuperstructureRequest.Idle()
@@ -76,6 +78,14 @@ class Superstructure(
   var checkAtRequestedStateNextLoopCycle = false
 
   override fun periodic() {
+    val gameboyLoopStartTime = Clock.realTimestamp
+    gameboy.periodic()
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/ga",
+        (Clock.realTimestamp - gameboyLoopStartTime).inMilliseconds
+      )
+
     val elevatorLoopStartTime = Clock.realTimestamp
     elevator.periodic()
     Logger.getInstance()

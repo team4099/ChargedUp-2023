@@ -40,6 +40,7 @@ object Constants {
       DOUBLE_SUBSTATION_LEFT,
       DOUBLE_SUBSTATION_RIGHT,
       SINGLE_SUBSTATION,
+      NONE,
     }
   }
 
