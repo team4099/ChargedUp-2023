@@ -17,16 +17,16 @@ class Waypoint {
    * Constructs a Waypoint with a translation, drive rotation, and holonomic rotation.
    *
    * @param translation Waypoint position (required)
-   * @param driveRotation Drive velocity rotation (optional, can be null)
+   * @param heading Drive velocity rotation (optional, can be null)
    * @param holonomicRotation Holonomic rotation (optional, can be null)
    */
   constructor(
     translation: Translation2d,
-    driveRotation: Rotation2d?,
-    holonomicRotation: Rotation2d?
+    heading: Rotation2d? = null,
+    holonomicRotation: Rotation2d? = null
   ) {
     this.translation = ErrorMessages.requireNonNullParam(translation, "translation", "Waypoint")
-    this.driveRotation = driveRotation
+    this.driveRotation = heading
     this.holonomicRotation = holonomicRotation
   }
   /**

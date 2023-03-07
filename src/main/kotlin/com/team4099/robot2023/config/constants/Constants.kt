@@ -40,8 +40,11 @@ object Constants {
       DOUBLE_SUBSTATION_LEFT,
       DOUBLE_SUBSTATION_RIGHT,
       SINGLE_SUBSTATION,
-      NONE
     }
+  }
+
+  object AprilTagIds {
+    const val BLUE_DOUBLE_SUBSTATION_ID = 4
   }
 
   object Tuning {

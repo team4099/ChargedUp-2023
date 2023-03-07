@@ -84,7 +84,7 @@ object ElevatorConstants {
 
   // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_POSITION_DELTA = 2.0.inches
-  val CONE_DROP_POSITION_DELTA = 5.0.inches
+  val CONE_DROP_POSITION_DELTA = 0.0.inches
   val GROUND_INTAKE_CUBE_HEIGHT = 5.0.inches
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val DOUBLE_SUBSTATION_CONE_OFFSET = 11.5.inches

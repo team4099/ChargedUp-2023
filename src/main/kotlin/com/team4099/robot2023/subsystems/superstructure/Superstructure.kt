@@ -13,6 +13,7 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
@@ -70,6 +71,10 @@ class Superstructure(
 
   val manipulatorInputs = manipulator.inputs
 
+  var isAtRequestedState: Boolean = false
+
+  var checkAtRequestedStateNextLoopCycle = false
+
   override fun periodic() {
     val elevatorLoopStartTime = Clock.realTimestamp
     elevator.periodic()
@@ -106,6 +111,7 @@ class Superstructure(
     Logger.getInstance().recordOutput("Superstructure/nodeTier", nodeTier.name)
     Logger.getInstance()
       .recordOutput("Superstructure/lastTransitionTime", lastTransitionTime.inSeconds)
+    Logger.getInstance().recordOutput("Superstructure/isAtAllTargetedPositions", isAtRequestedState)
 
     Logger.getInstance()
       .recordOutput(
@@ -829,9 +835,19 @@ class Superstructure(
 
     if (nextState != currentState) {
       lastTransitionTime = Clock.fpgaTime
+      checkAtRequestedStateNextLoopCycle = true
     }
 
     currentState = nextState
+
+    if (!(checkAtRequestedStateNextLoopCycle)) {
+      isAtRequestedState =
+        elevator.isAtTargetedPosition &&
+        manipulator.isAtTargetedPosition &&
+        groundIntake.isAtTargetedPosition
+    } else {
+      checkAtRequestedStateNextLoopCycle = false
+    }
 
     Logger.getInstance()
       .recordOutput(
@@ -911,7 +927,11 @@ class Superstructure(
   fun prepScoreConeHighCommand(): CommandBase {
     val returnCommand =
       runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.HIGH) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
+        .andThen(
+          run {}.until {
+            isAtRequestedState && currentState == SuperstructureStates.SCORE_PREP
+          }
+        )
 
     returnCommand.name = "PrepscoreConeHighCommand"
     return returnCommand
@@ -928,26 +948,6 @@ class Superstructure(
     return returnCommand
   }
 
-  fun scoreConeCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
-        currentState == SuperstructureStates.SCORE_CONE
-      }
-
-    returnCommand.name = "ScoreConeCommand"
-    return returnCommand
-  }
-
-  fun scoreCubeCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
-        currentState == SuperstructureStates.SCORE_CUBE
-      }
-
-    returnCommand.name = "ScoreCubeCommand"
-    return returnCommand
-  }
-
   fun score(): CommandBase {
     var stateToBeChecked: SuperstructureStates
     if (usingGamePiece == GamePiece.CUBE) {
@@ -957,9 +957,12 @@ class Superstructure(
     }
 
     val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
-        currentState == stateToBeChecked
-      }
+      runOnce { currentRequest = SuperstructureRequest.Score() }
+        .andThen(
+          WaitUntilCommand {
+            isAtRequestedState && currentState == SuperstructureStates.IDLE
+          }
+        )
 
     returnCommand.name = "ScoreCommand"
     return returnCommand

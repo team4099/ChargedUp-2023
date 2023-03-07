@@ -2,6 +2,7 @@ package com.team4099.robot2023
 
 import com.team4099.lib.vision.VisionMeasurement
 import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.commands.PickupFromSubstationCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -133,8 +134,17 @@ object RobotContainer {
 
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
-    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    //    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
+
+    ControlBoard.doubleSubstationIntake.whileTrue(
+      PickupFromSubstationCommand(
+        drivetrain,
+        superstructure,
+        Constants.Universal.GamePiece.CONE,
+        Constants.Universal.Substation.SINGLE_SUBSTATION
+      )
+    )
 
     //
     // ControlBoard.advanceAndClimb.whileActiveOnce(AdvanceClimberCommand().andThen(RunClimbCommand()))
