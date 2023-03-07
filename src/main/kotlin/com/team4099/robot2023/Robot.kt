@@ -4,7 +4,6 @@ import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.MechanismSimConstants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
@@ -14,7 +13,6 @@ import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.ejml.EjmlVersion.BUILD_DATE
@@ -156,10 +154,6 @@ object Robot : LoggedRobot() {
 
     Logger.getInstance()
       .recordOutput("LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
-
-    if (!RobotBase.isReal()) {
-      SmartDashboard.putData("Arm Sim", MechanismSimConstants.m_mech2d)
-    }
 
     Logger.getInstance()
       .recordOutput("LoggedRobot/totalMS", (Clock.realTimestamp - startTime).inMilliseconds)

@@ -2,14 +2,9 @@ package com.team4099.robot2023.subsystems.elevator
 
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
-import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.FieldConstants
-import com.team4099.robot2023.config.constants.MechanismSimConstants.carriageAttachment
-import com.team4099.robot2023.config.constants.MechanismSimConstants.elevatorAbsoluteXPosition
-import com.team4099.robot2023.config.constants.MechanismSimConstants.elevatorAbsoluteYPosition
-import com.team4099.robot2023.config.constants.MechanismSimConstants.secondStageAttachment
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ElevatorFeedforward
@@ -581,42 +576,6 @@ class Elevator(val io: ElevatorIO) {
   /** set the current encoder position to be the encoders zero value */
   fun zeroEncoder() {
     io.zeroEncoder()
-  }
-
-  fun updateMech2d() {
-    // updating carriage attachment based on height of elevator
-    val secondStagePosition =
-      clamp(inputs.elevatorPosition, 0.0.inches, ElevatorConstants.FIRST_STAGE_HEIGHT)
-
-    val carriagePosition =
-      clamp(
-        inputs.elevatorPosition, secondStagePosition, ElevatorConstants.ELEVATOR_MAX_EXTENSION
-      )
-
-    secondStageAttachment.setPosition(
-      (
-        elevatorAbsoluteXPosition -
-          ElevatorConstants.ElevatorStates.fromPositionToRange(secondStagePosition)
-        )
-        .inInches,
-      (
-        elevatorAbsoluteYPosition +
-          ElevatorConstants.ElevatorStates.fromPositionToHeight(secondStagePosition)
-        )
-        .inInches
-    )
-    carriageAttachment.setPosition(
-      (
-        elevatorAbsoluteXPosition -
-          ElevatorConstants.ElevatorStates.fromPositionToRange(carriagePosition)
-        )
-        .inInches,
-      (
-        elevatorAbsoluteYPosition +
-          ElevatorConstants.ElevatorStates.fromPositionToHeight(carriagePosition)
-        )
-        .inInches
-    )
   }
 
   companion object {
