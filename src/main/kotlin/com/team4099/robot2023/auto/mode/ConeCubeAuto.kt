@@ -5,6 +5,7 @@ import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
 import com.team4099.robot2023.commands.drivetrain.PositionAutoLevel
 import com.team4099.robot2023.commands.drivetrain.ResetPoseCommand
+import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
@@ -27,7 +28,9 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
       ResetPoseCommand(
         drivetrain, Pose2d(startingPosX.get(), startingPosY.get(), startingPosTheta.get())
       ),
-      superstructure.prepScoreConeHighCommand(),
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
+      ),
       superstructure.score(),
       ParallelCommandGroup(
         DrivePathCommand(
@@ -85,7 +88,9 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
         },
         keepTrapping = true
       ),
-      superstructure.prepScoreConeHighCommand(),
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
+      ),
       superstructure.score(),
       PositionAutoLevel(drivetrain)
     )

@@ -1,7 +1,6 @@
 package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
-import com.team4099.robot2023.commands.drivetrain.PositionAutoLevel
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -26,7 +25,6 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
@@ -42,8 +40,7 @@ object RobotContainer {
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       vision =
         Vision(
-          object: CameraIO {},
-          //        CameraIONorthstar("left"),
+          CameraIONorthstar("northstar"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
         )
@@ -123,19 +120,49 @@ object RobotContainer {
     //      GoToAngle(drivetrain).andThen(AutoLevel(drivetrain))
     //    )
 
-    ControlBoard.setArmCubeHybridPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HYBRID))
-    ControlBoard.setArmCubeMidPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.MID))
-    ControlBoard.setArmCubeHighPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH))
-    ControlBoard.setArmConeHybridPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HYBRID))
-    ControlBoard.setArmConeMidPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.MID))
-    ControlBoard.setArmConeHighPrep.whileTrue(superstructure.prepScoreCommand(Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH))
+    ControlBoard.setArmCubeHybridPrep.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HYBRID
+      )
+    )
+    ControlBoard.setArmCubeMidPrep.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.MID
+      )
+    )
+    ControlBoard.setArmCubeHighPrep.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
+      )
+    )
+    ControlBoard.setArmConeHybridPrep.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HYBRID
+      )
+    )
+    ControlBoard.setArmConeMidPrep.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.MID
+      )
+    )
+    ControlBoard.setArmConeHighPrep.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
+      )
+    )
 
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
     ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
 
-    ControlBoard.prepScore.whileTrue(superstructure.prepScoreCommand(if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE else Constants.Universal.GamePiece.CUBE, superstructure.objective.nodeTier))
+    ControlBoard.prepScore.whileTrue(
+      superstructure.prepScoreCommand(
+        if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
+        else Constants.Universal.GamePiece.CUBE,
+        superstructure.objective.nodeTier
+      )
+    )
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(
     //      PickupFromSubstationCommand(
@@ -145,7 +172,6 @@ object RobotContainer {
     //        Constants.Universal.Substation.SINGLE_SUBSTATION
     //      )
     //    )
-
   }
 
   fun mapTestControls() {}

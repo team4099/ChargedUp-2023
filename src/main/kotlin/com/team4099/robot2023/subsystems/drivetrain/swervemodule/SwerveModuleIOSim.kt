@@ -38,6 +38,7 @@ import org.team4099.lib.units.derived.inVoltsPerDegreePerSecond
 import org.team4099.lib.units.derived.inVoltsPerDegreeSeconds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 import kotlin.random.Random
 
@@ -192,6 +193,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     speed: LinearVelocity,
     acceleration: LinearAcceleration
   ) {
+    Logger.getInstance().recordOutput("$label/desiredDriveSpeedMPS", speed.inMetersPerSecond)
     val feedforward = driveFeedForward.calculate(speed, acceleration)
     setDriveVoltage(feedforward + driveFeedback.calculate(driveVelocity, speed))
 

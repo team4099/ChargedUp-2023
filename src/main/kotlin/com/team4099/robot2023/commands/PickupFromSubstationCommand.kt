@@ -44,7 +44,7 @@ class PickupFromSubstationCommand(
       when (substation) {
         Substation.DOUBLE_SUBSTATION_LEFT -> {
           Pose2d(
-            FieldConstants.idToTagPose(Constants.AprilTagIds.BLUE_DOUBLE_SUBSTATION_ID)!!
+            FieldConstants.getTagPose(Constants.AprilTagIds.BLUE_DOUBLE_SUBSTATION_ID)!!
               .toPose2d()
               .translation +
               Translation2d(-doubleSubstationXoffset.get(), doubleSubstationYoffset.get()),
@@ -53,7 +53,7 @@ class PickupFromSubstationCommand(
         }
         Substation.DOUBLE_SUBSTATION_RIGHT -> {
           Pose2d(
-            FieldConstants.idToTagPose(Constants.AprilTagIds.BLUE_DOUBLE_SUBSTATION_ID)!!
+            FieldConstants.getTagPose(Constants.AprilTagIds.BLUE_DOUBLE_SUBSTATION_ID)!!
               .toPose2d()
               .translation +
               Translation2d(doubleSubstationXoffset.get(), doubleSubstationYoffset.get()),

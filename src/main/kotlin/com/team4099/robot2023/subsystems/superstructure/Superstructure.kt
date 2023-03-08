@@ -887,12 +887,11 @@ class Superstructure(
     return returnCommand
   }
 
-  fun prepScoreCommand( gamePiece: GamePiece,  nodeTier: NodeTier): CommandBase {
+  fun prepScoreCommand(gamePiece: GamePiece, nodeTier: NodeTier): CommandBase {
     val returnCommand =
-      runOnce {
-        currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier)
+      runOnce { currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier) }.until {
+        currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState
       }
-        .until { currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState }
 
     returnCommand.name = "PrepScore${gamePiece.name}${nodeTier.name}Command"
     return returnCommand

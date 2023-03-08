@@ -117,7 +117,7 @@ object DrivetrainConstants {
 
     val AUTO_THETA_ALLOWED_ERROR = 3.degrees
 
-    val AUTO_THETA_PID_KP = 7.6.degrees.perSecond / 1.degrees
+    val AUTO_THETA_PID_KP = 30.degrees.perSecond / 1.degrees
     val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val AUTO_THETA_PID_KD =
       (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
@@ -157,9 +157,9 @@ object DrivetrainConstants {
     //    val DRIVE_KA = 0.40499.volts / 1.0.meters.perSecond.perSecond
 
     val SIM_DRIVE_KS = 0.116970.volts
-    val SIM_DRIVE_KV = 0.133240.volts / 1.0.meters.perSecond
+    val SIM_DRIVE_KV = 2.7.volts / 1.0.meters.perSecond
 
-    val SIM_DRIVE_KP = 0.9.volts / 1.meters.perSecond
+    val SIM_DRIVE_KP = 1.5.volts / 1.meters.perSecond
     val SIM_DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
     val SIM_DRIVE_KD = 0.0.volts / 1.meters.perSecond.perSecond
 

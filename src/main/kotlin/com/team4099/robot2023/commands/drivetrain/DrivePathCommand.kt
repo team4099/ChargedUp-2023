@@ -237,7 +237,7 @@ class DrivePathCommand(
       ),
       0.radians.perSecond.perSecond,
       Pair(xAccel, yAccel),
-      fieldOriented = true
+      fieldOriented = false
     )
 
     Logger.getInstance()
