@@ -10,12 +10,14 @@ import com.team4099.robot2023.config.constants.LedConstants.LEDMode
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.config.constants.NodeTier
 import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
@@ -36,6 +38,7 @@ class Superstructure(
   private val groundIntake: GroundIntake,
   private val manipulator: Manipulator,
   private val led: Led
+  private val gameboy: GameBoy
 ) : SubsystemBase() {
 
   var currentRequest: SuperstructureRequest = SuperstructureRequest.Idle()
@@ -74,6 +77,12 @@ class Superstructure(
 
   val manipulatorInputs = manipulator.inputs
 
+  val objective = gameboy.inputs.objective
+
+  var isAtRequestedState: Boolean = false
+
+  var checkAtRequestedStateNextLoopCycle = false
+
   override fun periodic() {
     val ledLoopStartTime = Clock.realTimestamp
     led.periodic()
@@ -81,6 +90,12 @@ class Superstructure(
       .recordOutput(
         "LoggedRobot/Subsystems/LedLoopTimeMS",
         (Clock.realTimestamp - ledLoopStartTime).inMilliseconds
+    val gameboyLoopStartTime = Clock.realTimestamp
+    gameboy.periodic()
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/ga",
+        (Clock.realTimestamp - gameboyLoopStartTime).inMilliseconds
       )
 
     val elevatorLoopStartTime = Clock.realTimestamp
@@ -118,6 +133,7 @@ class Superstructure(
     Logger.getInstance().recordOutput("Superstructure/nodeTier", nodeTier.name)
     Logger.getInstance()
       .recordOutput("Superstructure/lastTransitionTime", lastTransitionTime.inSeconds)
+    Logger.getInstance().recordOutput("Superstructure/isAtAllTargetedPositions", isAtRequestedState)
 
     Logger.getInstance()
       .recordOutput(
@@ -895,9 +911,19 @@ class Superstructure(
 
     if (nextState != currentState) {
       lastTransitionTime = Clock.fpgaTime
+      checkAtRequestedStateNextLoopCycle = true
     }
 
     currentState = nextState
+
+    if (!(checkAtRequestedStateNextLoopCycle)) {
+      isAtRequestedState =
+        elevator.isAtTargetedPosition &&
+        manipulator.isAtTargetedPosition &&
+        groundIntake.isAtTargetedPosition
+    } else {
+      checkAtRequestedStateNextLoopCycle = false
+    }
 
     Logger.getInstance()
       .recordOutput(
@@ -925,61 +951,13 @@ class Superstructure(
     return returnCommand
   }
 
-  fun prepScoreCubeHybridCommand(): CommandBase {
+  fun prepScoreCommand(gamePiece: GamePiece, nodeTier: NodeTier): CommandBase {
     val returnCommand =
-      runOnce {
-        currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.HYBRID)
+      runOnce { currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier) }.until {
+        currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState
       }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
 
-    returnCommand.name = "PrepscoreCubeHybridCommand"
-    return returnCommand
-  }
-
-  fun prepScoreCubeMidCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.MID) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreCubeMidCommand"
-    return returnCommand
-  }
-
-  fun prepScoreCubeHighCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CUBE, NodeTier.HIGH) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreCubeHighCommand"
-    return returnCommand
-  }
-
-  fun prepScoreConeHybridCommand(): CommandBase {
-    val returnCommand =
-      runOnce {
-        currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.HYBRID)
-      }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreConeHybridCommand"
-    return returnCommand
-  }
-
-  fun prepScoreConeMidCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.MID) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreConeMidCommand"
-    return returnCommand
-  }
-
-  fun prepScoreConeHighCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(GamePiece.CONE, NodeTier.HIGH) }
-        .until { currentState == SuperstructureStates.SCORE_PREP }
-
-    returnCommand.name = "PrepscoreConeHighCommand"
+    returnCommand.name = "PrepScore${gamePiece.name}${nodeTier.name}Command"
     return returnCommand
   }
 
@@ -994,26 +972,6 @@ class Superstructure(
     return returnCommand
   }
 
-  fun scoreConeCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
-        currentState == SuperstructureStates.SCORE_CONE
-      }
-
-    returnCommand.name = "ScoreConeCommand"
-    return returnCommand
-  }
-
-  fun scoreCubeCommand(): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
-        currentState == SuperstructureStates.SCORE_CUBE
-      }
-
-    returnCommand.name = "ScoreCubeCommand"
-    return returnCommand
-  }
-
   fun score(): CommandBase {
     var stateToBeChecked: SuperstructureStates
     if (usingGamePiece == GamePiece.CUBE) {
@@ -1023,9 +981,12 @@ class Superstructure(
     }
 
     val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.Score() }.until {
-        currentState == stateToBeChecked
-      }
+      runOnce { currentRequest = SuperstructureRequest.Score() }
+        .andThen(
+          WaitUntilCommand {
+            isAtRequestedState && currentState == SuperstructureStates.IDLE
+          }
+        )
 
     returnCommand.name = "ScoreCommand"
     return returnCommand

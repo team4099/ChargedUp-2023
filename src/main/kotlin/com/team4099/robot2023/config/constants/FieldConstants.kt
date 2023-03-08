@@ -3,12 +3,14 @@ package com.team4099.robot2023.config.constants
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.apriltag.AprilTag
+import org.team4099.lib.apriltag.AprilTagFieldLayout
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.feet
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
@@ -28,14 +30,16 @@ object FieldConstants {
   val fieldWidth = 315.5.inches
   val tapeWidth = 2.0.inches
 
+  val aprilTagLength = 6.0.inches
+
   // AprilTag locations (do not flip for red alliance)
   val aprilTags: List<AprilTag> =
     listOf(
       AprilTag(
         1,
         Pose3d(
-          (610.77).inches,
-          (42.19).inches,
+          (87.9375).inches - 33.inches,
+          (104.125).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
@@ -43,8 +47,8 @@ object FieldConstants {
       AprilTag(
         2,
         Pose3d(
-          (610.77).inches,
-          (108.19).inches,
+          (87.9375).inches - 33.inches,
+          (42.125).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
@@ -67,7 +71,15 @@ object FieldConstants {
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
       ),
-      AprilTag(5, Pose3d((14.25).inches, (265.74).inches, (27.38).inches, Rotation3d())),
+      AprilTag(
+        5,
+        Pose3d(
+          (440.0).inches + 33.inches,
+          (125.125).inches,
+          (27.375).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
+      ),
       AprilTag(
         6,
         Pose3d(
@@ -82,6 +94,11 @@ object FieldConstants {
     )
 
   val wpilibAprilTags = aprilTags.map { it.apriltagWpilib }
+
+  val wpilibFieldLayout =
+    edu.wpi.first.apriltag.AprilTagFieldLayout(
+      wpilibAprilTags, fieldLength.inMeters, fieldWidth.inMeters
+    )
 
   /**
    * Flips a translation to the correct side of the field based on the current alliance color. By
@@ -107,6 +124,10 @@ object FieldConstants {
     } else {
       pose
     }
+  }
+
+  fun getTagPose(id: Int): Pose3d? {
+    return aprilTags.firstOrNull { it.id == id }?.pose
   }
 
   // Dimensions for community and charging station, including the tape.
@@ -170,10 +191,10 @@ object FieldConstants {
 
     // Z layout
     val cubeEdgeHigh = (3.0).inches
-    val highCubeZ = (45.5).inches - cubeEdgeHigh
-    val midCubeZ = (34.5).inches - cubeEdgeHigh
-    val highConeZ = (43.0).inches
-    val midConeZ = (29.0).inches
+    val highCubeZ = (35.5).inches - cubeEdgeHigh
+    val midCubeZ = (23.5).inches - cubeEdgeHigh
+    val highConeZ = (46.0).inches
+    val midConeZ = (34.0).inches
 
     // Translations (all nodes in the same column/row have the same X/Y coordinate)
     val lowTranslations: Array<Translation2d?> = arrayOfNulls<Translation2d>(nodeRowCount)

@@ -40,14 +40,18 @@ object Constants {
       DOUBLE_SUBSTATION_LEFT,
       DOUBLE_SUBSTATION_RIGHT,
       SINGLE_SUBSTATION,
-      NONE
+      NONE,
     }
+  }
+
+  object AprilTagIds {
+    const val BLUE_DOUBLE_SUBSTATION_ID = 4
   }
 
   object Tuning {
 
     const val TUNING_MODE = false
-    const val DEBUGING_MODE = true
+    const val DEBUGING_MODE = false
     const val SIMULATE_DRIFT = false
     const val DRIFT_CONSTANT = 0.001
 

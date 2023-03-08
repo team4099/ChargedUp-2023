@@ -22,7 +22,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 
-class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
+class GyroAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   private val gyroPID: ProfiledPIDController<Radian, Velocity<Meter>>
 
   var alignmentAngle = 0.0.degrees
@@ -36,7 +36,6 @@ class AutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       }
     }
 
-  // TODO update falconutils to allow degrees / mps as a pid controller
   val levelkP =
     LoggedTunableValue(
       "Drivetrain/AutoLevel/levelkP",
