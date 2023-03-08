@@ -1,7 +1,6 @@
 package com.team4099.robot2023.commands.elevator
 
-import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
@@ -18,30 +17,28 @@ import org.team4099.lib.units.perSecond
  * @property appliedVolts the current amount of volts being applied to the motors
  * @property step the increase in volts per iteration
  */
-class GroundIntakeCharacterizeCommand(val groundIntake: GroundIntake) : CommandBase() {
-
+class GroundIntakeCharacterizeCommand(val superstructure: Superstructure) : CommandBase() {
   init {
-    addRequirements(groundIntake)
+    addRequirements(superstructure)
   }
 
   var hasMoved = false
   var appliedVolts = 0.volts
 
   var simStep = 0.01.volts
-  var realStep = 0.1.volts
+  var realStep = 0.01.volts
 
-  var moveTolerance = 0.1.degrees.perSecond
+  var moveTolerance = 1.degrees.perSecond
 
   override fun initialize() {
     hasMoved = false
     appliedVolts = 0.volts
-    groundIntake.requestedState = GroundIntakeConstants.ArmStates.OPEN_LOOP
   }
 
   override fun execute() {
-    groundIntake.armVoltageTarget = appliedVolts
+    superstructure.groundIntakeSetArmVoltage(appliedVolts)
 
-    if (groundIntake.inputs.armVelocity.absoluteValue > moveTolerance) {
+    if (superstructure.groundIntakeInputs.armVelocity.absoluteValue > moveTolerance) {
       hasMoved = true
       Logger.getInstance().recordOutput("GroundIntake/CharacterizationOutput", appliedVolts.inVolts)
     }

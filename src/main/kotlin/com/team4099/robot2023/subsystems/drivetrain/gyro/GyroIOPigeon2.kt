@@ -6,6 +6,7 @@ import com.ctre.phoenix.sensors.Pigeon2Configuration
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.GyroConstants
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -19,7 +20,7 @@ object GyroIOPigeon2 : GyroIO {
   private var pigeon2 = Pigeon2(Constants.Gyro.PIGEON_2_ID, Constants.Universal.CANIVORE_NAME)
   private val xyzDps = DoubleArray(3)
 
-  val isConnected = pigeon2.lastError.equals(ErrorCode.OK)
+  private val isConnected = pigeon2.lastError.equals(ErrorCode.OK)
 
   var gyroYawOffset: Angle = 0.0.degrees
   var gyroPitchOffset: Angle = 0.0.degrees
@@ -106,17 +107,19 @@ object GyroIOPigeon2 : GyroIO {
     inputs.gyroYawRate = gyroYawRate
     inputs.gyroPitchRate = gyroPitchRate
     inputs.gyroRollRate = gyroRollRate
+
+    Logger.getInstance().recordOutput("Gyro/rawYawDegrees", pigeon2.yaw)
   }
 
   override fun zeroGyroYaw(toAngle: Angle) {
-    gyroYawOffset = toAngle - gyroYaw
+    gyroYawOffset = toAngle - pigeon2.yaw.IEEErem(360.0).degrees
   }
 
   override fun zeroGyroPitch(toAngle: Angle) {
-    gyroPitchOffset = toAngle - gyroPitch
+    gyroPitchOffset = toAngle - pigeon2.pitch.IEEErem(360.0).degrees
   }
 
   override fun zeroGyroRoll(toAngle: Angle) {
-    gyroRollOffset = toAngle - gyroRoll
+    gyroRollOffset = toAngle - pigeon2.roll.IEEErem(360.0).degrees
   }
 }

@@ -28,6 +28,8 @@ interface GroundIntakeIO {
     var armPosition: Angle = 0.0.degrees
     var armVelocity = 0.0.degrees.perSecond
 
+    var armAbsoluteEncoderPosition = 0.0.degrees
+
     var armAppliedVoltage = 0.0.volts
     var armSupplyCurrent = 0.0.amps
     var armStatorCurrent = 0.0.amps
@@ -40,8 +42,11 @@ interface GroundIntakeIO {
     var rollerStatorCurrent = 0.0.amps
     var rollerTemp = 0.0.celsius
 
+    var isSimulated = false
+
     override fun toLog(table: LogTable?) {
       table?.put("armPositionDegrees", armPosition.inDegrees)
+      table?.put("armAbsoluteEncoderPositionDegrees", armAbsoluteEncoderPosition.inDegrees)
       table?.put("armVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)
 
       table?.put("armAppliedVoltage", armAppliedVoltage.inVolts)
@@ -67,6 +72,8 @@ interface GroundIntakeIO {
       table?.getDouble("armPositionDegrees", armPosition.inDegrees)?.let {
         armPosition = it.degrees
       }
+      table?.getDouble("armAbsoluteEncoderPositionDegrees", armAbsoluteEncoderPosition.inDegrees)
+        ?.let { armAbsoluteEncoderPosition = it.degrees }
       table?.getDouble("armVelocityDegreesPerSec", armVelocity.inDegreesPerSecond)?.let {
         armVelocity = it.degrees.perSecond
       }

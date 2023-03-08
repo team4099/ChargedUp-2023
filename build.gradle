@@ -3,7 +3,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 plugins {
 	id "idea"
 	id "org.jetbrains.kotlin.jvm" version "1.6.10"
-	id "edu.wpi.first.GradleRIO" version "2023.3.1"
+	id "edu.wpi.first.GradleRIO" version "2023.4.1"
 	id "com.diffplug.spotless" version "6.3.0"
 	id "com.peterabeles.gversion" version "1.10"
 	id "org.jetbrains.kotlinx.kover" version "0.4.2"
@@ -67,7 +67,6 @@ configurations.all {
 dependencies {
 	implementation wpi.java.deps.wpilib()
 	implementation wpi.java.vendor.java()
-	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
 
 	roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
 	roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
@@ -84,8 +83,10 @@ dependencies {
 	simulationRelease wpi.sim.enableRelease()
 
 	implementation 'org.jetbrains.kotlin:kotlin-test-junit5'
-
-	implementation 'com.github.team4099:FalconUtils:1.1.11'
+	implementation 'com.github.team4099:FalconUtils:1.1.15'
+	implementation 'org.apache.commons:commons-collections4:4.0'
+	implementation 'com.google.code.gson:gson:2.10.1'
+	implementation "io.javalin:javalin:5.3.2"
 
 	// We need to add the Kotlin stdlib in order to use most Kotlin language features.
 	// compile "org.jetbrains.kotlin:kotlin-stdlib"
@@ -126,7 +127,7 @@ spotless {
 		// by default the target is every '.kt' and '.kts` file in the java sourcesets
 		target fileTree(".") {
 			include "**/*.kt"
-			exclude "**/BuildConstants.kt", "**/build/**"
+			exclude "**/BuildConstants.kt", "**/build/**", "src/main/kotlin/com/team4099/lib/sim/**"
 		}
 		ktfmt()
 		ktlint().userData(['max_line_length': '120', 'insert_final_newline': 'true', 'indent_size': '2', 'continuation_indent_size': '2'])
@@ -137,19 +138,22 @@ wrapper {
 	gradleVersion = '7.3.3'
 }
 
+// Configure jar and deploy tasks
+deployArtifact.jarTask = jar
+wpi.java.configureExecutableTasks(jar)
+wpi.java.configureTestTasks(test)
+
+// Configure string concat to always inline compile
+tasks.withType(JavaCompile) {
+	options.compilerArgs.add "-XDstringConcat=inline"
+}
+
 compileKotlin {
 	kotlinOptions {
 		freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
+		jvmTarget="17"
 	}
 }
-
-task installLocalGitHook(type: Copy){
-	from new File(rootProject.rootDir, 'scripts/pre-commit')
-	into { new File(rootProject.rootDir, '.git/hooks')}
-	fileMode 0777
-}
-
-build.dependsOn installLocalGitHook
 
 gversion {
 	srcDir       = "src/main/kotlin/"           // path is relative to the sub-project by default

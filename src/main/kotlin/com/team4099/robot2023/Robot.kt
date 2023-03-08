@@ -1,15 +1,25 @@
 package com.team4099.robot2023
 
+import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
+import com.team4099.robot2023.util.FMSData
+import edu.wpi.first.hal.AllianceStationID
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
+import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.ejml.EjmlVersion.BUILD_DATE
+import org.ejml.EjmlVersion.DIRTY
+import org.ejml.EjmlVersion.GIT_BRANCH
+import org.ejml.EjmlVersion.GIT_SHA
+import org.ejml.EjmlVersion.MAVEN_NAME
 import org.littletonrobotics.junction.LogFileUtil
 import org.littletonrobotics.junction.LoggedRobot
 import org.littletonrobotics.junction.Logger
@@ -17,6 +27,7 @@ import org.littletonrobotics.junction.inputs.LoggedPowerDistribution
 import org.littletonrobotics.junction.networktables.NT4Publisher
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
+import org.team4099.lib.units.base.inMilliseconds
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -72,6 +83,7 @@ object Robot : LoggedRobot() {
         Constants.Tuning.SimType.SIM -> {
           logger.addDataReceiver(NT4Publisher())
           logSimulationAlert.set(true)
+          DriverStationSim.setAllianceStationId(AllianceStationID.Blue1)
         }
         Constants.Tuning.SimType.REPLAY -> {
           // if in replay mode get file path from command line and read log file
@@ -80,6 +92,8 @@ object Robot : LoggedRobot() {
           logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")))
         }
       }
+
+      // initialize mech2d stuff
     }
 
     logger.start() // no more configuration allowed
@@ -90,29 +104,7 @@ object Robot : LoggedRobot() {
     RobotContainer
     AutonomousSelector
     PathStore
-    // RobotContainer.zeroSensors() UNCOMMENT THIS PLS
     RobotContainer.mapDefaultCommands()
-  }
-
-  override fun autonomousInit() {
-    // autonomousCommand.schedule()
-    RobotContainer.setDriveBrakeMode()
-    //    RobotContainer.zeroSteering()
-    RobotContainer.getAutonomousCommand().schedule()
-  }
-
-  override fun disabledInit() {
-    RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveBrakeMode()
-    // autonomousCommand.cancel()
-  }
-
-  override fun robotPeriodic() {
-    // begin scheduling all commands
-    CommandScheduler.getInstance().run()
-
-    // checking for logging errors
-    logReceiverQueueAlert.set(Logger.getInstance().receiverQueueFault)
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
@@ -128,13 +120,53 @@ object Robot : LoggedRobot() {
     }
   }
 
-  override fun teleopInit() {
-    RobotContainer.mapTeleopControls()
-    // RobotContainer.getAutonomousCommand().cancel()
-    RobotContainer.setDriveBrakeMode() // change to coast
-    //    RobotContainer.zeroSteering()
-    // autonomousCommand.cancel()
+  override fun disabledExit() {
+    RobotContainer.regenerateProfiles()
+  }
 
+  override fun autonomousInit() {
+    RobotContainer.zeroSensors()
+    FMSData.allianceColor = DriverStation.getAlliance()
+    RobotContainer.setDriveBrakeMode()
+    RobotContainer.setSteeringBrakeMode()
+    RobotContainer.getAutonomousCommand().schedule()
+  }
+
+  override fun disabledInit() {
+    RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.setSteeringCoastMode()
+    RobotContainer.setDriveCoastMode()
+    RobotContainer.requestSuperstructureIdle()
+    // autonomousCommand.cancel()
+  }
+
+  override fun robotPeriodic() {
+    //    RobotContainer.measurementsWithTimestamps.forEach {
+    // RobotContainer.addVisionMeasurement(it) }
+
+    var startTime = Clock.realTimestamp
+
+    // begin scheduling all commands
+    CommandScheduler.getInstance().run()
+
+    // checking for logging errors
+    logReceiverQueueAlert.set(Logger.getInstance().receiverQueueFault)
+
+    Logger.getInstance()
+      .recordOutput("LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
+
+    Logger.getInstance()
+      .recordOutput("LoggedRobot/totalMS", (Clock.realTimestamp - startTime).inMilliseconds)
+  }
+
+  override fun teleopInit() {
+    RobotContainer.zeroSensors()
+    FMSData.allianceColor = DriverStation.getAlliance()
+    RobotContainer.mapTeleopControls()
+    RobotContainer.getAutonomousCommand().cancel()
+    RobotContainer.setDriveBrakeMode()
+    RobotContainer.setSteeringBrakeMode()
+    RobotContainer.zeroArm()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }

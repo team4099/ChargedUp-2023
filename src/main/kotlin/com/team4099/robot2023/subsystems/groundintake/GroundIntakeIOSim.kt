@@ -3,7 +3,6 @@ package com.team4099.robot2023.subsystems.groundintake
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
@@ -17,7 +16,6 @@ import org.team4099.lib.controller.PIDController
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inInches
-import org.team4099.lib.units.base.inKilograms
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.derived.Angle
@@ -28,9 +26,9 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.asDrivingOverDriven
-import org.team4099.lib.units.derived.asKilogramsPerMeterSquared
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inKilogramsMeterSquared
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
@@ -45,19 +43,18 @@ object GroundIntakeIOSim : GroundIntakeIO {
     FlywheelSim(
       DCMotor.getNEO(1),
       GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivingOverDriven,
-      GroundIntakeConstants.ROLLER_MOMENT_INERTIA.asKilogramsPerMeterSquared
+      GroundIntakeConstants.ROLLER_MOMENT_INERTIA.inKilogramsMeterSquared
     )
 
   val armSim =
     SingleJointedArmSim(
       DCMotor.getNEO(1),
       GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivingOverDriven,
-      GroundIntakeConstants.ARM_MOMENT_INERTIA.asKilogramsPerMeterSquared,
+      GroundIntakeConstants.ARM_MOMENT_INERTIA.inKilogramsMeterSquared,
       GroundIntakeConstants.ARM_LENGTH.inMeters,
       -15.degrees.inRadians,
       90.degrees.inRadians,
-      GroundIntakeConstants.ARM_MASS.inKilograms,
-      true
+      true,
     )
 
   private val armController =
@@ -104,6 +101,8 @@ object GroundIntakeIOSim : GroundIntakeIO {
     inputs.armSupplyCurrent = 0.amps
     inputs.armTemp = 0.celsius
 
+    inputs.isSimulated = true
+
     m_arm.angle = armSim.angleRads.radians.inDegrees
 
     Logger.getInstance().recordOutput("GroundIntake/simulatedArm", m_mech2d)
@@ -134,7 +133,7 @@ object GroundIntakeIOSim : GroundIntakeIO {
    * @param feedforward the amount of volts to apply for feedforward
    */
   override fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {
-    val ff = MathUtil.clamp(feedforward.inVolts, -12.0, 12.0).volts
+    val ff = clamp(feedforward, -12.0.volts, 12.0.volts)
     val feedback = armController.calculate(armSim.angleRads.radians, armPosition)
     armSim.setInputVoltage((ff + feedback).inVolts)
   }

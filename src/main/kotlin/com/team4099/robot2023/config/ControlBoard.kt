@@ -17,15 +17,62 @@ object ControlBoard {
     get() = -driver.leftXAxis
 
   val forward: Double
-    get() = driver.leftYAxis
+    get() = -driver.leftYAxis
 
   val turn: Double
     get() = driver.rightXAxis
 
-  val robotOriented: Boolean
+  val slowMode: Boolean
     get() = driver.leftShoulderButton
 
   val resetGyro = Trigger { driver.startButton && driver.selectButton }
+
+  val extendArm = Trigger { operator.aButton }
+
+  val retractArm = Trigger { operator.bButton }
+
+  // val setArmPositionToShelfIntake = Trigger { operator.xButton }
+
+  // val toConeLevelOnePrep = Trigger {operator.leftShoulderButton && operator.aButton}
+
+  val prepScore = Trigger { operator.leftTriggerAxis > 0.5 }
+
+  val setArmCubeHybridPrep = Trigger { operator.leftShoulderButton && operator.aButton }
+  val setArmCubeMidPrep = Trigger { operator.leftShoulderButton && operator.bButton }
+  val setArmCubeHighPrep = Trigger { operator.leftShoulderButton && operator.yButton }
+
+  val setArmConeHybridPrep = Trigger { operator.rightShoulderButton && operator.aButton }
+  val setArmConeMidPrep = Trigger { operator.rightShoulderButton && operator.bButton }
+  val setArmConeHighPrep = Trigger { operator.rightShoulderButton && operator.yButton }
+
+  val goBackToIdle = Trigger { operator.selectButton && operator.startButton }
+
+  val setArmDoubleSubCube = Trigger { operator.dPadLeft }
+  val setArmDoubleSubCone = Trigger { operator.dPadRight }
+
+  val doubleSubstationIntake = Trigger { driver.aButton }
+  val scoreOuttake = Trigger { driver.xButton }
+  val groundIntakeCube = Trigger { driver.rightShoulderButton }
+
+  // val armCharacterization = Trigger { operator.yButton }
+
+  /*
+  val intakeCone = Trigger { operator.aButton }
+
+  val intakeCube = Trigger { operator.bButton }
+
+  val outtakeCone = Trigger { operator.yButton }
+
+  val outtakeCube = Trigger { operator.xButton }
+
+   */
+  val runElevatorToHighNode = Trigger { operator.aButton }
+
+  val openLoopExtend = Trigger { operator.bButton }
+
+  val openLoopRetract = Trigger { operator.xButton }
+
+  val characterizeElevator = Trigger { operator.yButton }
 
   val extendIntake = Trigger { technician.aButton }
   val retractIntake = Trigger { technician.bButton }

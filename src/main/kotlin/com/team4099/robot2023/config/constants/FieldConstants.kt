@@ -2,12 +2,15 @@ package com.team4099.robot2023.config.constants
 
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
+import org.team4099.lib.apriltag.AprilTag
+import org.team4099.lib.apriltag.AprilTagFieldLayout
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.feet
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
@@ -27,50 +30,74 @@ object FieldConstants {
   val fieldWidth = 315.5.inches
   val tapeWidth = 2.0.inches
 
+  val aprilTagLength = 6.0.inches
+
   // AprilTag locations (do not flip for red alliance)
-  val aprilTags: Map<Int, Pose3d> =
-    java.util.Map.of<Int, Pose3d>(
-      1,
-      Pose3d(
-        (610.77).inches,
-        (42.19).inches,
-        (18.22).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+  val aprilTags: List<AprilTag> =
+    listOf(
+      AprilTag(
+        1,
+        Pose3d(
+          (87.9375).inches - 33.inches,
+          (104.125).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      2,
-      Pose3d(
-        (610.77).inches,
-        (108.19).inches,
-        (18.22).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+      AprilTag(
+        2,
+        Pose3d(
+          (87.9375).inches - 33.inches,
+          (42.125).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      3,
-      Pose3d(
-        (610.77).inches,
-        (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
-        (18.22).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+      AprilTag(
+        3,
+        Pose3d(
+          (610.77).inches,
+          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      4,
-      Pose3d(
-        (636.96).inches,
-        (265.74).inches,
-        (27.38).inches,
-        Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+      AprilTag(
+        4,
+        Pose3d(
+          (636.96).inches,
+          (265.74).inches,
+          (27.38).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      5,
-      Pose3d((14.25).inches, (265.74).inches, (27.38).inches, Rotation3d()),
-      6,
-      Pose3d(
-        (40.45).inches,
-        (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
-        (18.22).inches,
-        Rotation3d()
+      AprilTag(
+        5,
+        Pose3d(
+          (440.0).inches + 33.inches,
+          (125.125).inches,
+          (27.375).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
       ),
-      7,
-      Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d()),
-      8,
-      Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d())
+      AprilTag(
+        6,
+        Pose3d(
+          (40.45).inches,
+          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (18.22).inches,
+          Rotation3d()
+        )
+      ),
+      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
+      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
+    )
+
+  val wpilibAprilTags = aprilTags.map { it.apriltagWpilib }
+
+  val wpilibFieldLayout =
+    edu.wpi.first.apriltag.AprilTagFieldLayout(
+      wpilibAprilTags, fieldLength.inMeters, fieldWidth.inMeters
     )
 
   /**
@@ -97,6 +124,10 @@ object FieldConstants {
     } else {
       pose
     }
+  }
+
+  fun getTagPose(id: Int): Pose3d? {
+    return aprilTags.firstOrNull { it.id == id }?.pose
   }
 
   // Dimensions for community and charging station, including the tape.
@@ -234,7 +265,7 @@ object FieldConstants {
     // Double substation dimensions
     val doubleSubstationLength = (14.0).inches
     val doubleSubstationX = innerX - doubleSubstationLength
-    val doubleSubstationShelfZ = (37.375)
+    val doubleSubstationShelfZ = (37.375).inches
 
     // Single substation dimensions
     val singleSubstationWidth = (22.75).inches

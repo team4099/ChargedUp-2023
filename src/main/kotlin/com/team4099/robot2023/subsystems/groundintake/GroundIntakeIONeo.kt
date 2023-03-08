@@ -46,7 +46,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
   private val armSensor =
     sparkMaxAngularMechanismSensor(
       armSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
+      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
@@ -68,7 +68,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
   // uses the absolute encoder position to calculate the arm position
   private val armAbsolutePosition: Angle
     get() {
-      return (encoderAbsolutePosition + GroundIntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees
+      return (encoderAbsolutePosition - GroundIntakeConstants.ABSOLUTE_ENCODER_OFFSET).inDegrees
         .IEEErem(360.0)
         .degrees
     }
@@ -113,9 +113,11 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.rollerTemp = rollerSparkMax.motorTemperature.celsius
 
     inputs.armPosition = armSensor.position
+    inputs.armAbsoluteEncoderPosition = armAbsolutePosition
     inputs.armVelocity = armSensor.velocity
     inputs.armAppliedVoltage = armSparkMax.busVoltage.volts * armSparkMax.appliedOutput
     inputs.armStatorCurrent = armSparkMax.outputCurrent.amps
+    inputs.armTemp = armSparkMax.motorTemperature.celsius
 
     // same math as  rollersupplycurrent
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
@@ -123,9 +125,16 @@ object GroundIntakeIONeo : GroundIntakeIO {
     Logger.getInstance()
       .recordOutput("GroundIntake/absoluteEncoderRawRotations", throughBoreEncoder.get())
     Logger.getInstance()
-      .recordOutput("GroundIntake/AbsoluteEncoderPosition", encoderAbsolutePosition.inDegrees)
+      .recordOutput(
+        "GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees
+      )
+
     Logger.getInstance()
-      .recordOutput("GroundIntake/AbsoluteArmPosition", armAbsolutePosition.inDegrees)
+      .recordOutput(
+        "GroundIntake/armSensorVelocity",
+        armSparkMax.encoder.velocity *
+          GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving
+      )
   }
 
   /**
@@ -169,9 +178,11 @@ object GroundIntakeIONeo : GroundIntakeIO {
    * @param feedforward the amount of volts to apply for feedforward
    */
   override fun setArmPosition(armPosition: Angle, feedforward: ElectricalPotential) {
-    armPIDController.ff = feedforward.inVolts
     armPIDController.setReference(
-      armSensor.positionToRawUnits(armPosition), CANSparkMax.ControlType.kPosition
+      armSensor.positionToRawUnits(armPosition),
+      CANSparkMax.ControlType.kPosition,
+      0,
+      feedforward.inVolts
     )
   }
 
