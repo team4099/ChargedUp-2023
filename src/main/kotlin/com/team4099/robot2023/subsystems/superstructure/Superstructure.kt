@@ -37,7 +37,7 @@ class Superstructure(
   private val elevator: Elevator,
   private val groundIntake: GroundIntake,
   private val manipulator: Manipulator,
-  private val led: Led
+  private val led: Led,
   private val gameboy: GameBoy
 ) : SubsystemBase() {
 
@@ -90,6 +90,8 @@ class Superstructure(
       .recordOutput(
         "LoggedRobot/Subsystems/LedLoopTimeMS",
         (Clock.realTimestamp - ledLoopStartTime).inMilliseconds
+      )
+
     val gameboyLoopStartTime = Clock.realTimestamp
     gameboy.periodic()
     Logger.getInstance()
