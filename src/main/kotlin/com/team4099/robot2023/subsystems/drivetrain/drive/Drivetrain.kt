@@ -427,6 +427,32 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     }
   }
 
+  fun setClosedLoop(
+    chassisSpeeds: edu.wpi.first.math.kinematics.ChassisSpeeds,
+    chassisAccels: edu.wpi.first.math.kinematics.ChassisSpeeds =
+      edu.wpi.first.math.kinematics.ChassisSpeeds(0.0, 0.0, 0.0)
+  ) {
+
+    val velSwerveModuleStates: Array<SwerveModuleState> =
+      swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds)
+    val accelSwerveModuleStates: Array<SwerveModuleState> =
+      swerveDriveKinematics.toSwerveModuleStates(chassisAccels)
+
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+      velSwerveModuleStates, DrivetrainConstants.MAX_AUTO_VEL.inMetersPerSecond
+    )
+
+    setPointStates = velSwerveModuleStates.toMutableList()
+
+    // Once we have all of our states obtained for both velocity and acceleration, apply these
+    // states to each swerve module
+    for (moduleIndex in 0 until DrivetrainConstants.WHEEL_COUNT) {
+      swerveModules[moduleIndex].setPositionClosedLoop(
+        velSwerveModuleStates[moduleIndex], accelSwerveModuleStates[moduleIndex]
+      )
+    }
+  }
+
   fun resetModuleZero() {
     swerveModules.forEach { it.resetModuleZero() }
   }

@@ -19,6 +19,7 @@ import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose2dWPILIB
 import org.team4099.lib.hal.Clock
+import org.team4099.lib.kinematics.ChassisAccels
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inSeconds
@@ -230,14 +231,8 @@ class DrivePathCommand(
       )
 
     drivetrain.setClosedLoop(
-      nextDriveState.omegaRadiansPerSecond.radians.perSecond,
-      Pair(
-        nextDriveState.vxMetersPerSecond.meters.perSecond,
-        nextDriveState.vyMetersPerSecond.meters.perSecond
-      ),
-      0.radians.perSecond.perSecond,
-      Pair(xAccel, yAccel),
-      fieldOriented = false
+      nextDriveState,
+      ChassisAccels(xAccel, yAccel, 0.0.radians.perSecond.perSecond).chassisAccelsWPILIB
     )
 
     Logger.getInstance()
