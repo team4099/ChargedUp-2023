@@ -19,6 +19,9 @@ import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
+import com.team4099.robot2023.subsystems.led.Led
+import com.team4099.robot2023.subsystems.led.LedIOCandle
+import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
@@ -49,6 +52,7 @@ object RobotContainer {
           Elevator(ElevatorIONeo),
           GroundIntake(GroundIntakeIONeo),
           Manipulator(ManipulatorIONeo),
+          Led(LedIOCandle),
           GameBoy(GameboyIOServer)
         )
     } else {
@@ -60,6 +64,7 @@ object RobotContainer {
           Elevator(ElevatorIOSim),
           GroundIntake(GroundIntakeIOSim),
           Manipulator(ManipulatorIOSim),
+          Led(LedIOSim),
           GameBoy(GameboyIOServer)
         )
     }

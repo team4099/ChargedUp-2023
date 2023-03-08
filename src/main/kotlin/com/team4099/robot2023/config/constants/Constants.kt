@@ -120,4 +120,9 @@ object Constants {
     const val ARM_MOTOR_ID = 31
     const val REV_ENCODER_PORT = 8
   }
+
+  object Led {
+    const val LED_CANDLE_ID = 61
+    const val LED_BLINKEN_ID = 1
+  }
 }
