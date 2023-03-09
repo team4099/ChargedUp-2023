@@ -6,7 +6,6 @@ import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
-import edu.wpi.first.math.filter.MedianFilter
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
@@ -54,8 +53,6 @@ class Manipulator(val io: ManipulatorIO) {
     get() =
       (inputs.armPosition - ManipulatorConstants.MIN_EXTENSION).absoluteValue <=
         ManipulatorConstants.ARM_TOLERANCE
-
-  private var rollerStatorCurrentFilter = MedianFilter(filterSize.get().toInt())
 
   object TunableManipulatorStates {
 
@@ -210,20 +207,31 @@ class Manipulator(val io: ManipulatorIO) {
   }
 
   // checks if motor current draw is greater than given threshold and if rollers are intaking
-  // last condition prevnts current spikes caused by starting to run intake from triggering this
+  // last condition prevents current spikes caused by starting to run intake from triggering this
   var lastRollerRunTime = Clock.fpgaTime
+
+  var lastHeldGamePieceDetected = Clock.fpgaTime
+
+  var filterValue: Double = 0.0
 
   // Checks if motor current draw is greater than given threshold and if rollers are intaking
   // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCube: Boolean
     get() {
+      filterValue = inputs.rollerStatorCurrent.inAmperes
       return (
-        rollerStatorCurrentFilter.calculate(inputs.rollerStatorCurrent.inAmperes) >=
-          ManipulatorConstants.CUBE_CURRENT_THRESHOLD.inAmperes &&
-          (Clock.fpgaTime - lastRollerRunTime) >=
-          ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+        filterValue >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD.inAmperes &&
+          (Clock.fpgaTime - lastRollerRunTime) >= ManipulatorConstants.INTAKE_IN_TIME
         ) ||
         inputs.isSimulating
+    }
+
+  val grippingCone: Boolean
+    get() {
+      return (
+        hasCone &&
+          ((Clock.fpgaTime - lastHeldGamePieceDetected) >= ManipulatorConstants.INTAKE_IN_TIME)
+        )
     }
 
   // Checks if motor current draw is greater than the given threshold for cubes and if rollers are
@@ -232,7 +240,7 @@ class Manipulator(val io: ManipulatorIO) {
   val hasCone: Boolean
     get() {
       return (
-        rollerStatorCurrentFilter.calculate(inputs.rollerStatorCurrent.inAmperes) >=
+        inputs.rollerStatorCurrent.inAmperes >=
           ManipulatorConstants.CONE_CURRENT_THRESHOLD.inAmperes &&
           (Clock.fpgaTime - lastRollerRunTime) >=
           ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
@@ -356,9 +364,14 @@ class Manipulator(val io: ManipulatorIO) {
     var updateCone = hasCone
     var updateCube = hasCube
 
+    Logger.getInstance().recordOutput("Manipulator/filteredStatorRoller", filterValue)
+
+    /*
     if (filterSize.hasChanged()) {
-      rollerStatorCurrentFilter = MedianFilter(filterSize.get().toInt())
+      rollerStatorCurrentFilter =
+        LinearFilter.highPass(filterSize.get(), ManipulatorConstants.FILTER_PERIOD.inMilliseconds)
     }
+    */
 
     Logger.getInstance().processInputs("Manipulator", inputs)
 
@@ -406,11 +419,13 @@ class Manipulator(val io: ManipulatorIO) {
 
       Logger.getInstance().recordOutput("Manipulator/reverseLimitReached", reverseLimitReached)
 
+      /*
       Logger.getInstance()
         .recordOutput(
           "Manipulator/filteredRollerMotorStatorCurrent",
           rollerStatorCurrentFilter.calculate(inputs.rollerStatorCurrent.inAmperes)
         )
+       */
     }
 
     var nextState = currentState

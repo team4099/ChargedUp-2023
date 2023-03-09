@@ -255,12 +255,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
     var driveTwist = swerveDriveKinematics.toTwist2d(*wheelDeltas.toTypedArray())
 
-    if (gyroInputs.gyroConnected) {
-      driveTwist =
-        edu.wpi.first.math.geometry.Twist2d(
-          driveTwist.dx, driveTwist.dy, (gyroInputs.gyroYaw - lastGyroYaw).inRadians
-        )
-    }
+    //    if (gyroInputs.gyroConnected) {
+    //      driveTwist =
+    //        edu.wpi.first.math.geometry.Twist2d(
+    //          driveTwist.dx, driveTwist.dy, (gyroInputs.gyroYaw - lastGyroYaw).inRadians
+    //        )
+    //    }
 
     lastGyroYaw = odometryPose.rotation
     // reversing the drift to store the ground truth pose
@@ -471,6 +471,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
    */
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
+
+    swerveDrivePoseEstimator.resetPose(Pose2d(odometryPose.x, odometryPose.y, gyroInputs.gyroYaw))
 
     if (RobotBase.isSimulation()) {
       swerveDriveOdometry.resetPosition(

@@ -29,7 +29,6 @@ import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRequest as SuperstructureRequest
 
@@ -423,6 +422,15 @@ class Superstructure(
       SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP -> {
         // Goes immediately to IDLE
         // Outputs
+        groundIntake.currentRequest =
+          Request.GroundIntakeRequest.TargetingPosition(
+            GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
+            GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+          )
+
+        if (groundIntake.isAtTargetedPosition) {
+          nextState = SuperstructureStates.IDLE
+        }
 
         // Transition
         currentRequest = SuperstructureRequest.Idle()
@@ -524,9 +532,6 @@ class Superstructure(
                 GamePiece.CUBE -> ManipulatorConstants.CUBE_IN
                 else -> -1.0.volts
               }
-
-            Logger.getInstance()
-              .recordOutput("Manipulator/SussyVoltage", rollerCommandedVoltage.inVolts)
 
             manipulator.currentRequest =
               Request.ManipulatorRequest.TargetingPosition(
@@ -953,13 +958,23 @@ class Superstructure(
     return returnCommand
   }
 
-  fun prepScoreCommand(gamePiece: GamePiece, nodeTier: NodeTier): CommandBase {
-    val returnCommand =
-      runOnce { currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier) }.until {
-        currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState
-      }
+  fun prepScoreCommand(gamePiece: GamePiece? = null, nodeTier: NodeTier? = null): CommandBase {
+    var returnCommand: CommandBase
 
-    returnCommand.name = "PrepScore${gamePiece.name}${nodeTier.name}Command"
+    if (gamePiece == null || nodeTier == null) {
+      returnCommand =
+        runOnce {
+          currentRequest =
+            SuperstructureRequest.PrepScore(usingGamePiece, gameboy.inputs.objective.nodeTier)
+        }
+          .until { currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState }
+    } else {
+      returnCommand =
+        runOnce { currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier) }.until {
+          currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState
+        }
+    }
+    returnCommand.name = "PrepScore${gamePiece?.name}${nodeTier?.name}Command"
     return returnCommand
   }
 

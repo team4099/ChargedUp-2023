@@ -13,6 +13,7 @@ import org.team4099.lib.units.derived.driving
 import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.kilo
+import org.team4099.lib.units.milli
 import org.team4099.lib.units.perSecond
 import kotlin.math.PI
 
@@ -41,6 +42,8 @@ object ManipulatorConstants {
   val SPIT_OUT_TIME = 0.8.seconds
   val INTAKE_IN_TIME = 0.5.seconds
 
+  val FILTER_PERIOD = 2.0.milli.seconds
+
   // TODO(check if these motors are inverted)
   val ARM_MOTOR_INVERTED = true
   val ROLLER_MOTOR_INVERTED = false
@@ -63,8 +66,8 @@ object ManipulatorConstants {
   val ROLLER_GEAR_RATIO = 20.0.gearRatio
 
   // TODO: Change current thresholds
-  val CONE_CURRENT_THRESHOLD = 28.amps
-  val CUBE_CURRENT_THRESHOLD = 23.amps
+  val CONE_CURRENT_THRESHOLD = 32.amps
+  val CUBE_CURRENT_THRESHOLD = 32.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
   val ARM_MAX_EXTENSION = 8.inches
