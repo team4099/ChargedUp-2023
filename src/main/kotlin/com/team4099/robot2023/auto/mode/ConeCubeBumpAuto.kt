@@ -28,10 +28,10 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
       ResetPoseCommand(
         drivetrain, Pose2d(startingPosX.get(), startingPosY.get(), startingPosTheta.get())
       ),
-      superstructure.prepScoreCommand(
-        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
-      ),
-      superstructure.score(),
+//      superstructure.prepScoreCommand(
+//        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
+//      ),
+//      superstructure.score(),
       ParallelCommandGroup(
         DrivePathCommand(
           drivetrain,
@@ -103,10 +103,10 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
         },
         keepTrapping = true
       ),
-      superstructure.prepScoreCommand(
-        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
-      ),
-      superstructure.score()
+//      superstructure.prepScoreCommand(
+//        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
+//      ),
+//      superstructure.score()
     )
   }
 

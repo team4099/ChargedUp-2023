@@ -19,7 +19,7 @@ class CameraIONorthstar(val identifier: String) : CameraIO {
   private var cameraResolutionWidth = 1600
   private var cameraResolutionHeight = 1200
   private var cameraAutoExposure = 1
-  private var cameraExposure = 25
+  private var cameraExposure = 10
   private var cameraGain = 25
 
   private val observationSubscriber: DoubleArraySubscriber

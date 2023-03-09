@@ -41,7 +41,7 @@ object FieldConstants {
           (87.9375).inches - 33.inches,
           (104.125).inches,
           (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
       ),
       AprilTag(
@@ -50,7 +50,7 @@ object FieldConstants {
           (87.9375).inches - 33.inches,
           (42.125).inches,
           (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
       ),
       AprilTag(
@@ -74,7 +74,7 @@ object FieldConstants {
       AprilTag(
         5,
         Pose3d(
-          (440.0).inches + 33.inches,
+          (440.0).inches - 33.inches,
           (125.125).inches,
           (27.375).inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)

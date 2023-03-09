@@ -11,18 +11,21 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
 import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.elevator.ElevatorIO
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.gameboy.GameboyIOServer
 import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIOCandle
 import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIO
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
@@ -43,15 +46,15 @@ object RobotContainer {
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       vision =
         Vision(
-          // CameraIONorthstar("northstar"),
+           CameraIONorthstar("northstar"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
         )
       superstructure =
         Superstructure(
-          Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIONeo),
-          Manipulator(ManipulatorIONeo),
+          Elevator(object: ElevatorIO {}),
+          GroundIntake(object : GroundIntakeIO {}),
+          Manipulator(object: ManipulatorIO {}),
           Led(LedIOCandle),
           GameBoy(GameboyIOServer)
         )
