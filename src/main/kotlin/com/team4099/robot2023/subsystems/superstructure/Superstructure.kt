@@ -578,7 +578,7 @@ class Superstructure(
                 (manipulator.hasCube && usingGamePiece == GamePiece.CUBE)
               )
           ) ||
-          currentRequest == SuperstructureRequest.Idle()
+          currentRequest is SuperstructureRequest.Idle
         ) {
           nextState = SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP
         }

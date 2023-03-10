@@ -46,15 +46,15 @@ object RobotContainer {
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       vision =
         Vision(
-           CameraIONorthstar("northstar"),
+          CameraIONorthstar("northstar"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
         )
       superstructure =
         Superstructure(
-          Elevator(object: ElevatorIO {}),
-          GroundIntake(object : GroundIntakeIO {}),
-          Manipulator(object: ManipulatorIO {}),
+          Elevator(ElevatorIONeo),
+          GroundIntake(GroundIntakeIONeo),
+          Manipulator(ManipulatorIONeo),
           Led(LedIOCandle),
           GameBoy(GameboyIOServer)
         )
