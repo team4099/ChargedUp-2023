@@ -31,7 +31,7 @@ object DrivetrainConstants {
   const val MINIMIZE_SKEW = false
 
   const val WHEEL_COUNT = 4
-  val WHEEL_DIAMETER = 3.785.inches
+  val WHEEL_DIAMETER = 3.827.inches
   val DRIVETRAIN_LENGTH = 22.750.inches
   val DRIVETRAIN_WIDTH = 22.750.inches
 

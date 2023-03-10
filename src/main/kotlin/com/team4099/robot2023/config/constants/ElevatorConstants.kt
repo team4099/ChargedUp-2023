@@ -87,7 +87,7 @@ object ElevatorConstants {
   val CONE_DROP_POSITION_DELTA = 0.0.inches
   val GROUND_INTAKE_CUBE_HEIGHT = 5.0.inches
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
-  val DOUBLE_SUBSTATION_CONE_OFFSET = 12.5.inches
+  val DOUBLE_SUBSTATION_CONE_OFFSET = 10.75.inches
   val SINGLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val SINGLE_SUBSTATION_CONE_OFFSET = 0.0.inches
   val SLAM_VELOCITY = 5.0.inches.perSecond
