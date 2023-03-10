@@ -17,12 +17,12 @@ class ConeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstru
 
   init {
     addCommands(
-      ResetPoseCommand(drivetrain, Pose2d(0.0.meters, 0.0.meters, 180.degrees)),
+      ResetPoseCommand(drivetrain, Pose2d(1.9.meters, 0.5.meters, 180.degrees)),
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
       superstructure.score(),
-      ParallelRaceGroup(OpenLoopReverseCommand(drivetrain), WaitCommand(4.0)),
+      ParallelRaceGroup(OpenLoopReverseCommand(drivetrain), WaitCommand(2.8)),
     )
   }
 }
