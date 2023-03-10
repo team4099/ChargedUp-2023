@@ -92,7 +92,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 2.0.meters.perSecond / 1.0.meters
+          return 4.0.meters.perSecond / 1.0.meters
         } else {
           return 7.0.meters.perSecond / 1.0.meters
         }
