@@ -16,8 +16,7 @@ class ConeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstru
   SequentialCommandGroup() {
 
   init {
-    addCommands(
-      ResetPoseCommand(drivetrain, Pose2d(1.9.meters, 0.5.meters, 180.degrees)),
+    addCommands(,
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
