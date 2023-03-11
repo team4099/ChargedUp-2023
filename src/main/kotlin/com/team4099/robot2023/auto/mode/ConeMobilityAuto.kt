@@ -16,7 +16,7 @@ class ConeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstru
   SequentialCommandGroup() {
 
   init {
-    addCommands(,
+    addCommands(
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),

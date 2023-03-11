@@ -51,7 +51,7 @@ class Manipulator(val io: ManipulatorIO) {
 
   val isStowed: Boolean
     get() =
-      (inputs.armPosition - ManipulatorConstants.MIN_EXTENSION).absoluteValue <=
+      (inputs.armPosition - TunableManipulatorStates.minExtension.get()).absoluteValue <=
         ManipulatorConstants.ARM_TOLERANCE
 
   object TunableManipulatorStates {

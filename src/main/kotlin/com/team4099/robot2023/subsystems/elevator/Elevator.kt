@@ -257,7 +257,7 @@ class Elevator(val io: ElevatorIO) {
   val isStowed: Boolean
     get() =
       inputs.elevatorPosition <=
-        ElevatorConstants.ELEVATOR_SOFT_LIMIT_RETRACTION + ElevatorConstants.ELEVATOR_TOLERANCE
+        TunableElevatorHeights.minPosition.get() + ElevatorConstants.ELEVATOR_TOLERANCE
 
   var isHomed = false
 
