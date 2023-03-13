@@ -25,13 +25,13 @@ import org.team4099.lib.units.perSecond
 class GyroAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   private val gyroPID: ProfiledPIDController<Radian, Velocity<Meter>>
 
-  var alignmentAngle = 0.0.degrees
+  var alignmentAngle = drivetrain.odometryPose.rotation
 
   val gyroAngle: Angle
     get() {
-      return when (alignmentAngle.absoluteValue.inDegrees % 180.0) {
-        0.0 -> drivetrain.gyroInputs.gyroPitch
-        90.0 -> drivetrain.gyroInputs.gyroRoll
+      return when ((alignmentAngle.absoluteValue.inDegrees / 90.0).toInt()) {
+        0 -> drivetrain.gyroInputs.gyroPitch
+        1 -> drivetrain.gyroInputs.gyroRoll
         else -> 0.0.degrees
       }
     }
@@ -64,14 +64,14 @@ class GyroAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
 
   val gyroFeedback: Pair<Value<Fraction<Meter, Second>>, Value<Fraction<Meter, Second>>>
     get() {
-      var feedback =
+      val feedback =
         gyroPID.calculate(gyroAngle, DrivetrainConstants.DOCKING_GYRO_SETPOINT) *
           (alignmentAngle + 0.1.degrees).sign
       // 0.1 so sign of 0 degrees returns 1
 
-      return when (alignmentAngle.absoluteValue.inDegrees % 180.0) {
-        0.0 -> Pair(feedback, 0.0.meters.perSecond)
-        90.0 -> Pair(0.0.meters.perSecond, feedback)
+      return when ((alignmentAngle.absoluteValue.inDegrees / 90.0).toInt()) {
+        0 -> Pair(feedback, 0.0.meters.perSecond)
+        1 -> Pair(0.0.meters.perSecond, feedback)
         else -> Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
       }
     }

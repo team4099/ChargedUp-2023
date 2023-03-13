@@ -26,6 +26,8 @@ object GyroIOPigeon2 : GyroIO {
   var gyroPitchOffset: Angle = 0.0.degrees
   var gyroRollOffset: Angle = 0.0.degrees
 
+  val rawGyro: Angle = 0.0.degrees
+
   /** The current angle of the drivetrain. */
   val gyroYaw: Angle
     get() {
@@ -97,6 +99,8 @@ object GyroIOPigeon2 : GyroIO {
 
   override fun updateInputs(inputs: GyroIO.GyroIOInputs) {
     pigeon2.getRawGyro(xyzDps) // calling this here so it updated xyzDps which is called upon later
+
+    inputs.rawGyroYaw = pigeon2.yaw.degrees
 
     inputs.gyroConnected = isConnected
 

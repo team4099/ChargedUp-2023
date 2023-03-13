@@ -77,7 +77,7 @@ class Elevator(val io: ElevatorIO) {
     val minPosition =
       LoggedTunableValue(
         "Elevator/minPosition",
-        ElevatorConstants.ELEVATOR_SOFT_LIMIT_RETRACTION,
+        ElevatorConstants.ELEVATOR_IDLE_HEIGHT,
         Pair({ it.inInches }, { it.inches })
       )
 

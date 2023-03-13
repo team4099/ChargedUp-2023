@@ -54,6 +54,12 @@ object ControlBoard {
   val scoreOuttake = Trigger { driver.xButton }
   val groundIntakeCube = Trigger { driver.rightShoulderButton }
 
+  val increaseRollerVoltage = Trigger { operator.dPadUp }
+  val decreaseRollerVoltage = Trigger { operator.dPadDown }
+
+  val groundIntakeCone = Trigger  { driver.yButton }
+  val autoLevelTemp = Trigger { driver.dPadUp }
+
   // val armCharacterization = Trigger { operator.yButton }
 
   /*

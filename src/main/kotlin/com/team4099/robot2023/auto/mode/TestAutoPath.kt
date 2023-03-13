@@ -20,23 +20,25 @@ class TestAutoPath(val drivetrain: Drivetrain) : SequentialCommandGroup() {
         {
           listOf(
             Waypoint(
-              Translation2d(1.9.meters, 4.97.meters).translation2d,
+              Translation2d(0.0.meters, 0.0.meters).translation2d,
               null,
-              180.0.degrees.inRotation2ds
-            ),
-            Waypoint(
-              Translation2d(
-                FieldConstants.StagingLocations.translations[3]!!.x,
-                FieldConstants.StagingLocations.translations[3]!!.y
-              )
-                .translation2d,
-              0.0.degrees.inRotation2ds,
               0.0.degrees.inRotation2ds
             ),
             Waypoint(
-              Translation2d(1.9.meters, 4.97.meters).translation2d,
+              Translation2d(
+                2.0.meters,
+                0.0.meters
+              )
+                .translation2d,
               null,
-              180.0.degrees.inRotation2ds
+              0.0.degrees.inRotation2ds
+            ),
+            Waypoint(
+              Translation2d(0.0.meters,
+                1.0.meters
+              ).translation2d,
+              null,
+              0.0.degrees.inRotation2ds
             ),
           )
         },

@@ -1,6 +1,8 @@
 package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.commands.drivetrain.GyroAutoLevel
+import com.team4099.robot2023.commands.drivetrain.OpenLoopReverseCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -33,7 +35,15 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj2.command.Commands.runOnce
+import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.RunCommand
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.feet
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.perSecond
+import javax.naming.ldap.Control
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -171,6 +181,8 @@ object RobotContainer {
         superstructure.objective.nodeTier
       )
     )
+
+    ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(
     //      PickupFromSubstationCommand(

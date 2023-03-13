@@ -11,6 +11,7 @@ import org.team4099.lib.units.perSecond
 
 interface GyroIO {
   class GyroIOInputs : LoggableInputs {
+    var rawGyroYaw = 0.0.radians
     var gyroYaw = 0.0.radians
     var gyroPitch = -3.degrees
     var gyroRoll = 0.0.radians
@@ -21,6 +22,7 @@ interface GyroIO {
     var gyroConnected = false
 
     override fun toLog(table: LogTable?) {
+      table?.put("rawGyroYawDegrees", rawGyroYaw.inDegrees)
       table?.put("gyroYawAngleDegrees", gyroYaw.inDegrees)
       table?.put("gyroPitchAngleDegrees", gyroPitch.inDegrees)
       table?.put("gyroRollAngleDegrees", gyroRoll.inDegrees)
@@ -31,6 +33,7 @@ interface GyroIO {
     }
 
     override fun fromLog(table: LogTable?) {
+      table?.getDouble("rawGyroYawDegrees", rawGyroYaw.inDegrees)?.let { rawGyroYaw = it.degrees }
       table?.getDouble("gyroYawAngleDegrees", gyroYaw.inDegrees)?.let { gyroYaw = it.degrees }
       table?.getDouble("gyroPitchDegrees", gyroPitch.inDegrees)?.let { gyroPitch = it.degrees }
       table?.getDouble("gyroRollDegrees", gyroRoll.inDegrees)?.let { gyroRoll = it.degrees }

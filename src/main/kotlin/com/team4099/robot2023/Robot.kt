@@ -135,7 +135,7 @@ object Robot : LoggedRobot() {
   override fun disabledInit() {
     RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.setSteeringCoastMode()
-    RobotContainer.setDriveCoastMode()
+    RobotContainer.setDriveBrakeMode()
     RobotContainer.requestSuperstructureIdle()
     // autonomousCommand.cancel()
   }

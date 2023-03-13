@@ -92,7 +92,7 @@ object ManipulatorConstants {
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
   val IDLE_VOLTAGE = 0.0.volts
-  val CONE_IDLE = 3.volts
+  val CONE_IDLE = 5.volts
   val CUBE_IDLE = -4.volts
   val CONE_IN = 7.5.volts
   val CUBE_IN = -6.volts
@@ -137,7 +137,7 @@ object ManipulatorConstants {
   val MID_CONE_SCORE_EXTENSION = 5.0.inches
   val HIGH_CONE_SCORE_EXTENSION = 7.5.inches
   val INTAKE_CUBE_FROM_GROUND_EXTENSION = 1.0.inches
-  val INTAKE_CONE_FROM_GROUND_EXTENSION = 4.5.inches
+  val INTAKE_CONE_FROM_GROUND_EXTENSION = 7.0.inches
   val MAX_EXTENSION = 7.8.inches
 
   // TODO(figure out the values)
