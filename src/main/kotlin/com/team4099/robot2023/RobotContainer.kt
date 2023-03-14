@@ -29,6 +29,7 @@ import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
+import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
 
@@ -76,6 +77,7 @@ object RobotContainer {
   fun mapDefaultCommands() {
     drivetrain.defaultCommand =
       TeleopDriveCommand(
+        driver = Ryan(),
         { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
         { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
         { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },

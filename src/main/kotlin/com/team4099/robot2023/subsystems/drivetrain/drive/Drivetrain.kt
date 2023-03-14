@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.util.Alert
+import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.PoseEstimator
 import com.team4099.robot2023.util.Velocity2d
 import edu.wpi.first.math.VecBuilder
@@ -14,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -176,7 +178,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     if (elevatorHeightSupplier.get() > ElevatorConstants.FIRST_STAGE_HEIGHT) {
       DrivetrainConstants.DRIVE_SETPOINT_MAX =
         15.feet.perSecond -
-        8.feet.perSecond *
+        10.feet.perSecond *
         (
           (elevatorHeightSupplier.get() - ElevatorConstants.FIRST_STAGE_HEIGHT) /
             (ElevatorConstants.SECOND_STAGE_HEIGHT)
@@ -184,6 +186,12 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     } else {
       DrivetrainConstants.DRIVE_SETPOINT_MAX = 15.feet.perSecond
     }
+
+    Logger.getInstance()
+      .recordOutput(
+        "Drivetrain/maxSetpointMetersPerSecond",
+        DrivetrainConstants.DRIVE_SETPOINT_MAX.inMetersPerSecond
+      )
 
     // Update field velocity
     val measuredStates = arrayOfNulls<SwerveModuleState>(4)
@@ -317,19 +325,26 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     driveVector: Pair<LinearVelocity, LinearVelocity>,
     fieldOriented: Boolean = true
   ) {
+    val flipDrive = if (FMSData.allianceColor == DriverStation.Alliance.Red) -1 else 1
+    val allianceFlippedDriveVector =
+      Pair(driveVector.first * flipDrive, driveVector.second * flipDrive)
+
     val swerveModuleStates: Array<SwerveModuleState>
     var desiredChassisSpeeds: ChassisSpeeds
 
     if (fieldOriented) {
       desiredChassisSpeeds =
         ChassisSpeeds.fromFieldRelativeSpeeds(
-          driveVector.first, driveVector.second, angularVelocity, odometryPose.rotation
+          allianceFlippedDriveVector.first,
+          allianceFlippedDriveVector.second,
+          angularVelocity,
+          odometryPose.rotation
         )
     } else {
       desiredChassisSpeeds =
         ChassisSpeeds(
-          driveVector.first,
-          driveVector.second,
+          allianceFlippedDriveVector.first,
+          allianceFlippedDriveVector.second,
           angularVelocity,
         )
     }
