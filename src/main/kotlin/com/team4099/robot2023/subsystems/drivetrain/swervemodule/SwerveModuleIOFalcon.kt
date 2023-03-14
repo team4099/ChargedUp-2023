@@ -159,6 +159,10 @@ class SwerveModuleIOFalcon(
         "$label/potentiometerRadiansWithOffset",
         (inputs.potentiometerOutputRadians - zeroOffset).inRadians
       )
+
+    Logger.getInstance()
+      .recordOutput("$label/sensorVelocityRawUnits", driveFalcon.selectedSensorVelocity)
+    Logger.getInstance().recordOutput("$label/motorOutput", driveFalcon.motorOutputPercent)
   }
 
   override fun setSteeringSetpoint(angle: Angle) {

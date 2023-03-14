@@ -41,7 +41,9 @@ object AutonomousSelector {
       "1 Cone + 1 Cube Auto, Cable Carrier Side", AutonomousMode.CO_CU_BUMP_AUTO
     )
     autonomousModeChooser.addOption("1 Cone + Mobility", AutonomousMode.CONE_MOBILITY_AUTO)
-    autonomousModeChooser.addOption("1 Cone + Open Loop Charge Station", AutonomousMode.CONE_MOBILITY_AUTO)
+    autonomousModeChooser.addOption(
+      "1 Cone + Open Loop Charge Station", AutonomousMode.CONE_MOBILITY_AUTO
+    )
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(5, 2).withPosition(3, 0)
     waitBeforeCommandSlider =
@@ -83,7 +85,8 @@ object AutonomousSelector {
         return WaitCommand(waitTime.inSeconds)
           .andThen(ConeMobilityAuto(drivetrain, superstructure))
       AutonomousMode.PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE ->
-        return WaitCommand(waitTime.inSeconds).andThen(PreloadOpenLoopChargeStationBalance(drivetrain, superstructure))
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(PreloadOpenLoopChargeStationBalance(drivetrain, superstructure))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()

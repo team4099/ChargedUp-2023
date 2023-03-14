@@ -1,14 +1,11 @@
 package com.team4099.robot2023.auto.mode
 
 import com.team4099.lib.logging.LoggedTunableValue
-import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
-import com.team4099.robot2023.commands.drivetrain.OpenLoopReverseCommand
 import com.team4099.robot2023.commands.drivetrain.ResetPoseCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
-import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup
@@ -37,12 +34,30 @@ class ConeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstru
       ),
       superstructure.score(),
       ParallelRaceGroup(
-        if (FMSData.allianceColor == DriverStation.Alliance.Blue) RunCommand({ drivetrain.setOpenLoop(
-          0.degrees.perSecond, Pair(10.0.feet.perSecond, 0.0.feet.perSecond), fieldOriented = true
-        )}, drivetrain) else RunCommand({ drivetrain.setOpenLoop(
-          0.degrees.perSecond, Pair(-10.0.feet.perSecond, 0.0.feet.perSecond), fieldOriented = true
-        )}, drivetrain),
-        WaitCommand(1.4)),
+        if (FMSData.allianceColor == DriverStation.Alliance.Blue)
+          RunCommand(
+            {
+              drivetrain.setOpenLoop(
+                0.degrees.perSecond,
+                Pair(10.0.feet.perSecond, 0.0.feet.perSecond),
+                fieldOriented = true
+              )
+            },
+            drivetrain
+          )
+        else
+          RunCommand(
+            {
+              drivetrain.setOpenLoop(
+                0.degrees.perSecond,
+                Pair(-10.0.feet.perSecond, 0.0.feet.perSecond),
+                fieldOriented = true
+              )
+            },
+            drivetrain
+          ),
+        WaitCommand(1.4)
+      ),
     )
   }
 

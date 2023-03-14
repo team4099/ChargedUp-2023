@@ -89,7 +89,7 @@ object Robot : LoggedRobot() {
           // if in replay mode get file path from command line and read log file
           val path = LogFileUtil.findReplayLog()
           logger.setReplaySource(WPILOGReader(path))
-          logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")))
+          logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_replayed")))
         }
       }
 

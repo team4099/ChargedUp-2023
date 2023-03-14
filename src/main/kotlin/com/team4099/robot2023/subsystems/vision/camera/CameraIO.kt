@@ -28,7 +28,7 @@ interface CameraIO {
       val frameCount = table?.getDouble("frameCount", 0.0)?.toInt() ?: 0
       val tempFrames = mutableListOf<DoubleArray>()
       for (i in 0 until frameCount) {
-        tempFrames[i] = table?.getDoubleArray("Frame/$i", DoubleArray(0)) ?: DoubleArray(0)
+        tempFrames.add(table?.getDoubleArray("Frame/$i", DoubleArray(0)) ?: DoubleArray(0))
       }
       frames = tempFrames.toList()
 

@@ -263,7 +263,6 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       lastGyroYaw = gyroInputs.rawGyroYaw
     }
 
-
     // reversing the drift to store the ground truth pose
     if (RobotBase.isSimulation() && Constants.Tuning.SIMULATE_DRIFT) {
       val undriftedModules = arrayOfNulls<SwerveModulePosition>(4)
@@ -433,6 +432,31 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     chassisAccels: edu.wpi.first.math.kinematics.ChassisSpeeds =
       edu.wpi.first.math.kinematics.ChassisSpeeds(0.0, 0.0, 0.0)
   ) {
+    var chassisSpeeds = chassisSpeeds
+
+    if (DrivetrainConstants.MINIMIZE_SKEW) {
+      val velocityTransform =
+        Transform2d(
+          Translation2d(
+            Constants.Universal.LOOP_PERIOD_TIME *
+              chassisSpeeds.vxMetersPerSecond.meters.perSecond,
+            Constants.Universal.LOOP_PERIOD_TIME *
+              chassisSpeeds.vyMetersPerSecond.meters.perSecond
+          ),
+          Constants.Universal.LOOP_PERIOD_TIME *
+            chassisSpeeds.omegaRadiansPerSecond.radians.perSecond
+        )
+
+      val twistToNextPose: Twist2d = velocityTransform.log()
+
+      chassisSpeeds =
+        ChassisSpeeds(
+          (twistToNextPose.dx / Constants.Universal.LOOP_PERIOD_TIME),
+          (twistToNextPose.dy / Constants.Universal.LOOP_PERIOD_TIME),
+          (twistToNextPose.dtheta / Constants.Universal.LOOP_PERIOD_TIME)
+        )
+          .chassisSpeedsWPILIB
+    }
 
     val velSwerveModuleStates: Array<SwerveModuleState> =
       swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds)
@@ -493,7 +517,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     gyroIO.zeroGyroPitch(toAngle)
   }
 
-  fun zeroGyroRoll(toAngle: Angle = 0.0.degrees){
+  fun zeroGyroRoll(toAngle: Angle = 0.0.degrees) {
     gyroIO.zeroGyroRoll(toAngle)
   }
 

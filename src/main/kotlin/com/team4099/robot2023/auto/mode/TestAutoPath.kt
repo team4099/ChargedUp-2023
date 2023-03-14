@@ -2,7 +2,6 @@ package com.team4099.robot2023.auto.mode
 
 import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
-import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.team4099.lib.geometry.Translation2d
@@ -25,18 +24,12 @@ class TestAutoPath(val drivetrain: Drivetrain) : SequentialCommandGroup() {
               0.0.degrees.inRotation2ds
             ),
             Waypoint(
-              Translation2d(
-                2.0.meters,
-                0.0.meters
-              )
-                .translation2d,
+              Translation2d(2.0.meters, 0.0.meters).translation2d,
               null,
               0.0.degrees.inRotation2ds
             ),
             Waypoint(
-              Translation2d(0.0.meters,
-                1.0.meters
-              ).translation2d,
+              Translation2d(0.0.meters, 1.0.meters).translation2d,
               null,
               0.0.degrees.inRotation2ds
             ),

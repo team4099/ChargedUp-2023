@@ -32,6 +32,66 @@ object FieldConstants {
 
   val aprilTagLength = 6.0.inches
 
+  val homeAprilTags: List<AprilTag> =
+    listOf(
+      AprilTag(
+        1,
+        Pose3d(
+          40.inches,
+          (104.125).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+        )
+      ),
+      AprilTag(
+        2,
+        Pose3d(
+          40.inches,
+          (42.125).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+        )
+      ),
+      AprilTag(
+        3,
+        Pose3d(
+          (610.77).inches,
+          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
+      ),
+      AprilTag(
+        4,
+        Pose3d(
+          (636.96).inches,
+          (265.74).inches,
+          (27.38).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
+      ),
+      AprilTag(
+        5,
+        Pose3d(
+          (440.0).inches - 33.inches,
+          (125.125).inches,
+          (27.375).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+        )
+      ),
+      AprilTag(
+        6,
+        Pose3d(
+          (40.45).inches,
+          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (18.22).inches,
+          Rotation3d()
+        )
+      ),
+      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
+      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
+    )
+
   // AprilTag locations (do not flip for red alliance)
   val aprilTags: List<AprilTag> =
     listOf(
@@ -42,7 +102,8 @@ object FieldConstants {
           (42.19).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-      )),
+        )
+      ),
       AprilTag(
         2,
         Pose3d(
@@ -73,7 +134,7 @@ object FieldConstants {
       AprilTag(
         5,
         Pose3d((14.25).inches, (265.74).inches, (27.38).inches, Rotation3d()),
-        ),
+      ),
       AprilTag(
         6,
         Pose3d(
@@ -87,7 +148,9 @@ object FieldConstants {
       AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
     )
 
-  val wpilibAprilTags = aprilTags.map { it.apriltagWpilib }
+  val wpilibAprilTags =
+    if (Constants.Universal.REAL_FIELD) aprilTags.map { it.apriltagWpilib }
+    else homeAprilTags.map { it.apriltagWpilib }
 
   val wpilibFieldLayout =
     edu.wpi.first.apriltag.AprilTagFieldLayout(
@@ -121,7 +184,8 @@ object FieldConstants {
   }
 
   fun getTagPose(id: Int): Pose3d? {
-    return aprilTags.firstOrNull { it.id == id }?.pose
+    return if (Constants.Universal.REAL_FIELD) aprilTags.firstOrNull { it.id == id }?.pose
+    else homeAprilTags.firstOrNull { it.id == id }?.pose
   }
 
   // Dimensions for community and charging station, including the tape.

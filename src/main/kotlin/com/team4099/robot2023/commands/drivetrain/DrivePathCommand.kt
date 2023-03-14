@@ -22,6 +22,7 @@ import org.team4099.lib.hal.Clock
 import org.team4099.lib.kinematics.ChassisAccels
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -182,9 +183,9 @@ class DrivePathCommand(
 
     val trajectory = trajectoryGenerator.driveTrajectory
 
-    if (resetPose) {
-      drivetrain.odometryPose = AllianceFlipUtil.apply(Pose2d(trajectory.initialPose))
-    }
+    //    if (resetPose) {
+    //      drivetrain.odometryPose = AllianceFlipUtil.apply(Pose2d(trajectory.initialPose))
+    //    }
     trajStartTime = Clock.fpgaTime + trajectory.states[0].timeSeconds.seconds
     thetaPID.reset()
     xPID.reset()
@@ -237,6 +238,9 @@ class DrivePathCommand(
 
     Logger.getInstance()
       .recordOutput("Pathfollow/thetaPIDPositionErrorRadians", thetaPID.error.inRadians)
+
+    Logger.getInstance().recordOutput("Pathfollow/xPIDPositionErrorMeters", xPID.error.inMeters)
+    Logger.getInstance().recordOutput("Pathfollow/yPIDPositionErrorMeters", yPID.error.inMeters)
     Logger.getInstance()
       .recordOutput(
         "Pathfollow/thetaPIDVelocityErrorRadians", thetaPID.errorDerivative.inRadiansPerSecond
