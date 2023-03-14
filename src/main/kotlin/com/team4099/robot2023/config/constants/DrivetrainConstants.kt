@@ -39,7 +39,7 @@ object DrivetrainConstants {
   val DOCKING_GYRO_TOLERANCE = 2.5.degrees
   val DOCKING_TIME_THRESHOLD = 1.0.seconds
 
-  val DRIVE_SETPOINT_MAX = 15.feet.perSecond
+  var DRIVE_SETPOINT_MAX = 15.feet.perSecond
   val TURN_SETPOINT_MAX =
     (DRIVE_SETPOINT_MAX.inMetersPerSecond / DRIVETRAIN_LENGTH.inMeters / 2 * sqrt(2.0))
       .radians

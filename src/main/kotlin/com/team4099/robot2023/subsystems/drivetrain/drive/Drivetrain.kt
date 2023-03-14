@@ -3,6 +3,7 @@ package com.team4099.robot2023.subsystems.drivetrain.drive
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.util.Alert
@@ -28,9 +29,12 @@ import org.team4099.lib.units.AngularAcceleration
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearAcceleration
 import org.team4099.lib.units.LinearVelocity
+import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -39,6 +43,7 @@ import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
+import java.util.function.Supplier
 
 class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemBase() {
   val gyroNotConnectedAlert =
@@ -61,6 +66,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       }
       return 0.0.degrees
     }
+
+  private var elevatorHeightSupplier = Supplier<Length> { 0.0.inches }
 
   init {
 
@@ -164,6 +171,19 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     gyroIO.updateInputs(gyroInputs)
 
     swerveModules.forEach { it.periodic() }
+
+    // Update max setpoint speed based on elevator height
+    if (elevatorHeightSupplier.get() > ElevatorConstants.FIRST_STAGE_HEIGHT) {
+      DrivetrainConstants.DRIVE_SETPOINT_MAX =
+        15.feet.perSecond -
+        8.feet.perSecond *
+        (
+          (elevatorHeightSupplier.get() - ElevatorConstants.FIRST_STAGE_HEIGHT) /
+            (ElevatorConstants.SECOND_STAGE_HEIGHT)
+          )
+    } else {
+      DrivetrainConstants.DRIVE_SETPOINT_MAX = 15.feet.perSecond
+    }
 
     // Update field velocity
     val measuredStates = arrayOfNulls<SwerveModuleState>(4)
@@ -533,5 +553,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   fun addVisionData(visionData: List<PoseEstimator.TimestampedVisionUpdate>) {
     swerveDrivePoseEstimator.addVisionData(visionData)
+  }
+
+  fun setElevatorHeightSupplier(heightSupplier: Supplier<Length>) {
+    elevatorHeightSupplier = heightSupplier
   }
 }

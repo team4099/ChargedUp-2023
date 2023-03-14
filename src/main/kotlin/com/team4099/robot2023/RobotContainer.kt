@@ -70,6 +70,7 @@ object RobotContainer {
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
+    drivetrain.setElevatorHeightSupplier { superstructure.elevatorInputs.elevatorPosition }
   }
 
   fun mapDefaultCommands() {
