@@ -17,6 +17,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRotation2ds
+import org.team4099.lib.units.perSecond
 
 class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstructure) :
   SequentialCommandGroup() {
@@ -53,7 +54,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         drivetrain,
         {
           listOf(
-            Waypoint(drivePose.pose2d.translation, null, drivePose.rotation.inRotation2ds),
+            Waypoint(drivePose.pose2d.translation, if (drivetrain.fieldVelocity.magnitude.absoluteValue < 0.25.meters.perSecond) null else heading.inRotation2ds, drivePose.rotation.inRotation2ds),
             Waypoint(
               finalPose.translation.translation2d, null, finalPose.rotation.inRotation2ds
             )
