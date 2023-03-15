@@ -982,8 +982,8 @@ class Superstructure(
   ): CommandBase {
     val returnCommand =
       runOnce {
-          currentRequest =
-            SuperstructureRequest.PrepScore(gamePieceSupplier.get(), nodeTierSupplier.get())
+        currentRequest =
+          SuperstructureRequest.PrepScore(gamePieceSupplier.get(), nodeTierSupplier.get())
       }
         .andThen(
           WaitUntilCommand {

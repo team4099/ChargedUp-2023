@@ -165,20 +165,22 @@ object RobotContainer {
 
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
-    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    //    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
 
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
-        { if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
-        else Constants.Universal.GamePiece.CUBE },
+        {
+          if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
+          else Constants.Universal.GamePiece.CUBE
+        },
         { superstructure.objective.nodeTier }
       )
     )
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
 
-//    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain, superstructure))
+    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(
     //      PickupFromSubstationCommand(
