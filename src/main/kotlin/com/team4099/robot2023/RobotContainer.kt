@@ -170,9 +170,9 @@ object RobotContainer {
 
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
-        if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
-        else Constants.Universal.GamePiece.CUBE,
-        superstructure.objective.nodeTier
+        { if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
+        else Constants.Universal.GamePiece.CUBE },
+        { superstructure.objective.nodeTier }
       )
     )
 
