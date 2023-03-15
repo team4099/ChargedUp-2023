@@ -4,11 +4,13 @@ import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
 import com.team4099.robot2023.commands.drivetrain.ResetPoseCommand
+import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.units.base.inMeters
@@ -25,10 +27,10 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
       ResetPoseCommand(
         drivetrain, Pose2d(startingPosX.get(), startingPosY.get(), startingPosTheta.get())
       ),
-      //        superstructure.prepScoreCommand(
-      //          Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
-      //        ),
-      //        superstructure.score(),
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
+      ),
+      superstructure.score(),
       ParallelCommandGroup(
         DrivePathCommand(
           drivetrain,
@@ -42,15 +44,15 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
               ),
               // middle of bump
               Waypoint(
-                Translation2d(4.59.meters, 1.0.meters).translation2d,
+                Translation2d(4.59.meters, 1.3.meters).translation2d,
                 null,
                 180.0.degrees.inRotation2ds
               ),
               // pick up cube
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[0]!!.x,
-                  FieldConstants.StagingLocations.translations[0]!!.y + 0.5.meters
+                  FieldConstants.StagingLocations.translations[0]!!.x - 1.0.meters,
+                  FieldConstants.StagingLocations.translations[0]!!.y + 1.1.meters
                 )
                   .translation2d,
                 0.0.degrees.inRotation2ds,
@@ -59,7 +61,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
             )
           },
         ),
-        //        WaitCommand(2.0).andThen(superstructure.groundIntakeCubeCommand())
+        WaitCommand(1.5).andThen(superstructure.groundIntakeCubeCommand())
       ),
       DrivePathCommand(
         drivetrain,
@@ -68,8 +70,8 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
             // initial @ cube
             Waypoint(
               Translation2d(
-                FieldConstants.StagingLocations.translations[0]!!.x,
-                FieldConstants.StagingLocations.translations[0]!!.y + 0.5.meters
+                FieldConstants.StagingLocations.translations[0]!!.x - 1.0.meters,
+                FieldConstants.StagingLocations.translations[0]!!.y + 1.1.meters
               )
                 .translation2d,
               180.0.degrees.inRotation2ds,
@@ -77,7 +79,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
             ),
             // middle of bump
             Waypoint(
-              Translation2d(5.26.meters, 1.0.meters).translation2d,
+              Translation2d(5.26.meters, 1.3.meters).translation2d,
               null,
               180.0.degrees.inRotation2ds
             ),
@@ -91,10 +93,10 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
         },
         keepTrapping = true
       ),
-      //            superstructure.prepScoreCommand(
-      //              Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
-      //            ),
-      //            superstructure.score()
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
+      ),
+      superstructure.score()
     )
   }
 
@@ -117,7 +119,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
     val endingPosX =
       LoggedTunableValue(
         "Drivetrain/endingPosX",
-        FieldConstants.getTagPose(2)!!.x + 0.85.meters,
+        FieldConstants.getTagPose(2)!!.x + 0.875.meters,
         Pair({ it.inMeters }, { it.meters })
       )
     val endingPosY =

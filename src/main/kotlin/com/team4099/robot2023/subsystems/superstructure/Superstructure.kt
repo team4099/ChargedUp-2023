@@ -259,7 +259,7 @@ class Superstructure(
           manipulator.isStowed &&
           manipulator.isAtTargetedPosition
         ) {
-          if (theoreticalGamePiece == Constants.Universal.GamePiece.NONE) {
+          if (theoreticalGamePiece == Constants.Universal.GamePiece.NONE && !DriverStation.isAutonomous()) {
             groundIntake.currentRequest =
               Request.GroundIntakeRequest.TargetingPosition(
                 GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),

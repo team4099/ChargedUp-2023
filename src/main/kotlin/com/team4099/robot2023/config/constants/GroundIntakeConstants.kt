@@ -45,7 +45,7 @@ object GroundIntakeConstants {
 
   val ROLLER_RAMP_RATE = 75.percent.perSecond
 
-  val ABSOLUTE_ENCODER_OFFSET = 76.9.degrees
+  val ABSOLUTE_ENCODER_OFFSET = 95.562.degrees
   // From encoder to intake
   val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).gearRatio
 

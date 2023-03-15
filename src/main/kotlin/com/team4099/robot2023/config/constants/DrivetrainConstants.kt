@@ -148,7 +148,7 @@ object DrivetrainConstants {
 
     val DRIVE_KFF = 12.0.volts / 4.1675.meters.perSecond
 
-    val DRIVE_KS = 0.4.volts
+    val DRIVE_KS = 0.5.volts
     val DRIVE_KV = 0.0.volts / 1.0.meters.perSecond
     val DRIVE_KA = 0.0.volts / 1.0.meters.perSecond.perSecond
 

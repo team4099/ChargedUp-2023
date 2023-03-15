@@ -268,6 +268,7 @@ class DrivePathCommand(
       )
 
     Logger.getInstance().recordOutput("Pathfollow/trajectory", trajectory)
+    Logger.getInstance().recordOutput("Pathfollow/isAtReference", swerveDriveController.atReference())
 
     Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", true)
 
