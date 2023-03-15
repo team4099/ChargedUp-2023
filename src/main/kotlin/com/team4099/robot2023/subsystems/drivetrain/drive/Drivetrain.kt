@@ -113,7 +113,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       backRightWheelLocation.translation2d
     )
 
-  var swerveDrivePoseEstimator = PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0001))
+  var swerveDrivePoseEstimator = PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.00001))
 
   var swerveDriveOdometry =
     SwerveDriveOdometry(

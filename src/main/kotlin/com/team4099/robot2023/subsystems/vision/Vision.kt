@@ -33,7 +33,7 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
     val cameraPoses = VisionConstants.CAMERA_TRANSFORMS
 
     val xyStdDevCoeffecient = 0.01
-    val thetaStdDevCoefficient = 0.001
+    val thetaStdDevCoefficient = 0.1
   }
 
   private var poseSupplier = Supplier<Pose2d> { Pose2d() }
