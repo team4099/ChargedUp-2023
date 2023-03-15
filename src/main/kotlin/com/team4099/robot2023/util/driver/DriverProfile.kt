@@ -48,15 +48,17 @@ abstract class DriverProfile(
     turn: DoubleSupplier,
     slowMode: BooleanSupplier
   ): AngularVelocity {
-    var rotationSpeedCurve =
-      turn.asDouble.pow(sensitivityRotationPowerConstant)
+    var rotationSpeedCurve = turn.asDouble.pow(sensitivityRotationPowerConstant)
 
     if (sensitivityRotationPowerConstant % 2 == 0) {
       rotationSpeedCurve *= sign(turn.asDouble)
     }
 
     if (slowMode.asBoolean) {
-      return DrivetrainConstants.TURN_SETPOINT_MAX * rotationSpeedCurve * slowModeClamp * invertRotationMultiplier
+      return DrivetrainConstants.TURN_SETPOINT_MAX *
+        rotationSpeedCurve *
+        slowModeClamp *
+        invertRotationMultiplier
     } else {
       return DrivetrainConstants.TURN_SETPOINT_MAX * rotationSpeedCurve * invertRotationMultiplier
     }

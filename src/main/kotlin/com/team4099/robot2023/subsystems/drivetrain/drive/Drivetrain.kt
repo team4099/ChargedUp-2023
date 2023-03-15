@@ -6,6 +6,7 @@ import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
+import com.team4099.robot2023.subsystems.gameboy.objective.Objective
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.PoseEstimator
@@ -69,7 +70,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       return 0.0.degrees
     }
 
-  private var elevatorHeightSupplier = Supplier<Length> { 0.0.inches }
+  var elevatorHeightSupplier = Supplier<Length> { 0.0.inches }
+
+  var objectiveSupplier = Supplier<Objective> { Objective() }
 
   init {
 
@@ -568,9 +571,5 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   fun addVisionData(visionData: List<PoseEstimator.TimestampedVisionUpdate>) {
     swerveDrivePoseEstimator.addVisionData(visionData)
-  }
-
-  fun setElevatorHeightSupplier(heightSupplier: Supplier<Length>) {
-    elevatorHeightSupplier = heightSupplier
   }
 }

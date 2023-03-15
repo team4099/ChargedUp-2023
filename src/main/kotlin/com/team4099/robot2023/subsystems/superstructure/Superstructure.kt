@@ -31,6 +31,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.volts
+import java.util.function.Supplier
 import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRequest as SuperstructureRequest
 
 class Superstructure(
@@ -259,7 +260,9 @@ class Superstructure(
           manipulator.isStowed &&
           manipulator.isAtTargetedPosition
         ) {
-          if (theoreticalGamePiece == Constants.Universal.GamePiece.NONE && !DriverStation.isAutonomous()) {
+          if (theoreticalGamePiece == Constants.Universal.GamePiece.NONE &&
+            !DriverStation.isAutonomous()
+          ) {
             groundIntake.currentRequest =
               Request.GroundIntakeRequest.TargetingPosition(
                 GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
@@ -973,29 +976,32 @@ class Superstructure(
     return returnCommand
   }
 
-  fun prepScoreCommand(gamePiece: GamePiece? = null, nodeTier: NodeTier? = null): CommandBase {
-    var returnCommand: CommandBase
+  fun prepScoreCommand(
+    gamePieceSupplier: Supplier<GamePiece>,
+    nodeTierSupplier: Supplier<NodeTier>
+  ): CommandBase {
+    val returnCommand =
+      runOnce {
+        currentRequest =
+          SuperstructureRequest.PrepScore(gamePieceSupplier.get(), nodeTierSupplier.get())
+      }
+        .andThen(
+          WaitUntilCommand {
+            isAtRequestedState && currentState == SuperstructureStates.SCORE_PREP
+          }
+        )
 
-    if (gamePiece == null || nodeTier == null) { // TODO fix null edge case for operator app
-      returnCommand =
-        runOnce {
-          currentRequest =
-            SuperstructureRequest.PrepScore(usingGamePiece, gameboy.inputs.objective.nodeTier)
-        }
-          .until { currentState == SuperstructureStates.SCORE_PREP && isAtRequestedState }
-    } else {
+    return returnCommand
+  }
 
-      val stateToBeChecked =
-        if (gamePiece == Constants.Universal.GamePiece.CONE) SuperstructureStates.SCORE_CONE
-        else SuperstructureStates.SCORE_CUBE
-      returnCommand =
-        runOnce { currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier) }
-          .andThen(
-            WaitUntilCommand {
-              isAtRequestedState && currentState == SuperstructureStates.SCORE_PREP
-            }
-          )
-    }
+  fun prepScoreCommand(gamePiece: GamePiece, nodeTier: NodeTier): CommandBase {
+    val returnCommand =
+      runOnce { currentRequest = SuperstructureRequest.PrepScore(gamePiece, nodeTier) }
+        .andThen(
+          WaitUntilCommand {
+            isAtRequestedState && currentState == SuperstructureStates.SCORE_PREP
+          }
+        )
     returnCommand.name = "PrepScore${gamePiece?.name}${nodeTier?.name}Command"
     return returnCommand
   }

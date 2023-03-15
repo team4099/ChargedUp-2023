@@ -1,6 +1,7 @@
 package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.commands.AutoScoreCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -17,7 +18,6 @@ import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.gameboy.GameboyIOServer
 import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
@@ -29,11 +29,11 @@ import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
-import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
+import java.util.function.Supplier
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -46,7 +46,7 @@ object RobotContainer {
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       vision =
         Vision(
-//          object: CameraIO {}
+          //          object: CameraIO {}
           CameraIONorthstar("northstar"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
@@ -74,7 +74,8 @@ object RobotContainer {
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
-    drivetrain.setElevatorHeightSupplier { superstructure.elevatorInputs.elevatorPosition }
+    drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
+    drivetrain.objectiveSupplier = Supplier { superstructure.objective }
   }
 
   fun mapDefaultCommands() {
@@ -176,6 +177,8 @@ object RobotContainer {
     )
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
+
+//    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(
     //      PickupFromSubstationCommand(

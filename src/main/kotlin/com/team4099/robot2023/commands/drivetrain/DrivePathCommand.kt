@@ -183,6 +183,10 @@ class DrivePathCommand(
 
     val trajectory = trajectoryGenerator.driveTrajectory
 
+    if (trajectory.states.size <= 1) {
+      return
+    }
+
     //    if (resetPose) {
     //      drivetrain.odometryPose = AllianceFlipUtil.apply(Pose2d(trajectory.initialPose))
     //    }
@@ -268,7 +272,10 @@ class DrivePathCommand(
       )
 
     Logger.getInstance().recordOutput("Pathfollow/trajectory", trajectory)
-    Logger.getInstance().recordOutput("Pathfollow/isAtReference", swerveDriveController.atReference())
+    Logger.getInstance()
+      .recordOutput("Pathfollow/isAtReference", swerveDriveController.atReference())
+    Logger.getInstance()
+      .recordOutput("Pathfollow/trajectoryTimeSeconds", trajectory.totalTimeSeconds)
 
     Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", true)
 
@@ -297,6 +304,7 @@ class DrivePathCommand(
   }
 
   override fun end(interrupted: Boolean) {
+    Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", false)
     if (interrupted) {
       // Stop where we are if interrupted
       drivetrain.setOpenLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
