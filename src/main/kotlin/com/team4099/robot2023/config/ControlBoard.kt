@@ -58,7 +58,8 @@ object ControlBoard {
   val decreaseRollerVoltage = Trigger { operator.dPadDown }
 
   val groundIntakeCone = Trigger { driver.yButton }
-  val autoLevelTemp = Trigger { driver.dPadUp }
+  val dpadUp = Trigger { driver.dPadUp }
+  val dpadDown = Trigger { driver.dPadDown }
 
   // val armCharacterization = Trigger { operator.yButton }
 

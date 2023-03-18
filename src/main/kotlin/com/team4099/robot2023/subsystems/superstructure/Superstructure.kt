@@ -28,6 +28,7 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.volts
@@ -139,6 +140,7 @@ class Superstructure(
     Logger.getInstance()
       .recordOutput("Superstructure/lastTransitionTime", lastTransitionTime.inSeconds)
     Logger.getInstance().recordOutput("Superstructure/isAtAllTargetedPositions", isAtRequestedState)
+    Logger.getInstance().recordOutput("Superstructure/theoreticalGamePiece", theoreticalGamePiece.name)
 
     Logger.getInstance()
       .recordOutput(
@@ -243,7 +245,7 @@ class Superstructure(
 
         // Outputs
         val rollerVoltage =
-          when (manipulator.holdingGamePiece) {
+          when (theoreticalGamePiece) {
             GamePiece.NONE -> {
               0.0.volts
             }
@@ -260,7 +262,7 @@ class Superstructure(
           manipulator.isStowed &&
           manipulator.isAtTargetedPosition
         ) {
-          if (theoreticalGamePiece == Constants.Universal.GamePiece.NONE &&
+          if (
             !DriverStation.isAutonomous()
           ) {
             groundIntake.currentRequest =
@@ -340,18 +342,23 @@ class Superstructure(
         led.state = LEDMode.MOVEMENT
 
         // Outputs
-        groundIntake.currentRequest = Request.GroundIntakeRequest.ZeroArm()
+        groundIntake.currentRequest = Request.GroundIntakeRequest.OpenLoop(-10.volts, 0.0.volts)
 
-        if (groundIntake.isZeroed) {
-          groundIntake.currentRequest =
-            Request.GroundIntakeRequest.TargetingPosition(
-              GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-              GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
-            )
+        if ((Clock.fpgaTime - lastTransitionTime) >=
+          0.5.seconds){
+          groundIntake.currentRequest = Request.GroundIntakeRequest.ZeroArm()
         }
 
+//        if (groundIntake.isZeroed) {
+//          groundIntake.currentRequest =
+//            Request.GroundIntakeRequest.TargetingPosition(
+//              GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+//              GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+//            )
+//        }
+
         // Transition
-        if (groundIntake.isAtTargetedPosition && groundIntake.isZeroed) {
+        if (groundIntake.isZeroed) {
           nextState = SuperstructureStates.HOME
         }
       }
@@ -375,7 +382,7 @@ class Superstructure(
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.intakeAngle.get(),
-            GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
+            0.0.volts,
           )
         if (groundIntake.isAtTargetedPosition) {
           val rollerCommandedVoltage =
@@ -416,6 +423,7 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.intakeAngle.get(),
             GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
           )
+
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
             Manipulator.TunableManipulatorStates.groundIntakeCubeExtension.get(),
@@ -458,7 +466,7 @@ class Superstructure(
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get() + 8.degrees,
-            GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
+            0.0.volts
           )
         if (groundIntake.isAtTargetedPosition) {
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(2.5.inches)
@@ -699,8 +707,8 @@ class Superstructure(
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-            GroundIntake.TunableGroundIntakeStates.helpScoreVoltage.get()
-          )
+            0.0.volts)
+
         if (groundIntake.isAtTargetedPosition) {
           val rollerCommandedVoltage =
             when (usingGamePiece) {
@@ -755,11 +763,6 @@ class Superstructure(
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(scoreHeight)
 
           if (elevator.isAtTargetedPosition) {
-            groundIntake.currentRequest =
-              Request.GroundIntakeRequest.TargetingPosition(
-                GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-                GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
-              )
 
             val extension =
               when (nodeTier) {
@@ -845,7 +848,6 @@ class Superstructure(
         ) {
           theoreticalGamePiece = Constants.Universal.GamePiece.NONE
           nextState = SuperstructureStates.SCORE_CLEANUP
-          currentRequest = SuperstructureRequest.Idle()
         } else if (currentRequest !is SuperstructureRequest.Score) {
           nextState = SuperstructureStates.SCORE_CLEANUP
         }
@@ -883,7 +885,6 @@ class Superstructure(
         ) {
           theoreticalGamePiece = GamePiece.NONE
           nextState = SuperstructureStates.SCORE_CLEANUP
-          currentRequest = SuperstructureRequest.Idle()
         } else if (currentRequest !is SuperstructureRequest.Score) {
           nextState = SuperstructureStates.SCORE_CLEANUP
         }
@@ -896,8 +897,17 @@ class Superstructure(
             ManipulatorConstants.IDLE_VOLTAGE
           )
 
-        if (manipulator.isAtTargetedPosition) {
+        if (nodeTier == Constants.Universal.NodeTier.HYBRID){
+          if (manipulator.isAtTargetedPosition){
+            elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(
+              Elevator.TunableElevatorHeights.minPosition.get()
+            )
+          }
+        }
+
+        if (manipulator.isAtTargetedPosition && elevator.isAtTargetedPosition) {
           nextState = SuperstructureStates.IDLE
+          currentRequest = SuperstructureRequest.Idle()
         }
       }
       SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP -> {
@@ -1313,7 +1323,7 @@ class Superstructure(
     val returnCommand =
       run {
         groundIntake.currentRequest =
-          Request.GroundIntakeRequest.OpenLoop(0.676.volts, 0.0.volts)
+          Request.GroundIntakeRequest.OpenLoop(10.0.volts, 0.0.volts)
         currentRequest = SuperstructureRequest.Tuning()
       }
         .andThen(runOnce { currentRequest = SuperstructureRequest.Idle() })

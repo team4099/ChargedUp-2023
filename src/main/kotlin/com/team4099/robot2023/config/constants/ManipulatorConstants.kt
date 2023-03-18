@@ -39,7 +39,7 @@ object ManipulatorConstants {
   // used to detect intake/outake, values need testing
   // TODO(test this)
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.3.seconds
-  val SPIT_OUT_TIME = 0.8.seconds
+  val SPIT_OUT_TIME = 1.2.seconds
   val INTAKE_IN_TIME = 0.5.seconds
 
   val FILTER_PERIOD = 2.0.milli.seconds
@@ -50,7 +50,7 @@ object ManipulatorConstants {
 
   // TODO(figure out what current limit should be)
   val ARM_STATOR_CURRENT_LIMIT = 20.amps
-  val ROLLER_STATOR_CURRENT_LIMIT = 20.amps
+  val ROLLER_STATOR_CURRENT_LIMIT = 40.amps
 
   val ARM_VOLTAGE_COMPENSATION = 12.volts
   val ROLLER_VOLTAGE_COMPENSATION = 12.volts
@@ -66,8 +66,8 @@ object ManipulatorConstants {
   val ROLLER_GEAR_RATIO = 20.0.gearRatio
 
   // TODO: Change current thresholds
-  val CONE_CURRENT_THRESHOLD = 32.amps
-  val CUBE_CURRENT_THRESHOLD = 32.amps
+  val CONE_CURRENT_THRESHOLD = 30.amps
+  val CUBE_CURRENT_THRESHOLD = 30.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
   val ARM_MAX_EXTENSION = 8.inches
@@ -76,10 +76,10 @@ object ManipulatorConstants {
   val ARM_MASS = 10.0.pounds
 
   // soft limits
-  val ARM_SOFTLIMIT_EXTENSION = 7.95.inches
+  val ARM_SOFTLIMIT_EXTENSION = 8.75.inches
   val ARM_SOFTLIMIT_RETRACTION = 0.25.inches
 
-  val ARM_OPEN_LOOP_SOFTLIMIT_EXTENSION = 8.inches
+  val ARM_OPEN_LOOP_SOFTLIMIT_EXTENSION = 8.7.inches
   val ARM_OPEN_LOOP_SOFTLIMIT_RETRACTION = 0.5.inches
 
   // TODO(check for accuracy)
@@ -92,12 +92,12 @@ object ManipulatorConstants {
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
   val IDLE_VOLTAGE = 0.0.volts
-  val CONE_IDLE = 5.volts
-  val CUBE_IDLE = -4.volts
+  val CONE_IDLE = 3.volts
+  val CUBE_IDLE = -0.5.volts
   val CONE_IN = 7.5.volts
   val CUBE_IN = -6.volts
   val CONE_OUT = -6.volts
-  val CUBE_OUT = 6.volts
+  val CUBE_OUT = 12.volts
 
   // TODO(test voltage values)
   enum class RollerStates(val voltage: ElectricalPotential) {
@@ -130,12 +130,12 @@ object ManipulatorConstants {
   val MIN_EXTENSION = 1.0.inches
   val SINGLE_SUBSTATION_INTAKE_EXTENSION = 4.0.inches
   val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
-  val LOW_CUBE_SCORE_EXTENSION = 3.5.inches
+  val LOW_CUBE_SCORE_EXTENSION = 7.5.inches
   val MID_CUBE_SCORE_EXTENSION = 3.0.inches
-  val HIGH_CUBE_SCORE_EXTENSION = 7.7.inches
-  val LOW_CONE_SCORE_EXTENSION = 3.5.inches
+  val HIGH_CUBE_SCORE_EXTENSION = 8.6.inches
+  val LOW_CONE_SCORE_EXTENSION = 7.5.inches
   val MID_CONE_SCORE_EXTENSION = 5.0.inches
-  val HIGH_CONE_SCORE_EXTENSION = 7.5.inches
+  val HIGH_CONE_SCORE_EXTENSION = 7.8.inches
   val INTAKE_CUBE_FROM_GROUND_EXTENSION = 1.0.inches
   val INTAKE_CONE_FROM_GROUND_EXTENSION = 7.0.inches
   val MAX_EXTENSION = 7.8.inches

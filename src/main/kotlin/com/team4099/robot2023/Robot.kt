@@ -11,6 +11,7 @@ import edu.wpi.first.hal.AllianceStationID
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
@@ -28,6 +29,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.inSeconds
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -105,6 +107,7 @@ object Robot : LoggedRobot() {
     AutonomousSelector
     PathStore
     RobotContainer.mapDefaultCommands()
+    RobotContainer.zeroArm()
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
@@ -160,16 +163,15 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopInit() {
-    RobotContainer.zeroSensors()
     FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.setDriveBrakeMode()
     RobotContainer.setSteeringBrakeMode()
-    RobotContainer.zeroArm()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
+    RobotContainer.zeroSensors()
   }
 
   override fun testInit() {

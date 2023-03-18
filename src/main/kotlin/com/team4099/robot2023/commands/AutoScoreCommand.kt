@@ -37,7 +37,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              1.9.meters,
+              1.8.meters,
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -76,7 +76,6 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         flipForAlliances = false
       ),
       superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
-      superstructure.score()
     )
   }
 }

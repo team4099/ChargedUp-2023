@@ -3,6 +3,7 @@ package com.team4099.robot2023.auto
 import com.team4099.robot2023.auto.mode.ConeCubeAuto
 import com.team4099.robot2023.auto.mode.ConeCubeBumpAuto
 import com.team4099.robot2023.auto.mode.ConeMobilityAuto
+import com.team4099.robot2023.auto.mode.PreloadConeAutoBalance
 import com.team4099.robot2023.auto.mode.PreloadOpenLoopChargeStationBalance
 import com.team4099.robot2023.auto.mode.TestAutoPath
 import com.team4099.robot2023.commands.elevator.ElevatorKsCharacterizeCommand
@@ -43,6 +44,9 @@ object AutonomousSelector {
     autonomousModeChooser.addOption("1 Cone + Mobility", AutonomousMode.CONE_MOBILITY_AUTO)
     autonomousModeChooser.addOption(
       "1 Cone + Open Loop Charge Station", AutonomousMode.CONE_MOBILITY_AUTO
+    )
+    autonomousModeChooser.addOption(
+      "1 Cone + Auto Balance Charge Station", AutonomousMode.PRELOAD_SCORE_AUTO_CHARGE_STATION
     )
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(5, 2).withPosition(3, 0)
@@ -87,6 +91,7 @@ object AutonomousSelector {
       AutonomousMode.PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE ->
         return WaitCommand(waitTime.inSeconds)
           .andThen(PreloadOpenLoopChargeStationBalance(drivetrain, superstructure))
+      AutonomousMode.PRELOAD_SCORE_AUTO_CHARGE_STATION -> return WaitCommand(waitTime.inSeconds).andThen(PreloadConeAutoBalance(drivetrain, superstructure))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()
@@ -98,6 +103,7 @@ object AutonomousSelector {
     CO_CU_AUTO,
     CO_CU_BUMP_AUTO,
     CONE_MOBILITY_AUTO,
-    PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE
+    PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE,
+    PRELOAD_SCORE_AUTO_CHARGE_STATION
   }
 }

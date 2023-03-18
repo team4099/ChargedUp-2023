@@ -20,8 +20,10 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.asDrivenOverDriving
+import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
+import org.team4099.lib.units.derived.inRotations
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
@@ -60,7 +62,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
   private val encoderAbsolutePosition: Angle
     get() {
       return (
-        throughBoreEncoder.get().rotations *
+        (180.0.degrees - throughBoreEncoder.absolutePosition.rotations) *
           GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO.asDrivenOverDriving
         )
     }
@@ -123,7 +125,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
 
     Logger.getInstance()
-      .recordOutput("GroundIntake/absoluteEncoderRawRotations", throughBoreEncoder.get())
+      .recordOutput("GroundIntake/absoluteEncoderRawRotations", (180.degrees - throughBoreEncoder.absolutePosition.rotations).inRotations)
     Logger.getInstance()
       .recordOutput(
         "GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees
@@ -160,13 +162,10 @@ object GroundIntakeIONeo : GroundIntakeIO {
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
     armSparkMax.setVoltage(
-      clamp(
-        voltage,
-        -GroundIntakeConstants.VOLTAGE_COMPENSATION,
-        GroundIntakeConstants.VOLTAGE_COMPENSATION
-      )
-        .inVolts
+      voltage.inVolts
     )
+
+    Logger.getInstance().recordOutput("GroundIntake/commandedVoltage", voltage.inVolts)
   }
 
   /**
@@ -206,7 +205,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
   /** recalculates the current position of the neo encoder using value from the absolute encoder */
   override fun zeroEncoder() {
-    armEncoder.position = armSensor.positionToRawUnits(armAbsolutePosition)
+    armEncoder.position = armSensor.positionToRawUnits(72.degrees)
   }
 
   /**

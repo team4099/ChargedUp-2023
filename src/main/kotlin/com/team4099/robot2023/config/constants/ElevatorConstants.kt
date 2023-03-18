@@ -78,15 +78,15 @@ object ElevatorConstants {
   val ELEVATOR_SOFT_LIMIT_RETRACTION = 0.5.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION = 45.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION = 5.inches
-  val ELEVATOR_IDLE_HEIGHT = 1.5.inches
+  val ELEVATOR_IDLE_HEIGHT = 1.0.inches
 
   val FIRST_STAGE_HEIGHT = 25.05.inches
   val SECOND_STAGE_HEIGHT = 24.inches
 
   // TODO(do tests to figure out what these values should be)
-  val CUBE_DROP_POSITION_DELTA = 2.75.inches
+  val CUBE_DROP_POSITION_DELTA = 3.2.inches
   val CONE_DROP_POSITION_DELTA = 0.0.inches
-  val GROUND_INTAKE_CUBE_HEIGHT = 5.0.inches
+  val GROUND_INTAKE_CUBE_HEIGHT = 6.0.inches
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val DOUBLE_SUBSTATION_CONE_OFFSET = 11.0.inches
   val SINGLE_SUBSTATION_CUBE_OFFSET = 0.0.inches

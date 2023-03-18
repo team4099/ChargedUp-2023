@@ -28,24 +28,24 @@ object GroundIntakeConstants {
     val SIM_KI = 0.0.volts / (1.degrees * 1.seconds)
     val SIM_KD = 0.01.volts / (1.degrees.perSecond)
 
-    val ARM_KS = 0.0.volts
+    val ARM_KS = 0.2.volts
 
-    val ARM_KG = 0.4.volts
-    val ARM_KV = 1.1.volts / 1.0.radians.perSecond
+    val ARM_KG = 0.86.volts
+    val ARM_KV = 1.8.volts / 1.0.radians.perSecond
     val ARM_KA = 0.1.volts / 1.0.radians.perSecond.perSecond
   }
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
   val ROLLER_CURRENT_LIMIT = 30.amps // TODO TUNE
-  val ARM_CURRENT_LIMIT = 80.amps // TODO TUNE
+  val ARM_CURRENT_LIMIT = 50.amps // TODO TUNE
 
   const val ROLLER_MOTOR_INVERTED = true
   const val ARM_MOTOR_INVERTED = false
 
   val ROLLER_RAMP_RATE = 75.percent.perSecond
 
-  val ABSOLUTE_ENCODER_OFFSET = 95.562.degrees
+  val ABSOLUTE_ENCODER_OFFSET = -103.86.degrees
   // From encoder to intake
   val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).gearRatio
 
@@ -83,7 +83,7 @@ object GroundIntakeConstants {
 
   val INTAKE_ANGLE = 4.4.degrees
   val OUTTAKE_ANGLE = 4.4.degrees
-  val STOWED_UP_ANGLE = 59.0.degrees
+  val STOWED_UP_ANGLE = 65.degrees
   val INTAKE_VOLTAGE = 5.0.volts
   val OUTTAKE_VOLTAGE = (-3.0).volts
   val STOWED_DOWN_ANGLE = 4.4.degrees
