@@ -44,7 +44,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
               ),
               // middle of bump
               Waypoint(
-                Translation2d(4.59.meters, 1.3.meters).translation2d,
+                Translation2d(4.59.meters, 0.9.meters).translation2d,
                 null,
                 180.0.degrees.inRotation2ds
               ),
@@ -60,6 +60,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
               ),
             )
           },
+          flipForAlliances = true
         ),
         WaitCommand(1.5).andThen(superstructure.groundIntakeCubeCommand())
       ),
@@ -79,7 +80,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
             ),
             // middle of bump
             Waypoint(
-              Translation2d(5.26.meters, 1.3.meters).translation2d,
+              Translation2d(5.26.meters, 0.9.meters).translation2d,
               null,
               180.0.degrees.inRotation2ds
             ),
@@ -118,9 +119,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
 
     val endingPosX =
       LoggedTunableValue(
-        "Drivetrain/endingPosX",
-        FieldConstants.getTagPose(2)!!.x + 0.875.meters,
-        Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/endingPosX", 1.9.meters, Pair({ it.inMeters }, { it.meters })
       )
     val endingPosY =
       LoggedTunableValue(

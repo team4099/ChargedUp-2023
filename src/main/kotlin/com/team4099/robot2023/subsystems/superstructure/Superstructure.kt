@@ -28,7 +28,6 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.volts
@@ -140,7 +139,8 @@ class Superstructure(
     Logger.getInstance()
       .recordOutput("Superstructure/lastTransitionTime", lastTransitionTime.inSeconds)
     Logger.getInstance().recordOutput("Superstructure/isAtAllTargetedPositions", isAtRequestedState)
-    Logger.getInstance().recordOutput("Superstructure/theoreticalGamePiece", theoreticalGamePiece.name)
+    Logger.getInstance()
+      .recordOutput("Superstructure/theoreticalGamePiece", theoreticalGamePiece.name)
 
     Logger.getInstance()
       .recordOutput(
@@ -262,9 +262,7 @@ class Superstructure(
           manipulator.isStowed &&
           manipulator.isAtTargetedPosition
         ) {
-          if (
-            !DriverStation.isAutonomous()
-          ) {
+          if (!DriverStation.isAutonomous()) {
             groundIntake.currentRequest =
               Request.GroundIntakeRequest.TargetingPosition(
                 GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
@@ -342,23 +340,24 @@ class Superstructure(
         led.state = LEDMode.MOVEMENT
 
         // Outputs
-        groundIntake.currentRequest = Request.GroundIntakeRequest.OpenLoop(-10.volts, 0.0.volts)
+        //        groundIntake.currentRequest = Request.GroundIntakeRequest.OpenLoop(-10.volts,
+        // 0.0.volts)
+        //
+        //        if ((Clock.fpgaTime - lastTransitionTime) >=
+        //          0.5.seconds){
+        groundIntake.currentRequest = Request.GroundIntakeRequest.ZeroArm()
+        //        }
 
-        if ((Clock.fpgaTime - lastTransitionTime) >=
-          0.5.seconds){
-          groundIntake.currentRequest = Request.GroundIntakeRequest.ZeroArm()
+        if (groundIntake.isZeroed) {
+          groundIntake.currentRequest =
+            Request.GroundIntakeRequest.TargetingPosition(
+              GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+              GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
+            )
         }
 
-//        if (groundIntake.isZeroed) {
-//          groundIntake.currentRequest =
-//            Request.GroundIntakeRequest.TargetingPosition(
-//              GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-//              GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
-//            )
-//        }
-
         // Transition
-        if (groundIntake.isZeroed) {
+        if (groundIntake.isAtTargetedPosition && groundIntake.isZeroed) {
           nextState = SuperstructureStates.HOME
         }
       }
@@ -465,8 +464,7 @@ class Superstructure(
         // Outputs
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
-            GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get() + 8.degrees,
-            0.0.volts
+            GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(), 0.0.volts
           )
         if (groundIntake.isAtTargetedPosition) {
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(2.5.inches)
@@ -706,8 +704,8 @@ class Superstructure(
 
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
-            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-            0.0.volts)
+            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), 0.0.volts
+          )
 
         if (groundIntake.isAtTargetedPosition) {
           val rollerCommandedVoltage =
@@ -897,11 +895,12 @@ class Superstructure(
             ManipulatorConstants.IDLE_VOLTAGE
           )
 
-        if (nodeTier == Constants.Universal.NodeTier.HYBRID){
-          if (manipulator.isAtTargetedPosition){
-            elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(
-              Elevator.TunableElevatorHeights.minPosition.get()
-            )
+        if (nodeTier == Constants.Universal.NodeTier.HYBRID) {
+          if (manipulator.isAtTargetedPosition) {
+            elevator.currentRequest =
+              Request.ElevatorRequest.TargetingPosition(
+                Elevator.TunableElevatorHeights.minPosition.get()
+              )
           }
         }
 

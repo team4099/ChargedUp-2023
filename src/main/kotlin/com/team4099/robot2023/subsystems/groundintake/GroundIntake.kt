@@ -256,12 +256,12 @@ class GroundIntake(private val io: GroundIntakeIO) {
       GroundIntakeState.ZEROING_ARM -> {
         zeroArm()
 
-//        if (inputs.isSimulated ||
-//          (inputs.armPosition - inputs.armAbsoluteEncoderPosition).absoluteValue <= 1.degrees
-//        ) {
+        if (inputs.isSimulated ||
+          (inputs.armPosition - inputs.armAbsoluteEncoderPosition).absoluteValue <= 1.degrees
+        ) {
           isZeroed = true
           lastArmPositionTarget = -1337.degrees
-//        }
+        }
 
         // Transitions
         nextState = fromRequestToState(currentRequest)
@@ -371,13 +371,13 @@ class GroundIntake(private val io: GroundIntakeIO) {
   }
 
   fun setArmVoltage(voltage: ElectricalPotential) {
-//    if ((openLoopForwardLimitReached && voltage > 0.0.volts) ||
-//      (openLoopReverseLimitReached && voltage < 0.0.volts)
-//    ) {
-//      io.setArmVoltage(0.0.volts)
-//    } else {
-      io.setArmVoltage(voltage)
-//    }
+    //    if ((openLoopForwardLimitReached && voltage > 0.0.volts) ||
+    //      (openLoopReverseLimitReached && voltage < 0.0.volts)
+    //    ) {
+    //      io.setArmVoltage(0.0.volts)
+    //    } else {
+    io.setArmVoltage(voltage)
+    //    }
   }
 
   /**

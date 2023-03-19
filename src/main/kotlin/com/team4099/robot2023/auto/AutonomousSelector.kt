@@ -26,6 +26,8 @@ object AutonomousSelector {
     LoggedDashboardChooser("AutonomousMode")
   private var waitBeforeCommandSlider: GenericEntry
   private var secondaryWaitInAuto: GenericEntry
+  var hasCube: GenericEntry
+  var hasCone: GenericEntry
 
   init {
     val autoTab = Shuffleboard.getTab("Pre-match")
@@ -64,6 +66,19 @@ object AutonomousSelector {
         .withPosition(3, 2)
         .withWidget(BuiltInWidgets.kTextView)
         .entry
+
+    hasCube =
+      autoTab
+        .add("Has Cube", false)
+        .withPosition(7, 2)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .entry
+    hasCone =
+      autoTab
+        .add("Has Cone", false)
+        .withPosition(6, 2)
+        .withWidget(BuiltInWidgets.kBooleanBox)
+        .entry
   }
 
   val waitTime: Time
@@ -91,7 +106,9 @@ object AutonomousSelector {
       AutonomousMode.PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE ->
         return WaitCommand(waitTime.inSeconds)
           .andThen(PreloadOpenLoopChargeStationBalance(drivetrain, superstructure))
-      AutonomousMode.PRELOAD_SCORE_AUTO_CHARGE_STATION -> return WaitCommand(waitTime.inSeconds).andThen(PreloadConeAutoBalance(drivetrain, superstructure))
+      AutonomousMode.PRELOAD_SCORE_AUTO_CHARGE_STATION ->
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(PreloadConeAutoBalance(drivetrain, superstructure))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()

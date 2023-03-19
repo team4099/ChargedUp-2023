@@ -20,10 +20,8 @@ import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.asDrivenOverDriving
-import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
-import org.team4099.lib.units.derived.inRotations
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
@@ -61,10 +59,17 @@ object GroundIntakeIONeo : GroundIntakeIO {
   // gets the reported angle from the through bore encoder
   private val encoderAbsolutePosition: Angle
     get() {
-      return (
-        (180.0.degrees - throughBoreEncoder.absolutePosition.rotations) *
-          GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO.asDrivenOverDriving
-        )
+      var output =
+        (
+          (-throughBoreEncoder.absolutePosition.rotations) *
+            GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO.asDrivenOverDriving
+          )
+
+      if (output in (-55).degrees..0.0.degrees) {
+        output -= 180.degrees
+      }
+
+      return output
     }
 
   // uses the absolute encoder position to calculate the arm position
@@ -125,8 +130,6 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
 
     Logger.getInstance()
-      .recordOutput("GroundIntake/absoluteEncoderRawRotations", (180.degrees - throughBoreEncoder.absolutePosition.rotations).inRotations)
-    Logger.getInstance()
       .recordOutput(
         "GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees
       )
@@ -161,9 +164,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
    * @param voltage the voltage to set the arm motor to
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
-    armSparkMax.setVoltage(
-      voltage.inVolts
-    )
+    armSparkMax.setVoltage(voltage.inVolts)
 
     Logger.getInstance().recordOutput("GroundIntake/commandedVoltage", voltage.inVolts)
   }
@@ -205,7 +206,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
   /** recalculates the current position of the neo encoder using value from the absolute encoder */
   override fun zeroEncoder() {
-    armEncoder.position = armSensor.positionToRawUnits(72.degrees)
+    armEncoder.position = armSensor.positionToRawUnits(armAbsolutePosition)
   }
 
   /**

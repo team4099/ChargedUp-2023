@@ -60,6 +60,7 @@ class DrivePathCommand(
   val resetPose: Boolean = false,
   val keepTrapping: Boolean = false,
   val flipForAlliances: Boolean = true,
+  val endPathOnceAtReference: Boolean = true,
   val endVelocity: Velocity2d = Velocity2d(),
 ) : CommandBase() {
   private val xPID: PIDController<Meter, Velocity<Meter>>
@@ -299,7 +300,8 @@ class DrivePathCommand(
 
   override fun isFinished(): Boolean {
     trajCurTime = Clock.fpgaTime - trajStartTime
-    return (!keepTrapping || swerveDriveController.atReference()) &&
+    return endPathOnceAtReference &&
+      (!keepTrapping || swerveDriveController.atReference()) &&
       trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds
   }
 
