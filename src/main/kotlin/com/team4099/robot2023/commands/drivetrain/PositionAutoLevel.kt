@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
@@ -45,7 +46,8 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
           (
             FieldConstants.Community.chargingStationCorners[3].x +
               FieldConstants.Community.chargingStationCorners[0].x
-            ) / 2
+            ) / 2 -
+            0.3.meters // skew CG isn't great ig
           )
           .inMeters,
         (
@@ -58,7 +60,7 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       )
 
     val intermediateTranslationXOffset =
-      if (drivetrain.odometryPose.isOnInnerSideOfChargeStation()) -20.inches else 20.inches
+      if (drivetrain.odometryPose.isOnInnerSideOfChargeStation()) -40.inches else 40.inches
 
     val intermediateTranslationYOffset =
       if (drivetrain.odometryPose.isAboveMiddleOfChargeStation()) -20.inches else 20.inches
@@ -102,7 +104,8 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
           )
         },
         flipForAlliances = false,
-        keepTrapping = true
+        keepTrapping = true,
+        endPathOnceAtReference = false
       )
 
     executeCommand.initialize()

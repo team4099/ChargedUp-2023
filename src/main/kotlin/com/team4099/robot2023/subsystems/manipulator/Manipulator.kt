@@ -3,6 +3,7 @@ package com.team4099.robot2023.subsystems.manipulator
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableNumber
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
@@ -251,11 +252,15 @@ class Manipulator(val io: ManipulatorIO) {
   val holdingGamePiece: GamePiece
     get() {
       if (hasCone) {
+        AutonomousSelector.hasCone.setBoolean(true)
         return GamePiece.CONE
       }
       if (hasCube) {
+        AutonomousSelector.hasCube.setBoolean(true)
         return GamePiece.CUBE
       }
+      AutonomousSelector.hasCone.setBoolean(false)
+      AutonomousSelector.hasCube.setBoolean(false)
       return GamePiece.NONE
     }
 

@@ -1,8 +1,7 @@
 package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
-import com.team4099.robot2023.commands.drivetrain.GyroAutoLevel
-import com.team4099.robot2023.commands.drivetrain.OpenLoopReverseCommand
+import com.team4099.robot2023.commands.AutoScoreCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -13,37 +12,28 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
 import com.team4099.robot2023.subsystems.elevator.Elevator
-import com.team4099.robot2023.subsystems.elevator.ElevatorIO
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.gameboy.GameboyIOServer
 import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIOCandle
 import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
-import com.team4099.robot2023.subsystems.manipulator.ManipulatorIO
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
+import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj2.command.Commands.runOnce
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import edu.wpi.first.wpilibj2.command.RunCommand
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand
 import org.team4099.lib.smoothDeadband
-import org.team4099.lib.units.base.feet
-import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.perSecond
-import javax.naming.ldap.Control
+import java.util.function.Supplier
 
 object RobotContainer {
   private val drivetrain: Drivetrain
@@ -56,6 +46,7 @@ object RobotContainer {
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       vision =
         Vision(
+          //          object: CameraIO {}
           CameraIONorthstar("northstar"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
@@ -83,11 +74,14 @@ object RobotContainer {
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
+    drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
+    drivetrain.objectiveSupplier = Supplier { superstructure.objective }
   }
 
   fun mapDefaultCommands() {
     drivetrain.defaultCommand =
       TeleopDriveCommand(
+        driver = Ryan(),
         { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
         { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
         { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
@@ -114,7 +108,7 @@ object RobotContainer {
 
   fun zeroSensors() {
     drivetrain.zeroSensors()
-    zeroArm()
+    superstructure.groundIntakeZeroArm()
   }
 
   fun setSteeringCoastMode() {
@@ -176,13 +170,20 @@ object RobotContainer {
 
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
-        if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
-        else Constants.Universal.GamePiece.CUBE,
-        superstructure.objective.nodeTier
+        {
+          if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
+          else Constants.Universal.GamePiece.CUBE
+        },
+        { superstructure.objective.nodeTier }
       )
     )
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
+    ControlBoard.dpadUp.whileTrue(AutoScoreCommand(drivetrain, superstructure))
+    //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
+
+    //    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain,
+    // superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(
     //      PickupFromSubstationCommand(

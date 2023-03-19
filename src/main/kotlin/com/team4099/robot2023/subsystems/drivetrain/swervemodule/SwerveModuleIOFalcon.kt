@@ -108,8 +108,8 @@ class SwerveModuleIOFalcon(
       driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
     driveConfiguration.slot0.kD =
       driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
-    driveConfiguration.slot0.kF =
-      driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
+    driveConfiguration.slot0.kF = 0.05425
+    //      driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
     driveConfiguration.supplyCurrLimit.triggerThresholdCurrent =
@@ -159,6 +159,10 @@ class SwerveModuleIOFalcon(
         "$label/potentiometerRadiansWithOffset",
         (inputs.potentiometerOutputRadians - zeroOffset).inRadians
       )
+
+    Logger.getInstance()
+      .recordOutput("$label/sensorVelocityRawUnits", driveFalcon.selectedSensorVelocity)
+    Logger.getInstance().recordOutput("$label/motorOutput", driveFalcon.motorOutputPercent)
   }
 
   override fun setSteeringSetpoint(angle: Angle) {

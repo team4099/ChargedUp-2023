@@ -1,14 +1,12 @@
 package com.team4099.robot2023.commands.drivetrain
 
-import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
-import com.team4099.robot2023.util.FMSData
-import edu.wpi.first.wpilibj.DriverStation
+import com.team4099.robot2023.util.driver.DriverProfile
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
-import kotlin.math.sign
 
 class TeleopDriveCommand(
+  val driver: DriverProfile,
   val driveX: () -> Double,
   val driveY: () -> Double,
   val turn: () -> Double,
@@ -16,44 +14,16 @@ class TeleopDriveCommand(
   val drivetrain: Drivetrain
 ) : CommandBase() {
 
-  val speedMultiplier: () -> Double
-
   init {
     addRequirements(drivetrain)
-    speedMultiplier = { if (slowMode()) 0.25 else 1.0 }
   }
 
   override fun initialize() {}
 
   override fun execute() {
-    val flipDrive = if (FMSData.allianceColor == DriverStation.Alliance.Red) -1 else 1
-    val flipTurn = -1
-
-    val speed =
-      Pair(
-        DrivetrainConstants.DRIVE_SETPOINT_MAX *
-          speedMultiplier() *
-          driveX() *
-          driveX() *
-          sign(driveX()) *
-          flipDrive,
-        DrivetrainConstants.DRIVE_SETPOINT_MAX *
-          speedMultiplier() *
-          driveY() *
-          driveY() *
-          sign(driveY()) *
-          flipDrive
-      )
-    val direction =
-      DrivetrainConstants.TURN_SETPOINT_MAX *
-        speedMultiplier() *
-        turn() *
-        turn() *
-        turn() *
-        turn() *
-        turn() *
-        flipTurn
-    drivetrain.setOpenLoop(direction, speed)
+    val speed = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
+    val rotation = driver.rotationSpeedClampedSupplier(turn, slowMode)
+    drivetrain.setOpenLoop(rotation, speed)
     Logger.getInstance().recordOutput("ActiveCommands/TeleopDriveCommand", true)
   }
   override fun isFinished(): Boolean {

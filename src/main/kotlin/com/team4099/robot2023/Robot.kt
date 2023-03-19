@@ -89,7 +89,7 @@ object Robot : LoggedRobot() {
           // if in replay mode get file path from command line and read log file
           val path = LogFileUtil.findReplayLog()
           logger.setReplaySource(WPILOGReader(path))
-          logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_sim")))
+          logger.addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(path, "_replayed")))
         }
       }
 
@@ -105,6 +105,7 @@ object Robot : LoggedRobot() {
     AutonomousSelector
     PathStore
     RobotContainer.mapDefaultCommands()
+    RobotContainer.zeroArm()
 
     // Set the scheduler to log events for command initialize, interrupt, finish
     CommandScheduler.getInstance().onCommandInitialize { command: Command ->
@@ -160,16 +161,15 @@ object Robot : LoggedRobot() {
   }
 
   override fun teleopInit() {
-    RobotContainer.zeroSensors()
     FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.mapTeleopControls()
     RobotContainer.getAutonomousCommand().cancel()
     RobotContainer.setDriveBrakeMode()
     RobotContainer.setSteeringBrakeMode()
-    RobotContainer.zeroArm()
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
+    RobotContainer.zeroSensors()
   }
 
   override fun testInit() {

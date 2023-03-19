@@ -22,6 +22,7 @@ import org.team4099.lib.hal.Clock
 import org.team4099.lib.kinematics.ChassisAccels
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -59,6 +60,7 @@ class DrivePathCommand(
   val resetPose: Boolean = false,
   val keepTrapping: Boolean = false,
   val flipForAlliances: Boolean = true,
+  val endPathOnceAtReference: Boolean = true,
   val endVelocity: Velocity2d = Velocity2d(),
 ) : CommandBase() {
   private val xPID: PIDController<Meter, Velocity<Meter>>
@@ -182,9 +184,13 @@ class DrivePathCommand(
 
     val trajectory = trajectoryGenerator.driveTrajectory
 
-    if (resetPose) {
-      drivetrain.odometryPose = AllianceFlipUtil.apply(Pose2d(trajectory.initialPose))
+    if (trajectory.states.size <= 1) {
+      return
     }
+
+    //    if (resetPose) {
+    //      drivetrain.odometryPose = AllianceFlipUtil.apply(Pose2d(trajectory.initialPose))
+    //    }
     trajStartTime = Clock.fpgaTime + trajectory.states[0].timeSeconds.seconds
     thetaPID.reset()
     xPID.reset()
@@ -237,6 +243,9 @@ class DrivePathCommand(
 
     Logger.getInstance()
       .recordOutput("Pathfollow/thetaPIDPositionErrorRadians", thetaPID.error.inRadians)
+
+    Logger.getInstance().recordOutput("Pathfollow/xPIDPositionErrorMeters", xPID.error.inMeters)
+    Logger.getInstance().recordOutput("Pathfollow/yPIDPositionErrorMeters", yPID.error.inMeters)
     Logger.getInstance()
       .recordOutput(
         "Pathfollow/thetaPIDVelocityErrorRadians", thetaPID.errorDerivative.inRadiansPerSecond
@@ -264,6 +273,10 @@ class DrivePathCommand(
       )
 
     Logger.getInstance().recordOutput("Pathfollow/trajectory", trajectory)
+    Logger.getInstance()
+      .recordOutput("Pathfollow/isAtReference", swerveDriveController.atReference())
+    Logger.getInstance()
+      .recordOutput("Pathfollow/trajectoryTimeSeconds", trajectory.totalTimeSeconds)
 
     Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", true)
 
@@ -287,11 +300,13 @@ class DrivePathCommand(
 
   override fun isFinished(): Boolean {
     trajCurTime = Clock.fpgaTime - trajStartTime
-    return (!keepTrapping || swerveDriveController.atReference()) &&
+    return endPathOnceAtReference &&
+      (!keepTrapping || swerveDriveController.atReference()) &&
       trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds
   }
 
   override fun end(interrupted: Boolean) {
+    Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", false)
     if (interrupted) {
       // Stop where we are if interrupted
       drivetrain.setOpenLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))

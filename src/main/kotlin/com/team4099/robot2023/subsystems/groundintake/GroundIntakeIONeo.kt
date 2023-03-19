@@ -59,10 +59,17 @@ object GroundIntakeIONeo : GroundIntakeIO {
   // gets the reported angle from the through bore encoder
   private val encoderAbsolutePosition: Angle
     get() {
-      return (
-        throughBoreEncoder.get().rotations *
-          GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO.asDrivenOverDriving
-        )
+      var output =
+        (
+          (-throughBoreEncoder.absolutePosition.rotations) *
+            GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO.asDrivenOverDriving
+          )
+
+      if (output in (-55).degrees..0.0.degrees) {
+        output -= 180.degrees
+      }
+
+      return output
     }
 
   // uses the absolute encoder position to calculate the arm position
@@ -123,8 +130,6 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
 
     Logger.getInstance()
-      .recordOutput("GroundIntake/absoluteEncoderRawRotations", throughBoreEncoder.get())
-    Logger.getInstance()
       .recordOutput(
         "GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees
       )
@@ -159,14 +164,9 @@ object GroundIntakeIONeo : GroundIntakeIO {
    * @param voltage the voltage to set the arm motor to
    */
   override fun setArmVoltage(voltage: ElectricalPotential) {
-    armSparkMax.setVoltage(
-      clamp(
-        voltage,
-        -GroundIntakeConstants.VOLTAGE_COMPENSATION,
-        GroundIntakeConstants.VOLTAGE_COMPENSATION
-      )
-        .inVolts
-    )
+    armSparkMax.setVoltage(voltage.inVolts)
+
+    Logger.getInstance().recordOutput("GroundIntake/commandedVoltage", voltage.inVolts)
   }
 
   /**

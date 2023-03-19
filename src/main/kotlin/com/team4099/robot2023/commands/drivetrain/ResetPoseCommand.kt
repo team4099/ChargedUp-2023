@@ -13,6 +13,8 @@ class ResetPoseCommand(val drivetrain: Drivetrain, val pose: Pose2d) : CommandBa
 
   override fun initialize() {
     drivetrain.odometryPose = AllianceFlipUtil.apply(pose)
+    Logger.getInstance()
+      .recordOutput("Drivetrain/lastResetPose", AllianceFlipUtil.apply(pose).pose2d)
     Logger.getInstance().recordOutput("ActiveCommands/ResetPoseCommand", true)
   }
 
