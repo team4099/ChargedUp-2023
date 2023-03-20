@@ -92,7 +92,7 @@ object ManipulatorConstants {
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
   val IDLE_VOLTAGE = 0.0.volts
-  val CONE_IDLE = 3.volts
+  val CONE_IDLE = 6.volts
   val CUBE_IDLE = -3.volts
   val CONE_IN = 7.5.volts
   val CUBE_IN = -6.volts

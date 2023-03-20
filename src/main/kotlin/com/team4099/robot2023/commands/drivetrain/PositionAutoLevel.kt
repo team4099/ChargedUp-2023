@@ -47,7 +47,7 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
             FieldConstants.Community.chargingStationCorners[3].x +
               FieldConstants.Community.chargingStationCorners[0].x
             ) / 2 -
-            0.3.meters // skew CG isn't great ig
+            0.1.meters // skew CG isn't great ig
           )
           .inMeters,
         (
@@ -60,10 +60,10 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       )
 
     val intermediateTranslationXOffset =
-      if (drivetrain.odometryPose.isOnInnerSideOfChargeStation()) -40.inches else 40.inches
+      if (drivetrain.odometryPose.isOnInnerSideOfChargeStation()) -20.inches else 20.inches
 
     val intermediateTranslationYOffset =
-      if (drivetrain.odometryPose.isAboveMiddleOfChargeStation()) -20.inches else 20.inches
+      if (drivetrain.odometryPose.isAboveMiddleOfChargeStation()) 40.inches else -40.inches
 
     executeCommand =
       DrivePathCommand(

@@ -73,7 +73,7 @@ object GameboyIOServer : GameboyIO {
     if (FMSData.allianceColor == DriverStation.Alliance.Blue) {
       selected += (8 - objective.nodeColumn)
     } else {
-      selected += objective.nodeColumn
+      selected += (8 - objective.nodeColumn)
     }
     when (objective.nodeTier) {
       Constants.Universal.NodeTier.HYBRID -> selected += 0
@@ -100,7 +100,7 @@ object GameboyIOServer : GameboyIO {
     if (FMSData.allianceColor == DriverStation.Alliance.Blue) {
       column = 8 - position % 9
     } else {
-      column = position % 9
+      column = 8 - position % 9
     }
 
     if (position < 9) {
