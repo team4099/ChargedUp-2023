@@ -6,7 +6,6 @@ import com.team4099.robot2023.commands.elevator.GroundIntakeCharacterizeCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
 import com.team4099.robot2023.config.constants.GamePiece
-import com.team4099.robot2023.config.constants.GroundIntakeConstants
 import com.team4099.robot2023.config.constants.LedConstants.LEDMode
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.config.constants.NodeTier
@@ -466,12 +465,19 @@ class Superstructure(
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(), 0.0.volts
           )
+
+        manipulator.currentRequest =
+          Request.ManipulatorRequest.TargetingPosition(
+            manipulator.inputs.armPosition,
+            Manipulator.TunableManipulatorStates.coneInVoltage.get()
+          )
+
         if (groundIntake.isAtTargetedPosition) {
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(2.5.inches)
           if (elevator.isAtTargetedPosition) {
             manipulator.currentRequest =
               Request.ManipulatorRequest.TargetingPosition(
-                7.0.inches, GroundIntakeConstants.NEUTRAL_VOLTAGE
+                7.0.inches, Manipulator.TunableManipulatorStates.coneInVoltage.get()
               )
           }
         }
