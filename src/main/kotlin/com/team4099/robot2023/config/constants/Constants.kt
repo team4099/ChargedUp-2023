@@ -1,7 +1,5 @@
 package com.team4099.robot2023.config.constants
 
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
 
@@ -53,7 +51,7 @@ object Constants {
 
   object Tuning {
 
-    val TUNING_MODE = false && !DriverStation.isFMSAttached() // force tuning mode to be false when we're attached to FMS
+    const val TUNING_MODE = false
     const val DEBUGING_MODE = true
     const val SIMULATE_DRIFT = false
     const val DRIFT_CONSTANT = 0.001

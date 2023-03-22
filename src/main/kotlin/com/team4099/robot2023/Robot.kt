@@ -41,6 +41,8 @@ object Robot : LoggedRobot() {
   val logWriteAlert =
     Alert("Failed write to the log file. Data will NOT be logged", AlertType.ERROR)
   val logSimulationAlert = Alert("Running in simulation", AlertType.INFO)
+  val logTuningModeEnabled =
+    Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.WARNING)
 
   override fun robotInit() {
     val logger = Logger.getInstance()
@@ -49,6 +51,9 @@ object Robot : LoggedRobot() {
     setUseTiming(
       RobotBase.isReal() || Constants.Universal.SIM_MODE != Constants.Tuning.SimType.REPLAY
     )
+
+    // Tuning mode alert check
+    logTuningModeEnabled.set(Constants.Tuning.TUNING_MODE)
 
     // metadata value (not timed -- just metadata for given log file)
     logger.recordMetadata(
