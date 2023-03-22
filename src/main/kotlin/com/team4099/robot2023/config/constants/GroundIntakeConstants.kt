@@ -1,6 +1,7 @@
 package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -39,6 +40,9 @@ object GroundIntakeConstants {
 
   val ROLLER_CURRENT_LIMIT = 30.amps // TODO TUNE
   val ARM_CURRENT_LIMIT = 50.amps // TODO TUNE
+
+  val ROLLER_TEMP_ALERT = 80.celsius
+  val ARM_TEMP_ALERT = 80.celsius
 
   const val ROLLER_MOTOR_INVERTED = true
   const val ARM_MOTOR_INVERTED = false

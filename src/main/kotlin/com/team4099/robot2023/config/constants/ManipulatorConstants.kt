@@ -2,6 +2,7 @@ package com.team4099.robot2023.config.constants
 
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
@@ -51,6 +52,9 @@ object ManipulatorConstants {
   // TODO(figure out what current limit should be)
   val ARM_STATOR_CURRENT_LIMIT = 20.amps
   val ROLLER_STATOR_CURRENT_LIMIT = 40.amps
+
+  val ROLLER_TEMP_ALERT = 80.celsius
+  val ARM_TEMP_ALERT = 80.celsius
 
   val ARM_VOLTAGE_COMPENSATION = 12.volts
   val ROLLER_VOLTAGE_COMPENSATION = 12.volts

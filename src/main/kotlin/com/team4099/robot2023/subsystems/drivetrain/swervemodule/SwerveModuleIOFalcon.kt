@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import com.team4099.robot2023.util.Alert
 import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj.RobotController
 import org.littletonrobotics.junction.Logger
@@ -69,6 +70,18 @@ class SwerveModuleIOFalcon(
         2 * PI - potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
       }
     }
+
+  private val steeringCurrentLimitAlert =
+    Alert("$label steering motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val driveCurrentLimitAlert =
+    Alert("$label drive motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val steeringTempAlert =
+    Alert("$label steering motor surpassed temperature limit", Alert.AlertType.ERROR)
+
+  private val driveTempAlert =
+    Alert("$label drive motor surpassed temperature limit", Alert.AlertType.ERROR)
 
   init {
     driveFalcon.configFactoryDefault()
@@ -163,6 +176,20 @@ class SwerveModuleIOFalcon(
     Logger.getInstance()
       .recordOutput("$label/sensorVelocityRawUnits", driveFalcon.selectedSensorVelocity)
     Logger.getInstance().recordOutput("$label/motorOutput", driveFalcon.motorOutputPercent)
+
+    driveCurrentLimitAlert.set(
+      driveFalcon.statorCurrent.amps > DrivetrainConstants.DRIVE_STATOR_CURRENT_LIMIT
+    )
+
+    steeringCurrentLimitAlert.set(
+      steeringFalcon.statorCurrent.amps > DrivetrainConstants.DRIVE_STATOR_CURRENT_LIMIT
+    )
+
+    driveTempAlert.set(driveFalcon.temperature.celsius > DrivetrainConstants.DRIVE_TEMP_ALERT)
+
+    steeringTempAlert.set(
+      steeringFalcon.temperature.celsius > DrivetrainConstants.STEERING_TEMP_ALERT
+    )
   }
 
   override fun setSteeringSetpoint(angle: Angle) {
