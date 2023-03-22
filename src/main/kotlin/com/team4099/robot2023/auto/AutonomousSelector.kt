@@ -2,6 +2,8 @@ package com.team4099.robot2023.auto
 
 import com.team4099.robot2023.auto.mode.ConeCubeAuto
 import com.team4099.robot2023.auto.mode.ConeCubeBumpAuto
+import com.team4099.robot2023.auto.mode.ConeCubeBumpHoldAutoBalance
+import com.team4099.robot2023.auto.mode.ConeCubeHoldAutoBalance
 import com.team4099.robot2023.auto.mode.ConeMobilityAuto
 import com.team4099.robot2023.auto.mode.PreloadConeAutoBalance
 import com.team4099.robot2023.auto.mode.PreloadOpenLoopChargeStationBalance
@@ -43,6 +45,15 @@ object AutonomousSelector {
     autonomousModeChooser.addOption(
       "1 Cone + 1 Cube Auto, Cable Carrier Side", AutonomousMode.CO_CU_BUMP_AUTO
     )
+
+    autonomousModeChooser.addOption(
+      "1 Cone + Hold Cube + Auto Balance", AutonomousMode.CO_CU_HOLD_AUTO_BALANCE
+    )
+    autonomousModeChooser.addOption(
+      "1 Cone + Hold Cube + Auto Balance, Cable Carrier Side",
+      AutonomousMode.CO_CU_BUMP_HOLD_AUTO_BALANCE
+    )
+
     autonomousModeChooser.addOption("1 Cone + Mobility", AutonomousMode.CONE_MOBILITY_AUTO)
     autonomousModeChooser.addOption(
       "1 Cone + Open Loop Charge Station", AutonomousMode.CONE_MOBILITY_AUTO
@@ -100,6 +111,12 @@ object AutonomousSelector {
       AutonomousMode.CO_CU_BUMP_AUTO ->
         return WaitCommand(waitTime.inSeconds)
           .andThen(ConeCubeBumpAuto(drivetrain, superstructure))
+      AutonomousMode.CO_CU_HOLD_AUTO_BALANCE ->
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(ConeCubeHoldAutoBalance(drivetrain, superstructure))
+      AutonomousMode.CO_CU_BUMP_HOLD_AUTO_BALANCE ->
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(ConeCubeBumpHoldAutoBalance(drivetrain, superstructure))
       AutonomousMode.CONE_MOBILITY_AUTO ->
         return WaitCommand(waitTime.inSeconds)
           .andThen(ConeMobilityAuto(drivetrain, superstructure))
@@ -119,6 +136,8 @@ object AutonomousSelector {
     ELEVATOR_CHARACTERIZE,
     CO_CU_AUTO,
     CO_CU_BUMP_AUTO,
+    CO_CU_HOLD_AUTO_BALANCE,
+    CO_CU_BUMP_HOLD_AUTO_BALANCE,
     CONE_MOBILITY_AUTO,
     PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE,
     PRELOAD_SCORE_AUTO_CHARGE_STATION

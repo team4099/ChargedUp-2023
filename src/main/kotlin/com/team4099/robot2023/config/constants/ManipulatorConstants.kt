@@ -70,7 +70,7 @@ object ManipulatorConstants {
   val CUBE_CURRENT_THRESHOLD = 30.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
-  val ARM_MAX_EXTENSION = 8.inches
+  val ARM_MAX_EXTENSION = 8.6.inches
   val ARM_MAX_RETRACTION = 0.inches
   val ARM_TOLERANCE = 0.25.inches
   val ARM_MASS = 10.0.pounds

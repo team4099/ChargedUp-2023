@@ -135,21 +135,21 @@ class Manipulator(val io: ManipulatorIO) {
 
     val lowConeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/lowCubeScoreExtension",
+        "Manipulator/lowConeScoreExtension",
         ManipulatorConstants.LOW_CONE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
     val midConeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/midCubeScoreExtension",
+        "Manipulator/midConeScoreExtension",
         ManipulatorConstants.MID_CONE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
     val highConeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/highCubeScoreExtension",
+        "Manipulator/highConeScoreExtension",
         ManipulatorConstants.HIGH_CONE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
