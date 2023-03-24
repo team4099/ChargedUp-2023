@@ -53,6 +53,7 @@ object ControlBoard {
   val doubleSubstationIntake = Trigger { driver.aButton }
   val scoreOuttake = Trigger { driver.xButton }
   val groundIntakeCube = Trigger { driver.rightShoulderButton }
+  val singleSubIntake = Trigger { driver.leftShoulderButton }
 
   val increaseRollerVoltage = Trigger { operator.dPadUp }
   val decreaseRollerVoltage = Trigger { operator.dPadDown }

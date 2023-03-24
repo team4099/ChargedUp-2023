@@ -128,7 +128,7 @@ object ManipulatorConstants {
   }
 
   val MIN_EXTENSION = 1.0.inches
-  val SINGLE_SUBSTATION_INTAKE_EXTENSION = 4.0.inches
+  val SINGLE_SUBSTATION_INTAKE_EXTENSION = 1.0.inches
   val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
   val LOW_CUBE_SCORE_EXTENSION = 7.5.inches
   val MID_CUBE_SCORE_EXTENSION = 3.0.inches

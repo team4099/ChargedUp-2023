@@ -323,13 +323,8 @@ class Superstructure(
                 }
               }
             }
-            is SuperstructureRequest.SingleSubstationIntake -> {
-              when (usingGamePiece) {
-                GamePiece.CONE -> SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CONE
-                GamePiece.CUBE -> SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CUBE
-                GamePiece.NONE -> SuperstructureStates.IDLE
-              }
-            }
+            is SuperstructureRequest.SingleSubstationIntakePrep ->
+              SuperstructureStates.SINGLE_SUBSTATION_INTAKE_PREP
             is SuperstructureRequest.Tuning -> SuperstructureStates.TUNING
             else -> currentState
           }
@@ -622,11 +617,7 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
           )
         if (groundIntake.isAtTargetedPosition) {
-          manipulator.currentRequest =
-            Request.ManipulatorRequest.TargetingPosition(
-              Manipulator.TunableManipulatorStates.singleSubstationIntakeShelfExtension.get(),
-              ManipulatorConstants.IDLE_VOLTAGE
-            )
+
           val offset =
             when (usingGamePiece) {
               GamePiece.CUBE -> Elevator.TunableElevatorHeights.singleSubstationCubeOffset.get()
@@ -637,6 +628,14 @@ class Superstructure(
             Request.ElevatorRequest.TargetingPosition(
               Elevator.TunableElevatorHeights.singleSubstationHeight.get() + offset
             )
+
+          if (elevator.isAtTargetedPosition) {
+            manipulator.currentRequest =
+              Request.ManipulatorRequest.TargetingPosition(
+                Manipulator.TunableManipulatorStates.singleSubstationIntakeShelfExtension.get(),
+                ManipulatorConstants.IDLE_VOLTAGE
+              )
+          }
         }
 
         // Transition
@@ -684,12 +683,19 @@ class Superstructure(
         // Outputs
 
         // Transition
-        if (manipulator.isAtTargetedPosition &&
-          (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.intakeTime.get()
+        if ((
+          manipulator.isAtTargetedPosition &&
+            (
+              (manipulator.hasCone && usingGamePiece == GamePiece.CONE) ||
+                (manipulator.hasCube && usingGamePiece == GamePiece.CUBE)
+              )
+          ) ||
+          currentRequest is SuperstructureRequest.Idle
         ) {
-          nextState = SuperstructureStates.IDLE
-          currentRequest = SuperstructureRequest.Idle()
+          if (manipulator.hasCone && usingGamePiece == GamePiece.CONE) {
+            theoreticalGamePiece = Constants.Universal.GamePiece.CONE
+          }
+          nextState = SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP
         }
       }
       SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP -> {
@@ -698,11 +704,12 @@ class Superstructure(
         manipulator.currentRequest =
           Request.ManipulatorRequest.TargetingPosition(
             Manipulator.TunableManipulatorStates.minExtension.get(),
-            ManipulatorConstants.IDLE_VOLTAGE
+            ManipulatorConstants.CONE_IDLE
           )
 
         if (manipulator.isAtTargetedPosition) {
           nextState = SuperstructureStates.IDLE
+          currentRequest = SuperstructureRequest.Idle()
         }
       }
       SuperstructureStates.SCORE_PREP -> {
@@ -1039,6 +1046,17 @@ class Superstructure(
         .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP }
 
     returnCommand.name = "DoubleSubIntakeConeCommand"
+    return returnCommand
+  }
+
+  fun singleSubConeCommand(): CommandBase {
+    val returnCommand =
+      runOnce {
+        currentRequest = SuperstructureRequest.SingleSubstationIntakePrep(GamePiece.CONE)
+      }
+        .until { currentState == SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP }
+
+    returnCommand.name = "SingleSubConeCommand"
     return returnCommand
   }
 

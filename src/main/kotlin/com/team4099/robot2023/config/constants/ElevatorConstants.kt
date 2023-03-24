@@ -90,7 +90,7 @@ object ElevatorConstants {
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val DOUBLE_SUBSTATION_CONE_OFFSET = 11.0.inches
   val SINGLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
-  val SINGLE_SUBSTATION_CONE_OFFSET = 0.0.inches
+  val SINGLE_SUBSTATION_CONE_OFFSET = 24.0.inches
   val SLAM_VELOCITY = 5.0.inches.perSecond
 
   enum class ElevatorStates(val height: Length) {

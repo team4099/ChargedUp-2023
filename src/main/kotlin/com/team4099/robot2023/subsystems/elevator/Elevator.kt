@@ -143,14 +143,14 @@ class Elevator(val io: ElevatorIO) {
     val singleSubstationCubeOffset =
       LoggedTunableValue(
         "Elevator/singleSubstationCubeOffset",
-        ElevatorConstants.DOUBLE_SUBSTATION_CUBE_OFFSET,
+        ElevatorConstants.SINGLE_SUBSTATION_CUBE_OFFSET,
         Pair({ it.inInches }, { it.inches })
       )
 
     val singleSubstationConeOffset =
       LoggedTunableValue(
         "Elevator/singleSubstationConeOffset",
-        ElevatorConstants.DOUBLE_SUBSTATION_CONE_OFFSET,
+        ElevatorConstants.SINGLE_SUBSTATION_CONE_OFFSET,
         Pair({ it.inInches }, { it.inches })
       )
 

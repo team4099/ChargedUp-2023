@@ -180,6 +180,7 @@ object RobotContainer {
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
     ControlBoard.dpadUp.whileTrue(AutoScoreCommand(drivetrain, superstructure))
+    ControlBoard.singleSubIntake.whileTrue(superstructure.singleSubConeCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain,
