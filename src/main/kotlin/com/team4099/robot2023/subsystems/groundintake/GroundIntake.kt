@@ -4,6 +4,7 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
+import com.team4099.robot2023.subsystems.superstructure.Request
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ArmFeedforward
@@ -171,6 +172,15 @@ class GroundIntake(private val io: GroundIntakeIO) {
         (inputs.armPosition - armPositionTarget).absoluteValue <=
         GroundIntakeConstants.ARM_TOLERANCE
 
+  val canContinueSafely: Boolean
+    get() =
+      currentRequest is Request.GroundIntakeRequest.TargetingPosition &&
+        (
+          ((Clock.fpgaTime - timeProfileGeneratedAt) - armProfile.totalTime() < 1.0.seconds) ||
+            armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
+          ) &&
+        (inputs.armPosition - armPositionTarget).absoluteValue <= 5.degrees
+
   init {
 
     if (RobotBase.isReal()) {
@@ -215,6 +225,8 @@ class GroundIntake(private val io: GroundIntakeIO) {
       .recordOutput("GroundIntake/requestedState", currentRequest.javaClass.simpleName)
 
     Logger.getInstance().recordOutput("GroundIntake/isAtTargetedPosition", isAtTargetedPosition)
+
+    Logger.getInstance().recordOutput("Elevator/canContinueSafely", canContinueSafely)
 
     Logger.getInstance().recordOutput("GroundIntake/isZeroed", isZeroed)
 

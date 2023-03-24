@@ -318,6 +318,18 @@ class Elevator(val io: ElevatorIO) {
         (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
         ElevatorConstants.ELEVATOR_TOLERANCE
 
+  val canContinueSafely: Boolean
+    get() =
+      currentRequest is ElevatorRequest.TargetingPosition &&
+        (
+          (
+            (Clock.fpgaTime - timeProfileGeneratedAt) - elevatorProfile.totalTime() <
+              1.0.seconds
+            ) ||
+            elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
+          ) &&
+        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <= 10.inches
+
   init {
     TunableElevatorHeights
 
@@ -392,6 +404,7 @@ class Elevator(val io: ElevatorIO) {
 
     if (Constants.Tuning.DEBUGING_MODE) {
       Logger.getInstance().recordOutput("Elevator/isHomed", isHomed)
+      Logger.getInstance().recordOutput("Elevator/canContinueSafely", canContinueSafely)
 
       Logger.getInstance().recordOutput("Elevator/isAtTargetPosition", isAtTargetedPosition)
       Logger.getInstance().recordOutput("Elevator/isStowed", isStowed)

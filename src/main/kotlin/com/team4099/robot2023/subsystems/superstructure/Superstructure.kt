@@ -85,6 +85,8 @@ class Superstructure(
 
   var checkAtRequestedStateNextLoopCycle = false
 
+  var canMoveSafely = false
+
   override fun periodic() {
     val ledLoopStartTime = Clock.realTimestamp
     led.periodic()
@@ -140,6 +142,7 @@ class Superstructure(
     Logger.getInstance().recordOutput("Superstructure/isAtAllTargetedPositions", isAtRequestedState)
     Logger.getInstance()
       .recordOutput("Superstructure/theoreticalGamePiece", theoreticalGamePiece.name)
+    Logger.getInstance().recordOutput("Superstructure/canMoveSafely", canMoveSafely)
 
     Logger.getInstance()
       .recordOutput(
@@ -469,7 +472,7 @@ class Superstructure(
             Manipulator.TunableManipulatorStates.coneInVoltage.get()
           )
 
-        if (groundIntake.isAtTargetedPosition) {
+        if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(2.5.inches)
           if (elevator.isAtTargetedPosition) {
             manipulator.currentRequest =
@@ -535,7 +538,7 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
             GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
           )
-        if (groundIntake.isAtTargetedPosition) {
+        if (groundIntake.canContinueSafely || groundIntake.isAtTargetedPosition) {
           val offset =
             when (usingGamePiece) {
               GamePiece.CUBE -> Elevator.TunableElevatorHeights.shelfIntakeCubeOffset.get()
@@ -547,7 +550,7 @@ class Superstructure(
               Elevator.TunableElevatorHeights.doubleSubstationHeight.get() + offset
             )
 
-          if (elevator.isAtTargetedPosition) {
+          if (elevator.isAtTargetedPosition || elevator.canContinueSafely) {
             val rollerCommandedVoltage =
               when (usingGamePiece) {
                 GamePiece.CONE -> ManipulatorConstants.CONE_IN
@@ -618,7 +621,7 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
             GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
           )
-        if (groundIntake.isAtTargetedPosition) {
+        if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {
           val offset =
             when (usingGamePiece) {
               GamePiece.CUBE -> Elevator.TunableElevatorHeights.singleSubstationCubeOffset.get()
@@ -630,7 +633,7 @@ class Superstructure(
               Elevator.TunableElevatorHeights.singleSubstationHeight.get() + offset
             )
 
-          if (elevator.isAtTargetedPosition) {
+          if (elevator.isAtTargetedPosition || elevator.canContinueSafely) {
             manipulator.currentRequest =
               Request.ManipulatorRequest.TargetingPosition(
                 Manipulator.TunableManipulatorStates.singleSubstationIntakeShelfExtension.get(),
@@ -728,7 +731,7 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), 0.0.volts
           )
 
-        if (groundIntake.isAtTargetedPosition) {
+        if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {
           val rollerCommandedVoltage =
             when (usingGamePiece) {
               GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
@@ -781,7 +784,7 @@ class Superstructure(
 
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(scoreHeight)
 
-          if (elevator.isAtTargetedPosition) {
+          if (elevator.isAtTargetedPosition || elevator.canContinueSafely) {
 
             val extension =
               when (nodeTier) {
@@ -976,6 +979,8 @@ class Superstructure(
         elevator.isAtTargetedPosition &&
         manipulator.isAtTargetedPosition &&
         groundIntake.isAtTargetedPosition
+
+      canMoveSafely = elevator.canContinueSafely && groundIntake.canContinueSafely
     } else {
       checkAtRequestedStateNextLoopCycle = false
     }
@@ -1080,7 +1085,11 @@ class Superstructure(
       runOnce { currentRequest = SuperstructureRequest.Score() }
         .andThen(
           WaitUntilCommand {
-            isAtRequestedState && currentState == SuperstructureStates.IDLE
+            if (DriverStation.isAutonomous()) {
+              canMoveSafely && currentState == SuperstructureStates.IDLE
+            } else {
+              isAtRequestedState && currentState == SuperstructureStates.IDLE
+            }
           }
         )
 

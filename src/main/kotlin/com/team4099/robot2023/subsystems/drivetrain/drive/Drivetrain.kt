@@ -70,6 +70,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       return 0.0.degrees
     }
 
+  var canMoveSafely = Supplier { false }
+
   var elevatorHeightSupplier = Supplier<Length> { 0.0.inches }
 
   var objectiveSupplier = Supplier<Objective> { Objective() }
