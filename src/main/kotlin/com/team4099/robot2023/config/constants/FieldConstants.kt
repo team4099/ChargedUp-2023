@@ -331,7 +331,7 @@ object FieldConstants {
     val singleSubstationCenterX = singleSubstationLeftX + singleSubstationWidth / 2.0
     val singleSubstationRightX = singleSubstationLeftX + singleSubstationWidth
     val singleSubstationTranslation: Translation2d = Translation2d(singleSubstationCenterX, leftY)
-    val singleSubstationHeight = (18.0).inches
+    val singleSubstationHeight = (38.0).inches
     val singleSubstationLowZ = (27.125).inches
     val singleSubstationCenterZ = singleSubstationLowZ + singleSubstationHeight / 2.0
     val singleSubstationHighZ = singleSubstationLowZ + singleSubstationHeight

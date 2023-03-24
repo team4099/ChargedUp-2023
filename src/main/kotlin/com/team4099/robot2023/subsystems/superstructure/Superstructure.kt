@@ -313,6 +313,8 @@ class Superstructure(
               SuperstructureStates.GROUND_INTAKE_CUBE_PREP
             is SuperstructureRequest.Home -> SuperstructureStates.HOME_PREP
             is SuperstructureRequest.Idle -> SuperstructureStates.IDLE
+            is SuperstructureRequest.SingleSubstationIntakePrep ->
+              SuperstructureStates.SINGLE_SUBSTATION_INTAKE_PREP
             is SuperstructureRequest.PrepScore -> {
               when (usingGamePiece) {
                 GamePiece.CONE -> SuperstructureStates.SCORE_PREP
@@ -617,7 +619,6 @@ class Superstructure(
             GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
           )
         if (groundIntake.isAtTargetedPosition) {
-
           val offset =
             when (usingGamePiece) {
               GamePiece.CUBE -> Elevator.TunableElevatorHeights.singleSubstationCubeOffset.get()
@@ -636,6 +637,13 @@ class Superstructure(
                 ManipulatorConstants.IDLE_VOLTAGE
               )
           }
+        }
+        if (groundIntake.isAtTargetedPosition && elevator.isAtTargetedPosition) {
+          manipulator.currentRequest =
+            Request.ManipulatorRequest.TargetingPosition(
+              Manipulator.TunableManipulatorStates.singleSubstationIntakeShelfExtension.get(),
+              ManipulatorConstants.IDLE_VOLTAGE
+            )
         }
 
         // Transition
@@ -1056,7 +1064,7 @@ class Superstructure(
       }
         .until { currentState == SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP }
 
-    returnCommand.name = "SingleSubConeCommand"
+    returnCommand.name = "SingleSubIntakeConeCommand"
     return returnCommand
   }
 

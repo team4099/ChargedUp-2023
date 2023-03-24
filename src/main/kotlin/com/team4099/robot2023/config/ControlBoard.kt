@@ -51,6 +51,7 @@ object ControlBoard {
   val setArmDoubleSubCone = Trigger { operator.dPadRight }
 
   val doubleSubstationIntake = Trigger { driver.aButton }
+  val singleSubstationIntake = Trigger { driver.bButton }
   val scoreOuttake = Trigger { driver.xButton }
   val groundIntakeCube = Trigger { driver.rightShoulderButton }
   val singleSubIntake = Trigger { driver.leftShoulderButton }
