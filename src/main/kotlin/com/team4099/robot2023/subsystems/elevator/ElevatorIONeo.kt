@@ -6,6 +6,8 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import com.team4099.robot2023.subsystems.motorchecker.MotorChecker
+import com.team4099.robot2023.subsystems.motorchecker.Neo
 import com.team4099.robot2023.util.Alert
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
@@ -84,6 +86,8 @@ object ElevatorIONeo : ElevatorIO {
 
     leaderSparkMax.burnFlash()
     followerSparkMax.burnFlash()
+
+    MotorChecker.add(Neo(leaderSparkMax))
   }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
