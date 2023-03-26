@@ -1,6 +1,7 @@
 package com.team4099.robot2023.auto
 
 import com.team4099.robot2023.auto.mode.ConeCubeAuto
+import com.team4099.robot2023.auto.mode.ConeCubeAutoNoSpin
 import com.team4099.robot2023.auto.mode.ConeCubeBumpAuto
 import com.team4099.robot2023.auto.mode.ConeCubeBumpHoldAutoBalance
 import com.team4099.robot2023.auto.mode.ConeCubeHoldAutoBalance
@@ -42,6 +43,9 @@ object AutonomousSelector {
     autonomousModeChooser.addOption("Test", AutonomousMode.TEST_AUTO_PATH)
     autonomousModeChooser.addOption("Characterize Elevator", AutonomousMode.ELEVATOR_CHARACTERIZE)
     autonomousModeChooser.addOption("1 Cone + 1 Cube Auto", AutonomousMode.CO_CU_AUTO)
+    autonomousModeChooser.addOption(
+      "1 Cone + 1 Cube Auto, 254 version", AutonomousMode.CO_CU_AUTO_NO_SPIN
+    )
     autonomousModeChooser.addOption(
       "1 Cone + 1 Cube Auto, Cable Carrier Side", AutonomousMode.CO_CU_BUMP_AUTO
     )
@@ -108,6 +112,9 @@ object AutonomousSelector {
       AutonomousMode.ELEVATOR_CHARACTERIZE -> return ElevatorKsCharacterizeCommand(superstructure)
       AutonomousMode.CO_CU_AUTO ->
         return WaitCommand(waitTime.inSeconds).andThen(ConeCubeAuto(drivetrain, superstructure))
+      AutonomousMode.CO_CU_AUTO_NO_SPIN ->
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(ConeCubeAutoNoSpin(drivetrain, superstructure))
       AutonomousMode.CO_CU_BUMP_AUTO ->
         return WaitCommand(waitTime.inSeconds)
           .andThen(ConeCubeBumpAuto(drivetrain, superstructure))
@@ -135,6 +142,7 @@ object AutonomousSelector {
     TEST_AUTO_PATH,
     ELEVATOR_CHARACTERIZE,
     CO_CU_AUTO,
+    CO_CU_AUTO_NO_SPIN,
     CO_CU_BUMP_AUTO,
     CO_CU_HOLD_AUTO_BALANCE,
     CO_CU_BUMP_HOLD_AUTO_BALANCE,

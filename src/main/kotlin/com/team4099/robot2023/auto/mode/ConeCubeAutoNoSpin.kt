@@ -43,13 +43,23 @@ class ConeCubeAutoNoSpin(val drivetrain: Drivetrain, val superstructure: Superst
                 180.0.degrees.inRotation2ds
               ),
               Waypoint(
+                Translation2d(3.37.meters, 4.97.meters).translation2d,
+                0.0.degrees.inRotation2ds,
+                180.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(6.70.meters, 5.83.meters).translation2d,
+                -15.0.degrees.inRotation2ds,
+                -135.0.degrees.inRotation2ds
+              ),
+              Waypoint(
                 Translation2d(
                   FieldConstants.StagingLocations.translations[3]!!.x,
                   FieldConstants.StagingLocations.translations[3]!!.y
                 )
                   .translation2d,
-                0.0.degrees.inRotation2ds,
-                0.0.degrees.inRotation2ds
+                -135.0.degrees.inRotation2ds,
+                -135.0.degrees.inRotation2ds
               ),
             )
           }
@@ -67,7 +77,7 @@ class ConeCubeAutoNoSpin(val drivetrain: Drivetrain, val superstructure: Superst
               )
                 .translation2d,
               180.0.degrees.inRotation2ds,
-              0.0.degrees.inRotation2ds
+              -135.0.degrees.inRotation2ds,
             ),
             Waypoint(
               Translation2d(3.139.meters, 4.68.meters).translation2d,
