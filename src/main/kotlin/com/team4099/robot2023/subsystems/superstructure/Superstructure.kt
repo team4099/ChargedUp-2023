@@ -866,7 +866,7 @@ class Superstructure(
         // Transition
         if (manipulator.isAtTargetedPosition &&
           (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.spitTime.get()
+          Manipulator.TunableManipulatorStates.cubeSpitTime.get()
         ) {
           theoreticalGamePiece = Constants.Universal.GamePiece.NONE
           nextState = SuperstructureStates.SCORE_CLEANUP
@@ -903,7 +903,7 @@ class Superstructure(
         if (elevator.isAtTargetedPosition &&
           manipulator.isAtTargetedPosition &&
           (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.spitTime.get()
+          Manipulator.TunableManipulatorStates.coneSpitTime.get()
         ) {
           theoreticalGamePiece = GamePiece.NONE
           nextState = SuperstructureStates.SCORE_CLEANUP
