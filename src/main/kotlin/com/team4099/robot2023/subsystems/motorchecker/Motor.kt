@@ -178,7 +178,7 @@ class Falcon500(
   override val id: Int
     get() = falcon500.deviceID
 
-  override var currentLimitStage = CURRENT_STAGE_LIMIT.BASE
+  override var currentLimitStage = CURRENT_STAGE_LIMIT.NONE
 
   override fun setCurrentLimit(
     limit: Current,
