@@ -4,14 +4,17 @@ import com.team4099.lib.vision.TargetCorner
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.util.PoseEstimator
 import com.team4099.robot2023.util.rotateBy
+import com.team4099.robot2023.util.toPose3d
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.tan
 import java.util.function.Consumer
@@ -51,8 +54,37 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
         )
       )
     }
+  }
 
-    //
+  // based off of angles
+  fun solveTargetPositionFromAngularOutput(
+    tx: Angle,
+    ty: Angle,
+    currentPose: Pose2d,
+    cameraTransform: Transform3d,
+    targetHeight: Length
+  ): Pose3d {
+    val horizontalAngleFromRobot = tx + cameraTransform.rotation.x
+    val verticalAngleFromRobot = ty + cameraTransform.rotation.y
+
+    // rotation from robot to the target in frame
+    val rotationFromTargetToRobot =
+      Rotation3d(0.0.degrees, verticalAngleFromRobot, horizontalAngleFromRobot)
+
+    val xDistanceFromTargetToRobot = (targetHeight - cameraTransform.x) / verticalAngleFromRobot.tan
+    val yDistanceFromTargetToRobot = xDistanceFromTargetToRobot / horizontalAngleFromRobot.tan
+
+    val translationFromTargetToRobot =
+      Translation3d(
+        xDistanceFromTargetToRobot,
+        yDistanceFromTargetToRobot,
+        targetHeight - cameraTransform.z
+      )
+
+    return currentPose
+      .toPose3d()
+      .transformBy(cameraTransform)
+      .transformBy(Transform3d(translationFromTargetToRobot, rotationFromTargetToRobot))
   }
 
   // based off of pixel coordinates

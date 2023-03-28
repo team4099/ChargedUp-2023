@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.limelight
 
 import com.team4099.lib.hal.Clock
+import com.team4099.robot2023.util.LimelightHelpers
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.team4099.lib.units.base.inMilliseconds
@@ -49,6 +50,9 @@ class LimelightVisionIOReal : LimelightVisionIO {
       }
     }
     inputs.corners = xCoords.zip(yCoords).toList()
+
+    inputs.retroTargets =
+      LimelightHelpers.getLatestResults(limelightName).targetingResults.targets_Retro.toList()
   }
 
   override fun setPipeline(pipelineIndex: Int) {
