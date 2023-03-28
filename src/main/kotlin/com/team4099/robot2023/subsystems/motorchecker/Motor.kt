@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.motorchecker
 
 import com.ctre.phoenix.ErrorCode
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration
+import com.ctre.phoenix.motorcontrol.StickyFaults
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.revrobotics.CANSparkMax
 import com.revrobotics.REVLibError
@@ -47,6 +48,9 @@ abstract class Motor<M : MotorType> {
   open val firstStageCurrentLimit: Current = 0.0.amps
 
   open val motorShutDownThreshold: Temperature = 0.0.celsius
+
+  // this should ONLY be called once on init
+  open val stickyFaults: List<String> = listOf()
 
   open val currentLimitInUse: Current
     get() =
@@ -116,6 +120,15 @@ class Neo(
   override val id: Int
     get() = canSparkMax.deviceId
 
+  override val stickyFaults: List<String>
+    get() =
+      canSparkMax
+        .stickyFaults
+        .toUInt()
+        .toString(radix = 2)
+        .mapIndexedNotNull { index, c -> index.takeIf { c == '1' } }
+        .map { CANSparkMax.FaultID.fromId(it).name }
+
   override fun setCurrentLimit(
     limit: Current,
     thresholdLimit: Current?,
@@ -179,6 +192,55 @@ class Falcon500(
     get() = falcon500.deviceID
 
   override var currentLimitStage = CURRENT_STAGE_LIMIT.NONE
+
+  override val stickyFaults: List<String>
+    get() {
+      val faults = StickyFaults()
+      falcon500.getStickyFaults(faults)
+      val retVal = mutableListOf<String>()
+
+      if (faults.UnderVoltage) {
+        retVal.add("UnderVoltage")
+      }
+      if (faults.ForwardLimitSwitch) {
+        retVal.add("ForwardLimitSwitch")
+      }
+      if (faults.ReverseLimitSwitch) {
+        retVal.add("ReverseLimitSwitch")
+      }
+      if (faults.ForwardSoftLimit) {
+        retVal.add("ForwardSoftLimit")
+      }
+      if (faults.ReverseSoftLimit) {
+        retVal.add("ReverseSoftLimit")
+      }
+      if (faults.ResetDuringEn) {
+        retVal.add("ResetDuringEn")
+      }
+      if (faults.SensorOverflow) {
+        retVal.add("SensorOverflow")
+      }
+      if (faults.SensorOutOfPhase) {
+        retVal.add("SensorOutOfPhase")
+      }
+      if (faults.HardwareESDReset) {
+        retVal.add("HardwareESDReset")
+      }
+      if (faults.RemoteLossOfSignal) {
+        retVal.add("RemoteLossOfSignal")
+      }
+      if (faults.APIError) {
+        retVal.add("APIError")
+      }
+      if (faults.SupplyOverV) {
+        retVal.add("SupplyOverV")
+      }
+      if (faults.SupplyUnstable) {
+        retVal.add("SupplyUnstable")
+      }
+
+      return retVal
+    }
 
   override fun setCurrentLimit(
     limit: Current,

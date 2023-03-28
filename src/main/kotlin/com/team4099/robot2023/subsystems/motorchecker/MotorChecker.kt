@@ -1,6 +1,5 @@
 package com.team4099.robot2023.subsystems.motorchecker
 
-import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.inAmperes
