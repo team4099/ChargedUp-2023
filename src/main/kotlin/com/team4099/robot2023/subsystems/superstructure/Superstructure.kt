@@ -328,8 +328,6 @@ class Superstructure(
                 }
               }
             }
-            is SuperstructureRequest.SingleSubstationIntakePrep ->
-              SuperstructureStates.SINGLE_SUBSTATION_INTAKE_PREP
             is SuperstructureRequest.Tuning -> SuperstructureStates.TUNING
             else -> currentState
           }
