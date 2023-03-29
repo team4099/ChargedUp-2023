@@ -23,6 +23,9 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIOCandle
 import com.team4099.robot2023.subsystems.led.LedIOSim
+import com.team4099.robot2023.subsystems.limelight.LimelightVision
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOReal
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
@@ -39,6 +42,7 @@ object RobotContainer {
   private val drivetrain: Drivetrain
   private val vision: Vision
   private val superstructure: Superstructure
+  private val limelight: LimelightVision
 
   init {
     if (RobotBase.isReal()) {
@@ -59,6 +63,7 @@ object RobotContainer {
           Led(LedIOCandle),
           GameBoy(GameboyIOServer)
         )
+      limelight = LimelightVision(LimelightVisionIOReal())
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
@@ -71,6 +76,7 @@ object RobotContainer {
           Led(LedIOSim),
           GameBoy(GameboyIOServer)
         )
+      limelight = LimelightVision(object : LimelightVisionIO {})
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })

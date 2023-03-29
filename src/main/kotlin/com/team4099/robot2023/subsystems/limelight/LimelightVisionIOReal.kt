@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.limelight
 
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.util.LimelightHelpers
+import com.team4099.robot2023.util.LimelightReading
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.team4099.lib.units.base.inMilliseconds
@@ -39,20 +40,10 @@ class LimelightVisionIOReal : LimelightVisionIO {
     inputs.angle = angleEntry.getDouble(0.0).degrees
     inputs.fps = 1000 / totalLatency.inMilliseconds
 
-    val entry = dataEntry.getDoubleArray(DoubleArray(0))
-    val xCoords = mutableListOf<Double>()
-    val yCoords = mutableListOf<Double>()
-    for (coordinateIndex in entry.indices) {
-      if (coordinateIndex % 2 == 0) {
-        xCoords.add(entry[coordinateIndex])
-      } else {
-        yCoords.add(entry[coordinateIndex])
-      }
-    }
-    inputs.corners = xCoords.zip(yCoords).toList()
-
     inputs.retroTargets =
-      LimelightHelpers.getLatestResults(limelightName).targetingResults.targets_Retro.toList()
+      LimelightHelpers.getLatestResults(limelightName).targetingResults.targets_Retro.map {
+        LimelightReading(it)
+      }
   }
 
   override fun setPipeline(pipelineIndex: Int) {

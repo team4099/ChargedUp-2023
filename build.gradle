@@ -155,6 +155,10 @@ compileKotlin {
 	}
 }
 
+compileJava{
+
+}
+
 gversion {
 	srcDir       = "src/main/kotlin/"           // path is relative to the sub-project by default
 	// Gradle variables can also be used
@@ -172,6 +176,7 @@ gversion {
 
 
 project.compileKotlin.dependsOn(createVersionFile)
+project.compileJava.dependsOn(createVersionFile)
 // Configure jar and deploy tasks
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
