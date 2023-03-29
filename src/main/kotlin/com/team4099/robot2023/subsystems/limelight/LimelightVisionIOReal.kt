@@ -1,8 +1,9 @@
 package com.team4099.robot2023.subsystems.limelight
 
 import com.team4099.lib.hal.Clock
-import com.team4099.robot2023.util.LimelightHelpers
+import com.team4099.robot2023.config.constants.VisionConstants.Limelight.LIMELIGHT_NAME
 import com.team4099.robot2023.util.LimelightReading
+import com.team4099.utils.LimelightHelpers
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.team4099.lib.units.base.inMilliseconds
@@ -12,22 +13,20 @@ import org.team4099.lib.units.milli
 
 class LimelightVisionIOReal : LimelightVisionIO {
 
-  val limelightName = "limelight"
-
   private val ledEntry: NetworkTableEntry =
-    NetworkTableInstance.getDefault().getTable(limelightName).getEntry("ledMode")
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("ledMode")
   private val pipelineEntry: NetworkTableEntry =
-    NetworkTableInstance.getDefault().getTable(limelightName).getEntry("pipeline")
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("pipeline")
   private val validEntry: NetworkTableEntry =
-    NetworkTableInstance.getDefault().getTable(limelightName).getEntry("tv")
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("tv")
   private val latencyEntry: NetworkTableEntry =
-    NetworkTableInstance.getDefault().getTable(limelightName).getEntry("tl")
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("tl")
   private val captureLatencyEntry: NetworkTableEntry =
-    NetworkTableInstance.getDefault().getTable(limelightName).getEntry("cl")
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("cl")
   private val dataEntry: NetworkTableEntry =
-    NetworkTableInstance.getDefault().getTable(limelightName).getEntry("tcornxy")
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("tcornxy")
   private val angleEntry: NetworkTableEntry =
-    NetworkTableInstance.getDefault().getTable(limelightName).getEntry("tx")
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("tx")
 
   override fun updateInputs(inputs: LimelightVisionIO.LimelightVisionIOInputs) {
     val totalLatency =
@@ -41,7 +40,7 @@ class LimelightVisionIOReal : LimelightVisionIO {
     inputs.fps = 1000 / totalLatency.inMilliseconds
 
     inputs.retroTargets =
-      LimelightHelpers.getLatestResults(limelightName).targetingResults.targets_Retro.map {
+      LimelightHelpers.getLatestResults(LIMELIGHT_NAME).targetingResults.targets_Retro.map {
         LimelightReading(it)
       }
   }

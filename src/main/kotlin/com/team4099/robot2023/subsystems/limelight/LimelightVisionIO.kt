@@ -26,11 +26,11 @@ interface LimelightVisionIO {
       val numOfTargets = table?.getInteger("numOfTargets", 0) ?: 0
       val retrievedTargets = mutableListOf<LimelightReading>()
       for (targetIndex in 0 until numOfTargets) {
-        val targetTx: Angle? = table?.getDouble("$targetIndex/tx", 0.0)?.degrees
-        val targetTy: Angle? = table?.getDouble("$targetIndex/tx", 0.0)?.degrees
-        val targetTxPixels: Double? = table?.getDouble("$targetIndex/txPixels", 0.0)
-        val targetTyPixels: Double? = table?.getDouble("$targetIndex/tyPixels", 0.0)
-        val targetTs: Angle? = table?.getDouble("$targetIndex/tyPixels", 0.0)?.degrees
+        val targetTx: Angle? = table?.getDouble("Detection/$targetIndex/tx", 0.0)?.degrees
+        val targetTy: Angle? = table?.getDouble("Detection/$targetIndex/tx", 0.0)?.degrees
+        val targetTxPixels: Double? = table?.getDouble("Detection/$targetIndex/txPixels", 0.0)
+        val targetTyPixels: Double? = table?.getDouble("Detection/$targetIndex/tyPixels", 0.0)
+        val targetTs: Angle? = table?.getDouble("Detection/$targetIndex/tyPixels", 0.0)?.degrees
         if (targetTx != null &&
           targetTy != null &&
           targetTxPixels != null &&
@@ -51,12 +51,14 @@ interface LimelightVisionIO {
       table?.put("validReading", validReading)
       table?.put("simpleAngleDegrees", angle.inDegrees)
       table?.put("numOfTargets", retroTargets.size.toLong())
+      table?.put("cornersX", retroTargets.map { it.txPixel }.toDoubleArray())
+      table?.put("cornersY", retroTargets.map { it.tyPixel }.toDoubleArray())
       for (i in retroTargets.indices) {
-        table?.put("$i/txDegrees", retroTargets[i].tx.inDegrees)
-        table?.put("$i/tyDegrees", retroTargets[i].ty.inDegrees)
-        table?.put("$i/tyPixels", retroTargets[i].tyPixel)
-        table?.put("$i/txPixels", retroTargets[i].txPixels)
-        table?.put("$i/tsDegrees", retroTargets[i].ts.inDegrees)
+        table?.put("Detection/$i/txDegrees", retroTargets[i].tx.inDegrees)
+        table?.put("Detection/$i/tyDegrees", retroTargets[i].ty.inDegrees)
+        table?.put("Detection/$i/tyPixels", retroTargets[i].tyPixel)
+        table?.put("Detection/$i/txPixels", retroTargets[i].txPixel)
+        table?.put("Detection/$i/tsDegrees", retroTargets[i].ts.inDegrees)
       }
     }
   }
