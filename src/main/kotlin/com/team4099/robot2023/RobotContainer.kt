@@ -60,9 +60,9 @@ object RobotContainer {
         )
       superstructure =
         Superstructure(
-          Elevator(object: ElevatorIO {}),
-          GroundIntake(object: GroundIntakeIO {}),
-          Manipulator(object: ManipulatorIO {}),
+          Elevator(ElevatorIONeo),
+          GroundIntake(GroundIntakeIONeo),
+          Manipulator(ManipulatorIONeo),
           Led(LedIOCandle),
           GameBoy(GameboyIOServer)
         )
@@ -176,7 +176,7 @@ object RobotContainer {
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
     ControlBoard.singleSubstationIntake.whileTrue(superstructure.singleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
-
+    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
         {
@@ -189,7 +189,6 @@ object RobotContainer {
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
     ControlBoard.dpadUp.whileTrue(AutoScoreCommand(drivetrain, superstructure))
-    ControlBoard.singleSubIntake.whileTrue(superstructure.singleSubConeCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain,
