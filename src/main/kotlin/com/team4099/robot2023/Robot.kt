@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
+import com.team4099.robot2023.util.NTSafePublisher
 import edu.wpi.first.hal.AllianceStationID
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
@@ -79,14 +80,14 @@ object Robot : LoggedRobot() {
         logFolderAlert.set(true)
       }
 
-      logger.addDataReceiver(NT4Publisher())
+      logger.addDataReceiver(NTSafePublisher())
       LoggedPowerDistribution.getInstance(
         Constants.Universal.POWER_DISTRIBUTION_HUB_ID, PowerDistribution.ModuleType.kRev
       )
     } else {
       when (Constants.Universal.SIM_MODE) {
         Constants.Tuning.SimType.SIM -> {
-          logger.addDataReceiver(NT4Publisher())
+          logger.addDataReceiver(NTSafePublisher())
           logSimulationAlert.set(true)
           DriverStationSim.setAllianceStationId(AllianceStationID.Blue1)
         }
