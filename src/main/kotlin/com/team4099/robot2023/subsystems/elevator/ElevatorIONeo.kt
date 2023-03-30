@@ -25,7 +25,7 @@ import org.team4099.lib.units.sparkMaxLinearMechanismSensor
 object ElevatorIONeo : ElevatorIO {
 
   private val leaderSparkMax =
-    CANSparkMax(Constants.Elevator.LEADER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
+    CANSparkMax(Constants.Elevator.FOLLOWER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
   private val leaderSensor =
     sparkMaxLinearMechanismSensor(
@@ -36,7 +36,7 @@ object ElevatorIONeo : ElevatorIO {
     )
 
   private val followerSparkMax =
-    CANSparkMax(Constants.Elevator.FOLLOWER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
+    CANSparkMax(Constants.Elevator.LEADER_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless)
 
   private val leaderPIDController: SparkMaxPIDController = leaderSparkMax.pidController
 
@@ -53,7 +53,7 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
     followerSparkMax.enableVoltageCompensation(ElevatorConstants.VOLTAGE_COMPENSATION.inVolts)
 
-    leaderSparkMax.inverted = true
+    leaderSparkMax.inverted = false
 
     leaderSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
     followerSparkMax.setSmartCurrentLimit(ElevatorConstants.PHASE_CURRENT_LIMIT.inAmperes.toInt())
