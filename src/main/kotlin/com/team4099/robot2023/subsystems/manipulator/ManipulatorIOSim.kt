@@ -3,11 +3,9 @@ package com.team4099.robot2023.subsystems.manipulator
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
-import com.team4099.robot2023.subsystems.falconspin.Motor
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.util.ElevatorSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
@@ -57,7 +55,7 @@ object ManipulatorIOSim : ManipulatorIO {
       simulateGravity = false
     )
 
-  init{
+  init {
     MotorChecker.add(
       "Manipulator",
       "Extension",

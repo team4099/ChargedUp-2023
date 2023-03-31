@@ -3,11 +3,9 @@ package com.team4099.robot2023.subsystems.groundintake
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
-import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
-import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
@@ -62,7 +60,7 @@ object GroundIntakeIOSim : GroundIntakeIO {
       true,
     )
 
-  init{
+  init {
     MotorChecker.add(
       "Ground Intake",
       "Rotation",

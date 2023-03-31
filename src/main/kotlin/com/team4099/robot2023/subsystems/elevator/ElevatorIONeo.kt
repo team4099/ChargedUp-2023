@@ -6,11 +6,9 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
-import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import com.team4099.robot2023.subsystems.falconspin.Neo
-import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
@@ -78,19 +76,20 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.burnFlash()
     followerSparkMax.burnFlash()
 
-//    MotorChecker.add(
-//      "Elevator",
-//      MotorCollection(
-//        mutableListOf(
-//          Neo(leaderSparkMax, "Leader Extension Motor"),
-//          Neo(followerSparkMax, "Follower Extension Motor")
-//        ),
-//        ElevatorConstants.PHASE_CURRENT_LIMIT,
-//        70.celsius,
-//        ElevatorConstants.PHASE_CURRENT_LIMIT - 30.amps,
-//        90.celsius
-//      ),
-//    )
+    MotorChecker.add(
+      "Elevator",
+      "Extension",
+      MotorCollection(
+        mutableListOf(
+          Neo(leaderSparkMax, "Leader Extension Motor"),
+          Neo(followerSparkMax, "Follower Extension Motor")
+        ),
+        ElevatorConstants.PHASE_CURRENT_LIMIT,
+        70.celsius,
+        ElevatorConstants.PHASE_CURRENT_LIMIT - 30.amps,
+        90.celsius
+      ),
+    )
   }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {

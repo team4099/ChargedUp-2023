@@ -9,17 +9,15 @@ object MotorChecker {
 
   val subsystemHardware = HashMap<String, HashMap<String, MutableList<MotorCollection>>>()
 
-  fun add(subsystemName: String, subCategory: String, vararg subsystemMotorCollections: MotorCollection) {
-    if (subsystemHardware[subsystemName] == null){
+  fun add(subsystemName: String, subCategory: String, subsystemMotorCollections: MotorCollection) {
+    if (subsystemHardware[subsystemName] == null) {
       subsystemHardware[subsystemName] = HashMap()
     }
-    if (
-      subsystemHardware[subsystemName]?.get(subCategory) == null
-    ){
+    if (subsystemHardware[subsystemName]?.get(subCategory) == null) {
       subsystemHardware[subsystemName]?.set(subCategory, mutableListOf())
     }
 
-    subsystemHardware[subsystemName]!![subCategory]!!.addAll(subsystemMotorCollections)
+    subsystemHardware[subsystemName]!![subCategory]!!.add(subsystemMotorCollections)
   }
 
   fun periodic() {
@@ -64,20 +62,38 @@ object MotorChecker {
 // not clean but whatever
 fun logMotor(subsystemName: String, motor: Motor<MotorType>) {
   Logger.getInstance()
-    .recordOutput("MotorChecker/$subsystemName/${motor.name}/AppliedVoltageVolts", motor.appliedVoltage.inVolts)
-  Logger.getInstance()
-    .recordOutput("MotorChecker/$subsystemName/${motor.name}/BusVoltageVolts", motor.busVoltage.inVolts)
-  Logger.getInstance()
-    .recordOutput("MotorChecker/$subsystemName/${motor.name}/TemperatureCelsius", motor.temperature.inCelsius)
-  Logger.getInstance()
-    .recordOutput("MotorChecker/$subsystemName/${motor.name}/StatorCurrentAmps", motor.statorCurrent.inAmperes)
-  Logger.getInstance()
-    .recordOutput("MotorChecker/$subsystemName/${motor.name}/SupplyCurrentAmps", motor.supplyCurrent.inAmperes)
-  Logger.getInstance()
-    .recordOutput("MotorChecker/$subsystemName/${motor.name}/CurrentLimitStage", motor.currentLimitStage.name)
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/AppliedVoltageVolts",
+      motor.appliedVoltage.inVolts
+    )
   Logger.getInstance()
     .recordOutput(
-      "MotorChecker/$subsystemName/${motor.name}/BaseCurrentLimitAmps", motor.baseCurrentLimit.inAmperes
+      "MotorChecker/$subsystemName/${motor.name}/BusVoltageVolts", motor.busVoltage.inVolts
+    )
+  Logger.getInstance()
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/TemperatureCelsius",
+      motor.temperature.inCelsius
+    )
+  Logger.getInstance()
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/StatorCurrentAmps",
+      motor.statorCurrent.inAmperes
+    )
+  Logger.getInstance()
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/SupplyCurrentAmps",
+      motor.supplyCurrent.inAmperes
+    )
+  Logger.getInstance()
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/CurrentLimitStage",
+      motor.currentLimitStage.name
+    )
+  Logger.getInstance()
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/BaseCurrentLimitAmps",
+      motor.baseCurrentLimit.inAmperes
     )
   Logger.getInstance()
     .recordOutput(
@@ -96,7 +112,9 @@ fun logMotor(subsystemName: String, motor: Motor<MotorType>) {
     )
   Logger.getInstance()
     .recordOutput(
-      "MotorChecker/$subsystemName/${motor.name}/CurrentLimitInUseAmps", motor.currentLimitInUse.inAmperes
+      "MotorChecker/$subsystemName/${motor.name}/CurrentLimitInUseAmps",
+      motor.currentLimitInUse.inAmperes
     )
-  Logger.getInstance().recordOutput("MotorChecker/$subsystemName/${motor.name}/MotorID", motor.id.toLong())
+  Logger.getInstance()
+    .recordOutput("MotorChecker/$subsystemName/${motor.name}/MotorID", motor.id.toLong())
 }

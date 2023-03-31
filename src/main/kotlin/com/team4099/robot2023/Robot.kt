@@ -162,7 +162,11 @@ object Robot : LoggedRobot() {
     // motor checker stuff
     val motorCheckerStartTime = Clock.realTimestamp
     MotorChecker.periodic()
-    Logger.getInstance().recordOutput("LoggedRobot/Subsystems/MotorCheckerLoopTimeMS", (Clock.realTimestamp - motorCheckerStartTime).inMilliseconds)
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/MotorCheckerLoopTimeMS",
+        (Clock.realTimestamp - motorCheckerStartTime).inMilliseconds
+      )
 
     Logger.getInstance()
       .recordOutput("LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)

@@ -133,6 +133,30 @@ class SwerveModuleIOFalcon(
     driveFalcon.enableVoltageCompensation(true)
 
     driveFalcon.setNeutralMode(NeutralMode.Brake)
+
+    MotorChecker.add(
+      "Drivetrain",
+      "Drive",
+      MotorCollection(
+        mutableListOf(Falcon500(driveFalcon, "$label Drive Motor")),
+        DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT,
+        90.celsius,
+        DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT - 30.amps,
+        110.celsius
+      )
+    )
+
+    MotorChecker.add(
+      "Drivetrain",
+      "Steering",
+      MotorCollection(
+        mutableListOf(Falcon500(steeringFalcon, "$label Steering Motor")),
+        DrivetrainConstants.STEERING_SUPPLY_CURRENT_LIMIT,
+        90.celsius,
+        DrivetrainConstants.STEERING_SUPPLY_CURRENT_LIMIT - 10.amps,
+        110.celsius
+      )
+    )
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {

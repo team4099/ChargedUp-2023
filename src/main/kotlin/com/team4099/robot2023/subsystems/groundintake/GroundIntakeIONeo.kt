@@ -109,27 +109,29 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
     armSparkMax.burnFlash()
 
-//    MotorChecker.add(
-//      "Ground Intake",
-//      MotorCollection(
-//        mutableListOf(
-//          Neo(rollerSparkMax, "Roller Motor")
-//        ),
-//        GroundIntakeConstants.ROLLER_CURRENT_LIMIT,
-//        70.celsius,
-//        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 30.amps,
-//        90.celsius
-//        ),
-//      MotorCollection(
-//        mutableListOf(
-//          Neo(armSparkMax, "Extension Motor")
-//        ),
-//        GroundIntakeConstants.ARM_CURRENT_LIMIT,
-//        70.celsius,
-//        GroundIntakeConstants.ARM_CURRENT_LIMIT - 30.amps,
-//        90.celsius
-//      )
-//    )
+    MotorChecker.add(
+      "Ground Intake",
+      "Roller",
+      MotorCollection(
+        mutableListOf(Neo(rollerSparkMax, "Roller Motor")),
+        GroundIntakeConstants.ROLLER_CURRENT_LIMIT,
+        70.celsius,
+        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 30.amps,
+        90.celsius
+      ),
+    )
+
+    MotorChecker.add(
+      "Ground Intake",
+      "Extension",
+      MotorCollection(
+        mutableListOf(Neo(armSparkMax, "Extension Motor")),
+        GroundIntakeConstants.ARM_CURRENT_LIMIT,
+        70.celsius,
+        GroundIntakeConstants.ARM_CURRENT_LIMIT - 30.amps,
+        90.celsius
+      )
+    )
   }
 
   override fun updateInputs(inputs: GroundIntakeIO.GroundIntakeIOInputs) {

@@ -37,11 +37,11 @@ fun Pose3d.findClosestPose(vararg pose3d: Pose3d): Pose3d {
   return closestPose
 }
 
-fun Transform3d.toPose3d(): Pose3d{
+fun Transform3d.toPose3d(): Pose3d {
   return Pose3d(this.translation, this.rotation)
 }
 
-fun Pose3d.toTransform3d(): Transform3d{
+fun Pose3d.toTransform3d(): Transform3d {
   return Transform3d(this.translation, this.rotation)
 }
 

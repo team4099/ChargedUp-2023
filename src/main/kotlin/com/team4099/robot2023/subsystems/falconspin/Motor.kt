@@ -1,15 +1,12 @@
 package com.team4099.robot2023.subsystems.falconspin
 
 import com.ctre.phoenix.ErrorCode
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration
 import com.ctre.phoenix.motorcontrol.StickyFaults
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.revrobotics.CANSparkMax
 import com.revrobotics.REVLibError
 import edu.wpi.first.math.Num
-import edu.wpi.first.math.numbers.N1
-import edu.wpi.first.math.numbers.N2
-import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import org.team4099.lib.units.base.Current
@@ -21,7 +18,6 @@ import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.volts
-import kotlin.test.assertTrue
 
 interface MotorType
 
@@ -251,14 +247,14 @@ class Falcon500(
     thresholdTime: Time?
   ): Boolean {
     if (thresholdLimit != null && thresholdTime != null) {
-      val statorCurrentConfigSuccess =
-        falcon500.configStatorCurrentLimit(
-          StatorCurrentLimitConfiguration(
+      val supplyCurrentConfigSuccess =
+        falcon500.configSupplyCurrentLimit(
+          SupplyCurrentLimitConfiguration(
             true, limit.inAmperes, thresholdLimit.inAmperes, thresholdTime.inSeconds
           )
         )
 
-      if (statorCurrentConfigSuccess == ErrorCode.OK) {
+      if (supplyCurrentConfigSuccess == ErrorCode.OK) {
         if (limit == firstStageCurrentLimit) {
           currentLimitStage = CURRENT_STAGE_LIMIT.FIRST
         } else if (limit == baseCurrentLimit) {
@@ -266,7 +262,7 @@ class Falcon500(
         }
       }
 
-      return statorCurrentConfigSuccess == ErrorCode.OK
+      return supplyCurrentConfigSuccess == ErrorCode.OK
     }
     return false
   }
@@ -279,7 +275,7 @@ class Falcon500(
 class SimulatedMotor(
   val simSystem: LinearSystemSim<out Num, out Num, out Num>,
   override val name: String,
-): Motor<SimMotor>() {
+) : Motor<SimMotor>() {
   override val appliedVoltage: ElectricalPotential
     get() = simSystem.output.get(0, 0).volts
 
@@ -315,5 +311,4 @@ class SimulatedMotor(
 
     return true
   }
-
 }

@@ -47,19 +47,23 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
       for (target in inputs.retroTargets) {
         visibleNodes.add(
-        solveTargetPositionFromAngularOutput(
-          target.tx,
-          target.ty,
-          currentPose,
-          VisionConstants.Limelight.LL_TRANSFORM,
-          23.905.inches
-        ))
+          solveTargetPositionFromAngularOutput(
+            target.tx,
+            target.ty,
+            currentPose,
+            VisionConstants.Limelight.LL_TRANSFORM,
+            23.905.inches
+          )
+        )
       }
 
       // this is adding where we think they are,, not where they actually are
     }
 
-    Logger.getInstance().recordOutput("LimelightVision/visibleNodes", *visibleNodes.map { it.pose3d }.toTypedArray())
+    Logger.getInstance()
+      .recordOutput(
+        "LimelightVision/visibleNodes", *visibleNodes.map { it.pose3d }.toTypedArray()
+      )
   }
 
   // based off of angles
@@ -77,7 +81,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     val rotationFromTargetToRobot =
       Rotation3d(0.0.degrees, verticalAngleFromCamera, horizontalAngleFromCamera)
 
-    val xDistanceFromTargetToRobot = (targetHeight - cameraTransform.z) / verticalAngleFromCamera.tan
+    val xDistanceFromTargetToRobot =
+      (targetHeight - cameraTransform.z) / verticalAngleFromCamera.tan
     val yDistanceFromTargetToRobot = xDistanceFromTargetToRobot / horizontalAngleFromCamera.tan
 
     val translationFromTargetToRobot =
@@ -89,8 +94,15 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     return currentPose
       .toPose3d()
-      .transformBy(cameraTransform.toPose3d().transformBy(Transform3d(translationFromTargetToRobot, rotationFromTargetToRobot).inverse()).toTransform3d().inverse())
-
+      .transformBy(
+        cameraTransform
+          .toPose3d()
+          .transformBy(
+            Transform3d(translationFromTargetToRobot, rotationFromTargetToRobot).inverse()
+          )
+          .toTransform3d()
+          .inverse()
+      )
   }
 
   // based off of pixel coordinates

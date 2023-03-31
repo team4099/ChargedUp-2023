@@ -6,7 +6,6 @@ import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
-import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -62,15 +61,12 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
       DrivetrainConstants.STEERING_WHEEL_INERTIA.inKilogramsMeterSquared
     )
 
-  init{
+  init {
     MotorChecker.add(
       "Drivetrain",
       "Drive",
       MotorCollection(
-        mutableListOf(
-          SimulatedMotor(driveMotorSim,
-            "$label Drive Motor")
-        ),
+        mutableListOf(SimulatedMotor(driveMotorSim, "$label Drive Motor")),
         65.amps,
         90.celsius,
         45.amps,
@@ -82,10 +78,7 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
       "Drivetrain",
       "Steering",
       MotorCollection(
-        mutableListOf(
-          SimulatedMotor(steerMotorSim,
-            "$label Steering Motor")
-        ),
+        mutableListOf(SimulatedMotor(steerMotorSim, "$label Steering Motor")),
         65.amps,
         90.celsius,
         45.amps,

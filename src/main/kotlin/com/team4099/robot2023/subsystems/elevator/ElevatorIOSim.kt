@@ -3,7 +3,6 @@ package com.team4099.robot2023.subsystems.elevator
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
-import com.team4099.robot2023.subsystems.falconspin.Motor
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
@@ -42,7 +41,7 @@ object ElevatorIOSim : ElevatorIO {
       true,
     )
 
-  init{
+  init {
     MotorChecker.add(
       "Elevator",
       "Extension",
