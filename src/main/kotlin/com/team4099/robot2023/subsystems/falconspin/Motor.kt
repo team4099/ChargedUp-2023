@@ -54,7 +54,6 @@ abstract class Motor<M : MotorType> {
 
   open var motorShutDownThreshold: Temperature = 0.0.celsius
 
-  // this should ONLY be called once on init
   open val stickyFaults: List<String> = listOf()
 
   open val errors: List<String> = listOf()
