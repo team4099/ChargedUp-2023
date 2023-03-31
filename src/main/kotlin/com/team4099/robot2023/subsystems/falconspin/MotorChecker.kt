@@ -1,5 +1,6 @@
 package com.team4099.robot2023.subsystems.falconspin
 
+import edu.wpi.first.wpilibj.DriverStation
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inCelsius
@@ -49,8 +50,10 @@ object MotorChecker {
 
           for (motor in motorCollection.motorCollection) {
             // complete motor shutdown but we don't want to shut down all motors at once
-            if (motor.temperature > motor.motorShutDownThreshold) {
-              motor.shutdown()
+            if (!DriverStation.isFMSAttached()) {
+              if (motor.temperature > motor.motorShutDownThreshold) {
+                motor.shutdown()
+              }
             }
 
             logMotor(subsystemName, motor)
