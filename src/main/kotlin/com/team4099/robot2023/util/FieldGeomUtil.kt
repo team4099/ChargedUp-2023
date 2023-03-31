@@ -3,6 +3,7 @@ package com.team4099.robot2023.util
 import com.team4099.robot2023.config.constants.FieldConstants
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.units.base.inMeters
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -34,6 +35,14 @@ fun Pose3d.findClosestPose(vararg pose3d: Pose3d): Pose3d {
   }
 
   return closestPose
+}
+
+fun Transform3d.toPose3d(): Pose3d{
+  return Pose3d(this.translation, this.rotation)
+}
+
+fun Pose3d.toTransform3d(): Transform3d{
+  return Transform3d(this.translation, this.rotation)
 }
 
 fun Pose3d.closerToInTranslation(pose1: Pose3d, pose2: Pose3d): Pose3d {

@@ -5,6 +5,7 @@ import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.util.PoseEstimator
 import com.team4099.robot2023.util.rotateBy
 import com.team4099.robot2023.util.toPose3d
+import com.team4099.robot2023.util.toTransform3d
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
@@ -13,6 +14,7 @@ import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -42,18 +44,22 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     // process transform outputs from LL and get the target corners
     if (inputs.validReading) {
-      // idk how to do this part
+
+      for (target in inputs.retroTargets) {
+        visibleNodes.add(
+        solveTargetPositionFromAngularOutput(
+          target.tx,
+          target.ty,
+          currentPose,
+          VisionConstants.Limelight.LL_TRANSFORM,
+          23.905.inches
+        ))
+      }
 
       // this is adding where we think they are,, not where they actually are
-      visibleNodes.add(
-        solveTargetPositionFromCameraOutput(
-          currentPose,
-          pixelPosition = CoordinatePair(0.0, 0.0),
-          VisionConstants.Limelight.LL_TRANSFORM,
-          targetHeight = 0.0.meters
-        )
-      )
     }
+
+    Logger.getInstance().recordOutput("LimelightVision/visibleNodes", *visibleNodes.map { it.pose3d }.toTypedArray())
   }
 
   // based off of angles
@@ -64,15 +70,15 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     cameraTransform: Transform3d,
     targetHeight: Length
   ): Pose3d {
-    val horizontalAngleFromRobot = tx + cameraTransform.rotation.x
-    val verticalAngleFromRobot = ty + cameraTransform.rotation.y
+    val horizontalAngleFromCamera = tx
+    val verticalAngleFromCamera = ty
 
     // rotation from robot to the target in frame
     val rotationFromTargetToRobot =
-      Rotation3d(0.0.degrees, verticalAngleFromRobot, horizontalAngleFromRobot)
+      Rotation3d(0.0.degrees, verticalAngleFromCamera, horizontalAngleFromCamera)
 
-    val xDistanceFromTargetToRobot = (targetHeight - cameraTransform.x) / verticalAngleFromRobot.tan
-    val yDistanceFromTargetToRobot = xDistanceFromTargetToRobot / horizontalAngleFromRobot.tan
+    val xDistanceFromTargetToRobot = (targetHeight - cameraTransform.z) / verticalAngleFromCamera.tan
+    val yDistanceFromTargetToRobot = xDistanceFromTargetToRobot / horizontalAngleFromCamera.tan
 
     val translationFromTargetToRobot =
       Translation3d(
@@ -83,8 +89,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     return currentPose
       .toPose3d()
-      .transformBy(cameraTransform)
-      .transformBy(Transform3d(translationFromTargetToRobot, rotationFromTargetToRobot))
+      .transformBy(cameraTransform.toPose3d().transformBy(Transform3d(translationFromTargetToRobot, rotationFromTargetToRobot).inverse()).toTransform3d().inverse())
+
   }
 
   // based off of pixel coordinates

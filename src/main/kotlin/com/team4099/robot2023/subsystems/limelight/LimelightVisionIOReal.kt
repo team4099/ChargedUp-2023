@@ -38,6 +38,7 @@ class LimelightVisionIOReal : LimelightVisionIO {
     inputs.timestamp = Clock.realTimestamp - totalLatency
     inputs.angle = angleEntry.getDouble(0.0).degrees
     inputs.fps = 1000 / totalLatency.inMilliseconds
+    inputs.validReading = LimelightHelpers.getTV(LIMELIGHT_NAME)
 
     inputs.retroTargets =
       LimelightHelpers.getLatestResults(LIMELIGHT_NAME).targetingResults.targets_Retro.map {
