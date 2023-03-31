@@ -21,11 +21,15 @@ object MotorChecker {
   }
 
   fun periodic() {
+    Logger.getInstance().recordOutput("MotorChecker/subsystemNames", subsystemHardware.keys.toTypedArray())
+
     for (subsystemName in subsystemHardware.keys) {
 
+      val motorNames = mutableListOf<String>()
       for (subCategory in subsystemHardware[subsystemName]!!) {
-
         for (motorCollection in subCategory.value) {
+
+          motorNames.addAll(motorCollection.motorCollection.map { it.name })
 
           // base current limit
           if (motorCollection.maxMotorTemperature < motorCollection.firstStageTemperatureLimit &&
@@ -52,6 +56,7 @@ object MotorChecker {
           }
         }
       }
+      Logger.getInstance().recordOutput("MotorChecker/${subsystemName}/motorNames", motorNames.toTypedArray())
     }
   }
 }
