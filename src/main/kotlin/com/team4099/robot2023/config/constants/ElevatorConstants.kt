@@ -14,8 +14,6 @@ import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.driven
-import org.team4099.lib.units.derived.driving
 import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts

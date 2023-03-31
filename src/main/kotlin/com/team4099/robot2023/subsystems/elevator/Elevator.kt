@@ -159,6 +159,11 @@ class Elevator(val io: ElevatorIO) {
         "Elevator/hybridHeight", 16.0.inches, Pair({ it.inInches }, { it.inches })
       )
 
+    val cubeHybridHeight =
+      LoggedTunableValue(
+        "Elevator/hybridHeight", 2.8.inches, Pair({ it.inInches }, { it.inches })
+      )
+
     val midCubeHeight =
       LoggedTunableValue(
         "Elevator/midCubeHeight",
