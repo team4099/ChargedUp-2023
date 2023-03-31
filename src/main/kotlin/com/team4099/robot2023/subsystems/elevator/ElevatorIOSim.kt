@@ -3,6 +3,10 @@ package com.team4099.robot2023.subsystems.elevator
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import com.team4099.robot2023.subsystems.falconspin.Motor
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
 import com.team4099.robot2023.util.ElevatorSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
@@ -25,6 +29,7 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 object ElevatorIOSim : ElevatorIO {
+
   val elevatorSim: ElevatorSim =
     ElevatorSim(
       DCMotor.getNEO(2),
@@ -36,6 +41,24 @@ object ElevatorIOSim : ElevatorIO {
       ElevatorConstants.ELEVATOR_ANGLE,
       true,
     )
+
+  init{
+    MotorChecker.add(
+      "Elevator",
+      MotorCollection(
+        mutableListOf(
+          SimulatedMotor(
+            elevatorSim,
+            "Elevator Extension Motor",
+          )
+        ),
+        60.amps,
+        10.celsius,
+        45.amps,
+        20.celsius
+      )
+    )
+  }
 
   private val elevatorController =
     PIDController(ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD)

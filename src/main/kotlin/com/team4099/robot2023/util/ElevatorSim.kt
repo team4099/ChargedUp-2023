@@ -16,7 +16,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.sin
 
 class ElevatorSim(
-  private val gearbox: DCMotor,
+  val gearbox: DCMotor,
   private val gearing: Double,
   private val carriageMassKg: Mass,
   private val drumRadiusMeters: Length,

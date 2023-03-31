@@ -3,6 +3,10 @@ package com.team4099.robot2023.subsystems.manipulator
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.util.ElevatorSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
@@ -51,6 +55,28 @@ object ManipulatorIOSim : ManipulatorIO {
       ManipulatorConstants.ARM_MAX_EXTENSION,
       simulateGravity = false
     )
+
+  init{
+    MotorChecker.add(
+      "Manipulator",
+      MotorCollection(
+        mutableListOf(
+          SimulatedMotor(
+            armSim,
+            "Manipulator Arm Motor",
+          ),
+          SimulatedMotor(
+            rollerSim,
+            "Manipulator Roller Motor",
+          )
+        ),
+        60.amps,
+        10.celsius,
+        45.amps,
+        20.celsius
+      )
+    )
+  }
 
   private val armController =
     PIDController(
