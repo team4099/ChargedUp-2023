@@ -57,6 +57,12 @@ abstract class Motor<M : MotorType> {
   // this should ONLY be called once on init
   open val stickyFaults: List<String> = listOf()
 
+  open val errors: List<String> = listOf()
+
+  open val warnings: List<String> = listOf()
+
+  open val info: List<String> = listOf()
+
   open val currentLimitInUse: Current
     get() =
       if (currentLimitStage == CURRENT_STAGE_LIMIT.BASE) baseCurrentLimit

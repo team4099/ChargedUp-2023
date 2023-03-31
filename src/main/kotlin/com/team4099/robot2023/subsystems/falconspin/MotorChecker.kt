@@ -114,4 +114,12 @@ fun logMotor(subsystemName: String, motor: Motor<MotorType>) {
     )
   Logger.getInstance()
     .recordOutput("MotorChecker/$subsystemName/${motor.name}/MotorID", motor.id.toLong())
+  Logger.getInstance()
+    .recordOutput("MotorChecker/$subsystemName/${motor.name}/Errors", motor.errors.toTypedArray())
+  Logger.getInstance()
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/Warnings", motor.warnings.toTypedArray()
+    )
+  Logger.getInstance()
+    .recordOutput("MotorChecker/$subsystemName/${motor.name}/Info", motor.info.toTypedArray())
 }
