@@ -7,44 +7,55 @@ import org.team4099.lib.units.derived.inVolts
 
 object MotorChecker {
 
-  val subsystemHardware = HashMap<String, MotorCollection>()
+  val subsystemHardware = HashMap<String, HashMap<String, MutableList<MotorCollection>>>()
 
-  fun add(subsystemName: String, subsystemMotorCollection: MotorCollection) {
-    if (subsystemHardware[subsystemName] != null){
-      subsystemHardware[subsystemName]?.motorCollection?.addAll(subsystemMotorCollection.motorCollection)
-    } else {
-      subsystemHardware[subsystemName] = subsystemMotorCollection
+  fun add(subsystemName: String, subCategory: String, vararg subsystemMotorCollections: MotorCollection) {
+    if (subsystemHardware[subsystemName] == null){
+      subsystemHardware[subsystemName] = HashMap()
+    }
+    if (
+      subsystemHardware[subsystemName]?.get(subCategory) == null
+    ){
+      subsystemHardware[subsystemName]?.set(subCategory, mutableListOf())
     }
 
+    subsystemHardware[subsystemName]!![subCategory]!!.addAll(subsystemMotorCollections)
   }
 
   fun periodic() {
     for (subsystemName in subsystemHardware.keys) {
 
-      val motorCollection = subsystemHardware[subsystemName]!!
+      println("copium")
+      for (subCategory in subsystemHardware[subsystemName]!!) {
 
-      // base current limit
-      if (motorCollection.maxMotorTemperature < motorCollection.firstStageTemperatureLimit &&
-        motorCollection.currentLimitStage != CURRENT_STAGE_LIMIT.BASE
-      ) {
-        motorCollection.setCurrentLimit(motorCollection.baseCurrentLimit)
-      }
+        println("hopium")
+        for (motorCollection in subCategory.value) {
+          println("opium")
 
-      // first stage current limit
-      if (motorCollection.maxMotorTemperature in
-        motorCollection.firstStageTemperatureLimit..motorCollection.motorShutDownThreshold &&
-        motorCollection.currentLimitStage != CURRENT_STAGE_LIMIT.FIRST
-      ) {
-        motorCollection.setCurrentLimit(motorCollection.firstStageCurrentLimit)
-      }
+          // base current limit
+          if (motorCollection.maxMotorTemperature < motorCollection.firstStageTemperatureLimit &&
+            motorCollection.currentLimitStage != CURRENT_STAGE_LIMIT.BASE
+          ) {
+            motorCollection.setCurrentLimit(motorCollection.baseCurrentLimit)
+          }
 
-      for (motor in motorCollection.motorCollection) {
-        // complete motor shutdown but we don't want to shut down all motors at once
-        if (motor.temperature > motor.motorShutDownThreshold) {
-          motor.shutdown()
+          // first stage current limit
+          if (motorCollection.maxMotorTemperature in
+            motorCollection.firstStageTemperatureLimit..motorCollection.motorShutDownThreshold &&
+            motorCollection.currentLimitStage != CURRENT_STAGE_LIMIT.FIRST
+          ) {
+            motorCollection.setCurrentLimit(motorCollection.firstStageCurrentLimit)
+          }
+
+          for (motor in motorCollection.motorCollection) {
+            // complete motor shutdown but we don't want to shut down all motors at once
+            if (motor.temperature > motor.motorShutDownThreshold) {
+              motor.shutdown()
+            }
+
+            logMotor(subsystemName, motor)
+          }
         }
-
-        logMotor(subsystemName, motor)
       }
     }
   }

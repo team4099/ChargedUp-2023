@@ -7,6 +7,7 @@ import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
@@ -64,15 +65,29 @@ object GroundIntakeIOSim : GroundIntakeIO {
   init{
     MotorChecker.add(
       "Ground Intake",
+      "Rotation",
       MotorCollection(
         mutableListOf(
           SimulatedMotor(
             armSim,
-            "Ground Intake Arm Motor",
+            "Arm Motor",
           ),
+        ),
+        60.amps,
+        10.celsius,
+        45.amps,
+        20.celsius
+      )
+    )
+
+    MotorChecker.add(
+      "Ground Intake",
+      "Roller",
+      MotorCollection(
+        mutableListOf(
           SimulatedMotor(
             rollerSim,
-            "Ground Intake Roller Motor",
+            "Roller Motor",
           )
         ),
         60.amps,

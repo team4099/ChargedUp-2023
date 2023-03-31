@@ -3,6 +3,7 @@ package com.team4099.robot2023.subsystems.manipulator
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import com.team4099.robot2023.subsystems.falconspin.Motor
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
@@ -59,15 +60,29 @@ object ManipulatorIOSim : ManipulatorIO {
   init{
     MotorChecker.add(
       "Manipulator",
+      "Extension",
       MotorCollection(
         mutableListOf(
           SimulatedMotor(
             armSim,
-            "Manipulator Arm Motor",
+            "Arm Motor",
           ),
+        ),
+        60.amps,
+        10.celsius,
+        45.amps,
+        20.celsius
+      )
+    )
+
+    MotorChecker.add(
+      "Manipulator",
+      "Roller",
+      MotorCollection(
+        mutableListOf(
           SimulatedMotor(
             rollerSim,
-            "Manipulator Roller Motor",
+            "Roller Motor",
           )
         ),
         60.amps,

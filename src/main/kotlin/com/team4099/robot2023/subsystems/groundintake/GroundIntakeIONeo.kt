@@ -6,6 +6,9 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.Neo
 import edu.wpi.first.wpilibj.DutyCycleEncoder
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.amps
@@ -105,6 +108,28 @@ object GroundIntakeIONeo : GroundIntakeIO {
     armSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
 
     armSparkMax.burnFlash()
+
+//    MotorChecker.add(
+//      "Ground Intake",
+//      MotorCollection(
+//        mutableListOf(
+//          Neo(rollerSparkMax, "Roller Motor")
+//        ),
+//        GroundIntakeConstants.ROLLER_CURRENT_LIMIT,
+//        70.celsius,
+//        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 30.amps,
+//        90.celsius
+//        ),
+//      MotorCollection(
+//        mutableListOf(
+//          Neo(armSparkMax, "Extension Motor")
+//        ),
+//        GroundIntakeConstants.ARM_CURRENT_LIMIT,
+//        70.celsius,
+//        GroundIntakeConstants.ARM_CURRENT_LIMIT - 30.amps,
+//        90.celsius
+//      )
+//    )
   }
 
   override fun updateInputs(inputs: GroundIntakeIO.GroundIntakeIOInputs) {

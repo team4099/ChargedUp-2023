@@ -45,17 +45,18 @@ object ElevatorIOSim : ElevatorIO {
   init{
     MotorChecker.add(
       "Elevator",
+      "Extension",
       MotorCollection(
         mutableListOf(
           SimulatedMotor(
             elevatorSim,
-            "Elevator Extension Motor",
+            "Extension Motor",
           )
         ),
-        60.amps,
-        10.celsius,
-        45.amps,
-        20.celsius
+        baseCurrentLimit = 60.amps,
+        firstStageTemperatureLimit = 10.celsius,
+        firstStageCurrentLimit = 45.amps,
+        motorShutDownThreshold = 20.celsius
       )
     )
   }

@@ -2,6 +2,7 @@ package com.team4099.robot2023.subsystems.falconspin
 
 import org.team4099.lib.units.base.Current
 import org.team4099.lib.units.base.Temperature
+import org.team4099.lib.units.base.celsius
 
 data class MotorCollection(
   val motorCollection: MutableList<Motor<MotorType>>,
@@ -12,12 +13,12 @@ data class MotorCollection(
 ) {
 
   init{
-    for (motor in motorCollection){
-      motor.baseCurrentLimit = baseCurrentLimit
-      motor.firstStageTemperatureLimit = firstStageTemperatureLimit
-      motor.firstStageCurrentLimit = firstStageCurrentLimit
-      motor.motorShutDownThreshold = motorShutDownThreshold
-    }
+      for (motor in motorCollection){
+        motor.baseCurrentLimit = baseCurrentLimit
+        motor.firstStageTemperatureLimit = firstStageTemperatureLimit
+        motor.firstStageCurrentLimit = firstStageCurrentLimit
+        motor.motorShutDownThreshold = motorShutDownThreshold
+      }
   }
 
   val maxMotorTemperature: Temperature

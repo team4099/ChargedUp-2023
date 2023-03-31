@@ -64,7 +64,8 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
 
   init{
     MotorChecker.add(
-      "Drive Motors",
+      "Drivetrain",
+      "Drive",
       MotorCollection(
         mutableListOf(
           SimulatedMotor(driveMotorSim,
@@ -78,7 +79,8 @@ class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
     )
 
     MotorChecker.add(
-      "Steering Motors",
+      "Drivetrain",
+      "Steering",
       MotorCollection(
         mutableListOf(
           SimulatedMotor(steerMotorSim,

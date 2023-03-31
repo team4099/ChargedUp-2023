@@ -106,6 +106,8 @@ abstract class Motor<M : MotorType> {
 class Neo(
   private val canSparkMax: CANSparkMax,
   override val name: String,
+  override var firstStageTemperatureLimit: Temperature = 70.celsius,
+  override var motorShutDownThreshold: Temperature = 90.celsius
 ) : Motor<REVNeo>() {
   override val busVoltage: ElectricalPotential
     get() = canSparkMax.busVoltage.volts
