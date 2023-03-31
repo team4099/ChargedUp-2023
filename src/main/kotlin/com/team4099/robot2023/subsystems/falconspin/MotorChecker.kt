@@ -21,7 +21,8 @@ object MotorChecker {
   }
 
   fun periodic() {
-    Logger.getInstance().recordOutput("MotorChecker/subsystemNames", subsystemHardware.keys.toTypedArray())
+    Logger.getInstance()
+      .recordOutput("MotorChecker/subsystemNames", subsystemHardware.keys.toTypedArray())
 
     for (subsystemName in subsystemHardware.keys) {
 
@@ -56,7 +57,8 @@ object MotorChecker {
           }
         }
       }
-      Logger.getInstance().recordOutput("MotorChecker/${subsystemName}/motorNames", motorNames.toTypedArray())
+      Logger.getInstance()
+        .recordOutput("MotorChecker/$subsystemName/motorNames", motorNames.toTypedArray())
     }
   }
 }
@@ -127,5 +129,9 @@ fun logMotor(subsystemName: String, motor: Motor<MotorType>) {
     )
   Logger.getInstance()
     .recordOutput("MotorChecker/$subsystemName/${motor.name}/Info", motor.info.toTypedArray())
-  Logger.getInstance().recordOutput("MotorChecker/$subsystemName/${motor.name}/StickyFaults", motor.stickyFaults.toTypedArray())
+  Logger.getInstance()
+    .recordOutput(
+      "MotorChecker/$subsystemName/${motor.name}/StickyFaults",
+      motor.stickyFaults.toTypedArray()
+    )
 }
