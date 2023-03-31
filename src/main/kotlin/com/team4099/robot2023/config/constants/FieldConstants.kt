@@ -251,7 +251,7 @@ object FieldConstants {
     val cubeEdgeHigh = (3.0).inches
     val highCubeZ = (48.5).inches - cubeEdgeHigh
     val midCubeZ = (34.5).inches - cubeEdgeHigh
-    val highConeZ = (46.0).inches
+    val highConeZ = (48.0).inches
     val midConeZ = (34.0).inches
 
     // Translations (all nodes in the same column/row have the same X/Y coordinate)

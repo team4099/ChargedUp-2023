@@ -378,7 +378,7 @@ class Superstructure(
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.intakeAngle.get(),
-            0.0.volts,
+            GroundIntake.TunableGroundIntakeStates.intakeVoltage.get(),
           )
         if (groundIntake.isAtTargetedPosition) {
           val rollerCommandedVoltage =
@@ -724,10 +724,20 @@ class Superstructure(
       SuperstructureStates.SCORE_PREP -> {
         led.state = LEDMode.SCORE
 
+        val rollerVoltage =
+          when (usingGamePiece){
+            GamePiece.CUBE ->
+              when (nodeTier) {
+                NodeTier.HYBRID -> GroundIntake.TunableGroundIntakeStates.outtakeVoltage.get()
+                else -> GroundIntake.TunableGroundIntakeStates.helpScoreVoltage.get()
+              }
+            else -> GroundIntake.TunableGroundIntakeStates.helpScoreVoltage.get()
+          }
+
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
             GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-            GroundIntake.TunableGroundIntakeStates.outtakeVoltage.get()
+            rollerVoltage
           )
 
         if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {

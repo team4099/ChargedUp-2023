@@ -85,7 +85,7 @@ object ElevatorIONeo : ElevatorIO {
           Neo(followerSparkMax, "Follower Extension Motor")
         ),
         ElevatorConstants.PHASE_CURRENT_LIMIT,
-        70.celsius,
+        30.celsius,
         ElevatorConstants.PHASE_CURRENT_LIMIT - 30.amps,
         90.celsius
       ),

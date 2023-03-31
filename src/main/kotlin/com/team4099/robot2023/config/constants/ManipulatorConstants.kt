@@ -39,7 +39,7 @@ object ManipulatorConstants {
   // used to detect intake/outake, values need testing
   // TODO(test this)
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.3.seconds
-  val SPIT_OUT_TIME = 1.2.seconds
+  val SPIT_OUT_TIME = 0.9.seconds
   val INTAKE_IN_TIME = 0.5.seconds
 
   val FILTER_PERIOD = 2.0.milli.seconds

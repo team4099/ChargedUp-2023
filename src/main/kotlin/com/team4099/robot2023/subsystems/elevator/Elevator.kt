@@ -329,7 +329,7 @@ class Elevator(val io: ElevatorIO) {
         (
           (
             (Clock.fpgaTime - timeProfileGeneratedAt) - elevatorProfile.totalTime() <
-              1.0.seconds
+              2.0.seconds
             ) ||
             elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
           ) &&
