@@ -23,12 +23,9 @@ object MotorChecker {
   fun periodic() {
     for (subsystemName in subsystemHardware.keys) {
 
-      println("copium")
       for (subCategory in subsystemHardware[subsystemName]!!) {
 
-        println("hopium")
         for (motorCollection in subCategory.value) {
-          println("opium")
 
           // base current limit
           if (motorCollection.maxMotorTemperature < motorCollection.firstStageTemperatureLimit &&
