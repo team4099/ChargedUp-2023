@@ -63,7 +63,7 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
       if (drivetrain.odometryPose.isOnInnerSideOfChargeStation()) -20.inches else 20.inches
 
     val intermediateTranslationYOffset =
-      if (drivetrain.odometryPose.isAboveMiddleOfChargeStation()) 40.inches else -40.inches
+      if (drivetrain.odometryPose.isAboveMiddleOfChargeStation()) -40.inches else 40.inches
 
     executeCommand =
       DrivePathCommand(
