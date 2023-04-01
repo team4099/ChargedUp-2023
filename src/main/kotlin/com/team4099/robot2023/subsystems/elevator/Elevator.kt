@@ -328,12 +328,10 @@ class Elevator(val io: ElevatorIO) {
       currentRequest is ElevatorRequest.TargetingPosition &&
         (
           (
-            (Clock.fpgaTime - timeProfileGeneratedAt) - elevatorProfile.totalTime() <
-              2.0.seconds
+            (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <= 10.inches
             ) ||
             elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
-          ) &&
-        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <= 10.inches
+          )
 
   init {
     TunableElevatorHeights

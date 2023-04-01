@@ -20,5 +20,5 @@ fun Objective.isValidObjective(): Boolean {
 
 fun Objective.isConeNode(): Boolean {
   return this.nodeTier != Constants.Universal.NodeTier.HYBRID &&
-    this.nodeColumn in listOf(2, 3, 5, 6, 8)
+    this.nodeColumn in listOf(0, 2, 3, 5, 6, 8)
 }

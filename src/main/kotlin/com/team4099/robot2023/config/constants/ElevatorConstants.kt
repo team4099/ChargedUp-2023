@@ -67,8 +67,8 @@ object ElevatorConstants {
   // circumference / 2pi = radius
   val SPOOL_RADIUS = 0.005.meters * 32.0 / (2 * PI)
 
-  val MAX_VELOCITY = 75.inches.perSecond // 75
-  val MAX_ACCELERATION = 225.inches.perSecond.perSecond // 225
+  val MAX_VELOCITY = 100.inches.perSecond // 75
+  val MAX_ACCELERATION = 300.inches.perSecond.perSecond // 225
 
   val ELEVATOR_MAX_EXTENSION = 54.8.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches

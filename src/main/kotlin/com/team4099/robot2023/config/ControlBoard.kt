@@ -59,7 +59,7 @@ object ControlBoard {
   val decreaseRollerVoltage = Trigger { operator.dPadDown }
 
   val groundIntakeCone = Trigger { driver.yButton }
-  val dpadUp = Trigger { driver.dPadUp }
+  val autoScore = Trigger { driver.rightTriggerAxis > 0.5 }
   val dpadDown = Trigger { driver.dPadDown }
 
   // val armCharacterization = Trigger { operator.yButton }

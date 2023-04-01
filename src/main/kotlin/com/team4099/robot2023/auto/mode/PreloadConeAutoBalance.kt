@@ -38,7 +38,7 @@ class PreloadConeAutoBalance(val drivetrain: Drivetrain, val superstructure: Sup
     val startingPosY =
       LoggedTunableValue(
         "Drivetrain/startingPosY",
-        FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 4,
+        FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 3,
         Pair({ it.inMeters }, { it.meters })
       )
     val startingPosTheta =

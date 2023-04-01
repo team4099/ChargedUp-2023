@@ -135,7 +135,7 @@ class Neo(
         .toUInt()
         .toString(radix = 2)
         .mapIndexedNotNull { index, c -> index.takeIf { c == '1' } }
-        .map { CANSparkMax.FaultID.fromId(it).name }
+        .map { CANSparkMax.FaultID.fromId(it)?.name ?: "" }
 
   override fun setCurrentLimit(
     limit: Current,

@@ -99,9 +99,9 @@ object ManipulatorIONeo : ManipulatorIO {
           Neo(rollerSparkMax, "Roller Motor")
         ),
         ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT,
-        70.celsius,
-        ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT - 30.amps,
-        90.celsius
+        80.celsius,
+        ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT - 5.amps,
+        100.celsius
       )
     )
   }
