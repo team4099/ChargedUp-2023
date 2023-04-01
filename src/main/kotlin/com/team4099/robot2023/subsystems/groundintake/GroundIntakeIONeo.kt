@@ -123,9 +123,9 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
     MotorChecker.add(
       "Ground Intake",
-      "Extension",
+      "Pivot",
       MotorCollection(
-        mutableListOf(Neo(armSparkMax, "Extension Motor")),
+        mutableListOf(Neo(armSparkMax, "Pivot Motor")),
         GroundIntakeConstants.ARM_CURRENT_LIMIT,
         70.celsius,
         GroundIntakeConstants.ARM_CURRENT_LIMIT - 30.amps,

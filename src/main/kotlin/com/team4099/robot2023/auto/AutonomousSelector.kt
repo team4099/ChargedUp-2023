@@ -4,6 +4,7 @@ import com.team4099.robot2023.auto.mode.ConeCubeAuto
 import com.team4099.robot2023.auto.mode.ConeCubeBumpAuto
 import com.team4099.robot2023.auto.mode.ConeCubeBumpHoldAutoBalance
 import com.team4099.robot2023.auto.mode.ConeCubeHoldAutoBalance
+import com.team4099.robot2023.auto.mode.ConeCubeOverChargeStationAuto
 import com.team4099.robot2023.auto.mode.ConeMobilityAuto
 import com.team4099.robot2023.auto.mode.PreloadConeAutoBalance
 import com.team4099.robot2023.auto.mode.PreloadOpenLoopChargeStationBalance
@@ -60,6 +61,9 @@ object AutonomousSelector {
     )
     autonomousModeChooser.addOption(
       "1 Cone + Auto Balance Charge Station", AutonomousMode.PRELOAD_SCORE_AUTO_CHARGE_STATION
+    )
+    autonomousModeChooser.addOption(
+      "1 Cone + 1 Cube Auto Balance Charge Station", AutonomousMode.CO_CUBE_CHARGE_STATION
     )
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(5, 2).withPosition(3, 0)
@@ -126,6 +130,8 @@ object AutonomousSelector {
       AutonomousMode.PRELOAD_SCORE_AUTO_CHARGE_STATION ->
         return WaitCommand(waitTime.inSeconds)
           .andThen(PreloadConeAutoBalance(drivetrain, superstructure))
+      AutonomousMode.CO_CUBE_CHARGE_STATION ->
+        return WaitCommand(waitTime.inSeconds).andThen(ConeCubeOverChargeStationAuto(drivetrain, superstructure))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()
@@ -140,6 +146,7 @@ object AutonomousSelector {
     CO_CU_BUMP_HOLD_AUTO_BALANCE,
     CONE_MOBILITY_AUTO,
     PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE,
-    PRELOAD_SCORE_AUTO_CHARGE_STATION
+    PRELOAD_SCORE_AUTO_CHARGE_STATION,
+    CO_CUBE_CHARGE_STATION
   }
 }

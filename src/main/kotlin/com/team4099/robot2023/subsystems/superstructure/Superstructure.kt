@@ -100,7 +100,7 @@ class Superstructure(
     gameboy.periodic()
     Logger.getInstance()
       .recordOutput(
-        "LoggedRobot/Subsystems/ga",
+        "LoggedRobot/Subsystems/GameBoyLoopTimeMS",
         (Clock.realTimestamp - gameboyLoopStartTime).inMilliseconds
       )
 
@@ -144,85 +144,62 @@ class Superstructure(
       .recordOutput("Superstructure/theoreticalGamePiece", theoreticalGamePiece.name)
     Logger.getInstance().recordOutput("Superstructure/canMoveSafely", canMoveSafely)
 
-    Logger.getInstance()
-      .recordOutput(
-        "SimulatedMechanisms/0",
-        Pose3d(
-          0.1016.meters,
-          0.0.meters,
-          0.211550.meters,
-          Rotation3d(0.0.degrees, -groundIntake.inputs.armPosition, 0.0.degrees)
-        )
-          .pose3d
+
+    Logger.getInstance().recordOutput(
+      "SimulatedMechanisms",
+      Pose3d(
+        0.1016.meters,
+        0.0.meters,
+        0.211550.meters,
+        Rotation3d(0.0.degrees, -groundIntake.inputs.armPosition, 0.0.degrees)
       )
-
-    if (elevator.inputs.elevatorPosition >= ElevatorConstants.FIRST_STAGE_HEIGHT) {
-      Logger.getInstance()
-        .recordOutput(
-          "SimulatedMechanisms/1",
-          Pose3d()
-            .transformBy(
-              Transform3d(
-                Translation3d(
-                  0.0.inches,
-                  0.0.inches,
-                  elevator.inputs.elevatorPosition -
-                    ElevatorConstants.FIRST_STAGE_HEIGHT
-                )
-                  .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-                Rotation3d()
-              )
+        .pose3d,
+      if (elevator.inputs.elevatorPosition >= ElevatorConstants.FIRST_STAGE_HEIGHT) Pose3d()
+        .transformBy(
+          Transform3d(
+            Translation3d(
+              0.0.inches,
+              0.0.inches,
+              elevator.inputs.elevatorPosition -
+                ElevatorConstants.FIRST_STAGE_HEIGHT
             )
-            .pose3d
-        )
-    } else {
-      Logger.getInstance()
-        .recordOutput(
-          "SimulatedMechanisms/1",
-          Pose3d()
-            .transformBy(
-              Transform3d(
-                Translation3d(0.0.inches, 0.0.inches, 0.0.inches)
-                  .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-                Rotation3d()
-              )
-            )
-            .pose3d
-        )
-    }
-
-    Logger.getInstance()
-      .recordOutput(
-        "SimulatedMechanisms/2",
-        Pose3d()
-          .transformBy(
-            Transform3d(
-              Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
-                .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-              Rotation3d()
-            )
+              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+            Rotation3d()
           )
-          .pose3d
-      )
-
-    Logger.getInstance()
-      .recordOutput(
-        "SimulatedMechanisms/3",
-        Pose3d(
-          -0.15.meters + manipulator.inputs.armPosition,
-          0.05.meters,
-          0.5825.meters,
-          Rotation3d()
         )
-          .transformBy(
-            Transform3d(
-              Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
-                .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-              Rotation3d()
-            )
+        .pose3d else Pose3d()
+        .transformBy(
+          Transform3d(
+            Translation3d(0.0.inches, 0.0.inches, 0.0.inches)
+              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+            Rotation3d()
           )
-          .pose3d
+        )
+        .pose3d,
+      Pose3d()
+        .transformBy(
+          Transform3d(
+            Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
+              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+            Rotation3d()
+          )
+        )
+        .pose3d,
+      Pose3d(
+        -0.15.meters + manipulator.inputs.armPosition,
+        0.05.meters,
+        0.5825.meters,
+        Rotation3d()
       )
+        .transformBy(
+          Transform3d(
+            Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
+              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+            Rotation3d()
+          )
+        )
+        .pose3d
+    )
 
     var nextState = currentState
     when (currentState) {
@@ -1093,7 +1070,7 @@ class Superstructure(
         .andThen(
           WaitUntilCommand {
             if (DriverStation.isAutonomous()) {
-              canMoveSafely && currentState == SuperstructureStates.IDLE
+              canMoveSafely && isAtRequestedState && currentState == SuperstructureStates.SCORE_CLEANUP
             } else {
               isAtRequestedState && currentState == SuperstructureStates.IDLE
             }
