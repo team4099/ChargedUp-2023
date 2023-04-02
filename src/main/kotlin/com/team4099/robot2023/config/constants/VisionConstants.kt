@@ -25,4 +25,17 @@ object VisionConstants {
     )
 
   val CAMERA_NAMES = listOf("northstar")
+
+  object Limelight {
+    val LIMELIGHT_NAME = "limelight-zapdos"
+    val HORIZONTAL_FOV = 59.6.degrees
+    val VERITCAL_FOV = 45.7.degrees
+    val LL_TRANSFORM =
+      Transform3d(
+        Translation3d(-1.1438.inches, 10.3966.inches, 12.9284.inches),
+        Rotation3d(0.0.degrees, 61.610.degrees, 16.1525.degrees)
+      )
+    const val RES_WIDTH = 320
+    const val RES_HEIGHT = 240 // no clue what these numbers should be but usnig these for now
+  }
 }

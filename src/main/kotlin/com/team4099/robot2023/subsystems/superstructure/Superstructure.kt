@@ -328,8 +328,6 @@ class Superstructure(
                 }
               }
             }
-            is SuperstructureRequest.SingleSubstationIntakePrep ->
-              SuperstructureStates.SINGLE_SUBSTATION_INTAKE_PREP
             is SuperstructureRequest.Tuning -> SuperstructureStates.TUNING
             else -> currentState
           }
@@ -728,7 +726,8 @@ class Superstructure(
 
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
-            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), 0.0.volts
+            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
+            GroundIntake.TunableGroundIntakeStates.outtakeVoltage.get()
           )
 
         if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {
@@ -748,9 +747,7 @@ class Superstructure(
             when (nodeTier) {
               NodeTier.HYBRID -> {
                 when (usingGamePiece) {
-                  GamePiece.CUBE ->
-                    Elevator.TunableElevatorHeights.hybridHeight.get() +
-                      Elevator.TunableElevatorHeights.cubeDropPosition.get()
+                  GamePiece.CUBE -> Elevator.TunableElevatorHeights.groundIntakeCubeHeight.get()
                   GamePiece.CONE ->
                     Elevator.TunableElevatorHeights.hybridHeight.get() +
                       Elevator.TunableElevatorHeights.coneDropPosition.get()

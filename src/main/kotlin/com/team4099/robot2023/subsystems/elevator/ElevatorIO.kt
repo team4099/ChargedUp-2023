@@ -53,7 +53,7 @@ interface ElevatorIO {
       table?.put("elevatorFollowerTempCelsius", followerTempCelcius.inCelsius)
     }
 
-    override fun fromLog(table: LogTable) {
+    override fun fromLog(table: LogTable?) {
       table?.getDouble("elevatorPositionInches", elevatorPosition.inInches)?.let {
         elevatorPosition = it.inches
       }

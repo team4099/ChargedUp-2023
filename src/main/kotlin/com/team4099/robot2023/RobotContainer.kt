@@ -12,18 +12,24 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
 import com.team4099.robot2023.subsystems.elevator.Elevator
+import com.team4099.robot2023.subsystems.elevator.ElevatorIO
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.gameboy.GameboyIOServer
 import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIOCandle
 import com.team4099.robot2023.subsystems.led.LedIOSim
+import com.team4099.robot2023.subsystems.limelight.LimelightVision
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOReal
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
+import com.team4099.robot2023.subsystems.manipulator.ManipulatorIO
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
@@ -39,6 +45,7 @@ object RobotContainer {
   private val drivetrain: Drivetrain
   private val vision: Vision
   private val superstructure: Superstructure
+  private val limelight: LimelightVision
 
   init {
     if (RobotBase.isReal()) {
@@ -53,12 +60,13 @@ object RobotContainer {
         )
       superstructure =
         Superstructure(
-          Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIONeo),
-          Manipulator(ManipulatorIONeo),
+          Elevator(object: ElevatorIO {}),
+          GroundIntake(object: GroundIntakeIO {}),
+          Manipulator(object: ManipulatorIO {}),
           Led(LedIOCandle),
           GameBoy(GameboyIOServer)
         )
+      limelight = LimelightVision(LimelightVisionIOReal())
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
@@ -71,6 +79,7 @@ object RobotContainer {
           Led(LedIOSim),
           GameBoy(GameboyIOServer)
         )
+      limelight = LimelightVision(object : LimelightVisionIO {})
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
@@ -167,7 +176,7 @@ object RobotContainer {
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
     ControlBoard.singleSubstationIntake.whileTrue(superstructure.singleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
-
+    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
         {
@@ -180,7 +189,6 @@ object RobotContainer {
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
     ControlBoard.dpadUp.whileTrue(AutoScoreCommand(drivetrain, superstructure))
-    ControlBoard.singleSubIntake.whileTrue(superstructure.singleSubConeCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain,

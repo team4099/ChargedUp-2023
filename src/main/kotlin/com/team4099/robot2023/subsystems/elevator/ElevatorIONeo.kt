@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -100,6 +101,9 @@ object ElevatorIONeo : ElevatorIO {
     inputs.followerSupplyCurrent = inputs.followerStatorCurrent * followerSparkMax.appliedOutput
 
     inputs.followerTempCelcius = followerSparkMax.motorTemperature.celsius
+
+    Logger.getInstance()
+      .recordOutput("Elevator/leaderRawRotations", leaderSparkMax.encoder.position)
   }
 
   /**
