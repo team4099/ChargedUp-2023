@@ -21,10 +21,14 @@ object VisionConstants {
       Transform3d(
         Translation3d((11.760.inches - 1.25.inches), 7.3125.inches, 29.33.inches),
         Rotation3d(180.degrees, 0.degrees, 0.degrees)
+      ),
+      Transform3d(
+        Translation3d(10.inches, 10.inches, 10.inches),
+        Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)
       )
     )
 
-  val CAMERA_NAMES = listOf("northstar")
+  val CAMERA_NAMES = listOf("northstar", "northstar_1")
 
   object Limelight {
     val LIMELIGHT_NAME = "limelight-zapdos"

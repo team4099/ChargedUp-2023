@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.vision
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.TunableNumber
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.vision.camera.CameraIO
@@ -35,6 +36,14 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
     val xyStdDevCoeffecient = 0.01
     val thetaStdDevCoefficient = 0.75
   }
+
+  private val xyStdDevCoefficient = TunableNumber(
+    "Vision/xystdev", 0.1
+  )
+
+  private val thetaStdDev = TunableNumber(
+    "Vision/thetaStdDev", 0.75
+  )
 
   private var poseSupplier = Supplier<Pose2d> { Pose2d() }
   private var visionConsumer: Consumer<List<PoseEstimator.TimestampedVisionUpdate>> = Consumer {}
@@ -186,8 +195,8 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
         val averageDistance = totalDistance / tagPoses.size
 
         // Add to vision updates
-        val xyStdDev = xyStdDevCoeffecient * averageDistance.inMeters.pow(2) / tagPoses.size
-        val thetaStdDev = thetaStdDevCoefficient * averageDistance.inMeters.pow(2) / tagPoses.size
+        val xyStdDev = xyStdDevCoefficient.get() * averageDistance.inMeters.pow(2) / tagPoses.size
+        val thetaStdDev = thetaStdDev.get() * averageDistance.inMeters.pow(2) / tagPoses.size
 
         visionUpdates.add(
           PoseEstimator.TimestampedVisionUpdate(

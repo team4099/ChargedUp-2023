@@ -14,6 +14,7 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 
@@ -32,6 +33,66 @@ object FieldConstants {
 
   val aprilTagLength = 6.0.inches
 
+//  val homeAprilTags: List<AprilTag> =
+//    listOf(
+//      AprilTag(
+//        1,
+//        Pose3d(
+//          40.inches,
+//          (104.125).inches,
+//          (18.22).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+//        )
+//      ),
+//      AprilTag(
+//        2,
+//        Pose3d(
+//          40.inches,
+//          (104.125).inches,
+//          (18.22).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+//        )
+//      ),
+//      AprilTag(
+//        3,
+//        Pose3d(
+//          40.inches,
+//          (42.125).inches,
+//          (18.22).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+//        )
+//      ),
+//      AprilTag(
+//        4,
+//        Pose3d(
+//          (636.96).inches,
+//          (265.74).inches,
+//          (27.38).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+//        )
+//      ),
+//      AprilTag(
+//        5,
+//        Pose3d(
+//          (409.5).inches,
+//          (85.5).inches,
+//          (27.833).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+//        )
+//      ),
+//      AprilTag(
+//        6,
+//        Pose3d(
+//          (40.45).inches,
+//          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+//          (18.22).inches,
+//          Rotation3d()
+//        )
+//      ),
+//      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
+//      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
+//    )
+
   val homeAprilTags: List<AprilTag> =
     listOf(
       AprilTag(
@@ -46,8 +107,8 @@ object FieldConstants {
       AprilTag(
         2,
         Pose3d(
-          40.inches,
-          (104.125).inches,
+          0.inches,
+          (42.125).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
@@ -55,8 +116,8 @@ object FieldConstants {
       AprilTag(
         3,
         Pose3d(
-          40.inches,
-          (42.125).inches,
+          0.inches,
+          (104.125).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
@@ -64,10 +125,10 @@ object FieldConstants {
       AprilTag(
         4,
         Pose3d(
-          (636.96).inches,
-          (265.74).inches,
-          (27.38).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+          (8.13).inches,
+          (174.19).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
       ),
       AprilTag(
@@ -89,7 +150,7 @@ object FieldConstants {
         )
       ),
       AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
-      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
+      AprilTag(8, Pose3d((280.125).inches, (104.5).inches, (18.22).inches, Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)))
     )
 
   // AprilTag locations (do not flip for red alliance)

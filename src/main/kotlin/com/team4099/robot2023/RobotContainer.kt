@@ -52,6 +52,7 @@ object RobotContainer {
         Vision(
           //          object: CameraIO {}
           CameraIONorthstar("northstar"),
+          CameraIONorthstar("northstar_1"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
         )
