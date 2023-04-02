@@ -33,12 +33,17 @@ import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
+import java.util.function.Consumer
 import java.util.function.Supplier
 
 object RobotContainer {
   private val drivetrain: Drivetrain
   private val vision: Vision
   private val superstructure: Superstructure
+  val rumbleState: Boolean
+   get() {
+     return superstructure.rumbleState
+   }
 
   init {
     if (RobotBase.isReal()) {
@@ -72,7 +77,6 @@ object RobotContainer {
           GameBoy(GameboyIOServer)
         )
     }
-
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
     drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
     drivetrain.objectiveSupplier = Supplier { superstructure.objective }

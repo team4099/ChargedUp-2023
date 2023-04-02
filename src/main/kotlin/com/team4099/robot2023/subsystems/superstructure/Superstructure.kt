@@ -30,6 +30,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.volts
+import java.util.function.Consumer
 import java.util.function.Supplier
 import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRequest as SuperstructureRequest
 
@@ -1583,6 +1584,11 @@ class Superstructure(
     returnCommand.name = "ScoreConeAtHighNodeCommand"
     return returnCommand
   }
+
+  val rumbleState: Boolean
+    get() {
+      return manipulator.rumbleTrigger
+    }
 
   companion object {
     enum class SuperstructureStates {
