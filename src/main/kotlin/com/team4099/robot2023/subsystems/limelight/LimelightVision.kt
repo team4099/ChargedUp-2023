@@ -47,12 +47,13 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
       for (target in inputs.retroTargets) {
         visibleNodes.add(
-        solveTargetPositionFromAngularOutput(
-          target.tx,
-          target.ty,
-          currentPose,
-          VisionConstants.Limelight.LL_TRANSFORM,
-          23.905.inches
+          solveTargetPositionFromAngularOutput(
+            target.tx,
+            target.ty,
+            currentPose,
+            VisionConstants.Limelight.LL_TRANSFORM,
+            if (target.tyPixel < 100) 23.905.inches else 43.875.inches
+            // 100 is pixel pos between mid and high tape, pls tune
         ))
       }
 
