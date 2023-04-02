@@ -31,10 +31,11 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
 import org.team4099.lib.units.perSecond
-import java.util.function.Consumer
 import com.team4099.robot2023.subsystems.superstructure.Request.ManipulatorRequest as ManipulatorRequest
 
-class Manipulator(val io: ManipulatorIO, ) {
+class Manipulator(
+  val io: ManipulatorIO,
+) {
   val inputs = ManipulatorIO.ManipulatorIOInputs()
   // placement feedforward
   private var armFeedforward: SimpleMotorFeedforward<Meter, Volt>
