@@ -7,6 +7,7 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
@@ -30,6 +31,7 @@ import org.team4099.lib.units.derived.perInchSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
+import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.perSecond
 import com.team4099.robot2023.subsystems.superstructure.Request.ManipulatorRequest as ManipulatorRequest
 
@@ -56,6 +58,20 @@ class Manipulator(val io: ManipulatorIO) {
         ManipulatorConstants.ARM_TOLERANCE
 
   object TunableManipulatorStates {
+
+
+
+    val enableRotation =
+      LoggedTunableNumber(
+        "Manipulator/enableRollerManipulator",
+        ManipulatorConstants.ENABLE_ROLLER
+      )
+
+    val enableExtension =
+      LoggedTunableNumber(
+        "Manipulator/enableExtensionManipulator",
+        ManipulatorConstants.ENABLE_EXTENSION
+      )
 
     val minExtension =
       LoggedTunableValue(
@@ -241,10 +257,10 @@ class Manipulator(val io: ManipulatorIO) {
   val hasCone: Boolean
     get() {
       return (
-        inputs.rollerStatorCurrent.inAmperes >=
-          ManipulatorConstants.CONE_CURRENT_THRESHOLD.inAmperes &&
+        inputs.rollerVelocity <=
+          ManipulatorConstants.CONE_ROTATION_THRESHOLD &&
           (Clock.fpgaTime - lastRollerRunTime) >=
-          ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+          ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP
         ) ||
         inputs.isSimulating
     }
@@ -330,10 +346,11 @@ class Manipulator(val io: ManipulatorIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
-      currentRequest is ManipulatorRequest.TargetingPosition &&
+      (currentRequest is ManipulatorRequest.TargetingPosition &&
         armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
         (inputs.armPosition - armPositionTarget).absoluteValue <=
-        ManipulatorConstants.ARM_TOLERANCE
+        ManipulatorConstants.ARM_TOLERANCE) ||
+        (Manipulator.TunableManipulatorStates.enableExtension.get() != 1.0)
 
   init {
     TunableManipulatorStates

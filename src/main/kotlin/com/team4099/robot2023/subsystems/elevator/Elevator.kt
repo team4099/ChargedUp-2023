@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.elevator
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableNumber
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
@@ -74,6 +75,12 @@ class Elevator(val io: ElevatorIO) {
     )
 
   object TunableElevatorHeights {
+    val enableElevator =
+      LoggedTunableNumber(
+        "Elevator/enableMovementElevator",
+        ElevatorConstants.ENABLE_ELEVATOR
+      )
+
     val minPosition =
       LoggedTunableValue(
         "Elevator/minPosition",
@@ -318,10 +325,11 @@ class Elevator(val io: ElevatorIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
-      currentRequest is ElevatorRequest.TargetingPosition &&
+      (currentRequest is ElevatorRequest.TargetingPosition &&
         elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
         (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
-        ElevatorConstants.ELEVATOR_TOLERANCE
+        ElevatorConstants.ELEVATOR_TOLERANCE) ||
+        (TunableElevatorHeights.enableElevator.get() != 1.0)
 
   val canContinueSafely: Boolean
     get() =

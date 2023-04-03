@@ -11,9 +11,11 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.driven
 import org.team4099.lib.units.derived.driving
 import org.team4099.lib.units.derived.gearRatio
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.kilo
 import org.team4099.lib.units.milli
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 import kotlin.math.PI
 
@@ -39,6 +41,7 @@ object ManipulatorConstants {
   // used to detect intake/outake, values need testing
   // TODO(test this)
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.3.seconds
+  val MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP = 0.35.seconds
   val SPIT_OUT_TIME = 0.9.seconds
   val INTAKE_IN_TIME = 0.5.seconds
 
@@ -66,7 +69,8 @@ object ManipulatorConstants {
   val ROLLER_GEAR_RATIO = 20.0.gearRatio
 
   // TODO: Change current thresholds
-  val CONE_CURRENT_THRESHOLD = 30.amps
+  val CONE_CURRENT_THRESHOLD = 25.amps
+  val CONE_ROTATION_THRESHOLD = 40.rotations.perMinute
   val CUBE_CURRENT_THRESHOLD = 30.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
@@ -126,6 +130,9 @@ object ManipulatorConstants {
       }
     }
   }
+
+  val ENABLE_ROLLER = 1.0
+  val ENABLE_EXTENSION = 1.0
 
   val MIN_EXTENSION = 1.0.inches
   val SINGLE_SUBSTATION_INTAKE_EXTENSION = 1.0.inches

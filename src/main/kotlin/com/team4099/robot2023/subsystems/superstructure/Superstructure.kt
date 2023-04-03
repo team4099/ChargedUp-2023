@@ -481,7 +481,7 @@ class Superstructure(
         if (groundIntake.isAtTargetedPosition &&
           manipulator.isAtTargetedPosition &&
           elevator.isAtTargetedPosition &&
-          manipulator.hasCube
+          manipulator.hasCone
         ) {
           theoreticalGamePiece = Constants.Universal.GamePiece.CONE
           nextState = SuperstructureStates.GROUND_INTAKE_CONE_CLEANUP

@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.groundintake
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableNumber
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
@@ -36,7 +37,9 @@ class GroundIntake(private val io: GroundIntakeIO) {
   var armFeedforward: ArmFeedforward
 
   private val kP =
-    LoggedTunableValue("GroundIntake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree }))
+    LoggedTunableValue(
+      "GroundIntake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree })
+    )
   private val kI =
     LoggedTunableValue(
       "GroundIntake/kI", Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
@@ -48,6 +51,18 @@ class GroundIntake(private val io: GroundIntakeIO) {
     )
 
   object TunableGroundIntakeStates {
+    val enableArm =
+      LoggedTunableNumber(
+        "GroundIntake/enableArmIntake",
+        GroundIntakeConstants.ENABLE_ARM,
+      )
+
+    val enableRotation =
+      LoggedTunableNumber(
+        "GroundIntake/enableRotationIntake",
+        GroundIntakeConstants.ENABLE_ROTATION,
+      )
+
     val intakeAngle =
       LoggedTunableValue(
         "GroundIntake/intakeAngle",
@@ -167,10 +182,10 @@ class GroundIntake(private val io: GroundIntakeIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
-      currentState == GroundIntakeState.TARGETING_POSITION &&
+      (currentState == GroundIntakeState.TARGETING_POSITION &&
         armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
         (inputs.armPosition - armPositionTarget).absoluteValue <=
-        GroundIntakeConstants.ARM_TOLERANCE
+        GroundIntakeConstants.ARM_TOLERANCE) || (TunableGroundIntakeStates.enableArm.get() != 1.0)
 
   val canContinueSafely: Boolean
     get() =

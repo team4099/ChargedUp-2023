@@ -81,6 +81,9 @@ object GroundIntakeConstants {
   val ARM_TOLERANCE = 2.degrees
   val VOLTAGE_TOLERANCE = 0.3.volts // such a terrible constant to have but whatever
 
+  val ENABLE_ARM = 1.0
+  val ENABLE_ROTATION = 1.0
+
   val INTAKE_ANGLE = 4.4.degrees
   val OUTTAKE_ANGLE = 4.4.degrees
   val STOWED_UP_ANGLE = 55.degrees

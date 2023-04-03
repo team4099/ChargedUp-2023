@@ -70,6 +70,8 @@ object ElevatorConstants {
   val MAX_VELOCITY = 75.inches.perSecond // 75
   val MAX_ACCELERATION = 225.inches.perSecond.perSecond // 225
 
+  val ENABLE_ELEVATOR = 1.0
+
   val ELEVATOR_MAX_EXTENSION = 54.8.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
   val ELEVATOR_SOFT_LIMIT_EXTENSION = 54.5.inches
