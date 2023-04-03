@@ -28,11 +28,11 @@ object VisionConstants {
       ),
       Transform3d(
         Translation3d(-6.560.inches, -12.793.inches, 16.438.inches),
-        Rotation3d(0.0.degrees, 0.0.degrees, 50.degrees)
+        Rotation3d(0.0.degrees, 0.0.degrees, -40.degrees)
       ), // camera facing rightward
       Transform3d(
         Translation3d(-6.560.inches, 12.793.inches, 16.437.inches),
-        Rotation3d(180.0.degrees, 0.0.degrees, -50.degrees)
+        Rotation3d(180.0.degrees, 0.0.degrees, 40.degrees)
       ) // camera facing leftward
     )
 

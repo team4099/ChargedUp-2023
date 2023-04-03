@@ -120,6 +120,10 @@ object ElevatorIONeo : ElevatorIO {
 
     inputs.followerTempCelcius = followerSparkMax.motorTemperature.celsius
 
+    inputs.leaderRawPosition = leaderSparkMax.encoder.position
+
+    inputs.followerRawPosition = followerSparkMax.encoder.position
+
     Logger.getInstance()
       .recordOutput("Elevator/leaderRawRotations", leaderSparkMax.encoder.position)
   }

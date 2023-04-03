@@ -81,6 +81,9 @@ object ElevatorIOSim : ElevatorIO {
     inputs.followerSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
     inputs.followerAppliedVoltage = lastAppliedVoltage
 
+    inputs.leaderRawPosition = 0.0
+    inputs.followerRawPosition = 0.0
+
     inputs.isSimulating = true
 
     RoboRioSim.setVInVoltage(
