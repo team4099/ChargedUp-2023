@@ -131,7 +131,8 @@ object AutonomousSelector {
         return WaitCommand(waitTime.inSeconds)
           .andThen(PreloadConeAutoBalance(drivetrain, superstructure))
       AutonomousMode.CO_CUBE_CHARGE_STATION ->
-        return WaitCommand(waitTime.inSeconds).andThen(ConeCubeOverChargeStationAuto(drivetrain, superstructure))
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(ConeCubeOverChargeStationAuto(drivetrain, superstructure))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()

@@ -144,62 +144,65 @@ class Superstructure(
       .recordOutput("Superstructure/theoreticalGamePiece", theoreticalGamePiece.name)
     Logger.getInstance().recordOutput("Superstructure/canMoveSafely", canMoveSafely)
 
-
-    Logger.getInstance().recordOutput(
-      "SimulatedMechanisms",
-      Pose3d(
-        0.1016.meters,
-        0.0.meters,
-        0.211550.meters,
-        Rotation3d(0.0.degrees, -groundIntake.inputs.armPosition, 0.0.degrees)
-      )
-        .pose3d,
-      if (elevator.inputs.elevatorPosition >= ElevatorConstants.FIRST_STAGE_HEIGHT) Pose3d()
-        .transformBy(
-          Transform3d(
-            Translation3d(
-              0.0.inches,
-              0.0.inches,
-              elevator.inputs.elevatorPosition -
-                ElevatorConstants.FIRST_STAGE_HEIGHT
+    Logger.getInstance()
+      .recordOutput(
+        "SimulatedMechanisms",
+        Pose3d(
+          0.1016.meters,
+          0.0.meters,
+          0.211550.meters,
+          Rotation3d(0.0.degrees, -groundIntake.inputs.armPosition, 0.0.degrees)
+        )
+          .pose3d,
+        if (elevator.inputs.elevatorPosition >= ElevatorConstants.FIRST_STAGE_HEIGHT)
+          Pose3d()
+            .transformBy(
+              Transform3d(
+                Translation3d(
+                  0.0.inches,
+                  0.0.inches,
+                  elevator.inputs.elevatorPosition -
+                    ElevatorConstants.FIRST_STAGE_HEIGHT
+                )
+                  .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+                Rotation3d()
+              )
             )
-              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-            Rotation3d()
+            .pose3d
+        else
+          Pose3d()
+            .transformBy(
+              Transform3d(
+                Translation3d(0.0.inches, 0.0.inches, 0.0.inches)
+                  .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+                Rotation3d()
+              )
+            )
+            .pose3d,
+        Pose3d()
+          .transformBy(
+            Transform3d(
+              Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
+                .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+              Rotation3d()
+            )
           )
+          .pose3d,
+        Pose3d(
+          -0.15.meters + manipulator.inputs.armPosition,
+          0.05.meters,
+          0.5825.meters,
+          Rotation3d()
         )
-        .pose3d else Pose3d()
-        .transformBy(
-          Transform3d(
-            Translation3d(0.0.inches, 0.0.inches, 0.0.inches)
-              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-            Rotation3d()
+          .transformBy(
+            Transform3d(
+              Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
+                .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
+              Rotation3d()
+            )
           )
-        )
-        .pose3d,
-      Pose3d()
-        .transformBy(
-          Transform3d(
-            Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
-              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-            Rotation3d()
-          )
-        )
-        .pose3d,
-      Pose3d(
-        -0.15.meters + manipulator.inputs.armPosition,
-        0.05.meters,
-        0.5825.meters,
-        Rotation3d()
+          .pose3d
       )
-        .transformBy(
-          Transform3d(
-            Translation3d(0.0.inches, 0.0.inches, elevator.inputs.elevatorPosition)
-              .rotateBy(Rotation3d(0.0.degrees, 40.5.degrees, 0.0.degrees)),
-            Rotation3d()
-          )
-        )
-        .pose3d
-    )
 
     var nextState = currentState
     when (currentState) {
@@ -702,7 +705,7 @@ class Superstructure(
         led.state = LEDMode.SCORE
 
         val rollerVoltage =
-          when (usingGamePiece){
+          when (usingGamePiece) {
             GamePiece.CUBE ->
               when (nodeTier) {
                 NodeTier.HYBRID -> GroundIntake.TunableGroundIntakeStates.outtakeVoltage.get()
@@ -713,8 +716,7 @@ class Superstructure(
 
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
-            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
-            rollerVoltage
+            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
           )
 
         if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {
@@ -1070,7 +1072,9 @@ class Superstructure(
         .andThen(
           WaitUntilCommand {
             if (DriverStation.isAutonomous()) {
-              canMoveSafely && isAtRequestedState && currentState == SuperstructureStates.SCORE_CLEANUP
+              canMoveSafely &&
+                isAtRequestedState &&
+                currentState == SuperstructureStates.SCORE_CLEANUP
             } else {
               isAtRequestedState && currentState == SuperstructureStates.IDLE
             }

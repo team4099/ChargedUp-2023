@@ -81,9 +81,7 @@ object ManipulatorIONeo : ManipulatorIO {
       "Manipulator",
       "ExtensionMotor",
       MotorCollection(
-        mutableListOf(
-          Neo(armSparkMax, "Extension Motor")
-        ),
+        mutableListOf(Neo(armSparkMax, "Extension Motor")),
         ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT,
         70.celsius,
         ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT - 30.amps,
@@ -95,9 +93,7 @@ object ManipulatorIONeo : ManipulatorIO {
       "Manipulator",
       "Roller Motor",
       MotorCollection(
-        mutableListOf(
-          Neo(rollerSparkMax, "Roller Motor")
-        ),
+        mutableListOf(Neo(rollerSparkMax, "Roller Motor")),
         ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT,
         80.celsius,
         ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT - 5.amps,

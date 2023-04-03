@@ -37,13 +37,9 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
     val thetaStdDevCoefficient = 0.75
   }
 
-  private val xyStdDevCoefficient = TunableNumber(
-    "Vision/xystdev", 0.1
-  )
+  private val xyStdDevCoefficient = TunableNumber("Vision/xystdev", 0.1)
 
-  private val thetaStdDev = TunableNumber(
-    "Vision/thetaStdDev", 0.75
-  )
+  private val thetaStdDev = TunableNumber("Vision/thetaStdDev", 0.75)
 
   private var poseSupplier = Supplier<Pose2d> { Pose2d() }
   private var visionConsumer: Consumer<List<PoseEstimator.TimestampedVisionUpdate>> = Consumer {}
