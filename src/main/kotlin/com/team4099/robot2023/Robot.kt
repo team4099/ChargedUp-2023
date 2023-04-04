@@ -30,6 +30,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.derived.degrees
 import java.nio.file.Files
 import java.nio.file.Paths
 

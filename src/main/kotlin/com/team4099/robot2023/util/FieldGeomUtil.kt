@@ -46,19 +46,7 @@ fun Pose3d.toTransform3d(): Transform3d {
 }
 
 fun Pose3d.closerToInTranslation(pose1: Pose3d, pose2: Pose3d): Pose3d {
-  val distToPose1 =
-    sqrt(
-      (this.x - pose1.x).inMeters.pow(2) +
-        (this.y - pose1.y).inMeters.pow(2) +
-        (this.z - pose1.z).inMeters.pow(2)
-    )
-  val distToPose2 =
-    sqrt(
-      (this.x - pose2.x).inMeters.pow(2) +
-        (this.y - pose2.y).inMeters.pow(2) +
-        (this.z - pose2.z).inMeters.pow(2)
-    )
-  if (distToPose1 < distToPose2) {
+  if ((this.translation - pose1.translation).norm < (this.translation - pose2.translation).norm){
     return pose1
   } else {
     return pose2

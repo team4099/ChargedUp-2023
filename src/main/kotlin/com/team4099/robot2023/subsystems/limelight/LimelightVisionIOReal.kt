@@ -11,7 +11,7 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.milli
 
-class LimelightVisionIOReal : LimelightVisionIO {
+object LimelightVisionIOReal : LimelightVisionIO {
 
   private val ledEntry: NetworkTableEntry =
     NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("ledMode")
@@ -38,12 +38,13 @@ class LimelightVisionIOReal : LimelightVisionIO {
     inputs.timestamp = Clock.realTimestamp - totalLatency
     inputs.angle = angleEntry.getDouble(0.0).degrees
     inputs.fps = 1000 / totalLatency.inMilliseconds
-    inputs.validReading = LimelightHelpers.getTV(LIMELIGHT_NAME)
+    inputs.validReading = true
 
     inputs.retroTargets =
       LimelightHelpers.getLatestResults(LIMELIGHT_NAME).targetingResults.targets_Retro.map {
         LimelightReading(it)
       }
+
   }
 
   override fun setPipeline(pipelineIndex: Int) {

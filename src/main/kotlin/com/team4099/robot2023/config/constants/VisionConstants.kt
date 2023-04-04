@@ -46,8 +46,8 @@ object VisionConstants {
     val MID_TAPE_HEIGHT = 23.905.inches
     val LL_TRANSFORM =
       Transform3d(
-        Translation3d(-1.1438.inches, 10.3966.inches, 12.9284.inches),
-        Rotation3d(8.159.degrees, -61.610.degrees, -14.1254.degrees)
+        Translation3d(1.1438.inches, 10.3966.inches, 12.9284.inches),
+        Rotation3d(8.159.degrees, -90.degrees + 61.610.degrees, -14.1254.degrees)
       )
     const val RES_WIDTH = 320
     const val RES_HEIGHT = 240 // no clue what these numbers should be but usnig these for now

@@ -85,15 +85,15 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
 
         when (values[0]) {
           1.0 -> {
-            cameraPose =
-              Pose3d(
-                values[2].meters,
-                values[3].meters,
-                values[4].meters,
-                Rotation3d(Quaternion(values[5].radians, values[6], values[7], values[8]))
-              )
-
-            robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
+//            cameraPose =
+//              Pose3d(
+//                values[2].meters,
+//                values[3].meters,
+//                values[4].meters,
+//                Rotation3d(Quaternion(values[5].radians, values[6], values[7], values[8]))
+//              )
+//
+//            robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
           }
           2.0 -> {
             val error0 = values[1]

@@ -2,6 +2,7 @@ package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.AutoScoreCommand
+import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -27,6 +28,7 @@ import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
 import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
 import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOReal
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
@@ -36,7 +38,11 @@ import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.radians
 import java.util.function.Supplier
 
 object RobotContainer {
@@ -70,7 +76,7 @@ object RobotContainer {
           Led(object: LedIO {}),
           GameBoy(GameboyIOServer)
         )
-      limelight = LimelightVision(LimelightVisionIOReal())
+      limelight = LimelightVision(LimelightVisionIOReal)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
@@ -83,12 +89,17 @@ object RobotContainer {
           Led(LedIOSim),
           GameBoy(GameboyIOServer)
         )
-      limelight = LimelightVision(object : LimelightVisionIO {})
+      limelight = LimelightVision(LimelightVisionIOSim)
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
     drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
     drivetrain.objectiveSupplier = Supplier { superstructure.objective }
+    limelight.poseSupplier = { drivetrain.odometryPose }
+    limelight.nodeToLookFor = { superstructure.objective }
+
+    // TODO remove this
+    drivetrain.odometryPose = Pose2d(14.684481175727836.meters, 4.9674040753568125.meters, 0.48586828954966504.radians)
   }
 
   fun mapDefaultCommands() {
@@ -122,6 +133,10 @@ object RobotContainer {
   fun zeroSensors() {
     drivetrain.zeroSensors()
     superstructure.groundIntakeZeroArm()
+  }
+
+  fun zeroAngle(toAngle: Angle){
+    drivetrain.zeroGyroYaw(toAngle)
   }
 
   fun setSteeringCoastMode() {
