@@ -23,7 +23,6 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIO
-import com.team4099.robot2023.subsystems.led.LedIOCandle
 import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
 import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
@@ -73,7 +72,7 @@ object RobotContainer {
           Elevator(ElevatorIONeo),
           GroundIntake(GroundIntakeIONeo),
           Manipulator(ManipulatorIONeo),
-          Led(object: LedIO {}),
+          Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
         )
       limelight = LimelightVision(LimelightVisionIOReal)

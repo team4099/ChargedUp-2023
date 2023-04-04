@@ -3,7 +3,6 @@ package com.team4099.robot2023.auto.mode
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
-import com.team4099.robot2023.commands.drivetrain.PositionAutoLevel
 import com.team4099.robot2023.commands.drivetrain.ResetPoseCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
@@ -20,7 +19,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRotation2ds
 
-class ConeCubeHoldAutoBalance(val drivetrain: Drivetrain, val superstructure: Superstructure) :
+class ConeCubeHoldAuto(val drivetrain: Drivetrain, val superstructure: Superstructure) :
   SequentialCommandGroup() {
 
   init {
@@ -87,8 +86,7 @@ class ConeCubeHoldAutoBalance(val drivetrain: Drivetrain, val superstructure: Su
           )
         },
         keepTrapping = true
-      ),
-      PositionAutoLevel(drivetrain)
+      )
     )
   }
 

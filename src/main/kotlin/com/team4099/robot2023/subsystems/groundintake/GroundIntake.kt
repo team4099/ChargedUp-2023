@@ -37,9 +37,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
   var armFeedforward: ArmFeedforward
 
   private val kP =
-    LoggedTunableValue(
-      "GroundIntake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree })
-    )
+    LoggedTunableValue("GroundIntake/kP", Pair({ it.inVoltsPerDegree }, { it.volts.perDegree }))
   private val kI =
     LoggedTunableValue(
       "GroundIntake/kI", Pair({ it.inVoltsPerDegreeSeconds }, { it.volts.perDegreeSeconds })
@@ -182,10 +180,13 @@ class GroundIntake(private val io: GroundIntakeIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
-      (currentState == GroundIntakeState.TARGETING_POSITION &&
-        armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
-        (inputs.armPosition - armPositionTarget).absoluteValue <=
-        GroundIntakeConstants.ARM_TOLERANCE) || (TunableGroundIntakeStates.enableArm.get() != 1.0)
+      (
+        currentState == GroundIntakeState.TARGETING_POSITION &&
+          armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+          (inputs.armPosition - armPositionTarget).absoluteValue <=
+          GroundIntakeConstants.ARM_TOLERANCE
+        ) ||
+        (TunableGroundIntakeStates.enableArm.get() != 1.0)
 
   val canContinueSafely: Boolean
     get() =

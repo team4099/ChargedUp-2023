@@ -76,10 +76,7 @@ class Elevator(val io: ElevatorIO) {
 
   object TunableElevatorHeights {
     val enableElevator =
-      LoggedTunableNumber(
-        "Elevator/enableMovementElevator",
-        ElevatorConstants.ENABLE_ELEVATOR
-      )
+      LoggedTunableNumber("Elevator/enableMovementElevator", ElevatorConstants.ENABLE_ELEVATOR)
 
     val minPosition =
       LoggedTunableValue(
@@ -325,10 +322,12 @@ class Elevator(val io: ElevatorIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
-      (currentRequest is ElevatorRequest.TargetingPosition &&
-        elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
-        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
-        ElevatorConstants.ELEVATOR_TOLERANCE) ||
+      (
+        currentRequest is ElevatorRequest.TargetingPosition &&
+          elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+          (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
+          ElevatorConstants.ELEVATOR_TOLERANCE
+        ) ||
         (TunableElevatorHeights.enableElevator.get() != 1.0)
 
   val canContinueSafely: Boolean

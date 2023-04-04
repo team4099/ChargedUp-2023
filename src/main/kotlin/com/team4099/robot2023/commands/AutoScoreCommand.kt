@@ -91,7 +91,6 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
           drivetrain
         ).withTimeout(0.5)
       )
-
     )
   }
 }
