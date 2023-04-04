@@ -108,8 +108,7 @@ class ConeCubeOverChargeStationAuto(
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
       ),
-      superstructure.score(),
-      PositionAutoLevel(drivetrain)
+      superstructure.score()
     )
   }
 

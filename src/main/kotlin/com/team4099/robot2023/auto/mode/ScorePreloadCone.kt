@@ -14,7 +14,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 
-class PreloadConeAutoBalance(val drivetrain: Drivetrain, val superstructure: Superstructure) :
+class ScorePreloadCone(val drivetrain: Drivetrain, val superstructure: Superstructure) :
   SequentialCommandGroup() {
 
   init {
@@ -25,8 +25,7 @@ class PreloadConeAutoBalance(val drivetrain: Drivetrain, val superstructure: Sup
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
-      superstructure.score(),
-      PositionAutoLevel(drivetrain)
+      superstructure.score()
     )
   }
 

@@ -97,8 +97,7 @@ class ConeCubeHoldOverChargeStationAuto(
             )
           )
         }
-      ),
-      PositionAutoLevel(drivetrain)
+      )
     )
   }
 
