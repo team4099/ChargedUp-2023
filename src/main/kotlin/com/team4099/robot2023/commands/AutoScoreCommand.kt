@@ -12,9 +12,12 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
+import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -37,7 +40,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              1.8.meters,
+              2.1.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -75,7 +78,20 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         keepTrapping = true,
         flipForAlliances = false
       ),
-      superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+      ParallelCommandGroup(
+        superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+        RunCommand(
+          {
+            drivetrain.setOpenLoop(
+              0.degrees.perSecond,
+              Pair(-2.5.feet.perSecond, 0.0.feet.perSecond),
+              fieldOriented = true
+            )
+          },
+          drivetrain
+        )
+      )
+
     )
   }
 }
