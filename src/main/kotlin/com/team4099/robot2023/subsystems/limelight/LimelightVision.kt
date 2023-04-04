@@ -6,6 +6,7 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.gameboy.objective.Objective
+import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.LimelightReading
 import com.team4099.robot2023.util.PoseEstimator
@@ -57,7 +58,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   val vpw = (2.0 * (VisionConstants.Limelight.HORIZONTAL_FOV / 2).tan)
   val vph = (2.0 * (VisionConstants.Limelight.VERITCAL_FOV / 2).tan)
 
-  private val xyStdDevCoefficient = TunableNumber("LimelightVision/xystdev", 0.1)
+  private val xyStdDevCoefficient = TunableNumber("LimelightVision/xystdev", 0.05)
   private val thetaStdDev = TunableNumber("LimelightVision/thetaStdDev", 0.75)
 
   init{
@@ -115,6 +116,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     val nodePose = Pose3d(nodeX, nodeY, nodeZ, nodeRotation)
 
+    val robotPoses = mutableListOf<Pose2d>()
+
 
     if (inputs.validReading) {
 
@@ -136,7 +139,9 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     for (node in visibleNodes) {
       val searchList = if(nodeZ == VisionConstants.Limelight.MID_TAPE_HEIGHT) midConeNodePoses else highConeNodePoses
+
       val closestPose = node.findClosestPose(*searchList.toTypedArray())
+
       trueVisibleNodes.add(closestPose)
 
       // find inverse translation from the detected pose to robot
@@ -150,8 +155,20 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       val xyStdDev = xyStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
       val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
 
-      timestampedVisionUpdates.add(PoseEstimator.TimestampedVisionUpdate(inputs.timestamp, trueNodePoseToRobot.toPose2d(), VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)))
+      if (nodeToLookFor.invoke().isConeNode()){
+        robotPoses.add(trueNodePoseToRobot.toPose2d())
+
+        timestampedVisionUpdates.add(
+          PoseEstimator.TimestampedVisionUpdate(
+            inputs.timestamp,
+            trueNodePoseToRobot.toPose2d(),
+            VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
+          )
+        )
     }
+    }
+
+    Logger.getInstance().recordOutput("LimelightVision/estimatedRobotPoses", *robotPoses.map {it.pose2d} .toTypedArray())
 
 
     Logger.getInstance()
@@ -165,7 +182,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     Logger.getInstance().recordOutput("LimelightVision/cameraFieldRelativePose", currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM).pose3d)
 
-    visionConsumer.accept(timestampedVisionUpdates)
+//    visionConsumer.accept(timestampedVisionUpdates)
   }
 
   fun solveTargetPoseFromAngle(currentPose: Pose2d, target: LimelightReading, targetHeight: Length): Pose3d{

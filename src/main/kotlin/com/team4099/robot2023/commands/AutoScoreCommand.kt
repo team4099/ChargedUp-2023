@@ -40,7 +40,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              2.1.meters, // slightly offset in the x
+              2.0.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -84,12 +84,12 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
           {
             drivetrain.setOpenLoop(
               0.degrees.perSecond,
-              Pair(-2.5.feet.perSecond, 0.0.feet.perSecond),
+              Pair(if (FMSData.isBlue) -2.5.feet.perSecond else 2.5.feet.perSecond, 0.0.feet.perSecond),
               fieldOriented = true
             )
           },
           drivetrain
-        )
+        ).withTimeout(0.5)
       )
 
     )

@@ -14,9 +14,12 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Quaternion
 import org.team4099.lib.geometry.Rotation3d
+import org.team4099.lib.geometry.Translation2d
+import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.radians
@@ -63,6 +66,11 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
   }
 
   override fun periodic() {
+    Logger.getInstance().recordOutput("Vision/tuningPosition",
+      Pose3d(FieldConstants.getTagPose(3)!!.translation.plus(Translation3d(45.625.inches, 1.3125.inches, 0.0.inches)), Rotation3d()).pose3d
+    )
+
+
     for (instance in io.indices) {
       io[instance].updateInputs(inputs[instance])
       Logger.getInstance()
