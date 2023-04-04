@@ -45,6 +45,9 @@ object RobotContainer {
   private val superstructure: Superstructure
   private val limelight: LimelightVision
 
+  val rumbleState: Boolean
+    get() = superstructure.rumbleState
+
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations

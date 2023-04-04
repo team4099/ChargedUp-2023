@@ -8,12 +8,14 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
@@ -229,18 +231,25 @@ class Manipulator(val io: ManipulatorIO) {
 
   var lastHeldGamePieceDetected = Clock.fpgaTime
 
+  var lastHeldGamePiece = GamePiece.NONE
+
+  var lastDropTime = Clock.fpgaTime
+
+  var rumbleTrigger = false
+
+  var rumbleTime = 0.5.seconds
+
   var filterValue: Double = 0.0
 
   // Checks if motor current draw is greater than given threshold and if rollers are intaking
   // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCube: Boolean
     get() {
-      filterValue = inputs.rollerStatorCurrent.inAmperes
-      return (
-        filterValue >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD.inAmperes &&
-          (Clock.fpgaTime - lastRollerRunTime) >= ManipulatorConstants.INTAKE_IN_TIME
-        ) ||
-        inputs.isSimulating
+      return inputs.rollerVelocity.absoluteValue <=
+        ManipulatorConstants.CONE_ROTATION_THRESHOLD && inputs.rollerStatorCurrent > 10.amps && inputs.rollerAppliedVoltage.sign < 0 &&
+        (Clock.fpgaTime - lastRollerRunTime) >=
+        ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP ||
+      inputs.isSimulating
     }
 
   val grippingCone: Boolean
@@ -257,8 +266,8 @@ class Manipulator(val io: ManipulatorIO) {
   val hasCone: Boolean
     get() {
       return (
-        inputs.rollerVelocity <=
-          ManipulatorConstants.CONE_ROTATION_THRESHOLD &&
+        inputs.rollerVelocity.absoluteValue <=
+          ManipulatorConstants.CONE_ROTATION_THRESHOLD && inputs.rollerStatorCurrent > 10.amps && inputs.rollerAppliedVoltage.sign > 0 &&
           (Clock.fpgaTime - lastRollerRunTime) >=
           ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP
         ) ||
@@ -388,6 +397,19 @@ class Manipulator(val io: ManipulatorIO) {
 
     Logger.getInstance().recordOutput("Manipulator/filteredStatorRoller", filterValue)
 
+    if (lastHeldGamePiece != holdingGamePiece && !rumbleTrigger) {
+      rumbleTrigger = true
+      lastDropTime = Clock.fpgaTime
+    }
+
+    if (Clock.fpgaTime - lastDropTime > rumbleTime) {
+      rumbleTrigger = false
+    }
+
+    lastHeldGamePiece = holdingGamePiece
+
+    Logger.getInstance().recordOutput("Manipulator/gamePieceRumble", rumbleTrigger)
+
     /*
     if (filterSize.hasChanged()) {
       rollerStatorCurrentFilter =
@@ -472,7 +494,9 @@ class Manipulator(val io: ManipulatorIO) {
       ManipulatorState.TARGETING_POSITION -> {
         setRollerPower(rollerVoltageTarget)
         if (lastRollerVoltage != rollerVoltageTarget) {
-          lastRollerRunTime = Clock.fpgaTime
+          if (rollerVoltageTarget != ManipulatorConstants.CONE_IDLE || rollerVoltageTarget != ManipulatorConstants.CUBE_IDLE){
+            lastRollerRunTime = Clock.fpgaTime
+          }
           lastRollerVoltage = rollerVoltageTarget
         }
 

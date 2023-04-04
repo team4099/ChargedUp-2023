@@ -87,6 +87,11 @@ class Superstructure(
 
   var canMoveSafely = false
 
+  val rumbleState: Boolean
+    get() {
+      return manipulator.rumbleTrigger
+    }
+
   override fun periodic() {
     val ledLoopStartTime = Clock.realTimestamp
     led.periodic()
@@ -528,7 +533,7 @@ class Superstructure(
               Elevator.TunableElevatorHeights.doubleSubstationHeight.get() + offset
             )
 
-          if (elevator.isAtTargetedPosition || elevator.canContinueSafely) {
+          if (elevator.isAtTargetedPosition) {
             val rollerCommandedVoltage =
               when (usingGamePiece) {
                 GamePiece.CONE -> ManipulatorConstants.CONE_IN
