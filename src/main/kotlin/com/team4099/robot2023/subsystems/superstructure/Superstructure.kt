@@ -832,7 +832,6 @@ class Superstructure(
         // Transition
         if (currentRequest is SuperstructureRequest.Score &&
           groundIntake.isAtTargetedPosition &&
-          manipulator.isAtTargetedPosition &&
           elevator.isAtTargetedPosition
         ) {
           nextState =

@@ -76,6 +76,7 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
 //
 //    Logger.getInstance().recordOutput("Vision/tuningPosition", tuningPosition.pose2d)
 
+    val startTime = Clock.realTimestamp
 
     for (instance in io.indices) {
       io[instance].updateInputs(inputs[instance])
@@ -266,5 +267,7 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
       .recordOutput("Vision/allTagPoses", *allTagPoses.map { it.pose3d }.toTypedArray())
 
     visionConsumer.accept(visionUpdates)
+
+    Logger.getInstance().recordOutput("LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.realTimestamp - startTime).inMilliseconds)
   }
 }

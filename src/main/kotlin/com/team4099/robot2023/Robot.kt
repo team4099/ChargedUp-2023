@@ -163,7 +163,7 @@ object Robot : LoggedRobot() {
 
     // motor checker stuff
     val motorCheckerStartTime = Clock.realTimestamp
-    MotorChecker.periodic()
+//    MotorChecker.periodic()
     Logger.getInstance()
       .recordOutput(
         "LoggedRobot/Subsystems/MotorCheckerLoopTimeMS",
@@ -173,10 +173,11 @@ object Robot : LoggedRobot() {
     Logger.getInstance()
       .recordOutput("LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
 
+    ControlBoard.rumbleConsumer.accept(RobotContainer.rumbleState)
+
     Logger.getInstance()
       .recordOutput("LoggedRobot/totalMS", (Clock.realTimestamp - startTime).inMilliseconds)
 
-    ControlBoard.rumbleConsumer.accept(RobotContainer.rumbleState)
   }
 
   override fun teleopInit() {
