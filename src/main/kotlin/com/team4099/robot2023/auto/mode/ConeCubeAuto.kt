@@ -95,9 +95,6 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
       ),
-      superstructure.prepScoreCommand(
-        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HYBRID
-      ),
       superstructure.score()
     )
   }
