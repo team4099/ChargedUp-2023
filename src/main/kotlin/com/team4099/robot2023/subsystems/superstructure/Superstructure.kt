@@ -892,7 +892,7 @@ class Superstructure(
         // Transition
         if (elevator.isAtTargetedPosition &&
           (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.spitTime.get()
+          Manipulator.TunableManipulatorStates.spitTimeCone.get()
         ) {
           theoreticalGamePiece = GamePiece.NONE
           nextState = SuperstructureStates.SCORE_CLEANUP

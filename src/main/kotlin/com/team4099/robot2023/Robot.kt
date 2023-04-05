@@ -5,6 +5,7 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
@@ -161,7 +162,7 @@ object Robot : LoggedRobot() {
 
     // motor checker stuff
     val motorCheckerStartTime = Clock.realTimestamp
-    //    MotorChecker.periodic()
+    MotorChecker.periodic()
     Logger.getInstance()
       .recordOutput(
         "LoggedRobot/Subsystems/MotorCheckerLoopTimeMS",

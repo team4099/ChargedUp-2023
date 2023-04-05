@@ -93,8 +93,6 @@ object GroundIntakeIONeo : GroundIntakeIO {
     )
     rollerSparkMax.inverted = GroundIntakeConstants.ROLLER_MOTOR_INVERTED
 
-    rollerSparkMax.openLoopRampRate =
-      GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
     rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
 
     rollerSparkMax.burnFlash()

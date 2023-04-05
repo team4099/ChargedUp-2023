@@ -94,6 +94,13 @@ class Manipulator(val io: ManipulatorIO) {
         Pair({ it.inSeconds }, { it.seconds })
       )
 
+    val spitTimeCone =
+      LoggedTunableValue(
+        "Manipulator/spitTimeCone",
+        ManipulatorConstants.SPIT_OUT_TIME_CONE,
+        Pair({ it.inSeconds }, { it.seconds })
+      )
+
     val groundIntakeCubeExtension =
       LoggedTunableValue(
         "Manipulator/groundIntakeCubeExtension",
