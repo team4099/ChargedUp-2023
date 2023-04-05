@@ -19,7 +19,7 @@ class PreloadOpenLoopChargeStationBalance(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
       superstructure.score(),
-      ParallelRaceGroup(OpenLoopReverseCommand(drivetrain), WaitCommand(1.3)),
+      ParallelRaceGroup(OpenLoopReverseCommand(drivetrain), WaitCommand(1.3))
     )
   }
 }

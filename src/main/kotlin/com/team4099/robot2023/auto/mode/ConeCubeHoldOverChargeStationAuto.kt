@@ -19,8 +19,10 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRotation2ds
 
-class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructure) :
-  SequentialCommandGroup() {
+class ConeCubeHoldOverChargeStationAuto(
+  val drivetrain: Drivetrain,
+  val superstructure: Superstructure
+) : SequentialCommandGroup() {
 
   init {
     addCommands(
@@ -37,28 +39,38 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
           {
             listOf(
               Waypoint(
-                Translation2d(1.9.meters, 4.97.meters).translation2d,
+                Translation2d(1.9.meters, 2.21.meters).translation2d,
                 null,
-                180.0.degrees.inRotation2ds
+                180.degrees.inRotation2ds
               ),
               Waypoint(
-                Translation2d(2.9.meters, 4.8.meters).translation2d,
+                Translation2d(3.8.meters, 2.8.meters).translation2d,
                 null,
-                180.0.degrees.inRotation2ds
+                180.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(5.35.meters, 2.15.meters).translation2d,
+                null,
+                180.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(6.5.meters, 2.15.meters).translation2d,
+                null,
+                0.0.degrees.inRotation2ds
               ),
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[3]!!.x,
-                  FieldConstants.StagingLocations.translations[3]!!.y
+                  FieldConstants.StagingLocations.translations[1]!!.x,
+                  FieldConstants.StagingLocations.translations[1]!!.y
                 )
                   .translation2d,
-                0.0.degrees.inRotation2ds,
+                null,
                 0.0.degrees.inRotation2ds
               ),
             )
           }
         ),
-        WaitCommand(1.5).andThen(superstructure.groundIntakeCubeCommand())
+        WaitCommand(2.0).andThen(superstructure.groundIntakeCubeCommand())
       ),
       DrivePathCommand(
         drivetrain,
@@ -66,36 +78,25 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
           listOf(
             Waypoint(
               Translation2d(
-                FieldConstants.StagingLocations.translations[3]!!.x,
-                FieldConstants.StagingLocations.translations[3]!!.y
+                FieldConstants.StagingLocations.translations[1]!!.x,
+                FieldConstants.StagingLocations.translations[1]!!.y
               )
                 .translation2d,
-              180.0.degrees.inRotation2ds,
-              0.0.degrees.inRotation2ds
-            ),
-            Waypoint(
-              Translation2d(3.139.meters, 4.68.meters).translation2d,
               null,
-              180.degrees.inRotation2ds
+              -45.0.degrees.inRotation2ds
             ),
             Waypoint(
               Translation2d(
-                endingPosX.get(),
-                FieldConstants.Grids.nodeFirstY +
-                  FieldConstants.Grids.nodeSeparationY * 7
+                FieldConstants.StagingLocations.translations[1]!!.x - 1.meters,
+                FieldConstants.StagingLocations.translations[1]!!.y
               )
                 .translation2d,
               null,
               180.0.degrees.inRotation2ds
             )
           )
-        },
-        keepTrapping = true
-      ),
-      superstructure.prepScoreCommand(
-        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
-      ),
-      superstructure.score()
+        }
+      )
     )
   }
 
@@ -106,7 +107,7 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
       )
     val startingPosY =
       LoggedTunableValue(
-        "Drivetrain/startingPosY", 4.97.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/startingPosY", 2.21.meters, Pair({ it.inMeters }, { it.meters })
       )
     val startingPosTheta =
       LoggedTunableValue(

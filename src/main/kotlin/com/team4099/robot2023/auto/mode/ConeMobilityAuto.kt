@@ -57,7 +57,7 @@ class ConeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstru
             drivetrain
           ),
         WaitCommand(1.4)
-      ),
+      )
     )
   }
 

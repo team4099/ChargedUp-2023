@@ -19,7 +19,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRotation2ds
 
-class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructure) :
+class ConeCubeHoldBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstructure) :
   SequentialCommandGroup() {
 
   init {
@@ -36,27 +36,31 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
           drivetrain,
           {
             listOf(
+              // initial waypoint
               Waypoint(
-                Translation2d(1.9.meters, 4.97.meters).translation2d,
+                Translation2d(startingPosX.get(), startingPosY.get()).translation2d,
                 null,
                 180.0.degrees.inRotation2ds
               ),
+              // middle of bump
               Waypoint(
-                Translation2d(2.9.meters, 4.8.meters).translation2d,
+                Translation2d(4.59.meters, 0.9.meters).translation2d,
                 null,
                 180.0.degrees.inRotation2ds
               ),
+              // pick up cube
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[3]!!.x,
-                  FieldConstants.StagingLocations.translations[3]!!.y
+                  FieldConstants.StagingLocations.translations[0]!!.x,
+                  FieldConstants.StagingLocations.translations[0]!!.y
                 )
                   .translation2d,
                 0.0.degrees.inRotation2ds,
                 0.0.degrees.inRotation2ds
               ),
             )
-          }
+          },
+          flipForAlliances = true
         ),
         WaitCommand(1.5).andThen(superstructure.groundIntakeCubeCommand())
       ),
@@ -64,38 +68,32 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
         drivetrain,
         {
           listOf(
+            // initial @ cube
             Waypoint(
               Translation2d(
-                FieldConstants.StagingLocations.translations[3]!!.x,
-                FieldConstants.StagingLocations.translations[3]!!.y
+                FieldConstants.StagingLocations.translations[0]!!.x,
+                FieldConstants.StagingLocations.translations[0]!!.y
               )
                 .translation2d,
               180.0.degrees.inRotation2ds,
               0.0.degrees.inRotation2ds
             ),
+            // middle of bump
             Waypoint(
-              Translation2d(3.139.meters, 4.68.meters).translation2d,
+              Translation2d(5.26.meters, 0.9.meters).translation2d,
               null,
-              180.degrees.inRotation2ds
+              180.0.degrees.inRotation2ds
             ),
+            // scoring cube
             Waypoint(
-              Translation2d(
-                endingPosX.get(),
-                FieldConstants.Grids.nodeFirstY +
-                  FieldConstants.Grids.nodeSeparationY * 7
-              )
-                .translation2d,
+              Translation2d(endingPosX.get(), endingPosY.get()).translation2d,
               null,
               180.0.degrees.inRotation2ds
             )
           )
         },
         keepTrapping = true
-      ),
-      superstructure.prepScoreCommand(
-        Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
-      ),
-      superstructure.score()
+      )
     )
   }
 
@@ -106,7 +104,9 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
       )
     val startingPosY =
       LoggedTunableValue(
-        "Drivetrain/startingPosY", 4.97.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/startingPosY",
+        FieldConstants.Grids.nodeFirstY,
+        Pair({ it.inMeters }, { it.meters })
       )
     val startingPosTheta =
       LoggedTunableValue(
@@ -119,7 +119,9 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
       )
     val endingPosY =
       LoggedTunableValue(
-        "Drivetrain/endingPosY", 4.97.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/endingPosY",
+        FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY,
+        Pair({ it.inMeters }, { it.meters })
       )
     val endingPosTheta =
       LoggedTunableValue(
