@@ -55,8 +55,8 @@ object FieldConstants {
       AprilTag(
         3,
         Pose3d(
-          (43.125).inches,
-          (108.375).inches,
+          (42.875).inches,
+          (113.25).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )

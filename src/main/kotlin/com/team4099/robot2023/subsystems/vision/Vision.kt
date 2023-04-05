@@ -6,6 +6,7 @@ import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.util.PoseEstimator
+import com.team4099.robot2023.util.toPose3d
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -66,9 +67,14 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
   }
 
   override fun periodic() {
-    Logger.getInstance().recordOutput("Vision/tuningPosition",
-      Pose3d(FieldConstants.getTagPose(3)!!.translation.plus(Translation3d(45.625.inches, 1.3125.inches, 0.0.inches)), Rotation3d()).pose3d
-    )
+//    val tuningPosition = Pose3d(Pose3d(
+//      (43.125).inches,
+//      (108.375).inches,
+//      (18.22).inches,
+//      Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+//    ).translation  + (Translation3d(45.625.inches, 1.3125.inches, 0.0.inches)), Rotation3d()).toPose2d()
+//
+//    Logger.getInstance().recordOutput("Vision/tuningPosition", tuningPosition.pose2d)
 
 
     for (instance in io.indices) {
@@ -93,15 +99,17 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
 
         when (values[0]) {
           1.0 -> {
-//            cameraPose =
-//              Pose3d(
-//                values[2].meters,
-//                values[3].meters,
-//                values[4].meters,
-//                Rotation3d(Quaternion(values[5].radians, values[6], values[7], values[8]))
-//              )
-//
-//            robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
+            cameraPose =
+              Pose3d(
+                values[2].meters,
+                values[3].meters,
+                values[4].meters,
+                Rotation3d(Quaternion(values[5].radians, values[6], values[7], values[8]))
+              )
+
+//            Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
+
+            robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
           }
           2.0 -> {
             val error0 = values[1]
@@ -171,6 +179,8 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
                 cameraPose = cameraPose1
                 robotPose = robotPose1
               }
+
+//              Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
             }
           }
         }
