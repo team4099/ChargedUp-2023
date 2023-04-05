@@ -2,7 +2,6 @@ package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.AutoScoreCommand
-import com.team4099.robot2023.commands.drivetrain.GoToAngle
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -25,7 +24,6 @@ import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIO
 import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
-import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
 import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOReal
 import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
@@ -98,7 +96,8 @@ object RobotContainer {
     limelight.nodeToLookFor = { superstructure.objective }
 
     // TODO remove this
-    drivetrain.odometryPose = Pose2d(14.684481175727836.meters, 4.9674040753568125.meters, 0.48586828954966504.radians)
+    drivetrain.odometryPose =
+      Pose2d(14.684481175727836.meters, 4.9674040753568125.meters, 0.48586828954966504.radians)
   }
 
   fun mapDefaultCommands() {
@@ -134,7 +133,7 @@ object RobotContainer {
     superstructure.groundIntakeZeroArm()
   }
 
-  fun zeroAngle(toAngle: Angle){
+  fun zeroAngle(toAngle: Angle) {
     drivetrain.zeroGyroYaw(toAngle)
   }
 

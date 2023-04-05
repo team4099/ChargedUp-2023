@@ -58,7 +58,7 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
             )
           }
         ),
-        WaitCommand(2.0).andThen(superstructure.groundIntakeCubeCommand())
+        WaitCommand(1.5).andThen(superstructure.groundIntakeCubeCommand())
       ),
       DrivePathCommand(
         drivetrain,
