@@ -44,7 +44,6 @@ object LimelightVisionIOReal : LimelightVisionIO {
       LimelightHelpers.getLatestResults(LIMELIGHT_NAME).targetingResults.targets_Retro.map {
         LimelightReading(it)
       }
-
   }
 
   override fun setPipeline(pipelineIndex: Int) {

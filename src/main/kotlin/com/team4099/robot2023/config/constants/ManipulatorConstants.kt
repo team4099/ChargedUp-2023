@@ -23,7 +23,7 @@ object ManipulatorConstants {
 
   // TODO(Maybe tune feedforward constants)
   val ARM_KS = 0.4.volts
-  val ARM_KV = 0.16.volts / 1.0.inches.perSecond
+  val ARM_KV = 0.2.volts / 1.0.inches.perSecond
   val ARM_KA = 0.0.volts / 1.0.inches.perSecond.perSecond
 
   val SIM_ARM_KP = 20.volts / 1.0.inches
@@ -31,12 +31,12 @@ object ManipulatorConstants {
   val SIM_ARM_KD = 1.0.volts / 1.0.inches.perSecond
 
   // TODO(tune these)
-  val REAL_ARM_KP = 2.0.volts / 1.0.inches
+  val REAL_ARM_KP = 3.0.volts / 1.0.inches
   val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val REAL_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
   val ARM_RAMP_RATE = 0.5
-  val ROLLER_RAMP_RATE = 0.75
+  val ROLLER_RAMP_RATE = 0.6
 
   // used to detect intake/outake, values need testing
   // TODO(test this)

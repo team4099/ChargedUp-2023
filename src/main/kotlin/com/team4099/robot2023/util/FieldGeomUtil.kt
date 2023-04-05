@@ -4,9 +4,6 @@ import com.team4099.robot2023.config.constants.FieldConstants
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Transform3d
-import org.team4099.lib.units.base.inMeters
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 fun Pose2d.isOnInnerSideOfChargeStation(): Boolean {
   val normalizedPose = AllianceFlipUtil.apply(this)
@@ -46,7 +43,7 @@ fun Pose3d.toTransform3d(): Transform3d {
 }
 
 fun Pose3d.closerToInTranslation(pose1: Pose3d, pose2: Pose3d): Pose3d {
-  if ((this.translation - pose1.translation).norm < (this.translation - pose2.translation).norm){
+  if ((this.translation - pose1.translation).norm < (this.translation - pose2.translation).norm) {
     return pose1
   } else {
     return pose2

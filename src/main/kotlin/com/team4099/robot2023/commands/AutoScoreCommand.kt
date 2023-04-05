@@ -84,14 +84,17 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
           {
             drivetrain.setOpenLoop(
               0.degrees.perSecond,
-              Pair(if (FMSData.isBlue) -2.5.feet.perSecond else 2.5.feet.perSecond, 0.0.feet.perSecond),
+              Pair(
+                if (FMSData.isBlue) -2.5.feet.perSecond else 2.5.feet.perSecond,
+                0.0.feet.perSecond
+              ),
               fieldOriented = true
             )
           },
           drivetrain
-        ).withTimeout(0.5)
+        )
+          .withTimeout(0.5)
       )
-
     )
   }
 }

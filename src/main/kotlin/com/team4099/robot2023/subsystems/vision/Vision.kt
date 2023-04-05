@@ -6,7 +6,6 @@ import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.util.PoseEstimator
-import com.team4099.robot2023.util.toPose3d
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -15,12 +14,9 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Pose3dWPILIB
 import org.team4099.lib.geometry.Quaternion
 import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Translation2d
-import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
-import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.radians
@@ -67,14 +63,15 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
   }
 
   override fun periodic() {
-//    val tuningPosition = Pose3d(Pose3d(
-//      (43.125).inches,
-//      (108.375).inches,
-//      (18.22).inches,
-//      Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-//    ).translation  + (Translation3d(45.625.inches, 1.3125.inches, 0.0.inches)), Rotation3d()).toPose2d()
-//
-//    Logger.getInstance().recordOutput("Vision/tuningPosition", tuningPosition.pose2d)
+    //    val tuningPosition = Pose3d(Pose3d(
+    //      (43.125).inches,
+    //      (108.375).inches,
+    //      (18.22).inches,
+    //      Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+    //    ).translation  + (Translation3d(45.625.inches, 1.3125.inches, 0.0.inches)),
+    // Rotation3d()).toPose2d()
+    //
+    //    Logger.getInstance().recordOutput("Vision/tuningPosition", tuningPosition.pose2d)
 
     val startTime = Clock.realTimestamp
 
@@ -108,7 +105,8 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
                 Rotation3d(Quaternion(values[5].radians, values[6], values[7], values[8]))
               )
 
-//            Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
+            //
+            // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
 
             robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
           }
@@ -181,7 +179,8 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
                 robotPose = robotPose1
               }
 
-//              Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
+              //
+              // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
             }
           }
         }
@@ -268,6 +267,10 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
 
     visionConsumer.accept(visionUpdates)
 
-    Logger.getInstance().recordOutput("LoggedRobot/Subsystems/VisionLoopTimeMS", (Clock.realTimestamp - startTime).inMilliseconds)
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/VisionLoopTimeMS",
+        (Clock.realTimestamp - startTime).inMilliseconds
+      )
   }
 }

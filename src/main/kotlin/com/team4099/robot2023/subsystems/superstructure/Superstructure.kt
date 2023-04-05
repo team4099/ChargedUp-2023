@@ -891,7 +891,6 @@ class Superstructure(
 
         // Transition
         if (elevator.isAtTargetedPosition &&
-          manipulator.isAtTargetedPosition &&
           (Clock.fpgaTime - lastTransitionTime) >=
           Manipulator.TunableManipulatorStates.spitTime.get()
         ) {
@@ -908,7 +907,7 @@ class Superstructure(
             Manipulator.TunableManipulatorStates.minExtension.get(),
             ManipulatorConstants.IDLE_VOLTAGE
           )
-
+/*
         if (nodeTier == Constants.Universal.NodeTier.HYBRID) {
           if (manipulator.isAtTargetedPosition) {
             elevator.currentRequest =
@@ -917,7 +916,7 @@ class Superstructure(
               )
           }
         }
-
+  */
         if (manipulator.isAtTargetedPosition && elevator.isAtTargetedPosition) {
           nextState = SuperstructureStates.IDLE
           currentRequest = SuperstructureRequest.Idle()

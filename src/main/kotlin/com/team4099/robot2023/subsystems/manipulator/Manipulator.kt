@@ -7,8 +7,6 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
-import com.team4099.robot2023.subsystems.groundintake.GroundIntake
-import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
@@ -16,7 +14,6 @@ import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
-import org.team4099.lib.units.base.inAmperes
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
@@ -33,7 +30,6 @@ import org.team4099.lib.units.derived.perInchSeconds
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.inInchesPerSecond
 import org.team4099.lib.units.inInchesPerSecondPerSecond
-import org.team4099.lib.units.inRotationsPerMinute
 import org.team4099.lib.units.perSecond
 import com.team4099.robot2023.subsystems.superstructure.Request.ManipulatorRequest as ManipulatorRequest
 
@@ -61,18 +57,14 @@ class Manipulator(val io: ManipulatorIO) {
 
   object TunableManipulatorStates {
 
-
-
     val enableRotation =
       LoggedTunableNumber(
-        "Manipulator/enableRollerManipulator",
-        ManipulatorConstants.ENABLE_ROLLER
+        "Manipulator/enableRollerManipulator", ManipulatorConstants.ENABLE_ROLLER
       )
 
     val enableExtension =
       LoggedTunableNumber(
-        "Manipulator/enableExtensionManipulator",
-        ManipulatorConstants.ENABLE_EXTENSION
+        "Manipulator/enableExtensionManipulator", ManipulatorConstants.ENABLE_EXTENSION
       )
 
     val minExtension =
@@ -245,11 +237,12 @@ class Manipulator(val io: ManipulatorIO) {
   // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCube: Boolean
     get() {
-      return inputs.rollerVelocity.absoluteValue <=
-        ManipulatorConstants.CONE_ROTATION_THRESHOLD && inputs.rollerStatorCurrent > 10.amps && inputs.rollerAppliedVoltage.sign < 0 &&
+      return inputs.rollerVelocity.absoluteValue <= ManipulatorConstants.CONE_ROTATION_THRESHOLD &&
+        inputs.rollerStatorCurrent > 10.amps &&
+        inputs.rollerAppliedVoltage.sign < 0 &&
         (Clock.fpgaTime - lastRollerRunTime) >=
         ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP ||
-      inputs.isSimulating
+        inputs.isSimulating
     }
 
   val grippingCone: Boolean
@@ -266,8 +259,9 @@ class Manipulator(val io: ManipulatorIO) {
   val hasCone: Boolean
     get() {
       return (
-        inputs.rollerVelocity.absoluteValue <=
-          ManipulatorConstants.CONE_ROTATION_THRESHOLD && inputs.rollerStatorCurrent > 10.amps && inputs.rollerAppliedVoltage.sign > 0 &&
+        inputs.rollerVelocity.absoluteValue <= ManipulatorConstants.CONE_ROTATION_THRESHOLD &&
+          inputs.rollerStatorCurrent > 10.amps &&
+          inputs.rollerAppliedVoltage.sign > 0 &&
           (Clock.fpgaTime - lastRollerRunTime) >=
           ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP
         ) ||
@@ -355,10 +349,12 @@ class Manipulator(val io: ManipulatorIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
-      (currentRequest is ManipulatorRequest.TargetingPosition &&
-        armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
-        (inputs.armPosition - armPositionTarget).absoluteValue <=
-        ManipulatorConstants.ARM_TOLERANCE) ||
+      (
+        currentRequest is ManipulatorRequest.TargetingPosition &&
+          armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+          (inputs.armPosition - armPositionTarget).absoluteValue <=
+          ManipulatorConstants.ARM_TOLERANCE
+        ) ||
         (Manipulator.TunableManipulatorStates.enableExtension.get() != 1.0)
 
   init {
@@ -494,7 +490,9 @@ class Manipulator(val io: ManipulatorIO) {
       ManipulatorState.TARGETING_POSITION -> {
         setRollerPower(rollerVoltageTarget)
         if (lastRollerVoltage != rollerVoltageTarget) {
-          if (rollerVoltageTarget != ManipulatorConstants.CONE_IDLE || rollerVoltageTarget != ManipulatorConstants.CUBE_IDLE){
+          if (rollerVoltageTarget != ManipulatorConstants.CONE_IDLE ||
+            rollerVoltageTarget != ManipulatorConstants.CUBE_IDLE
+          ) {
             lastRollerRunTime = Clock.fpgaTime
           }
           lastRollerVoltage = rollerVoltageTarget
