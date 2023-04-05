@@ -907,16 +907,16 @@ class Superstructure(
             Manipulator.TunableManipulatorStates.minExtension.get(),
             ManipulatorConstants.IDLE_VOLTAGE
           )
-/*
-        if (nodeTier == Constants.Universal.NodeTier.HYBRID) {
-          if (manipulator.isAtTargetedPosition) {
-            elevator.currentRequest =
-              Request.ElevatorRequest.TargetingPosition(
-                Elevator.TunableElevatorHeights.minPosition.get()
-              )
-          }
-        }
-  */
+        /*
+              if (nodeTier == Constants.Universal.NodeTier.HYBRID) {
+                if (manipulator.isAtTargetedPosition) {
+                  elevator.currentRequest =
+                    Request.ElevatorRequest.TargetingPosition(
+                      Elevator.TunableElevatorHeights.minPosition.get()
+                    )
+                }
+              }
+        */
         if (manipulator.isAtTargetedPosition && elevator.isAtTargetedPosition) {
           nextState = SuperstructureStates.IDLE
           currentRequest = SuperstructureRequest.Idle()

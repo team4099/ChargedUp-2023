@@ -13,11 +13,9 @@ import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
-import edu.wpi.first.wpilibj2.command.RunCommand
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -28,6 +26,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
   SequentialCommandGroup() {
   lateinit var drivePose: Pose2d
   lateinit var finalPose: Pose2d
+  lateinit var postAlignPose: Pose2d
   var heading: Angle = 0.0.degrees
   lateinit var gamePiece: GamePiece
   lateinit var nodeTier: NodeTier
@@ -41,6 +40,17 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
           AllianceFlipUtil.apply(
             Pose2d(
               2.0.meters, // slightly offset in the x
+              FieldConstants.Grids.nodeFirstY +
+                FieldConstants.Grids.nodeSeparationY *
+                if (FMSData.isBlue) superstructure.objective.nodeColumn
+                else 8 - superstructure.objective.nodeColumn,
+              180.degrees
+            )
+          )
+        postAlignPose =
+          AllianceFlipUtil.apply(
+            Pose2d(
+              1.8.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -80,18 +90,23 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
       ),
       ParallelCommandGroup(
         superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
-        RunCommand(
+        DrivePathCommand(
+          drivetrain,
           {
-            drivetrain.setOpenLoop(
-              0.degrees.perSecond,
-              Pair(
-                if (FMSData.isBlue) -2.5.feet.perSecond else 2.5.feet.perSecond,
-                0.0.feet.perSecond
+            listOf(
+              Waypoint(
+                finalPose.pose2d.translation, null, finalPose.rotation.inRotation2ds
               ),
-              fieldOriented = true
+              Waypoint(
+                postAlignPose.translation.translation2d,
+                null,
+                postAlignPose.rotation.inRotation2ds
+              )
             )
           },
-          drivetrain
+          keepTrapping = true,
+          leaveOutYAdjustment = true,
+          flipForAlliances = false
         )
           .withTimeout(0.5)
       )

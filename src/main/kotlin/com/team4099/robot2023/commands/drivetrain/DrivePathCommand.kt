@@ -8,6 +8,7 @@ import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.Velocity2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.trajectory.TrajectoryParameterizer.TrajectoryGenerationException
 import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstraint
@@ -61,6 +62,7 @@ class DrivePathCommand(
   val keepTrapping: Boolean = false,
   val flipForAlliances: Boolean = true,
   val endPathOnceAtReference: Boolean = true,
+  val leaveOutYAdjustment: Boolean = false,
   val endVelocity: Velocity2d = Velocity2d(),
 ) : CommandBase() {
   private val xPID: PIDController<Meter, Velocity<Meter>>
@@ -218,14 +220,20 @@ class DrivePathCommand(
     val xAccel =
       desiredState.accelerationMetersPerSecondSq.meters.perSecond.perSecond *
         desiredState.curvatureRadPerMeter.radians.cos
-    val yAccel =
+    var yAccel =
       desiredState.accelerationMetersPerSecondSq.meters.perSecond.perSecond *
         desiredState.curvatureRadPerMeter.radians.sin
 
-    val nextDriveState =
+    var nextDriveState =
       swerveDriveController.calculate(
         drivetrain.odometryPose.pose2d, desiredState, desiredRotation
       )
+
+    if (leaveOutYAdjustment) {
+      nextDriveState =
+        ChassisSpeeds(nextDriveState.vxMetersPerSecond, 0.0, nextDriveState.omegaRadiansPerSecond)
+      yAccel = 0.0.meters.perSecond.perSecond
+    }
 
     drivetrain.targetPose =
       Pose2d(Pose2dWPILIB(desiredState.poseMeters.translation, desiredRotation.position))
