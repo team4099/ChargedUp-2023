@@ -1,5 +1,6 @@
 package com.team4099.robot2023.subsystems.limelight
 
+import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.TunableNumber
 import com.team4099.lib.vision.TargetCorner
 import com.team4099.robot2023.config.constants.Constants
@@ -30,6 +31,7 @@ import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.geometry.Translation3dWPILIB
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inMeters
+import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -83,6 +85,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   }
 
   override fun periodic() {
+    val startTime = Clock.realTimestamp
+
     io.updateInputs(inputs)
     Logger.getInstance().processInputs("LimelightVision", inputs)
 
@@ -181,6 +185,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       )
 
     Logger.getInstance().recordOutput("LimelightVision/cameraFieldRelativePose", currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM).pose3d)
+
+    Logger.getInstance().recordOutput("LoggedRobot/Subsystems/LimelightLoopTimeMS", (Clock.realTimestamp - startTime).inMilliseconds)
 
 //    visionConsumer.accept(timestampedVisionUpdates)
   }
