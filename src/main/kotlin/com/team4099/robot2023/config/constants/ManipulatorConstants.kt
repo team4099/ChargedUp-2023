@@ -43,7 +43,7 @@ object ManipulatorConstants {
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.3.seconds
   val MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP = 0.35.seconds
   val SPIT_OUT_TIME = 0.9.seconds
-  val SPIT_OUT_TIME_CONE = 0.2.seconds
+  val SPIT_OUT_TIME_CONE = 0.6.seconds
   val INTAKE_IN_TIME = 0.5.seconds
 
   val FILTER_PERIOD = 2.0.milli.seconds

@@ -50,7 +50,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         postAlignPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              1.8.meters, // slightly offset in the x
+              1.5.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn

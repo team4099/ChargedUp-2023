@@ -20,7 +20,7 @@ import org.team4099.lib.units.perSecond
 object GroundIntakeConstants {
 
   object PID {
-    val NEO_KP = 0.5.volts / 1.degrees
+    val NEO_KP = 1.0.volts / 1.degrees //0.5
     val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
     val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
@@ -82,12 +82,12 @@ object GroundIntakeConstants {
   val ENABLE_ARM = 1.0
   val ENABLE_ROTATION = 1.0
 
-  val INTAKE_ANGLE = 4.4.degrees
-  val OUTTAKE_ANGLE = 4.4.degrees
+  val INTAKE_ANGLE = 0.5.degrees
+  val OUTTAKE_ANGLE = 0.5.degrees
   val STOWED_UP_ANGLE = 55.degrees
-  val INTAKE_VOLTAGE = 8.0.volts
+  val INTAKE_VOLTAGE = 6.0.volts
   val OUTTAKE_VOLTAGE = (-3.0).volts
-  val STOWED_DOWN_ANGLE = 4.4.degrees
+  val STOWED_DOWN_ANGLE = 0.5.degrees
   val NEUTRAL_VOLTAGE = 0.0.volts
   val HELP_SCORE_VOLTAGE = 2.5.volts
 

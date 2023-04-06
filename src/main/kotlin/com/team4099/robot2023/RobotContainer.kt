@@ -36,6 +36,7 @@ import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.degrees
 import java.util.function.Supplier
 
 object RobotContainer {

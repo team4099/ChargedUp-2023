@@ -19,6 +19,7 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import java.util.function.Consumer
 import java.util.function.Supplier
@@ -81,7 +82,7 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
         .processInputs("Vision/${VisionConstants.CAMERA_NAMES[instance]}", inputs[instance])
     }
 
-    val currentPose: Pose2d = poseSupplier.get()
+    var currentPose: Pose2d = poseSupplier.get()
     val robotPoses = mutableListOf<Pose2d>()
     val visionUpdates = mutableListOf<PoseEstimator.TimestampedVisionUpdate>()
 
