@@ -55,7 +55,7 @@ object RobotContainer {
       vision =
         Vision(
           //          object: CameraIO {}
-          CameraIONorthstar("northstar"),
+//          CameraIONorthstar("northstar"),
           CameraIONorthstar("northstar_1"),
           CameraIONorthstar("northstar_2"),
           CameraIONorthstar("northstar_3"),
