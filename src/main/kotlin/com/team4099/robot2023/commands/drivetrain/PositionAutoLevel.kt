@@ -21,6 +21,9 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
 
   lateinit var executeCommand: CommandBase
 
+  init {
+    Logger.getInstance().recordOutput("AttemptAutoEngage", true)
+  }
   override fun initialize() {
 
     val cornerIndex =

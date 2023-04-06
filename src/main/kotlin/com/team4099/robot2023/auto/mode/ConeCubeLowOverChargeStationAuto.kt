@@ -72,37 +72,40 @@ class ConeCubeLowOverChargeStationAuto(
         ),
         WaitCommand(2.0).andThen(superstructure.groundIntakeCubeCommand())
       ),
-      DrivePathCommand(
-        drivetrain,
-        {
-          listOf(
-            Waypoint(
-              Translation2d(
-                FieldConstants.StagingLocations.translations[1]!!.x,
-                FieldConstants.StagingLocations.translations[1]!!.y
+      ParallelCommandGroup(
+        WaitCommand(1.0).andThen(superstructure.requestIdleCommand()),
+        DrivePathCommand(
+          drivetrain,
+          {
+            listOf(
+              Waypoint(
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[1]!!.x,
+                  FieldConstants.StagingLocations.translations[1]!!.y
+                )
+                  .translation2d,
+                180.degrees.inRotation2ds,
+                -45.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(5.4.meters, 2.0.meters).translation2d,
+                null,
+                180.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(
+                  endingPosX.get(),
+                  FieldConstants.Grids.nodeFirstY +
+                    FieldConstants.Grids.nodeSeparationY * 4
+                )
+                  .translation2d,
+                null,
+                180.0.degrees.inRotation2ds
               )
-                .translation2d,
-              180.degrees.inRotation2ds,
-              -45.0.degrees.inRotation2ds
-            ),
-            Waypoint(
-              Translation2d(5.4.meters, 2.0.meters).translation2d,
-              null,
-              180.degrees.inRotation2ds
-            ),
-            Waypoint(
-              Translation2d(
-                endingPosX.get(),
-                FieldConstants.Grids.nodeFirstY +
-                  FieldConstants.Grids.nodeSeparationY * 4
-              )
-                .translation2d,
-              null,
-              180.0.degrees.inRotation2ds
             )
-          )
-        },
-        keepTrapping = true
+          },
+          keepTrapping = true
+        )
       ),
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HYBRID

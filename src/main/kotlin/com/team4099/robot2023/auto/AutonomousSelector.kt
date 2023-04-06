@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
+import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser
 import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inSeconds
@@ -135,7 +136,12 @@ object AutonomousSelector {
 
   fun getCommand(drivetrain: Drivetrain, superstructure: Superstructure): CommandBase {
 
-    val engageCommand = if (attemptEngage) PositionAutoLevel(drivetrain) else InstantCommand()
+    var engageCommand: CommandBase = InstantCommand()
+    if (attemptEngage) {
+      engageCommand = PositionAutoLevel(drivetrain)
+    } else {
+      Logger.getInstance().recordOutput("AttemptAutoEngage", false)
+    }
 
     val mode = autonomousModeChooser.get()
     //    println("${waitTime().inSeconds} wait command")

@@ -64,35 +64,38 @@ class ConeCubeHoldBumpAuto(val drivetrain: Drivetrain, val superstructure: Super
         ),
         WaitCommand(1.5).andThen(superstructure.groundIntakeCubeCommand())
       ),
-      DrivePathCommand(
-        drivetrain,
-        {
-          listOf(
-            // initial @ cube
-            Waypoint(
-              Translation2d(
-                FieldConstants.StagingLocations.translations[0]!!.x,
-                FieldConstants.StagingLocations.translations[0]!!.y
+      ParallelCommandGroup(
+        WaitCommand(1.0).andThen(superstructure.requestIdleCommand()),
+        DrivePathCommand(
+          drivetrain,
+          {
+            listOf(
+              // initial @ cube
+              Waypoint(
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[0]!!.x,
+                  FieldConstants.StagingLocations.translations[0]!!.y
+                )
+                  .translation2d,
+                180.0.degrees.inRotation2ds,
+                0.0.degrees.inRotation2ds
+              ),
+              // middle of bump
+              Waypoint(
+                Translation2d(5.26.meters, 0.9.meters).translation2d,
+                null,
+                180.0.degrees.inRotation2ds
+              ),
+              // scoring cube
+              Waypoint(
+                Translation2d(endingPosX.get(), endingPosY.get()).translation2d,
+                null,
+                180.0.degrees.inRotation2ds
               )
-                .translation2d,
-              180.0.degrees.inRotation2ds,
-              0.0.degrees.inRotation2ds
-            ),
-            // middle of bump
-            Waypoint(
-              Translation2d(5.26.meters, 0.9.meters).translation2d,
-              null,
-              180.0.degrees.inRotation2ds
-            ),
-            // scoring cube
-            Waypoint(
-              Translation2d(endingPosX.get(), endingPosY.get()).translation2d,
-              null,
-              180.0.degrees.inRotation2ds
             )
-          )
-        },
-        keepTrapping = true
+          },
+          keepTrapping = true
+        )
       )
     )
   }

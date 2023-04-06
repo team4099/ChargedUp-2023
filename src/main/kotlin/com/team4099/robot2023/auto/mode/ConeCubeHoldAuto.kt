@@ -42,6 +42,11 @@ class ConeCubeHoldAuto(val drivetrain: Drivetrain, val superstructure: Superstru
                 180.0.degrees.inRotation2ds
               ),
               Waypoint(
+                Translation2d(2.9.meters, 4.8.meters).translation2d,
+                null,
+                180.0.degrees.inRotation2ds
+              ),
+              Waypoint(
                 Translation2d(
                   FieldConstants.StagingLocations.translations[3]!!.x,
                   FieldConstants.StagingLocations.translations[3]!!.y
@@ -55,37 +60,40 @@ class ConeCubeHoldAuto(val drivetrain: Drivetrain, val superstructure: Superstru
         ),
         WaitCommand(2.0).andThen(superstructure.groundIntakeCubeCommand())
       ),
-      DrivePathCommand(
-        drivetrain,
-        {
-          listOf(
-            Waypoint(
-              Translation2d(
-                FieldConstants.StagingLocations.translations[3]!!.x,
-                FieldConstants.StagingLocations.translations[3]!!.y
+      ParallelCommandGroup(
+        WaitCommand(1.0).andThen(superstructure.requestIdleCommand()),
+        DrivePathCommand(
+          drivetrain,
+          {
+            listOf(
+              Waypoint(
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[3]!!.x,
+                  FieldConstants.StagingLocations.translations[3]!!.y
+                )
+                  .translation2d,
+                180.0.degrees.inRotation2ds,
+                0.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(3.139.meters, 4.68.meters).translation2d,
+                null,
+                180.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(
+                  endingPosX.get(),
+                  FieldConstants.Grids.nodeFirstY +
+                    FieldConstants.Grids.nodeSeparationY * 7
+                )
+                  .translation2d,
+                null,
+                180.0.degrees.inRotation2ds
               )
-                .translation2d,
-              180.0.degrees.inRotation2ds,
-              0.0.degrees.inRotation2ds
-            ),
-            Waypoint(
-              Translation2d(3.139.meters, 4.68.meters).translation2d,
-              null,
-              180.degrees.inRotation2ds
-            ),
-            Waypoint(
-              Translation2d(
-                endingPosX.get(),
-                FieldConstants.Grids.nodeFirstY +
-                  FieldConstants.Grids.nodeSeparationY * 7
-              )
-                .translation2d,
-              null,
-              180.0.degrees.inRotation2ds
             )
-          )
-        },
-        keepTrapping = true
+          },
+          keepTrapping = true
+        )
       )
     )
   }

@@ -72,30 +72,33 @@ class ConeCubeHoldOverChargeStationAuto(
         ),
         WaitCommand(2.0).andThen(superstructure.groundIntakeCubeCommand())
       ),
-      DrivePathCommand(
-        drivetrain,
-        {
-          listOf(
-            Waypoint(
-              Translation2d(
-                FieldConstants.StagingLocations.translations[1]!!.x,
-                FieldConstants.StagingLocations.translations[1]!!.y
+      ParallelCommandGroup(
+        WaitCommand(0.5).andThen(superstructure.requestIdleCommand()),
+        DrivePathCommand(
+          drivetrain,
+          {
+            listOf(
+              Waypoint(
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[1]!!.x,
+                  FieldConstants.StagingLocations.translations[1]!!.y
+                )
+                  .translation2d,
+                null,
+                -45.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[1]!!.x - 1.meters,
+                  FieldConstants.StagingLocations.translations[1]!!.y
+                )
+                  .translation2d,
+                null,
+                180.0.degrees.inRotation2ds
               )
-                .translation2d,
-              null,
-              -45.0.degrees.inRotation2ds
-            ),
-            Waypoint(
-              Translation2d(
-                FieldConstants.StagingLocations.translations[1]!!.x - 1.meters,
-                FieldConstants.StagingLocations.translations[1]!!.y
-              )
-                .translation2d,
-              null,
-              180.0.degrees.inRotation2ds
             )
-          )
-        }
+          }
+        )
       )
     )
   }
