@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
+import com.team4099.robot2023.util.Alert
 import edu.wpi.first.wpilibj.DutyCycleEncoder
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.amps
@@ -80,6 +81,18 @@ object GroundIntakeIONeo : GroundIntakeIO {
         .degrees
     }
 
+  private val rollerCurrentLimitAlert =
+    Alert("Ground intake roller motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val armCurrentLimitAlert =
+    Alert("Ground arm motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val rollerTempAlert =
+    Alert("Ground intake roller motor surpassed temperature limit", Alert.AlertType.ERROR)
+
+  private val armTempAlert =
+    Alert("Ground arm motor surpassed temperature limit", Alert.AlertType.ERROR)
+
   init {
     rollerSparkMax.restoreFactoryDefaults()
     rollerSparkMax.clearFaults()
@@ -140,6 +153,20 @@ object GroundIntakeIONeo : GroundIntakeIO {
         armSparkMax.encoder.velocity *
           GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving
       )
+
+    rollerCurrentLimitAlert.set(
+      rollerSparkMax.outputCurrent.amps > GroundIntakeConstants.ROLLER_CURRENT_LIMIT
+    )
+
+    armCurrentLimitAlert.set(
+      armSparkMax.outputCurrent.amps > GroundIntakeConstants.ARM_CURRENT_LIMIT
+    )
+
+    rollerTempAlert.set(
+      rollerSparkMax.motorTemperature.celsius > GroundIntakeConstants.ROLLER_TEMP_ALERT
+    )
+
+    armTempAlert.set(armSparkMax.motorTemperature.celsius > GroundIntakeConstants.ARM_TEMP_ALERT)
   }
 
   /**

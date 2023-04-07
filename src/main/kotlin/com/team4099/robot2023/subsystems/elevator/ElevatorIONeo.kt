@@ -6,6 +6,9 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import com.team4099.robot2023.subsystems.motorchecker.MotorChecker
+import com.team4099.robot2023.subsystems.motorchecker.Neo
+import com.team4099.robot2023.util.Alert
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -40,6 +43,18 @@ object ElevatorIONeo : ElevatorIO {
 
   private val leaderPIDController: SparkMaxPIDController = leaderSparkMax.pidController
 
+  private val leftCurrentLimitAlert =
+    Alert("Left Elevator motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val rightCurrentLimitAlert =
+    Alert("Right Elevator motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val leftTempAlert =
+    Alert("Left Elevator motor surpassed temperature limit", Alert.AlertType.ERROR)
+
+  private val rightTempAlert =
+    Alert("Right Elevator motor surpassed temperature limit", Alert.AlertType.ERROR)
+
   init {
 
     // reseting motor
@@ -71,6 +86,8 @@ object ElevatorIONeo : ElevatorIO {
 
     leaderSparkMax.burnFlash()
     followerSparkMax.burnFlash()
+
+    MotorChecker.add(Neo(leaderSparkMax))
   }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
@@ -100,6 +117,22 @@ object ElevatorIONeo : ElevatorIO {
     inputs.followerSupplyCurrent = inputs.followerStatorCurrent * followerSparkMax.appliedOutput
 
     inputs.followerTempCelcius = followerSparkMax.motorTemperature.celsius
+
+    leftCurrentLimitAlert.set(
+      followerSparkMax.outputCurrent.amps > ElevatorConstants.PHASE_CURRENT_LIMIT
+    )
+
+    rightCurrentLimitAlert.set(
+      leaderSparkMax.outputCurrent.amps > ElevatorConstants.PHASE_CURRENT_LIMIT
+    )
+
+    leftTempAlert.set(
+      followerSparkMax.motorTemperature.celsius > ElevatorConstants.ELEVATOR_TEMP_ALERT
+    )
+
+    rightTempAlert.set(
+      leaderSparkMax.motorTemperature.celsius > ElevatorConstants.ELEVATOR_TEMP_ALERT
+    )
   }
 
   /**

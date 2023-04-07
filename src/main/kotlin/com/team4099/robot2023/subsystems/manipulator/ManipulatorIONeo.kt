@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import com.team4099.robot2023.util.Alert
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -41,6 +42,18 @@ object ManipulatorIONeo : ManipulatorIO {
       ManipulatorConstants.ARM_VOLTAGE_COMPENSATION
     )
   private val armPIDController: SparkMaxPIDController = armSparkMax.pidController
+
+  private val rollerCurrentLimitAlert =
+    Alert("Manipulator roller motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val armCurrentLimitAlert =
+    Alert("Manipulator extension motor surpassed current limit", Alert.AlertType.ERROR)
+
+  private val rollerTempAlert =
+    Alert("Manipulator roller motor surpassed temperature limit", Alert.AlertType.ERROR)
+
+  private val armTempAlert =
+    Alert("Manipulator extension motor surpassed temperature limit", Alert.AlertType.ERROR)
 
   init {
     // resetting the motors
@@ -118,6 +131,20 @@ object ManipulatorIONeo : ManipulatorIO {
     // percentOutput * statorCurrent
     inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
     inputs.armTemp = armSparkMax.motorTemperature.celsius
+
+    rollerCurrentLimitAlert.set(
+      rollerSparkMax.outputCurrent.amps > ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT
+    )
+
+    armCurrentLimitAlert.set(
+      armSparkMax.outputCurrent.amps > ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT
+    )
+
+    rollerTempAlert.set(
+      rollerSparkMax.motorTemperature.celsius > ManipulatorConstants.ROLLER_TEMP_ALERT
+    )
+
+    armTempAlert.set(armSparkMax.motorTemperature.celsius > ManipulatorConstants.ARM_TEMP_ALERT)
   }
 
   /**

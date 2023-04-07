@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.FieldConstants.Grids.midCubeZ
 import com.team4099.robot2023.config.constants.FieldConstants.LoadingZone.doubleSubstationShelfZ
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.percent
@@ -58,6 +59,8 @@ object ElevatorConstants {
 
   val VOLTAGE_COMPENSATION = 12.volts
   val PHASE_CURRENT_LIMIT = 80.amps // TODO tune stator current limit
+
+  val ELEVATOR_TEMP_ALERT = 80.celsius
 
   // TODO figure out what these should be
   val HOMING_POSITION_THRESHOLD = 30.inches

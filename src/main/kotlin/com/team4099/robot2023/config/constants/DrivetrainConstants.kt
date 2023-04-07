@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
+import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inMeters
@@ -76,6 +77,9 @@ object DrivetrainConstants {
   val DRIVE_STATOR_CURRENT_LIMIT = 65.0.amps
   val DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT = 80.0.amps
   val DRIVE_STATOR_TRIGGER_THRESHOLD_TIME = 1.0.seconds
+
+  val STEERING_TEMP_ALERT = 80.celsius
+  val DRIVE_TEMP_ALERT = 80.celsius
 
   val FRONT_LEFT_MODULE_ZERO = 1.33.radians
   val FRONT_RIGHT_MODULE_ZERO = 4.51.radians
