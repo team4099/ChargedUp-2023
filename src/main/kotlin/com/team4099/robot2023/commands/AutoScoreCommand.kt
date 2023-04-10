@@ -12,7 +12,6 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
@@ -39,7 +38,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              2.0.meters, // slightly offset in the x
+              1.875.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -88,28 +87,29 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         keepTrapping = true,
         flipForAlliances = false
       ),
-      ParallelCommandGroup(
-        superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
-        DrivePathCommand(
-          drivetrain,
-          {
-            listOf(
-              Waypoint(
-                finalPose.pose2d.translation, null, finalPose.rotation.inRotation2ds
-              ),
-              Waypoint(
-                postAlignPose.translation.translation2d,
-                null,
-                postAlignPose.rotation.inRotation2ds
-              )
-            )
-          },
-          keepTrapping = true,
-          leaveOutYAdjustment = true,
-          flipForAlliances = false
-        )
-          .withTimeout(0.5)
-      )
+      superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+      //      ParallelCommandGroup(
+      //        superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+      //        DrivePathCommand(
+      //          drivetrain,
+      //          {
+      //            listOf(
+      //              Waypoint(
+      //                finalPose.pose2d.translation, null, finalPose.rotation.inRotation2ds
+      //              ),
+      //              Waypoint(
+      //                postAlignPose.translation.translation2d,
+      //                null,
+      //                postAlignPose.rotation.inRotation2ds
+      //              )
+      //            )
+      //          },
+      //          keepTrapping = true,
+      //          leaveOutYAdjustment = true,
+      //          flipForAlliances = false
+      //        )
+      //          .withTimeout(0.5)
+      //      )
     )
   }
 }

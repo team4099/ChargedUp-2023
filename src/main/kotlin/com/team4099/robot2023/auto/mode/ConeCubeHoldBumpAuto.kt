@@ -103,32 +103,32 @@ class ConeCubeHoldBumpAuto(val drivetrain: Drivetrain, val superstructure: Super
   companion object {
     val startingPosX =
       LoggedTunableValue(
-        "Drivetrain/startingPosX", 1.9.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/startingPosX3", 1.9.meters, Pair({ it.inMeters }, { it.meters })
       )
     val startingPosY =
       LoggedTunableValue(
-        "Drivetrain/startingPosY",
+        "Drivetrain/startingPosY3",
         FieldConstants.Grids.nodeFirstY,
         Pair({ it.inMeters }, { it.meters })
       )
     val startingPosTheta =
       LoggedTunableValue(
-        "Drivetrain/startingPosTheta", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
+        "Drivetrain/startingPosTheta3", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
       )
 
     val endingPosX =
       LoggedTunableValue(
-        "Drivetrain/endingPosX", 1.9.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/endingPosX3", 1.9.meters, Pair({ it.inMeters }, { it.meters })
       )
     val endingPosY =
       LoggedTunableValue(
-        "Drivetrain/endingPosY",
+        "Drivetrain/endingPosY3",
         FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY,
         Pair({ it.inMeters }, { it.meters })
       )
     val endingPosTheta =
       LoggedTunableValue(
-        "Drivetrain/endingPosTheta", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
+        "Drivetrain/endingPosTheta3", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
       )
   }
 }

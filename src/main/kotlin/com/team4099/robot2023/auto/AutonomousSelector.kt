@@ -7,6 +7,7 @@ import com.team4099.robot2023.auto.mode.ConeCubeHoldBumpAuto
 import com.team4099.robot2023.auto.mode.ConeCubeHoldOverChargeStationAuto
 import com.team4099.robot2023.auto.mode.ConeCubeLaunchOverChargeStationAuto
 import com.team4099.robot2023.auto.mode.ConeCubeLowOverChargeStationAuto
+import com.team4099.robot2023.auto.mode.ConeCubeMobilityAuto
 import com.team4099.robot2023.auto.mode.ConeCubeOverChargeStationAuto
 import com.team4099.robot2023.auto.mode.ConeMobilityAuto
 import com.team4099.robot2023.auto.mode.PreloadOpenLoopChargeStationBalance
@@ -51,6 +52,9 @@ object AutonomousSelector {
     // AutonomousMode.ELEVATOR_CHARACTERIZE)
 
     autonomousModeChooser.addOption("1 Cone + 1 Cube Auto", AutonomousMode.CO_CU_AUTO)
+    autonomousModeChooser.addOption(
+      "1 Cone + 1 Cube Mobility Auto", AutonomousMode.CO_CU_MOBILITY_AUTO
+    )
 
     // autonomousModeChooser.addOption("1 Cone + 1 Cube Auto, 254 version",
     // AutonomousMode.CO_CU_AUTO_NO_SPIN)
@@ -153,6 +157,10 @@ object AutonomousSelector {
         return WaitCommand(waitTime.inSeconds)
           .andThen(ConeCubeAuto(drivetrain, superstructure))
           .andThen(engageCommand)
+      AutonomousMode.CO_CU_MOBILITY_AUTO ->
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(ConeCubeMobilityAuto(drivetrain, superstructure))
+          .andThen(engageCommand)
       AutonomousMode.CO_CU_BUMP_AUTO ->
         return WaitCommand(waitTime.inSeconds)
           .andThen(ConeCubeBumpAuto(drivetrain, superstructure))
@@ -200,6 +208,7 @@ object AutonomousSelector {
     TEST_AUTO_PATH,
     ELEVATOR_CHARACTERIZE,
     CO_CU_AUTO,
+    CO_CU_MOBILITY_AUTO,
     CO_CU_BUMP_AUTO,
     CO_CU_MIDDLE_AUTO,
     CO_CU_MIDDLE_LOW_AUTO,

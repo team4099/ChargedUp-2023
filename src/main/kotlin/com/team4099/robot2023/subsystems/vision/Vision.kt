@@ -19,7 +19,6 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import java.util.function.Consumer
 import java.util.function.Supplier

@@ -24,6 +24,7 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
+import kotlin.math.absoluteValue
 
 object ManipulatorIONeo : ManipulatorIO {
   private val rollerSparkMax =
@@ -132,7 +133,8 @@ object ManipulatorIONeo : ManipulatorIO {
     // AppliedVoltage = percentOutput * BatteryVoltage
     // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput
+    inputs.rollerSupplyCurrent =
+      inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput.absoluteValue
     inputs.rollerTemp = rollerSparkMax.motorTemperature.celsius
 
     inputs.armPosition = armSensor.position
@@ -143,7 +145,7 @@ object ManipulatorIONeo : ManipulatorIO {
     // AppliedVoltage = percentOutput * BatteryVoltage
     // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
+    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput.absoluteValue
     inputs.armTemp = armSparkMax.motorTemperature.celsius
   }
 

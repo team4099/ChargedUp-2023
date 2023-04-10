@@ -25,6 +25,7 @@ import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
+import kotlin.math.absoluteValue
 
 object ElevatorIONeo : ElevatorIO {
 
@@ -107,7 +108,8 @@ object ElevatorIONeo : ElevatorIO {
     // SupplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
 
-    inputs.leaderSupplyCurrent = inputs.leaderStatorCurrent * leaderSparkMax.appliedOutput
+    inputs.leaderSupplyCurrent =
+      inputs.leaderStatorCurrent * leaderSparkMax.appliedOutput.absoluteValue
 
     inputs.leaderTempCelcius = leaderSparkMax.motorTemperature.celsius
 
@@ -116,7 +118,8 @@ object ElevatorIONeo : ElevatorIO {
 
     inputs.followerStatorCurrent = followerSparkMax.outputCurrent.amps
 
-    inputs.followerSupplyCurrent = inputs.followerStatorCurrent * followerSparkMax.appliedOutput
+    inputs.followerSupplyCurrent =
+      inputs.followerStatorCurrent * followerSparkMax.appliedOutput.absoluteValue
 
     inputs.followerTempCelcius = followerSparkMax.motorTemperature.celsius
 

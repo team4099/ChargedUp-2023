@@ -14,7 +14,6 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
-import org.team4099.lib.units.base.inPercentOutputPerSecond
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
@@ -30,6 +29,7 @@ import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 import kotlin.math.IEEErem
+import kotlin.math.absoluteValue
 
 object GroundIntakeIONeo : GroundIntakeIO {
 
@@ -95,6 +95,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
     rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
 
+    rollerSparkMax.openLoopRampRate = 0.0
     rollerSparkMax.burnFlash()
 
     armSparkMax.restoreFactoryDefaults()
@@ -114,7 +115,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
         mutableListOf(Neo(rollerSparkMax, "Roller Motor")),
         GroundIntakeConstants.ROLLER_CURRENT_LIMIT,
         70.celsius,
-        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 30.amps,
+        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 0.amps,
         90.celsius
       ),
     )
@@ -141,7 +142,8 @@ object GroundIntakeIONeo : GroundIntakeIO {
     // AppliedVoltage = percentOutput * BusVoltage
     // SupplyCurrent = (percentOutput * BusVoltage / BusVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput
+    inputs.rollerSupplyCurrent =
+      inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput.absoluteValue
     inputs.rollerTemp = rollerSparkMax.motorTemperature.celsius
 
     inputs.armPosition = armSensor.position
@@ -152,12 +154,19 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.armTemp = armSparkMax.motorTemperature.celsius
 
     // same math as  rollersupplycurrent
-    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
+    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput.absoluteValue
 
     Logger.getInstance()
       .recordOutput(
         "GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees
       )
+
+    Logger.getInstance()
+      .recordOutput(
+        "GroundIntake/rollerMotorOvercurrentFault",
+        rollerSparkMax.getFault(CANSparkMax.FaultID.kOvercurrent)
+      )
+    Logger.getInstance().recordOutput("GroundIntake/busVoltage", rollerSparkMax.busVoltage)
 
     Logger.getInstance()
       .recordOutput(

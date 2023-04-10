@@ -19,7 +19,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRotation2ds
 
-class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructure) :
+class ConeCubeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstructure) :
   SequentialCommandGroup() {
 
   init {
@@ -43,9 +43,18 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
                 180.0.degrees.inRotation2ds
               ),
               Waypoint(
-                Translation2d(2.9.meters, 4.8.meters).translation2d,
+                Translation2d(2.9.meters, 5.0.meters).translation2d,
                 null,
                 180.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[3]!!.x - 1.0.meters,
+                  FieldConstants.StagingLocations.translations[3]!!.y + 0.25.meters
+                )
+                  .translation2d,
+                0.0.degrees.inRotation2ds,
+                0.0.degrees.inRotation2ds
               ),
               Waypoint(
                 Translation2d(
@@ -62,7 +71,7 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
         WaitCommand(1.5).andThen(superstructure.groundIntakeCubeCommand())
       ),
       ParallelCommandGroup(
-        WaitCommand(1.0).andThen(superstructure.requestIdleCommand()),
+        WaitCommand(2.25).andThen(superstructure.requestIdleCommand()),
         DrivePathCommand(
           drivetrain,
           {
@@ -77,7 +86,16 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
                 0.0.degrees.inRotation2ds
               ),
               Waypoint(
-                Translation2d(3.139.meters, 4.8.meters).translation2d,
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[3]!!.x - 1.0.meters,
+                  FieldConstants.StagingLocations.translations[3]!!.y + 0.25.meters
+                )
+                  .translation2d,
+                180.0.degrees.inRotation2ds,
+                0.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(3.139.meters, 4.95.meters).translation2d,
                 null,
                 180.degrees.inRotation2ds
               ),
@@ -100,7 +118,38 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
         Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
       ),
       superstructure.score(),
-      WaitCommand(0.5)
+      WaitCommand(0.5),
+      DrivePathCommand(
+        drivetrain,
+        {
+          listOf(
+            Waypoint(
+              Translation2d(
+                endingPosX.get(),
+                FieldConstants.Grids.nodeFirstY +
+                  FieldConstants.Grids.nodeSeparationY * 7
+              )
+                .translation2d,
+              null,
+              180.0.degrees.inRotation2ds
+            ),
+            Waypoint(
+              Translation2d(2.9.meters, 4.95.meters).translation2d,
+              null,
+              180.0.degrees.inRotation2ds
+            ),
+            Waypoint(
+              Translation2d(
+                FieldConstants.StagingLocations.translations[3]!!.x,
+                FieldConstants.StagingLocations.translations[3]!!.y + 0.25.meters
+              )
+                .translation2d,
+              0.0.degrees.inRotation2ds,
+              -90.0.degrees.inRotation2ds
+            ),
+          )
+        }
+      ),
     )
   }
 

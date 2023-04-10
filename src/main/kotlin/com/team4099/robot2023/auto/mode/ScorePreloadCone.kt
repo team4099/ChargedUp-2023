@@ -31,17 +31,17 @@ class ScorePreloadCone(val drivetrain: Drivetrain, val superstructure: Superstru
   companion object {
     val startingPosX =
       LoggedTunableValue(
-        "Drivetrain/startingPosX", 1.9.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/startingPosX9", 1.9.meters, Pair({ it.inMeters }, { it.meters })
       )
     val startingPosY =
       LoggedTunableValue(
-        "Drivetrain/startingPosY",
+        "Drivetrain/startingPosY9",
         FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 3,
         Pair({ it.inMeters }, { it.meters })
       )
     val startingPosTheta =
       LoggedTunableValue(
-        "Drivetrain/startingPosTheta", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
+        "Drivetrain/startingPosTheta9", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
       )
   }
 }

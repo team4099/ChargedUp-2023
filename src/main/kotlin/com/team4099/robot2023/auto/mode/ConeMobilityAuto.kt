@@ -64,28 +64,28 @@ class ConeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstru
   companion object {
     val startingPosX =
       LoggedTunableValue(
-        "Drivetrain/startingPosX", 1.9.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/startingPosX8", 1.9.meters, Pair({ it.inMeters }, { it.meters })
       )
     val startingPosY =
       LoggedTunableValue(
-        "Drivetrain/startingPosY", 4.97.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/startingPosY8", 4.97.meters, Pair({ it.inMeters }, { it.meters })
       )
     val startingPosTheta =
       LoggedTunableValue(
-        "Drivetrain/startingPosTheta", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
+        "Drivetrain/startingPosTheta8", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
       )
 
     val endingPosX =
       LoggedTunableValue(
-        "Drivetrain/endingPosX", 1.9.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/endingPosX8", 1.9.meters, Pair({ it.inMeters }, { it.meters })
       )
     val endingPosY =
       LoggedTunableValue(
-        "Drivetrain/endingPosY", 4.97.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/endingPosY8", 4.97.meters, Pair({ it.inMeters }, { it.meters })
       )
     val endingPosTheta =
       LoggedTunableValue(
-        "Drivetrain/endingPosTheta", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
+        "Drivetrain/endingPosTheta8", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
       )
   }
 }

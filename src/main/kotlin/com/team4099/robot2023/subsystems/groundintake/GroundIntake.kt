@@ -312,7 +312,6 @@ class GroundIntake(private val io: GroundIntakeIO) {
         }
       }
       GroundIntakeState.TARGETING_POSITION -> {
-        setRollerVoltage(rollerVoltageTarget)
         // Outputs
         if (armPositionTarget != lastArmPositionTarget) {
           val preProfileGenerate = Clock.realTimestamp
@@ -339,6 +338,10 @@ class GroundIntake(private val io: GroundIntakeIO) {
         val timeElapsed = Clock.fpgaTime - timeProfileGeneratedAt
 
         val profileOutput = armProfile.calculate(timeElapsed)
+
+        if (armProfile.isFinished(timeElapsed)) {
+          setRollerVoltage(rollerVoltageTarget)
+        }
 
         setArmPosition(profileOutput)
 

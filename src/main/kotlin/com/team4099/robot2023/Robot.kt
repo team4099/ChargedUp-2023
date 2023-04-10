@@ -187,7 +187,7 @@ object Robot : LoggedRobot() {
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
-    RobotContainer.zeroSensors()
+    RobotContainer.zeroArm()
   }
 
   override fun testInit() {

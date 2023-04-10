@@ -36,7 +36,6 @@ import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.Angle
-import org.team4099.lib.units.derived.degrees
 import java.util.function.Supplier
 
 object RobotContainer {
@@ -55,7 +54,7 @@ object RobotContainer {
       vision =
         Vision(
           //          object: CameraIO {}
-//          CameraIONorthstar("northstar"),
+          //          CameraIONorthstar("northstar"),
           CameraIONorthstar("northstar_1"),
           CameraIONorthstar("northstar_2"),
           CameraIONorthstar("northstar_3"),
@@ -74,7 +73,12 @@ object RobotContainer {
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
-      vision = Vision(CameraIONorthstar("northstar"))
+      vision =
+        Vision(
+          CameraIONorthstar("northstar_1"),
+          CameraIONorthstar("northstar_2"),
+          CameraIONorthstar("northstar_3"),
+        )
       superstructure =
         Superstructure(
           Elevator(ElevatorIOSim),
@@ -199,6 +203,8 @@ object RobotContainer {
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
     ControlBoard.autoScore.whileTrue(AutoScoreCommand(drivetrain, superstructure))
+
+    ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain,

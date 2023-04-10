@@ -16,47 +16,47 @@ object VisionConstants {
 
   const val NUM_OF_CAMERAS = 1
 
-//  val CAMERA_TRANSFORMS =
-//    listOf(
-//      Transform3d(
-//        Translation3d(12.89.inches, 7.154.inches, 29.33.inches),
-//        Rotation3d(180.degrees, -5.degrees, 0.degrees)
-//      ),
-//      Transform3d(
-//        Translation3d(-9.98.inches, -6.64.inches, 16.508.inches),
-//        Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)
-//      ),
-//      Transform3d(
-//        Translation3d(-10.036.inches, -12.793.inches, 16.438.inches),
-//        Rotation3d(0.0.degrees, 0.0.degrees, -40.degrees)
-//      ), // camera facing rightward
-//      Transform3d(
-//        Translation3d(-10.560.inches, 12.793.inches, 16.437.inches),
-//        Rotation3d(180.0.degrees, 0.0.degrees, 40.degrees)
-//      ) // camera facing leftward
-//    )
+  //  val CAMERA_TRANSFORMS =
+  //    listOf(
+  //      Transform3d(
+  //        Translation3d(12.89.inches, 7.154.inches, 29.33.inches),
+  //        Rotation3d(180.degrees, -5.degrees, 0.degrees)
+  //      ),
+  //      Transform3d(
+  //        Translation3d(-9.98.inches, -6.64.inches, 16.508.inches),
+  //        Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)
+  //      ),
+  //      Transform3d(
+  //        Translation3d(-10.036.inches, -12.793.inches, 16.438.inches),
+  //        Rotation3d(0.0.degrees, 0.0.degrees, -40.degrees)
+  //      ), // camera facing rightward
+  //      Transform3d(
+  //        Translation3d(-10.560.inches, 12.793.inches, 16.437.inches),
+  //        Rotation3d(180.0.degrees, 0.0.degrees, 40.degrees)
+  //      ) // camera facing leftward
+  //    )
 
-    val CAMERA_TRANSFORMS =
-      listOf(
-        Transform3d(
-          Translation3d((11.760.inches - 1.25.inches), 7.3125.inches, 29.33.inches),
-          Rotation3d(180.degrees, 0.degrees, 0.degrees)
-        ),
-        Transform3d(
-          Translation3d(-10.965.inches, -11.85.inches, 16.437.inches),
-          Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)
-        ),
-        Transform3d(
-          Translation3d(-6.560.inches, -12.793.inches, 16.438.inches),
-          Rotation3d(0.0.degrees, 0.0.degrees, -40.degrees)
-        ), // camera facing rightward
-        Transform3d(
-          Translation3d(-6.560.inches, 12.793.inches, 16.437.inches),
-          Rotation3d(180.0.degrees, 0.0.degrees, 40.degrees)
-        ) // camera facing leftward
-      )
+  val CAMERA_TRANSFORMS =
+    listOf(
+      Transform3d(
+        Translation3d((11.760.inches - 1.25.inches), 7.3125.inches, 29.33.inches),
+        Rotation3d(180.degrees, 0.degrees, 0.degrees)
+      ),
+      //        Transform3d(
+      //          Translation3d(-10.965.inches, -11.85.inches, 16.437.inches),
+      //          Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)
+      //        ),
+      Transform3d(
+        Translation3d(-6.560.inches, -12.793.inches, 16.438.inches),
+        Rotation3d(0.0.degrees, 0.0.degrees, -40.degrees)
+      ), // camera facing rightward
+      Transform3d(
+        Translation3d(-6.560.inches, 12.793.inches, 16.437.inches),
+        Rotation3d(180.0.degrees, 0.0.degrees, 40.degrees)
+      ) // camera facing leftward
+    )
 
-  val CAMERA_NAMES = listOf("northstar", "northstar_1", "northstar_2", "northstar_3")
+  val CAMERA_NAMES = listOf("northstar_1", "northstar_2", "northstar_3")
 
   object Limelight {
     val LIMELIGHT_NAME = "limelight-zapdos"

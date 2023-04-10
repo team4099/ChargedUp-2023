@@ -31,6 +31,7 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
       superstructure.score(),
+      WaitCommand(0.5),
       ParallelCommandGroup(
         DrivePathCommand(
           drivetrain,
@@ -51,8 +52,8 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
               // pick up cube
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[0]!!.x,
-                  FieldConstants.StagingLocations.translations[0]!!.y
+                  FieldConstants.StagingLocations.translations[0]!!.x + 0.25.meters,
+                  FieldConstants.StagingLocations.translations[0]!!.y - 0.15.meters
                 )
                   .translation2d,
                 0.0.degrees.inRotation2ds,
@@ -73,8 +74,8 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
               // initial @ cube
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[0]!!.x,
-                  FieldConstants.StagingLocations.translations[0]!!.y
+                  FieldConstants.StagingLocations.translations[0]!!.x + 0.25.meters,
+                  FieldConstants.StagingLocations.translations[0]!!.y - 0.15.meters
                 )
                   .translation2d,
                 180.0.degrees.inRotation2ds,
@@ -100,7 +101,8 @@ class ConeCubeBumpAuto(val drivetrain: Drivetrain, val superstructure: Superstru
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
       ),
-      superstructure.score()
+      superstructure.score(),
+      WaitCommand(0.5)
     )
   }
 
