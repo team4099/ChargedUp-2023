@@ -1,8 +1,10 @@
 package com.team4099.robot2023.config
 
 import com.team4099.robot2023.config.constants.Constants
+import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj2.command.button.Trigger
 import org.team4099.lib.joystick.XboxOneGamepad
+import java.util.function.Consumer
 
 /**
  * Maps buttons on the driver and operator controllers to specific actions with meaningful variable
@@ -12,6 +14,11 @@ object ControlBoard {
   private val driver = XboxOneGamepad(Constants.Joysticks.DRIVER_PORT)
   private val operator = XboxOneGamepad(Constants.Joysticks.SHOTGUN_PORT)
   private val technician = XboxOneGamepad(Constants.Joysticks.TECHNICIAN_PORT)
+
+  val rumbleConsumer =
+    Consumer<Boolean> {
+      driver.setRumble(GenericHID.RumbleType.kBothRumble, if (it) 1.0 else 0.0)
+    }
 
   val strafe: Double
     get() = -driver.leftXAxis
@@ -51,16 +58,18 @@ object ControlBoard {
   val setArmDoubleSubCone = Trigger { operator.dPadRight }
 
   val doubleSubstationIntake = Trigger { driver.aButton }
+  val singleSubstationIntake = Trigger { driver.bButton }
   val scoreOuttake = Trigger { driver.xButton }
   val groundIntakeCube = Trigger { driver.rightShoulderButton }
-  val singleSubIntake = Trigger { driver.leftShoulderButton }
 
   val increaseRollerVoltage = Trigger { operator.dPadUp }
   val decreaseRollerVoltage = Trigger { operator.dPadDown }
 
   val groundIntakeCone = Trigger { driver.yButton }
-  val dpadUp = Trigger { driver.dPadUp }
+  val autoScore = Trigger { driver.rightTriggerAxis > 0.5 }
   val dpadDown = Trigger { driver.dPadDown }
+
+  val ejectGamePiece = Trigger { operator.dPadRight }
 
   // val armCharacterization = Trigger { operator.yButton }
 

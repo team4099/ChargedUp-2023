@@ -3,7 +3,9 @@ package com.team4099.robot2023
 import com.team4099.lib.hal.Clock
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
+import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
@@ -159,8 +161,19 @@ object Robot : LoggedRobot() {
     // checking for logging errors
     logReceiverQueueAlert.set(Logger.getInstance().receiverQueueFault)
 
+    // motor checker stuff
+    val motorCheckerStartTime = Clock.realTimestamp
+    MotorChecker.periodic()
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/MotorCheckerLoopTimeMS",
+        (Clock.realTimestamp - motorCheckerStartTime).inMilliseconds
+      )
+
     Logger.getInstance()
       .recordOutput("LoggedRobot/RemainingRamMB", Runtime.getRuntime().freeMemory() / 1024 / 1024)
+
+    ControlBoard.rumbleConsumer.accept(RobotContainer.rumbleState)
 
     Logger.getInstance()
       .recordOutput("LoggedRobot/totalMS", (Clock.realTimestamp - startTime).inMilliseconds)
@@ -175,7 +188,7 @@ object Robot : LoggedRobot() {
     if (Constants.Tuning.TUNING_MODE) {
       RobotContainer.mapTunableCommands()
     }
-    RobotContainer.zeroSensors()
+    RobotContainer.zeroArm()
   }
 
   override fun testInit() {

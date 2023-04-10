@@ -4,7 +4,6 @@ import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.grams
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.base.percent
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
@@ -20,7 +19,7 @@ import org.team4099.lib.units.perSecond
 object GroundIntakeConstants {
 
   object PID {
-    val NEO_KP = 0.5.volts / 1.degrees
+    val NEO_KP = 1.5.volts / 1.degrees // 0.5
     val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
     val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
@@ -37,15 +36,13 @@ object GroundIntakeConstants {
 
   val VOLTAGE_COMPENSATION = 12.0.volts
 
-  val ROLLER_CURRENT_LIMIT = 30.amps // TODO TUNE
+  val ROLLER_CURRENT_LIMIT = 50.amps // TODO TUNE
   val ARM_CURRENT_LIMIT = 50.amps // TODO TUNE
 
   const val ROLLER_MOTOR_INVERTED = true
   const val ARM_MOTOR_INVERTED = false
 
-  val ROLLER_RAMP_RATE = 75.percent.perSecond
-
-  val ABSOLUTE_ENCODER_OFFSET = -193.87.degrees
+  val ABSOLUTE_ENCODER_OFFSET = -196.87.degrees
   // From encoder to intake
   val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).gearRatio
 
@@ -81,12 +78,15 @@ object GroundIntakeConstants {
   val ARM_TOLERANCE = 2.degrees
   val VOLTAGE_TOLERANCE = 0.3.volts // such a terrible constant to have but whatever
 
-  val INTAKE_ANGLE = 4.4.degrees
-  val OUTTAKE_ANGLE = 4.4.degrees
+  val ENABLE_ARM = 1.0
+  val ENABLE_ROTATION = 1.0
+
+  val INTAKE_ANGLE = (-1).degrees
+  val OUTTAKE_ANGLE = (-1).degrees
   val STOWED_UP_ANGLE = 55.degrees
-  val INTAKE_VOLTAGE = 8.0.volts
+  val INTAKE_VOLTAGE = 12.0.volts
   val OUTTAKE_VOLTAGE = (-3.0).volts
-  val STOWED_DOWN_ANGLE = 4.4.degrees
+  val STOWED_DOWN_ANGLE = (-1).degrees
   val NEUTRAL_VOLTAGE = 0.0.volts
   val HELP_SCORE_VOLTAGE = 2.5.volts
 

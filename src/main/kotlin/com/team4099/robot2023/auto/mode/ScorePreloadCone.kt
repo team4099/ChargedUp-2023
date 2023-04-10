@@ -1,7 +1,6 @@
 package com.team4099.robot2023.auto.mode
 
 import com.team4099.lib.logging.LoggedTunableValue
-import com.team4099.robot2023.commands.drivetrain.PositionAutoLevel
 import com.team4099.robot2023.commands.drivetrain.ResetPoseCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
@@ -14,7 +13,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 
-class PreloadConeAutoBalance(val drivetrain: Drivetrain, val superstructure: Superstructure) :
+class ScorePreloadCone(val drivetrain: Drivetrain, val superstructure: Superstructure) :
   SequentialCommandGroup() {
 
   init {
@@ -25,25 +24,24 @@ class PreloadConeAutoBalance(val drivetrain: Drivetrain, val superstructure: Sup
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
-      superstructure.score(),
-      PositionAutoLevel(drivetrain)
+      superstructure.score()
     )
   }
 
   companion object {
     val startingPosX =
       LoggedTunableValue(
-        "Drivetrain/startingPosX", 1.9.meters, Pair({ it.inMeters }, { it.meters })
+        "Drivetrain/startingPosX9", 1.9.meters, Pair({ it.inMeters }, { it.meters })
       )
     val startingPosY =
       LoggedTunableValue(
-        "Drivetrain/startingPosY",
-        FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 4,
+        "Drivetrain/startingPosY9",
+        FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * 3,
         Pair({ it.inMeters }, { it.meters })
       )
     val startingPosTheta =
       LoggedTunableValue(
-        "Drivetrain/startingPosTheta", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
+        "Drivetrain/startingPosTheta9", 180.0.degrees, Pair({ it.inDegrees }, { it.degrees })
       )
   }
 }

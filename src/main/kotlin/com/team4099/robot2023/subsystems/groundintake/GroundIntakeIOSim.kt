@@ -3,6 +3,9 @@ package com.team4099.robot2023.subsystems.groundintake
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim
@@ -56,6 +59,42 @@ object GroundIntakeIOSim : GroundIntakeIO {
       90.degrees.inRadians,
       true,
     )
+
+  init {
+    MotorChecker.add(
+      "Ground Intake",
+      "Rotation",
+      MotorCollection(
+        mutableListOf(
+          SimulatedMotor(
+            armSim,
+            "Arm Motor",
+          ),
+        ),
+        60.amps,
+        10.celsius,
+        45.amps,
+        20.celsius
+      )
+    )
+
+    MotorChecker.add(
+      "Ground Intake",
+      "Roller",
+      MotorCollection(
+        mutableListOf(
+          SimulatedMotor(
+            rollerSim,
+            "Roller Motor",
+          )
+        ),
+        60.amps,
+        10.celsius,
+        45.amps,
+        20.celsius
+      )
+    )
+  }
 
   private val armController =
     PIDController(

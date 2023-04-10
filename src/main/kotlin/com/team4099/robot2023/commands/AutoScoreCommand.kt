@@ -25,6 +25,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
   SequentialCommandGroup() {
   lateinit var drivePose: Pose2d
   lateinit var finalPose: Pose2d
+  lateinit var postAlignPose: Pose2d
   var heading: Angle = 0.0.degrees
   lateinit var gamePiece: GamePiece
   lateinit var nodeTier: NodeTier
@@ -37,7 +38,18 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              1.8.meters,
+              1.875.meters, // slightly offset in the x
+              FieldConstants.Grids.nodeFirstY +
+                FieldConstants.Grids.nodeSeparationY *
+                if (FMSData.isBlue) superstructure.objective.nodeColumn
+                else 8 - superstructure.objective.nodeColumn,
+              180.degrees
+            )
+          )
+        postAlignPose =
+          AllianceFlipUtil.apply(
+            Pose2d(
+              1.5.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -76,6 +88,28 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         flipForAlliances = false
       ),
       superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+      //      ParallelCommandGroup(
+      //        superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+      //        DrivePathCommand(
+      //          drivetrain,
+      //          {
+      //            listOf(
+      //              Waypoint(
+      //                finalPose.pose2d.translation, null, finalPose.rotation.inRotation2ds
+      //              ),
+      //              Waypoint(
+      //                postAlignPose.translation.translation2d,
+      //                null,
+      //                postAlignPose.rotation.inRotation2ds
+      //              )
+      //            )
+      //          },
+      //          keepTrapping = true,
+      //          leaveOutYAdjustment = true,
+      //          flipForAlliances = false
+      //        )
+      //          .withTimeout(0.5)
+      //      )
     )
   }
 }

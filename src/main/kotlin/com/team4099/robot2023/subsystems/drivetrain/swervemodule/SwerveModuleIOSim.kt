@@ -3,6 +3,9 @@ package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.FlywheelSim
@@ -44,19 +47,45 @@ import kotlin.random.Random
 
 class SwerveModuleIOSim(override val label: String) : SwerveModuleIO {
   // Use inverses of gear ratios because our standard is <1 is reduction
-  private val driveMotorSim: FlywheelSim =
+  val driveMotorSim: FlywheelSim =
     FlywheelSim(
       DCMotor.getNEO(1),
       1 / DrivetrainConstants.DRIVE_SENSOR_GEAR_RATIO,
       DrivetrainConstants.DRIVE_WHEEL_INERTIA.inKilogramsMeterSquared
     )
 
-  private val steerMotorSim =
+  val steerMotorSim =
     FlywheelSim(
       DCMotor.getNEO(1),
       1 / DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO,
       DrivetrainConstants.STEERING_WHEEL_INERTIA.inKilogramsMeterSquared
     )
+
+  init {
+    MotorChecker.add(
+      "Drivetrain",
+      "Drive",
+      MotorCollection(
+        mutableListOf(SimulatedMotor(driveMotorSim, "$label Drive Motor")),
+        65.amps,
+        90.celsius,
+        45.amps,
+        100.celsius
+      )
+    )
+
+    MotorChecker.add(
+      "Drivetrain",
+      "Steering",
+      MotorCollection(
+        mutableListOf(SimulatedMotor(steerMotorSim, "$label Steering Motor")),
+        65.amps,
+        90.celsius,
+        45.amps,
+        100.celsius
+      )
+    )
+  }
 
   var turnRelativePosition = 0.0.radians
   var turnAbsolutePosition =

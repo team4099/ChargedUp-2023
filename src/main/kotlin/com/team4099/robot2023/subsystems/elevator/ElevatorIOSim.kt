@@ -3,6 +3,9 @@ package com.team4099.robot2023.subsystems.elevator
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.SimulatedMotor
 import com.team4099.robot2023.util.ElevatorSim
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.BatterySim
@@ -25,6 +28,7 @@ import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 
 object ElevatorIOSim : ElevatorIO {
+
   val elevatorSim: ElevatorSim =
     ElevatorSim(
       DCMotor.getNEO(2),
@@ -36,6 +40,25 @@ object ElevatorIOSim : ElevatorIO {
       ElevatorConstants.ELEVATOR_ANGLE,
       true,
     )
+
+  init {
+    MotorChecker.add(
+      "Elevator",
+      "Extension",
+      MotorCollection(
+        mutableListOf(
+          SimulatedMotor(
+            elevatorSim,
+            "Extension Motor",
+          )
+        ),
+        baseCurrentLimit = 60.amps,
+        firstStageTemperatureLimit = 10.celsius,
+        firstStageCurrentLimit = 45.amps,
+        motorShutDownThreshold = 20.celsius
+      )
+    )
+  }
 
   private val elevatorController =
     PIDController(ElevatorConstants.SIM_KP, ElevatorConstants.SIM_KI, ElevatorConstants.SIM_KD)
@@ -57,6 +80,9 @@ object ElevatorIOSim : ElevatorIO {
     inputs.followerStatorCurrent = 0.0.amps
     inputs.followerSupplyCurrent = elevatorSim.currentDrawAmps.amps / 2
     inputs.followerAppliedVoltage = lastAppliedVoltage
+
+    inputs.leaderRawPosition = 0.0
+    inputs.followerRawPosition = 0.0
 
     inputs.isSimulating = true
 

@@ -13,7 +13,7 @@ import org.team4099.lib.controller.SimpleMotorFeedforward
 import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
-import org.team4099.lib.units.base.inAmperes
+import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
@@ -57,6 +57,16 @@ class Manipulator(val io: ManipulatorIO) {
 
   object TunableManipulatorStates {
 
+    val enableRotation =
+      LoggedTunableNumber(
+        "Manipulator/enableRollerManipulator", ManipulatorConstants.ENABLE_ROLLER
+      )
+
+    val enableExtension =
+      LoggedTunableNumber(
+        "Manipulator/enableExtensionManipulator", ManipulatorConstants.ENABLE_EXTENSION
+      )
+
     val minExtension =
       LoggedTunableValue(
         "Manipulator/minExtension",
@@ -81,6 +91,13 @@ class Manipulator(val io: ManipulatorIO) {
       LoggedTunableValue(
         "Manipulator/spitTime",
         ManipulatorConstants.SPIT_OUT_TIME,
+        Pair({ it.inSeconds }, { it.seconds })
+      )
+
+    val spitTimeCone =
+      LoggedTunableValue(
+        "Manipulator/spitTimeCone",
+        ManipulatorConstants.SPIT_OUT_TIME_CONE,
         Pair({ it.inSeconds }, { it.seconds })
       )
 
@@ -135,21 +152,21 @@ class Manipulator(val io: ManipulatorIO) {
 
     val lowConeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/lowCubeScoreExtension",
+        "Manipulator/lowConeScoreExtension",
         ManipulatorConstants.LOW_CONE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
     val midConeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/midCubeScoreExtension",
+        "Manipulator/midConeScoreExtension",
         ManipulatorConstants.MID_CONE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
 
     val highConeScoreExtension =
       LoggedTunableValue(
-        "Manipulator/highCubeScoreExtension",
+        "Manipulator/highConeScoreExtension",
         ManipulatorConstants.HIGH_CONE_SCORE_EXTENSION,
         Pair({ it.inInches }, { it.inches })
       )
@@ -213,17 +230,25 @@ class Manipulator(val io: ManipulatorIO) {
 
   var lastHeldGamePieceDetected = Clock.fpgaTime
 
+  var lastHeldGamePiece = GamePiece.NONE
+
+  var lastDropTime = Clock.fpgaTime
+
+  var rumbleTrigger = false
+
+  var rumbleTime = 0.5.seconds
+
   var filterValue: Double = 0.0
 
   // Checks if motor current draw is greater than given threshold and if rollers are intaking
   // Last condition prevents current spikes caused by starting to run intake from triggering this
   val hasCube: Boolean
     get() {
-      filterValue = inputs.rollerStatorCurrent.inAmperes
-      return (
-        filterValue >= ManipulatorConstants.CUBE_CURRENT_THRESHOLD.inAmperes &&
-          (Clock.fpgaTime - lastRollerRunTime) >= ManipulatorConstants.INTAKE_IN_TIME
-        ) ||
+      return inputs.rollerVelocity.absoluteValue <= ManipulatorConstants.CONE_ROTATION_THRESHOLD &&
+        inputs.rollerStatorCurrent > 10.amps &&
+        inputs.rollerAppliedVoltage.sign < 0 &&
+        (Clock.fpgaTime - lastRollerRunTime) >=
+        ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP ||
         inputs.isSimulating
     }
 
@@ -241,10 +266,11 @@ class Manipulator(val io: ManipulatorIO) {
   val hasCone: Boolean
     get() {
       return (
-        inputs.rollerStatorCurrent.inAmperes >=
-          ManipulatorConstants.CONE_CURRENT_THRESHOLD.inAmperes &&
+        inputs.rollerVelocity.absoluteValue <= ManipulatorConstants.CONE_ROTATION_THRESHOLD &&
+          inputs.rollerStatorCurrent > 10.amps &&
+          inputs.rollerAppliedVoltage.sign > 0 &&
           (Clock.fpgaTime - lastRollerRunTime) >=
-          ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE
+          ManipulatorConstants.MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP
         ) ||
         inputs.isSimulating
     }
@@ -330,10 +356,13 @@ class Manipulator(val io: ManipulatorIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
-      currentRequest is ManipulatorRequest.TargetingPosition &&
-        armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
-        (inputs.armPosition - armPositionTarget).absoluteValue <=
-        ManipulatorConstants.ARM_TOLERANCE
+      (
+        currentRequest is ManipulatorRequest.TargetingPosition &&
+          armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+          (inputs.armPosition - armPositionTarget).absoluteValue <=
+          ManipulatorConstants.ARM_TOLERANCE
+        ) ||
+        (Manipulator.TunableManipulatorStates.enableExtension.get() != 1.0)
 
   init {
     TunableManipulatorStates
@@ -370,6 +399,19 @@ class Manipulator(val io: ManipulatorIO) {
     var updateCube = hasCube
 
     Logger.getInstance().recordOutput("Manipulator/filteredStatorRoller", filterValue)
+
+    if (lastHeldGamePiece != holdingGamePiece && !rumbleTrigger) {
+      rumbleTrigger = true
+      lastDropTime = Clock.fpgaTime
+    }
+
+    if (Clock.fpgaTime - lastDropTime > rumbleTime) {
+      rumbleTrigger = false
+    }
+
+    lastHeldGamePiece = holdingGamePiece
+
+    Logger.getInstance().recordOutput("Manipulator/gamePieceRumble", rumbleTrigger)
 
     /*
     if (filterSize.hasChanged()) {
@@ -455,7 +497,11 @@ class Manipulator(val io: ManipulatorIO) {
       ManipulatorState.TARGETING_POSITION -> {
         setRollerPower(rollerVoltageTarget)
         if (lastRollerVoltage != rollerVoltageTarget) {
-          lastRollerRunTime = Clock.fpgaTime
+          if (rollerVoltageTarget != ManipulatorConstants.CONE_IDLE ||
+            rollerVoltageTarget != ManipulatorConstants.CUBE_IDLE
+          ) {
+            lastRollerRunTime = Clock.fpgaTime
+          }
           lastRollerVoltage = rollerVoltageTarget
         }
 

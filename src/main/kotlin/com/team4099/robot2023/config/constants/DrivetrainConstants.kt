@@ -92,7 +92,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 6.0.meters.perSecond / 1.0.meters
+          return 8.0.meters.perSecond / 1.0.meters
         } else {
           return 7.0.meters.perSecond / 1.0.meters
         }
@@ -109,7 +109,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+          return (0.05.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         } else {
           return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
@@ -117,7 +117,7 @@ object DrivetrainConstants {
 
     val AUTO_THETA_ALLOWED_ERROR = 3.degrees
 
-    val AUTO_THETA_PID_KP = 12.degrees.perSecond / 1.degrees
+    val AUTO_THETA_PID_KP = 10.degrees.perSecond / 1.degrees
     val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val AUTO_THETA_PID_KD =
       (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond

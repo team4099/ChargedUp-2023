@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.vision
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.TunableNumber
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.vision.camera.CameraIO
@@ -36,6 +37,10 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
     val thetaStdDevCoefficient = 0.75
   }
 
+  private val xyStdDevCoefficient = TunableNumber("Vision/xystdev", 0.1)
+
+  private val thetaStdDev = TunableNumber("Vision/thetaStdDev", 0.75)
+
   private var poseSupplier = Supplier<Pose2d> { Pose2d() }
   private var visionConsumer: Consumer<List<PoseEstimator.TimestampedVisionUpdate>> = Consumer {}
   private val lastFrameTimes = mutableMapOf<Int, Time>()
@@ -58,13 +63,25 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
   }
 
   override fun periodic() {
+    //    val tuningPosition = Pose3d(Pose3d(
+    //      (43.125).inches,
+    //      (108.375).inches,
+    //      (18.22).inches,
+    //      Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+    //    ).translation  + (Translation3d(45.625.inches, 1.3125.inches, 0.0.inches)),
+    // Rotation3d()).toPose2d()
+    //
+    //    Logger.getInstance().recordOutput("Vision/tuningPosition", tuningPosition.pose2d)
+
+    val startTime = Clock.realTimestamp
+
     for (instance in io.indices) {
       io[instance].updateInputs(inputs[instance])
       Logger.getInstance()
         .processInputs("Vision/${VisionConstants.CAMERA_NAMES[instance]}", inputs[instance])
     }
 
-    val currentPose: Pose2d = poseSupplier.get()
+    var currentPose: Pose2d = poseSupplier.get()
     val robotPoses = mutableListOf<Pose2d>()
     val visionUpdates = mutableListOf<PoseEstimator.TimestampedVisionUpdate>()
 
@@ -87,6 +104,9 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
                 values[4].meters,
                 Rotation3d(Quaternion(values[5].radians, values[6], values[7], values[8]))
               )
+
+            //
+            // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
 
             robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
           }
@@ -158,6 +178,9 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
                 cameraPose = cameraPose1
                 robotPose = robotPose1
               }
+
+              //
+              // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
             }
           }
         }
@@ -186,8 +209,8 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
         val averageDistance = totalDistance / tagPoses.size
 
         // Add to vision updates
-        val xyStdDev = xyStdDevCoeffecient * averageDistance.inMeters.pow(2) / tagPoses.size
-        val thetaStdDev = thetaStdDevCoefficient * averageDistance.inMeters.pow(2) / tagPoses.size
+        val xyStdDev = xyStdDevCoefficient.get() * averageDistance.inMeters.pow(2) / tagPoses.size
+        val thetaStdDev = thetaStdDev.get() * averageDistance.inMeters.pow(2) / tagPoses.size
 
         visionUpdates.add(
           PoseEstimator.TimestampedVisionUpdate(
@@ -243,5 +266,11 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
       .recordOutput("Vision/allTagPoses", *allTagPoses.map { it.pose3d }.toTypedArray())
 
     visionConsumer.accept(visionUpdates)
+
+    Logger.getInstance()
+      .recordOutput(
+        "LoggedRobot/Subsystems/VisionLoopTimeMS",
+        (Clock.realTimestamp - startTime).inMilliseconds
+      )
   }
 }

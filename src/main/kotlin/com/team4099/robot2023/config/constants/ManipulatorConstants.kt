@@ -11,9 +11,11 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.driven
 import org.team4099.lib.units.derived.driving
 import org.team4099.lib.units.derived.gearRatio
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.kilo
 import org.team4099.lib.units.milli
+import org.team4099.lib.units.perMinute
 import org.team4099.lib.units.perSecond
 import kotlin.math.PI
 
@@ -21,7 +23,7 @@ object ManipulatorConstants {
 
   // TODO(Maybe tune feedforward constants)
   val ARM_KS = 0.4.volts
-  val ARM_KV = 0.16.volts / 1.0.inches.perSecond
+  val ARM_KV = 0.2.volts / 1.0.inches.perSecond
   val ARM_KA = 0.0.volts / 1.0.inches.perSecond.perSecond
 
   val SIM_ARM_KP = 20.volts / 1.0.inches
@@ -29,17 +31,19 @@ object ManipulatorConstants {
   val SIM_ARM_KD = 1.0.volts / 1.0.inches.perSecond
 
   // TODO(tune these)
-  val REAL_ARM_KP = 2.0.volts / 1.0.inches
+  val REAL_ARM_KP = 3.0.volts / 1.0.inches
   val REAL_ARM_KI = 0.0.volts / (1.0.inches * 1.0.seconds)
   val REAL_ARM_KD = 0.0.volts / 1.0.inches.perSecond
 
   val ARM_RAMP_RATE = 0.5
-  val ROLLER_RAMP_RATE = 0.75
+  val ROLLER_RAMP_RATE = 0.2
 
   // used to detect intake/outake, values need testing
   // TODO(test this)
   val MANIPULATOR_WAIT_BEFORE_DETECT_CURRENT_SPIKE = 0.3.seconds
-  val SPIT_OUT_TIME = 1.2.seconds
+  val MANIPULATOR_WAIT_BEFORE_DETECT_VELOCITY_DROP = 0.35.seconds
+  val SPIT_OUT_TIME = 0.9.seconds
+  val SPIT_OUT_TIME_CONE = 0.6.seconds
   val INTAKE_IN_TIME = 0.5.seconds
 
   val FILTER_PERIOD = 2.0.milli.seconds
@@ -66,11 +70,12 @@ object ManipulatorConstants {
   val ROLLER_GEAR_RATIO = 20.0.gearRatio
 
   // TODO: Change current thresholds
-  val CONE_CURRENT_THRESHOLD = 30.amps
+  val CONE_CURRENT_THRESHOLD = 25.amps
+  val CONE_ROTATION_THRESHOLD = 40.rotations.perMinute
   val CUBE_CURRENT_THRESHOLD = 30.amps
 
   val ARM_SPOOL_RADIUS = 0.005.meters * 24.0 / (2 * PI)
-  val ARM_MAX_EXTENSION = 8.inches
+  val ARM_MAX_EXTENSION = 8.6.inches
   val ARM_MAX_RETRACTION = 0.inches
   val ARM_TOLERANCE = 0.25.inches
   val ARM_MASS = 10.0.pounds
@@ -127,10 +132,13 @@ object ManipulatorConstants {
     }
   }
 
-  val MIN_EXTENSION = 1.0.inches
+  val ENABLE_ROLLER = 1.0
+  val ENABLE_EXTENSION = 1.0
+
+  val MIN_EXTENSION = 1.25.inches
   val SINGLE_SUBSTATION_INTAKE_EXTENSION = 1.0.inches
   val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
-  val LOW_CUBE_SCORE_EXTENSION = 7.5.inches
+  val LOW_CUBE_SCORE_EXTENSION = 1.3.inches
   val MID_CUBE_SCORE_EXTENSION = 3.0.inches
   val HIGH_CUBE_SCORE_EXTENSION = 8.6.inches
   val LOW_CONE_SCORE_EXTENSION = 7.5.inches

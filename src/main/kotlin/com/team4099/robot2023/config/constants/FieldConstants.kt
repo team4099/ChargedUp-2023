@@ -46,8 +46,8 @@ object FieldConstants {
       AprilTag(
         2,
         Pose3d(
-          40.inches,
-          (42.125).inches,
+          (43.125).inches,
+          (40.875).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
@@ -55,26 +55,26 @@ object FieldConstants {
       AprilTag(
         3,
         Pose3d(
-          (610.77).inches,
-          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (42.875).inches,
+          (113.25).inches,
           (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
       ),
       AprilTag(
         4,
         Pose3d(
-          (636.96).inches,
-          (265.74).inches,
-          (27.38).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+          (43.125).inches,
+          (173.375).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
       ),
       AprilTag(
         5,
         Pose3d(
-          (415.5).inches,
-          (124.5).inches,
+          (409.5).inches,
+          (85.5).inches,
           (27.833).inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
@@ -91,6 +91,67 @@ object FieldConstants {
       AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
       AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
     )
+
+  //  val homeAprilTags: List<AprilTag> =
+  //    listOf(
+  //      AprilTag(
+  //        1,
+  //        Pose3d(
+  //          40.inches,
+  //          (104.125).inches,
+  //          (18.22).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+  //        )
+  //      ),
+  //      AprilTag(
+  //        2,
+  //        Pose3d(
+  //          0.inches,
+  //          (42.125).inches,
+  //          (18.22).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+  //        )
+  //      ),
+  //      AprilTag(
+  //        3,
+  //        Pose3d(
+  //          0.inches,
+  //          (104.125).inches,
+  //          (18.22).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+  //        )
+  //      ),
+  //      AprilTag(
+  //        4,
+  //        Pose3d(
+  //          (8.13).inches,
+  //          (174.19).inches,
+  //          (18.22).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+  //        )
+  //      ),
+  //      AprilTag(
+  //        5,
+  //        Pose3d(
+  //          (409.5).inches,
+  //          (85.5).inches,
+  //          (27.833).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+  //        )
+  //      ),
+  //      AprilTag(
+  //        6,
+  //        Pose3d(
+  //          (40.45).inches,
+  //          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+  //          (18.22).inches,
+  //          Rotation3d()
+  //        )
+  //      ),
+  //      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
+  //      AprilTag(8, Pose3d((280.125).inches, (104.5).inches, (18.22).inches,
+  // Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)))
+  //    )
 
   // AprilTag locations (do not flip for red alliance)
   val aprilTags: List<AprilTag> =
@@ -251,7 +312,7 @@ object FieldConstants {
     val cubeEdgeHigh = (3.0).inches
     val highCubeZ = (48.5).inches - cubeEdgeHigh
     val midCubeZ = (34.5).inches - cubeEdgeHigh
-    val highConeZ = (46.0).inches
+    val highConeZ = (48.0).inches
     val midConeZ = (34.0).inches
 
     // Translations (all nodes in the same column/row have the same X/Y coordinate)
@@ -331,7 +392,7 @@ object FieldConstants {
     val singleSubstationCenterX = singleSubstationLeftX + singleSubstationWidth / 2.0
     val singleSubstationRightX = singleSubstationLeftX + singleSubstationWidth
     val singleSubstationTranslation: Translation2d = Translation2d(singleSubstationCenterX, leftY)
-    val singleSubstationHeight = (18.0).inches
+    val singleSubstationHeight = (38.0).inches
     val singleSubstationLowZ = (27.125).inches
     val singleSubstationCenterZ = singleSubstationLowZ + singleSubstationHeight / 2.0
     val singleSubstationHighZ = singleSubstationLowZ + singleSubstationHeight

@@ -6,12 +6,14 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GroundIntakeConstants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.Neo
 import edu.wpi.first.wpilibj.DutyCycleEncoder
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
 import org.team4099.lib.units.base.inAmperes
-import org.team4099.lib.units.base.inPercentOutputPerSecond
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.ElectricalPotential
@@ -27,6 +29,7 @@ import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 import kotlin.math.IEEErem
+import kotlin.math.absoluteValue
 
 object GroundIntakeIONeo : GroundIntakeIO {
 
@@ -90,10 +93,9 @@ object GroundIntakeIONeo : GroundIntakeIO {
     )
     rollerSparkMax.inverted = GroundIntakeConstants.ROLLER_MOTOR_INVERTED
 
-    rollerSparkMax.openLoopRampRate =
-      GroundIntakeConstants.ROLLER_RAMP_RATE.inPercentOutputPerSecond
     rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
 
+    rollerSparkMax.openLoopRampRate = 0.0
     rollerSparkMax.burnFlash()
 
     armSparkMax.restoreFactoryDefaults()
@@ -105,6 +107,30 @@ object GroundIntakeIONeo : GroundIntakeIO {
     armSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
 
     armSparkMax.burnFlash()
+
+    MotorChecker.add(
+      "Ground Intake",
+      "Roller",
+      MotorCollection(
+        mutableListOf(Neo(rollerSparkMax, "Roller Motor")),
+        GroundIntakeConstants.ROLLER_CURRENT_LIMIT,
+        70.celsius,
+        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 0.amps,
+        90.celsius
+      ),
+    )
+
+    MotorChecker.add(
+      "Ground Intake",
+      "Pivot",
+      MotorCollection(
+        mutableListOf(Neo(armSparkMax, "Pivot Motor")),
+        GroundIntakeConstants.ARM_CURRENT_LIMIT,
+        70.celsius,
+        GroundIntakeConstants.ARM_CURRENT_LIMIT - 30.amps,
+        90.celsius
+      )
+    )
   }
 
   override fun updateInputs(inputs: GroundIntakeIO.GroundIntakeIOInputs) {
@@ -116,7 +142,8 @@ object GroundIntakeIONeo : GroundIntakeIO {
     // AppliedVoltage = percentOutput * BusVoltage
     // SupplyCurrent = (percentOutput * BusVoltage / BusVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput
+    inputs.rollerSupplyCurrent =
+      inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput.absoluteValue
     inputs.rollerTemp = rollerSparkMax.motorTemperature.celsius
 
     inputs.armPosition = armSensor.position
@@ -127,12 +154,19 @@ object GroundIntakeIONeo : GroundIntakeIO {
     inputs.armTemp = armSparkMax.motorTemperature.celsius
 
     // same math as  rollersupplycurrent
-    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
+    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput.absoluteValue
 
     Logger.getInstance()
       .recordOutput(
         "GroundIntake/absoluteEncoderPositionDegrees", encoderAbsolutePosition.inDegrees
       )
+
+    Logger.getInstance()
+      .recordOutput(
+        "GroundIntake/rollerMotorOvercurrentFault",
+        rollerSparkMax.getFault(CANSparkMax.FaultID.kOvercurrent)
+      )
+    Logger.getInstance().recordOutput("GroundIntake/busVoltage", rollerSparkMax.busVoltage)
 
     Logger.getInstance()
       .recordOutput(

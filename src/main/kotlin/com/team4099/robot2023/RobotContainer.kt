@@ -21,8 +21,10 @@ import com.team4099.robot2023.subsystems.groundintake.GroundIntake
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
-import com.team4099.robot2023.subsystems.led.LedIOCandle
+import com.team4099.robot2023.subsystems.led.LedIO
 import com.team4099.robot2023.subsystems.led.LedIOSim
+import com.team4099.robot2023.subsystems.limelight.LimelightVision
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
@@ -33,12 +35,17 @@ import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.derived.Angle
 import java.util.function.Supplier
 
 object RobotContainer {
   private val drivetrain: Drivetrain
   private val vision: Vision
   private val superstructure: Superstructure
+  private val limelight: LimelightVision
+
+  val rumbleState: Boolean
+    get() = superstructure.rumbleState
 
   init {
     if (RobotBase.isReal()) {
@@ -47,7 +54,10 @@ object RobotContainer {
       vision =
         Vision(
           //          object: CameraIO {}
-          CameraIONorthstar("northstar"),
+          //          CameraIONorthstar("northstar"),
+          CameraIONorthstar("northstar_1"),
+          CameraIONorthstar("northstar_2"),
+          CameraIONorthstar("northstar_3"),
           //        CameraIONorthstar("right"),
           //        CameraIONorthstar("backward")
         )
@@ -56,13 +66,19 @@ object RobotContainer {
           Elevator(ElevatorIONeo),
           GroundIntake(GroundIntakeIONeo),
           Manipulator(ManipulatorIONeo),
-          Led(LedIOCandle),
+          Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
         )
+      limelight = LimelightVision(object : LimelightVisionIO {})
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
-      vision = Vision(CameraIONorthstar("northstar"))
+      vision =
+        Vision(
+          CameraIONorthstar("northstar_1"),
+          CameraIONorthstar("northstar_2"),
+          CameraIONorthstar("northstar_3"),
+        )
       superstructure =
         Superstructure(
           Elevator(ElevatorIOSim),
@@ -71,11 +87,14 @@ object RobotContainer {
           Led(LedIOSim),
           GameBoy(GameboyIOServer)
         )
+      limelight = LimelightVision(object : LimelightVisionIO {})
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
     drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
     drivetrain.objectiveSupplier = Supplier { superstructure.objective }
+    limelight.poseSupplier = { drivetrain.odometryPose }
+    limelight.nodeToLookFor = { superstructure.objective }
   }
 
   fun mapDefaultCommands() {
@@ -109,6 +128,10 @@ object RobotContainer {
   fun zeroSensors() {
     drivetrain.zeroSensors()
     superstructure.groundIntakeZeroArm()
+  }
+
+  fun zeroAngle(toAngle: Angle) {
+    drivetrain.zeroGyroYaw(toAngle)
   }
 
   fun setSteeringCoastMode() {
@@ -165,9 +188,9 @@ object RobotContainer {
 
     ControlBoard.goBackToIdle.whileTrue(superstructure.requestIdleCommand())
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
-    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    ControlBoard.singleSubstationIntake.whileTrue(superstructure.singleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
-
+    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
         {
@@ -179,8 +202,9 @@ object RobotContainer {
     )
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
-    ControlBoard.dpadUp.whileTrue(AutoScoreCommand(drivetrain, superstructure))
-    ControlBoard.singleSubIntake.whileTrue(superstructure.singleSubConeCommand())
+    ControlBoard.autoScore.whileTrue(AutoScoreCommand(drivetrain, superstructure))
+
+    ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain,

@@ -6,6 +6,9 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.falconspin.MotorCollection
+import com.team4099.robot2023.subsystems.falconspin.Neo
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -21,6 +24,7 @@ import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
+import kotlin.math.absoluteValue
 
 object ManipulatorIONeo : ManipulatorIO {
   private val rollerSparkMax =
@@ -73,6 +77,30 @@ object ManipulatorIONeo : ManipulatorIO {
     // set-up voltage and current limits
     armSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
     armSparkMax.burnFlash()
+
+    MotorChecker.add(
+      "Manipulator",
+      "ExtensionMotor",
+      MotorCollection(
+        mutableListOf(Neo(armSparkMax, "Extension Motor")),
+        ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT,
+        70.celsius,
+        ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT - 30.amps,
+        90.celsius
+      )
+    )
+
+    MotorChecker.add(
+      "Manipulator",
+      "Roller Motor",
+      MotorCollection(
+        mutableListOf(Neo(rollerSparkMax, "Roller Motor")),
+        ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT,
+        80.celsius,
+        ManipulatorConstants.ROLLER_STATOR_CURRENT_LIMIT - 5.amps,
+        100.celsius
+      )
+    )
   }
 
   /**
@@ -105,7 +133,8 @@ object ManipulatorIONeo : ManipulatorIO {
     // AppliedVoltage = percentOutput * BatteryVoltage
     // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.rollerSupplyCurrent = inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput
+    inputs.rollerSupplyCurrent =
+      inputs.rollerStatorCurrent * rollerSparkMax.appliedOutput.absoluteValue
     inputs.rollerTemp = rollerSparkMax.motorTemperature.celsius
 
     inputs.armPosition = armSensor.position
@@ -116,7 +145,7 @@ object ManipulatorIONeo : ManipulatorIO {
     // AppliedVoltage = percentOutput * BatteryVoltage
     // SuplyCurrent = (percentOutput * BatteryVoltage / BatteryVoltage) * StatorCurrent =
     // percentOutput * statorCurrent
-    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput
+    inputs.armSupplyCurrent = inputs.armStatorCurrent * armSparkMax.appliedOutput.absoluteValue
     inputs.armTemp = armSparkMax.motorTemperature.celsius
   }
 

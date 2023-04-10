@@ -1,6 +1,7 @@
 package com.team4099.robot2023.subsystems.elevator
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableNumber
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
@@ -74,6 +75,9 @@ class Elevator(val io: ElevatorIO) {
     )
 
   object TunableElevatorHeights {
+    val enableElevator =
+      LoggedTunableNumber("Elevator/enableMovementElevator", ElevatorConstants.ENABLE_ELEVATOR)
+
     val minPosition =
       LoggedTunableValue(
         "Elevator/minPosition",
@@ -157,6 +161,11 @@ class Elevator(val io: ElevatorIO) {
     val hybridHeight =
       LoggedTunableValue(
         "Elevator/hybridHeight", 16.0.inches, Pair({ it.inInches }, { it.inches })
+      )
+
+    val cubeHybridHeight =
+      LoggedTunableValue(
+        "Elevator/hybridHeight", 2.8.inches, Pair({ it.inInches }, { it.inches })
       )
 
     val midCubeHeight =
@@ -313,10 +322,22 @@ class Elevator(val io: ElevatorIO) {
 
   val isAtTargetedPosition: Boolean
     get() =
+      (
+        currentRequest is ElevatorRequest.TargetingPosition &&
+          elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
+          (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
+          ElevatorConstants.ELEVATOR_TOLERANCE
+        ) ||
+        (TunableElevatorHeights.enableElevator.get() != 1.0)
+
+  val canContinueSafely: Boolean
+    get() =
       currentRequest is ElevatorRequest.TargetingPosition &&
-        elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt) &&
-        (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
-        ElevatorConstants.ELEVATOR_TOLERANCE
+        (
+          ((inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <= 5.inches) ||
+            elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
+          ) &&
+        lastRequestedPosition == elevatorPositionTarget
 
   init {
     TunableElevatorHeights
@@ -392,6 +413,7 @@ class Elevator(val io: ElevatorIO) {
 
     if (Constants.Tuning.DEBUGING_MODE) {
       Logger.getInstance().recordOutput("Elevator/isHomed", isHomed)
+      Logger.getInstance().recordOutput("Elevator/canContinueSafely", canContinueSafely)
 
       Logger.getInstance().recordOutput("Elevator/isAtTargetPosition", isAtTargetedPosition)
       Logger.getInstance().recordOutput("Elevator/isStowed", isStowed)
