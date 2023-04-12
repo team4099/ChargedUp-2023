@@ -61,7 +61,14 @@ object AllianceFlipUtil {
 
   /** Flips a pose to the correct side of the field regardless of current alliance color. */
   fun forceApply(pose: Pose3d): Pose3d {
-    return Pose3d(FieldConstants.fieldLength - pose.x, pose.y, pose.z, Rotation3d(pose.rotation.x, pose.rotation.y, Angle(-pose.rotation.z.cos, pose.rotation.z.sin)))
+    return Pose3d(
+      FieldConstants.fieldLength - pose.x,
+      pose.y,
+      pose.z,
+      Rotation3d(
+        pose.rotation.x, pose.rotation.y, Angle(-pose.rotation.z.cos, pose.rotation.z.sin)
+      )
+    )
   }
 
   /** Flips a pose to the correct side of the field based on the current alliance color. */

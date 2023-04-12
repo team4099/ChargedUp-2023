@@ -21,22 +21,19 @@ import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
-import org.team4099.lib.geometry.Rotation3dWPILIB
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
-import org.team4099.lib.geometry.Translation3dWPILIB
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.tan
 import java.util.function.Consumer
-import kotlin.math.hypot
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.math.tan
@@ -123,9 +120,12 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     val robotPoses = mutableListOf<Pose2d>()
 
     if (inputs.validReading) {
-
       for (target in inputs.retroTargets) {
-        visibleNodes.add(solveTargetPoseFromAngle(currentPose, target, nodeZ))
+        visibleNodes.add(
+          solveTargetPoseFromAngle(
+            currentPose, target, VisionConstants.Limelight.HIGH_TAPE_HEIGHT
+          )
+        )
       }
       // this is adding where we think they are,, not where they actually are
     }
@@ -205,44 +205,33 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     target: LimelightReading,
     targetHeight: Length
   ): Pose3d {
+    val cameraPose = currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
+
     val xyDistance = xyDistanceFromTarget(target, targetHeight)
-    val distanceToTarget =
-      hypot(
-        xyDistance.inMeters,
-        targetHeight.inMeters - VisionConstants.Limelight.LL_TRANSFORM.z.inMeters
-      )
-        .meters
-
-    val targetTranslation =
-      Translation3dWPILIB(
-        distanceToTarget.inMeters,
-        Rotation3dWPILIB(0.0, -target.ty.inRadians, -target.tx.inRadians)
+    val translationToTarget =
+      Translation3d(
+        xyDistance * target.tx.sin / target.tx.tan,
+        xyDistance * target.tx.sin,
+        xyDistance * target.ty.tan
       )
 
-    Logger.getInstance().recordOutput("LimelightVision/distanceToTarget", distanceToTarget.inMeters)
+    Logger.getInstance().recordOutput("LimelightVision/distanceToTarget", xyDistance.inMeters)
 
     // figure out which way this target is facing using yaw of robot and yaw of camera
-    val targetRotation =
-      Rotation3d(
-        0.0.degrees,
-        0.0.degrees,
-        if (currentPose.rotation.rotateBy(VisionConstants.Limelight.LL_TRANSFORM.rotation.z) in
-          0.degrees..180.degrees
-        ) {
-          // we are looking at a red node which is facing towards 180 degrees
-          180.0.degrees
-        } else {
-          // we are looking at a blue node which is facing towards 0 degrees
-          0.degrees
-        }
-      )
+    val targetRotation = Rotation3d(0.0.degrees, 0.0.degrees, 0.0.degrees)
 
     return currentPose
       .toPose3d()
       .transformBy(VisionConstants.Limelight.LL_TRANSFORM)
-      .transformBy(Transform3d(Translation3d(targetTranslation), targetRotation))
+      .transformBy(Transform3d(translationToTarget, Rotation3d()))
   }
 
+  fun findDistanceFromTarget(target: LimelightReading, targetHeight: Length): Length {
+    val oppositeSide = targetHeight - VisionConstants.Limelight.LL_TRANSFORM.z
+    val angle = target.ty.sin
+
+    return oppositeSide / angle
+  }
   fun xyDistanceFromTarget(target: LimelightReading, targetHeight: Length): Length {
     var x = target.tx.tan
     var y = target.ty.tan
