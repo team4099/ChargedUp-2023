@@ -13,6 +13,7 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import kotlin.math.atan2
 
@@ -30,7 +31,7 @@ object LimelightVisionIOSim : LimelightVisionIO {
           FieldConstants.Grids.midX,
           FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * nodeIndex,
           VisionConstants.Limelight.MID_TAPE_HEIGHT,
-          Rotation3d()
+          Rotation3d(0.0.degrees, 0.0.degrees, 0.0.degrees)
         )
       )
       blueHighConeNodePoses.add(
@@ -38,7 +39,7 @@ object LimelightVisionIOSim : LimelightVisionIO {
           FieldConstants.Grids.highX,
           FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * nodeIndex,
           VisionConstants.Limelight.HIGH_TAPE_HEIGHT,
-          Rotation3d()
+          Rotation3d(0.0.degrees, 0.0.degrees, 0.0.degrees)
         )
       )
     }
@@ -80,6 +81,18 @@ object LimelightVisionIOSim : LimelightVisionIO {
       if (pitch.absoluteValue <= VisionConstants.Limelight.VERITCAL_FOV / 2 &&
         yaw.absoluteValue <= VisionConstants.Limelight.HORIZONTAL_FOV / 2
       ) {
+        println("TRANSLATION")
+        println(relativePose.translation.x.inMeters)
+        println(relativePose.translation.y.inMeters)
+        println(relativePose.translation.z.inMeters)
+        println("ROTATION")
+        println(relativePose.rotation.x.inDegrees)
+        println(relativePose.rotation.y.inDegrees)
+        println(relativePose.rotation.z.inDegrees)
+        println("BRUH")
+        println(yaw.inDegrees)
+        println(pitch.inDegrees)
+
         readings.add(
           LimelightReading(
             -yaw, -pitch, 0.0, 0.0, 0.0.degrees

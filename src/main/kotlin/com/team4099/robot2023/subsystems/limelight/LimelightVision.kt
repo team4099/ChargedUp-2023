@@ -206,8 +206,24 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     targetHeight: Length
   ): Pose3d {
     val cameraPose = currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
-
     val xyDistance = xyDistanceFromTarget(target, targetHeight)
+
+    val transformToTargetFromCamera = Translation3d(
+      2.3550070933744696.meters,
+      Rotation3d(0.0.degrees, -target.ty, -target.tx)
+    )
+    val correcTransformToNode = Transform3d(
+      Translation3d(
+        2.129395561229456.meters,
+        -0.9990481633434861.meters,
+        -0.11677208990321863.meters
+      ),
+      Rotation3d(
+        11.941271339128267.degrees,
+        -27.11565543896616.degrees,
+        169.82164884705452.degrees
+      )
+    )
     val translationToTarget =
       Translation3d(
         xyDistance * target.tx.sin / target.tx.tan,
@@ -220,10 +236,9 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     // figure out which way this target is facing using yaw of robot and yaw of camera
     val targetRotation = Rotation3d(0.0.degrees, 0.0.degrees, 0.0.degrees)
 
-    return Pose3d(currentPose
+    return currentPose
       .toPose3d()
-      .transformBy(Transform3d(VisionConstants.Limelight.LL_TRANSFORM.translation, Rotation3d())).translation - translationToTarget, Rotation3d()
-    )
+      .transformBy(VisionConstants.Limelight.LL_TRANSFORM).transformBy(correcTransformToNode)
   }
 
   fun findDistanceFromTarget(target: LimelightReading, targetHeight: Length): Length {
