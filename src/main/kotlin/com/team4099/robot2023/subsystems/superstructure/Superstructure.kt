@@ -404,8 +404,7 @@ class Superstructure(
         // Outputs
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.OpenLoop(
-            -5.volts,
-            GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
+            -5.volts, GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
           )
 
         manipulator.currentRequest =
@@ -415,10 +414,7 @@ class Superstructure(
           )
 
         // Transition
-        if (
-          manipulator.isAtTargetedPosition &&
-          manipulator.hasCube
-        ) {
+        if (manipulator.isAtTargetedPosition && manipulator.hasCube) {
           theoreticalGamePiece = GamePiece.CUBE
           nextState = SuperstructureStates.GROUND_INTAKE_CUBE_CLEANUP
         } else if (currentRequest !is SuperstructureRequest.GroundIntakeCube) {
@@ -505,8 +501,16 @@ class Superstructure(
             Manipulator.TunableManipulatorStates.coneIdleVoltage.get()
           )
 
+        if (manipulator.isAtTargetedPosition) {
+          elevator.currentRequest =
+            Request.ElevatorRequest.TargetingPosition(
+              Elevator.TunableElevatorHeights.minPosition.get()
+            )
+        }
+
         // Transition
         if (manipulator.isAtTargetedPosition &&
+          elevator.isAtTargetedPosition &&
           (Clock.fpgaTime - lastTransitionTime) >=
           Manipulator.TunableManipulatorStates.intakeTime.get()
         ) {
@@ -846,7 +850,12 @@ class Superstructure(
                 NodeTier.HYBRID -> {
                   when (usingGamePiece) {
                     GamePiece.CONE ->
-                      Manipulator.TunableManipulatorStates.lowConeScoreExtension.get()
+                      if (scoringConeWithoutLoweringGroundIntake) {
+                        Manipulator.TunableManipulatorStates.lowConeScoreExtension.get()
+                      } else {
+                        Manipulator.TunableManipulatorStates.lowConeScoreExtension.get() -
+                          5.inches
+                      }
                     GamePiece.CUBE ->
                       Manipulator.TunableManipulatorStates.lowCubeScoreExtension.get()
                     else -> 0.0.inches
@@ -931,19 +940,8 @@ class Superstructure(
       SuperstructureStates.SCORE_CONE -> {
         led.state = LEDMode.OUTTAKE
         // Outputs
-        val dropToPosition =
-          when (nodeTier) {
-            NodeTier.HYBRID ->
-              Elevator.TunableElevatorHeights.hybridHeight.get() +
-                Elevator.TunableElevatorHeights.coneDropPosition.get()
-            NodeTier.MID ->
-              Elevator.TunableElevatorHeights.midConeHeight.get() +
-                Elevator.TunableElevatorHeights.coneDropPosition.get()
-            NodeTier.HIGH ->
-              Elevator.TunableElevatorHeights.highConeHeight.get() +
-                Elevator.TunableElevatorHeights.coneDropPosition.get()
-            else -> elevator.elevatorPositionTarget
-          }
+        val dropToPosition = elevator.elevatorPositionTarget
+
         elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(dropToPosition)
         if (elevator.isAtTargetedPosition) {
           manipulator.currentRequest =
