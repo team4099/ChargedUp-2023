@@ -2,6 +2,7 @@ package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.AutoScoreCommand
+import com.team4099.robot2023.commands.DoubleSubIntakeCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -190,7 +191,16 @@ object RobotContainer {
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
     ControlBoard.singleSubstationIntake.whileTrue(superstructure.singleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
-    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    ControlBoard.doubleSubstationIntake.whileTrue(
+      DoubleSubIntakeCommand(
+        drivetrain,
+        superstructure,
+        { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+        { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
+        { ControlBoard.slowMode },
+        driver = Ryan()
+      )
+    )
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
         {
