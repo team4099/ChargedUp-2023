@@ -34,6 +34,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.tan
 import java.util.function.Consumer
+import kotlin.math.hypot
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.math.tan
@@ -207,6 +208,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   ): Pose3d {
     val cameraPose = currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
     val xyDistance = xyDistanceFromTarget(target, targetHeight)
+    println("HYPOT")
+    println(hypot(xyDistance.inMeters, (targetHeight - VisionConstants.Limelight.LL_TRANSFORM.z).inMeters))
 
     val transformToTargetFromCamera = Translation3d(
       2.3550070933744696.meters,
