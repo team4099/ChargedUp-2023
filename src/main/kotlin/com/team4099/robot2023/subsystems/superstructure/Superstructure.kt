@@ -403,8 +403,8 @@ class Superstructure(
       SuperstructureStates.GROUND_INTAKE_CUBE -> {
         // Outputs
         groundIntake.currentRequest =
-          Request.GroundIntakeRequest.TargetingPosition(
-            GroundIntake.TunableGroundIntakeStates.intakeAngle.get(),
+          Request.GroundIntakeRequest.OpenLoop(
+            -5.volts,
             GroundIntake.TunableGroundIntakeStates.intakeVoltage.get()
           )
 
@@ -415,7 +415,7 @@ class Superstructure(
           )
 
         // Transition
-        if (groundIntake.isAtTargetedPosition &&
+        if (
           manipulator.isAtTargetedPosition &&
           manipulator.hasCube
         ) {
