@@ -48,18 +48,22 @@ object ControlBoard {
   val setArmCubeMidPrep = Trigger { operator.leftShoulderButton && operator.bButton }
   val setArmCubeHighPrep = Trigger { operator.leftShoulderButton && operator.yButton }
 
-  val setArmConeHybridPrep = Trigger { operator.rightShoulderButton && operator.aButton }
-  val setArmConeMidPrep = Trigger { operator.rightShoulderButton && operator.bButton }
-  val setArmConeHighPrep = Trigger { operator.rightShoulderButton && operator.yButton }
+  //  val setArmConeHybridPrep = Trigger { operator.rightShoulderButton && operator.aButton }
+  //  val setArmConeMidPrep = Trigger { operator.rightShoulderButton && operator.bButton }
+  //  val setArmConeHighPrep = Trigger { operator.rightShoulderButton && operator.yButton }
+
+  val setArmConeHybridPrep = Trigger { driver.xButton }
+  val setArmConeMidPrep = Trigger { driver.bButton }
+  val setArmConeHighPrep = Trigger { driver.aButton }
 
   val goBackToIdle = Trigger { operator.selectButton && operator.startButton }
 
   val setArmDoubleSubCube = Trigger { operator.dPadLeft }
   val setArmDoubleSubCone = Trigger { operator.dPadRight }
 
-  val doubleSubstationIntake = Trigger { driver.aButton }
-  val singleSubstationIntake = Trigger { driver.bButton }
-  val scoreOuttake = Trigger { driver.xButton }
+  val doubleSubstationIntake = Trigger { false }
+  val singleSubstationIntake = Trigger { false }
+  val scoreOuttake = Trigger { false }
   val groundIntakeCube = Trigger { driver.rightShoulderButton }
 
   val increaseRollerVoltage = Trigger { operator.dPadUp }

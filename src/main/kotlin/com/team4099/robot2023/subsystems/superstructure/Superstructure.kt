@@ -87,6 +87,8 @@ class Superstructure(
 
   var canMoveSafely = false
 
+  var scoringConeWithoutLoweringGroundIntake = false
+
   val rumbleState: Boolean
     get() {
       return manipulator.rumbleTrigger
@@ -720,12 +722,69 @@ class Superstructure(
             else -> 0.0.volts
           }
 
-        groundIntake.currentRequest =
-          Request.GroundIntakeRequest.TargetingPosition(
-            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
-          )
+        if (usingGamePiece == Constants.Universal.GamePiece.CONE &&
+          nodeTier == Constants.Universal.NodeTier.HYBRID
+        ) {
+          if (elevatorInputs.elevatorPosition >=
+            10.inches
+          ) { // elevator be high up, faster to just score from above
+            scoringConeWithoutLoweringGroundIntake = false
+            groundIntake.currentRequest =
+              Request.GroundIntakeRequest.TargetingPosition(
+                GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
+              )
+          } else {
+            scoringConeWithoutLoweringGroundIntake = true
+            groundIntake.currentRequest =
+              Request.GroundIntakeRequest.TargetingPosition(
+                GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(), rollerVoltage
+              )
+          }
+        } else {
+          if (scoringConeWithoutLoweringGroundIntake) { // previously scored without lowering ground
+            // intake so we need to retract manipulator
+            // and lower elevator
+            val rollerCommandedVoltage =
+              when (usingGamePiece) {
+                GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
+                GamePiece.CUBE -> ManipulatorConstants.CUBE_IDLE
+                else -> -1.0.volts
+              }
 
-        if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {
+            manipulator.currentRequest =
+              Request.ManipulatorRequest.TargetingPosition(
+                Manipulator.TunableManipulatorStates.minExtension.get(), rollerCommandedVoltage
+              )
+            if (manipulator.isAtTargetedPosition) {
+              elevator.currentRequest =
+                Request.ElevatorRequest.TargetingPosition(
+                  Elevator.TunableElevatorHeights.minPosition.get()
+                )
+              if (elevator.isAtTargetedPosition) {
+                groundIntake.currentRequest =
+                  Request.GroundIntakeRequest.TargetingPosition(
+                    GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
+                  )
+                scoringConeWithoutLoweringGroundIntake = false
+              }
+            }
+          } else {
+            groundIntake.currentRequest =
+              Request.GroundIntakeRequest.TargetingPosition(
+                GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
+              )
+          }
+        }
+
+        if (manipulator.isAtTargetedPosition &&
+          elevator.isAtTargetedPosition &&
+          (
+            groundIntake.isAtTargetedPosition ||
+              groundIntake
+                .canContinueSafely
+            )
+        ) { // because manipulator and elevator will move while we're
+          // switching between different cone tiers
           val rollerCommandedVoltage =
             when (usingGamePiece) {
               GamePiece.CONE -> ManipulatorConstants.CONE_IDLE
@@ -744,8 +803,12 @@ class Superstructure(
                 when (usingGamePiece) {
                   GamePiece.CUBE -> Elevator.TunableElevatorHeights.groundIntakeCubeHeight.get()
                   GamePiece.CONE ->
-                    Elevator.TunableElevatorHeights.hybridHeight.get() +
-                      Elevator.TunableElevatorHeights.coneDropPosition.get()
+                    if (scoringConeWithoutLoweringGroundIntake) {
+                      Elevator.TunableElevatorHeights.coneDropPosition.get() + 3.inches
+                    } else {
+                      Elevator.TunableElevatorHeights.hybridHeight.get() +
+                        Elevator.TunableElevatorHeights.coneDropPosition.get()
+                    }
                   else -> 0.0.inches
                 }
               }
