@@ -24,7 +24,7 @@ import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIO
 import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
-import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOReal
 import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
@@ -73,7 +73,7 @@ object RobotContainer {
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
         )
-      limelight = LimelightVision(object : LimelightVisionIO {})
+      limelight = LimelightVision(LimelightVisionIOReal)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)

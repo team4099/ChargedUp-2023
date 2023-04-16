@@ -8,6 +8,7 @@ import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.gameboy.objective.Objective
 import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
+import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.LimelightReading
 import com.team4099.robot2023.util.PoseEstimator
@@ -15,6 +16,7 @@ import com.team4099.robot2023.util.findClosestPose
 import com.team4099.robot2023.util.rotateBy
 import com.team4099.robot2023.util.toPose3d
 import com.team4099.robot2023.util.toTransform3d
+import com.team4099.robot2023.util.within
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
@@ -64,7 +66,18 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           FieldConstants.Grids.midX,
           FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * nodeIndex,
           VisionConstants.Limelight.MID_TAPE_HEIGHT,
-          Rotation3d()
+          Rotation3d(0.0.degrees, 0.0.degrees, 180.0.degrees)
+        )
+      )
+      midConeNodePoses.add(
+        AllianceFlipUtil.forceApply(
+          Pose3d(
+            FieldConstants.Grids.midX,
+            FieldConstants.Grids.nodeFirstY +
+              FieldConstants.Grids.nodeSeparationY * nodeIndex,
+            VisionConstants.Limelight.MID_TAPE_HEIGHT,
+            Rotation3d(0.0.degrees, 0.0.degrees, 180.0.degrees)
+          )
         )
       )
       highConeNodePoses.add(
@@ -72,7 +85,18 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           FieldConstants.Grids.highX,
           FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * nodeIndex,
           VisionConstants.Limelight.HIGH_TAPE_HEIGHT,
-          Rotation3d()
+          Rotation3d(0.0.degrees, 0.0.degrees, 180.0.degrees)
+        )
+      )
+      highConeNodePoses.add(
+        AllianceFlipUtil.forceApply(
+          Pose3d(
+            FieldConstants.Grids.highX,
+            FieldConstants.Grids.nodeFirstY +
+              FieldConstants.Grids.nodeSeparationY * nodeIndex,
+            VisionConstants.Limelight.HIGH_TAPE_HEIGHT,
+            Rotation3d(0.0.degrees, 0.0.degrees, 180.0.degrees)
+          )
         )
       )
     }
@@ -87,6 +111,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     var currentPose: Pose2d = poseSupplier.invoke()
 
     val visibleNodes = mutableListOf<Pose3d>()
+    val estimatedPositionOfNode = mutableListOf<Pose3d>()
 
     // mathematically figure out which nodes we're looking at based on limelight fov
 
@@ -123,11 +148,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     if (inputs.validReading) {
       for (target in inputs.retroTargets) {
-        visibleNodes.add(
-          solveTargetPoseFromAngle(
-            currentPose, target, nodeZ
-          )
-        )
+        visibleNodes.add(solveTargetPoseFromAngle(currentPose, target, nodeZ))
       }
       // this is adding where we think they are,, not where they actually are
     }
@@ -137,21 +158,19 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     val trueVisibleNodes = mutableListOf<Pose3d>()
 
     for (node in visibleNodes) {
-        val searchList =
-          if (nodeZ == VisionConstants.Limelight.MID_TAPE_HEIGHT) midConeNodePoses
-          else highConeNodePoses
+      val searchList =
+        if (nodeZ == VisionConstants.Limelight.MID_TAPE_HEIGHT) midConeNodePoses
+        else highConeNodePoses
 
-        val closestPose = node.findClosestPose(*searchList.toTypedArray())
+      val closestPose = node.findClosestPose(*searchList.toTypedArray())
+
+      if (closestPose.toTransform3d().within(node.toTransform3d(), 5.inches)) {
 
         trueVisibleNodes.add(closestPose)
 
         // find inverse translation from the detected pose to robot
         val targetToCamera =
-          node
-            .relativeTo(
-              currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
-            )
-            .toTransform3d()
+          Transform3d(Pose3d(node.translation, closestPose.rotation), currentPose.toPose3d())
 
         val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
 
@@ -161,6 +180,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
         if (nodeToLookFor.invoke().isConeNode()) {
           robotPoses.add(trueNodePoseToRobot.toPose2d())
+          estimatedPositionOfNode.add(node)
 
           timestampedVisionUpdates.add(
             PoseEstimator.TimestampedVisionUpdate(
@@ -169,6 +189,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
               VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
             )
           )
+        }
       }
     }
 
@@ -179,7 +200,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     Logger.getInstance()
       .recordOutput(
-        "LimelightVision/robotVisibleNodes", *visibleNodes.map { it.pose3d }.toTypedArray()
+        "LimelightVision/robotVisibleNodes",
+        *estimatedPositionOfNode.map { it.pose3d }.toTypedArray()
       )
     Logger.getInstance()
       .recordOutput(
@@ -208,21 +230,25 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   ): Pose3d {
     val cameraPose = currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
     val xyDistance = xyDistanceFromTarget(target, targetHeight)
-    val distanceToTarget = hypot(xyDistance.inMeters, (targetHeight - VisionConstants.Limelight.LL_TRANSFORM.z).inMeters).meters
+    val distanceToTarget =
+      hypot(
+        xyDistance.inMeters,
+        (targetHeight - VisionConstants.Limelight.LL_TRANSFORM.z).inMeters
+      )
+        .meters
 
-    val transformToTargetFromCamera = Translation3d(
-      distanceToTarget,
-      Rotation3d(0.0.degrees, -target.ty, target.tx)
-    )
+    val transformToTargetFromCamera =
+      Translation3d(distanceToTarget, Rotation3d(0.0.degrees, -target.ty, -target.tx))
 
-    Logger.getInstance().recordOutput("LimelightVision/distanceToTarget", xyDistance.inMeters)
+    Logger.getInstance().recordOutput("LimelightVision/distanceToTarget", distanceToTarget.inMeters)
 
     // figure out which way this target is facing using yaw of robot and yaw of camera
     val targetRotation = Rotation3d(0.0.degrees, 0.0.degrees, 0.0.degrees)
 
     return currentPose
       .toPose3d()
-      .transformBy(VisionConstants.Limelight.LL_TRANSFORM).transformBy(Transform3d(transformToTargetFromCamera, Rotation3d()))
+      .transformBy(VisionConstants.Limelight.LL_TRANSFORM)
+      .transformBy(Transform3d(transformToTargetFromCamera, targetRotation))
   }
 
   fun findDistanceFromTarget(target: LimelightReading, targetHeight: Length): Length {

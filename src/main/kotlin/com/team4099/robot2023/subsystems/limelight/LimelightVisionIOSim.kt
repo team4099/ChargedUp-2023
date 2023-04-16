@@ -13,7 +13,6 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import kotlin.math.atan2
 
@@ -81,21 +80,12 @@ object LimelightVisionIOSim : LimelightVisionIO {
       if (pitch.absoluteValue <= VisionConstants.Limelight.VERITCAL_FOV / 2 &&
         yaw.absoluteValue <= VisionConstants.Limelight.HORIZONTAL_FOV / 2
       ) {
-        println("TRANSLATION")
-        println(relativePose.translation.x.inMeters)
-        println(relativePose.translation.y.inMeters)
-        println(relativePose.translation.z.inMeters)
-        println("ROTATION")
-        println(relativePose.rotation.x.inDegrees)
-        println(relativePose.rotation.y.inDegrees)
-        println(relativePose.rotation.z.inDegrees)
-        println("BRUH")
-        println(yaw.inDegrees)
-        println(pitch.inDegrees)
+        println("DISTANCE")
+        println(relativePose.translation.norm)
 
         readings.add(
           LimelightReading(
-            -yaw, -pitch, 0.0, 0.0, 0.0.degrees
+            yaw, -pitch, 0.0, 0.0, 0.0.degrees
           )
         ) // TODO add view port stuff for finding pixel
         visibleNodes.add(node)

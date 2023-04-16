@@ -4,6 +4,7 @@ import com.team4099.robot2023.config.constants.FieldConstants
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Transform3d
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.radians
 
@@ -56,4 +57,8 @@ fun DoubleArray.toPose2d(): Pose2d {
   return if (this.size == 3) {
     Pose2d(this[0].meters, this[1].meters, this[2].radians)
   } else Pose2d()
+}
+
+fun Transform3d.within(comparison: Transform3d, tolerance: Length): Boolean {
+  return ((this.translation - comparison.translation).norm <= tolerance)
 }
