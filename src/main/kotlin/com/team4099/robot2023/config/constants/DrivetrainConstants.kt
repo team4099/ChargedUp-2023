@@ -94,7 +94,7 @@ object DrivetrainConstants {
 
   object PID {
     val DOUBLE_SUB_AUTO_ALIGN_KP: ProportionalGain<Radian, Velocity<Radian>> =
-      1.degrees.perSecond / 5.0.degrees
+      0.0.degrees.perSecond / 5.0.degrees
     val DOUBLE_SUB_AUTO_ALIGN_KI: IntegralGain<Radian, Velocity<Radian>> =
       0.degrees.perSecond / (0.0.degrees * 1.0.seconds)
     val DOUBLE_SUB_AUTO_ALIGN_KD: DerivativeGain<Radian, Velocity<Radian>> =
