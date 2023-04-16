@@ -277,7 +277,7 @@ class Superstructure(
               Manipulator.TunableManipulatorStates.minExtension.get(), rollerVoltage
             )
 
-          if (manipulator.isAtTargetedPosition) {
+          if (manipulator.isAtTargetedPosition || (manipulator.canContinueSafely && elevatorInputs.elevatorPosition >= 10.inches)) {
             elevator.currentRequest =
               Request.ElevatorRequest.TargetingPosition(
                 Elevator.TunableElevatorHeights.minPosition.get()

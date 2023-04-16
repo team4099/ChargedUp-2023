@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.util.PoseEstimator
 import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
@@ -37,7 +38,15 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
     val thetaStdDevCoefficient = 0.75
   }
 
-  private val xyStdDevCoefficient = TunableNumber("Vision/xystdev", 0.1)
+  private val xyStdDevCoefficient: Double
+    get () {
+      if (DriverStation.isAutonomous()){
+        return 0.05
+      }
+      else {
+        return 0.1
+      }
+    }
 
   private val thetaStdDev = TunableNumber("Vision/thetaStdDev", 0.75)
 
@@ -209,7 +218,7 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
         val averageDistance = totalDistance / tagPoses.size
 
         // Add to vision updates
-        val xyStdDev = xyStdDevCoefficient.get() * averageDistance.inMeters.pow(2) / tagPoses.size
+        val xyStdDev = xyStdDevCoefficient * averageDistance.inMeters.pow(2) / tagPoses.size
         val thetaStdDev = thetaStdDev.get() * averageDistance.inMeters.pow(2) / tagPoses.size
 
         visionUpdates.add(

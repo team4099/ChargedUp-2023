@@ -5,6 +5,7 @@ import com.team4099.lib.trajectory.CustomHolonomicDriveController
 import com.team4099.lib.trajectory.CustomTrajectoryGenerator
 import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.config.constants.DrivetrainConstants
+import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.Velocity2d
@@ -31,6 +32,7 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegree
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreeSeconds
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreesPerSecond
@@ -54,12 +56,14 @@ import org.team4099.lib.units.inRadiansPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 import java.util.function.Supplier
 import kotlin.math.PI
+import kotlin.math.abs
 
 class DrivePathCommand(
   val drivetrain: Drivetrain,
   private val waypoints: Supplier<List<Waypoint>>,
   val resetPose: Boolean = false,
   val keepTrapping: Boolean = false,
+  val endBasedOnGyro: Boolean = false,
   val flipForAlliances: Boolean = true,
   val endPathOnceAtReference: Boolean = true,
   val leaveOutYAdjustment: Boolean = false,
@@ -126,6 +130,12 @@ class DrivePathCommand(
         { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
       )
     )
+
+  private var firstZone: Boolean = false
+  private val secondZone: Boolean
+    get() {
+      return abs(drivetrain.gyroInputs.gyroPitch.inDegrees).degrees < FieldConstants.chargeStationEngageAngle
+    }
 
   private fun generate(
     waypoints: List<Waypoint>,
@@ -200,6 +210,9 @@ class DrivePathCommand(
   }
 
   override fun execute() {
+
+    firstZone = firstZone || abs(drivetrain.gyroInputs.gyroPitch.inDegrees).degrees > FieldConstants.chargeStationEngageAngle
+
     val trajectory = trajectoryGenerator.driveTrajectory
 
     if (trajectory.states.size <= 1) {
@@ -261,6 +274,21 @@ class DrivePathCommand(
 
     Logger.getInstance()
       .recordOutput(
+        "Pathfollow/angleUsedInZone", drivetrain.gyroInputs.gyroPitch.inDegrees
+      )
+
+    Logger.getInstance()
+      .recordOutput(
+        "Pathfollow/firstZone", firstZone
+      )
+
+    Logger.getInstance()
+      .recordOutput(
+        "Pathfollow/secondZone", secondZone
+      )
+
+    Logger.getInstance()
+      .recordOutput(
         "Pathfollow/xAccelMetersPerSecondPerSecond", xAccel.inMetersPerSecondPerSecond
       )
     Logger.getInstance()
@@ -308,9 +336,11 @@ class DrivePathCommand(
 
   override fun isFinished(): Boolean {
     trajCurTime = Clock.fpgaTime - trajStartTime
-    return endPathOnceAtReference &&
+    return (endPathOnceAtReference &&
       (!keepTrapping || swerveDriveController.atReference()) &&
-      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds
+      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds) ||
+      (endBasedOnGyro && firstZone && secondZone &&
+        (trajCurTime - 0.7.seconds > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds))
   }
 
   override fun end(interrupted: Boolean) {
