@@ -30,6 +30,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.perSecond
 import java.util.function.Supplier
 import com.team4099.robot2023.subsystems.superstructure.Request.SuperstructureRequest as SuperstructureRequest
 
@@ -1179,7 +1180,17 @@ class Superstructure(
             if (DriverStation.isAutonomous()) {
               canMoveSafely &&
                 isAtRequestedState &&
-                currentState == SuperstructureStates.SCORE_CLEANUP
+                currentState == SuperstructureStates.SCORE_CLEANUP &&
+                (
+                  elevatorInputs.elevatorPosition <= ElevatorConstants.FIRST_STAGE_HEIGHT ||
+                    (
+                      elevator.isAtTargetedPosition &&
+                        elevator.elevatorPositionTarget <=
+                        ElevatorConstants.FIRST_STAGE_HEIGHT
+                      ) ||
+                    elevatorInputs.elevatorVelocity <=
+                    5.inches.perSecond
+                  ) // elevator check to make sure it's not up
             } else {
               isAtRequestedState && currentState == SuperstructureStates.IDLE
             }

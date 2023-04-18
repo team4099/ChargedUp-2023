@@ -134,7 +134,8 @@ class DrivePathCommand(
   private var firstZone: Boolean = false
   private val secondZone: Boolean
     get() {
-      return abs(drivetrain.gyroInputs.gyroPitch.inDegrees).degrees < FieldConstants.chargeStationEngageAngle
+      return abs(drivetrain.gyroInputs.gyroPitch.inDegrees).degrees <
+        FieldConstants.chargeStationEngageAngle
     }
 
   private fun generate(
@@ -211,7 +212,10 @@ class DrivePathCommand(
 
   override fun execute() {
 
-    firstZone = firstZone || abs(drivetrain.gyroInputs.gyroPitch.inDegrees).degrees > FieldConstants.chargeStationEngageAngle
+    firstZone =
+      firstZone ||
+      abs(drivetrain.gyroInputs.gyroPitch.inDegrees).degrees >
+      FieldConstants.chargeStationEngageAngle
 
     val trajectory = trajectoryGenerator.driveTrajectory
 
@@ -273,19 +277,11 @@ class DrivePathCommand(
       )
 
     Logger.getInstance()
-      .recordOutput(
-        "Pathfollow/angleUsedInZone", drivetrain.gyroInputs.gyroPitch.inDegrees
-      )
+      .recordOutput("Pathfollow/angleUsedInZone", drivetrain.gyroInputs.gyroPitch.inDegrees)
 
-    Logger.getInstance()
-      .recordOutput(
-        "Pathfollow/firstZone", firstZone
-      )
+    Logger.getInstance().recordOutput("Pathfollow/firstZone", firstZone)
 
-    Logger.getInstance()
-      .recordOutput(
-        "Pathfollow/secondZone", secondZone
-      )
+    Logger.getInstance().recordOutput("Pathfollow/secondZone", secondZone)
 
     Logger.getInstance()
       .recordOutput(
@@ -336,11 +332,20 @@ class DrivePathCommand(
 
   override fun isFinished(): Boolean {
     trajCurTime = Clock.fpgaTime - trajStartTime
-    return (endPathOnceAtReference &&
-      (!keepTrapping || swerveDriveController.atReference()) &&
-      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds) ||
-      (endBasedOnGyro && firstZone && secondZone &&
-        (trajCurTime - 0.7.seconds > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds))
+    return (
+      endPathOnceAtReference &&
+        (!keepTrapping || swerveDriveController.atReference()) &&
+        trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds
+      ) ||
+      (
+        endBasedOnGyro &&
+          firstZone &&
+          secondZone &&
+          (
+            trajCurTime - 0.7.seconds >
+              trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds
+            )
+        )
   }
 
   override fun end(interrupted: Boolean) {
