@@ -7,6 +7,7 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.ManipulatorConstants
+import com.team4099.robot2023.subsystems.superstructure.Request
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.SimpleMotorFeedforward
@@ -304,6 +305,15 @@ class Manipulator(val io: ManipulatorIO) {
     get() = inputs.armPosition <= ManipulatorConstants.ARM_OPEN_LOOP_SOFTLIMIT_RETRACTION
 
   var currentState: ManipulatorState = ManipulatorState.UNINITIALIZED
+
+  val canContinueSafely: Boolean
+    get() =
+      currentRequest is Request.ManipulatorRequest.TargetingPosition &&
+        (
+          ((inputs.armPosition - armPositionTarget).absoluteValue <= 4.inches) ||
+            armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
+          ) &&
+        lastArmPositionTarget == armPositionTarget
 
   var currentRequest: ManipulatorRequest =
     ManipulatorRequest.OpenLoop(0.0.volts, ManipulatorConstants.IDLE_VOLTAGE)

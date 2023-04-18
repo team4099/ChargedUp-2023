@@ -24,7 +24,8 @@ import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIO
 import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
-import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOReal
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
@@ -34,8 +35,11 @@ import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
+import org.team4099.lib.units.derived.radians
 import java.util.function.Supplier
 
 object RobotContainer {
@@ -69,7 +73,7 @@ object RobotContainer {
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
         )
-      limelight = LimelightVision(object : LimelightVisionIO {})
+      limelight = LimelightVision(LimelightVisionIOReal)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
@@ -87,7 +91,7 @@ object RobotContainer {
           Led(LedIOSim),
           GameBoy(GameboyIOServer)
         )
-      limelight = LimelightVision(object : LimelightVisionIO {})
+      limelight = LimelightVision(LimelightVisionIOSim)
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
@@ -95,6 +99,9 @@ object RobotContainer {
     drivetrain.objectiveSupplier = Supplier { superstructure.objective }
     limelight.poseSupplier = { drivetrain.odometryPose }
     limelight.nodeToLookFor = { superstructure.objective }
+
+    drivetrain.odometryPose =
+      Pose2d(2.3841118250345743.meters, -0.015085695930964824.meters, -2.8039195753021673.radians)
   }
 
   fun mapDefaultCommands() {

@@ -277,7 +277,9 @@ class Superstructure(
               Manipulator.TunableManipulatorStates.minExtension.get(), rollerVoltage
             )
 
-          if (manipulator.isAtTargetedPosition || (manipulator.canContinueSafely && elevatorInputs.elevatorPosition >= 10.inches)) {
+          if (manipulator.isAtTargetedPosition ||
+            (manipulator.canContinueSafely && elevatorInputs.elevatorPosition >= 10.inches)
+          ) {
             elevator.currentRequest =
               Request.ElevatorRequest.TargetingPosition(
                 Elevator.TunableElevatorHeights.minPosition.get()
@@ -979,11 +981,11 @@ class Superstructure(
                 }
               }
         */
-        if (manipulator.isAtTargetedPosition && elevator.isAtTargetedPosition) {
+        if (manipulator.isAtTargetedPosition ||
+          (manipulator.canContinueSafely && elevatorInputs.elevatorPosition >= 10.inches)
+        ) {
           nextState = SuperstructureStates.IDLE
           currentRequest = SuperstructureRequest.Idle()
-        } else if (currentRequest is SuperstructureRequest.PrepScore) {
-          nextState = SuperstructureStates.SCORE_PREP
         }
       }
       SuperstructureStates.EJECT_GAME_PIECE -> {
