@@ -188,6 +188,7 @@ object Robot : LoggedRobot() {
       RobotContainer.mapTunableCommands()
     }
     RobotContainer.zeroArm()
+    RobotContainer.zeroSteering()
   }
 
   override fun testInit() {
