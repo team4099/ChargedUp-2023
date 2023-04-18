@@ -374,6 +374,15 @@ class Manipulator(val io: ManipulatorIO) {
         ) ||
         (Manipulator.TunableManipulatorStates.enableExtension.get() != 1.0)
 
+  val canContinueSafely: Boolean
+    get() =
+      currentRequest is ManipulatorRequest.TargetingPosition &&
+        (
+          ((inputs.armPosition - armPositionTarget).absoluteValue <= 4.inches) ||
+            armProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
+          ) &&
+        lastArmPositionTarget == armPositionTarget
+
   init {
     TunableManipulatorStates
 

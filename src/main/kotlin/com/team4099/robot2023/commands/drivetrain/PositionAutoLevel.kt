@@ -22,7 +22,7 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   lateinit var executeCommand: CommandBase
 
   init {
-    Logger.getInstance().recordOutput("AttemptAutoEngage", true)
+    Logger.getInstance().recordOutput("Auto/AttemptAutoEngage", true)
   }
   override fun initialize() {
 
@@ -49,7 +49,7 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
           (
             FieldConstants.Community.chargingStationCorners[3].x +
               FieldConstants.Community.chargingStationCorners[0].x
-            ) / 2 - 0.1.meters
+            ) / 2 + 0.5.meters
           )
           .inMeters,
         (
@@ -107,7 +107,8 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
         },
         flipForAlliances = false,
         keepTrapping = true,
-        endPathOnceAtReference = false
+        endPathOnceAtReference = false,
+        endBasedOnGyro = true
       )
 
     executeCommand.initialize()
