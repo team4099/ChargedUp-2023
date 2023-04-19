@@ -987,6 +987,8 @@ class Superstructure(
         ) {
           nextState = SuperstructureStates.IDLE
           currentRequest = SuperstructureRequest.Idle()
+        } else if (currentRequest is SuperstructureRequest.PrepScore) {
+          nextState = SuperstructureStates.SCORE_PREP
         }
       }
       SuperstructureStates.EJECT_GAME_PIECE -> {
