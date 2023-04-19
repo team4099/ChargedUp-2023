@@ -56,7 +56,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   val vpw = (2.0 * (VisionConstants.Limelight.HORIZONTAL_FOV / 2).tan)
   val vph = (2.0 * (VisionConstants.Limelight.VERITCAL_FOV / 2).tan)
 
-  private val xyStdDevCoefficient = TunableNumber("LimelightVision/xystdev", 0.05)
+  private val xyStdDevCoefficient = TunableNumber("LimelightVision/xystdev", 0.0005)
   private val thetaStdDev = TunableNumber("LimelightVision/thetaStdDev", 0.75)
 
   init {
