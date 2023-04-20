@@ -433,7 +433,7 @@ class Superstructure(
         // Outputs
         groundIntake.currentRequest =
           Request.GroundIntakeRequest.TargetingPosition(
-            GroundIntake.TunableGroundIntakeStates.stowedUpAngle.get(),
+            GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
             GroundIntake.TunableGroundIntakeStates.neutralVoltage.get()
           )
 
@@ -462,7 +462,7 @@ class Superstructure(
           )
 
         if (groundIntake.isAtTargetedPosition || groundIntake.canContinueSafely) {
-          elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(2.5.inches)
+          elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(3.0.inches)
           if (elevator.isAtTargetedPosition) {
             manipulator.currentRequest =
               Request.ManipulatorRequest.TargetingPosition(
@@ -517,9 +517,7 @@ class Superstructure(
 
         // Transition
         if (manipulator.isAtTargetedPosition &&
-          elevator.isAtTargetedPosition &&
-          (Clock.fpgaTime - lastTransitionTime) >=
-          Manipulator.TunableManipulatorStates.intakeTime.get()
+          elevator.isAtTargetedPosition
         ) {
           currentRequest = SuperstructureRequest.Idle()
           nextState = SuperstructureStates.IDLE
@@ -812,7 +810,7 @@ class Superstructure(
             when (nodeTier) {
               NodeTier.HYBRID -> {
                 when (usingGamePiece) {
-                  GamePiece.CUBE -> Elevator.TunableElevatorHeights.groundIntakeCubeHeight.get()
+                  GamePiece.CUBE -> Elevator.TunableElevatorHeights.groundIntakeCubeHeight.get() + 3.0.inches
                   GamePiece.CONE ->
                     if (scoringConeWithoutLoweringGroundIntake) {
                       Elevator.TunableElevatorHeights.coneDropPosition.get() + 3.inches
@@ -922,6 +920,8 @@ class Superstructure(
             }
         } else if (currentRequest is SuperstructureRequest.Idle) {
           nextState = SuperstructureStates.IDLE
+        } else if (currentRequest is SuperstructureRequest.EjectGamePiece){
+          nextState = SuperstructureStates.EJECT_GAME_PIECE
         }
       }
       SuperstructureStates.SCORE_CUBE -> {
@@ -976,16 +976,16 @@ class Superstructure(
             Manipulator.TunableManipulatorStates.minExtension.get(),
             ManipulatorConstants.IDLE_VOLTAGE
           )
-        /*
-              if (nodeTier == Constants.Universal.NodeTier.HYBRID) {
-                if (manipulator.isAtTargetedPosition) {
-                  elevator.currentRequest =
-                    Request.ElevatorRequest.TargetingPosition(
-                      Elevator.TunableElevatorHeights.minPosition.get()
-                    )
-                }
-              }
-        */
+
+          if (nodeTier == Constants.Universal.NodeTier.HYBRID) {
+            if (manipulator.isAtTargetedPosition) {
+              elevator.currentRequest =
+                Request.ElevatorRequest.TargetingPosition(
+                  Elevator.TunableElevatorHeights.minPosition.get()
+                )
+            }
+          }
+
         if (manipulator.isAtTargetedPosition ||
           (manipulator.canContinueSafely && elevatorInputs.elevatorPosition >= 10.inches)
         ) {
@@ -1010,7 +1010,7 @@ class Superstructure(
           if (elevator.canContinueSafely || elevator.isAtTargetedPosition) {
             manipulator.currentRequest =
               Request.ManipulatorRequest.TargetingPosition(
-                Manipulator.TunableManipulatorStates.minExtension.get(),
+                manipulatorInputs.armPosition,
                 Manipulator.TunableManipulatorStates.cubeOutVoltage.get()
               )
           }
