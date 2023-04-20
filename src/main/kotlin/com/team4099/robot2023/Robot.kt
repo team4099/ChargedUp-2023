@@ -162,7 +162,7 @@ object Robot : LoggedRobot() {
 
     // motor checker stuff
     val motorCheckerStartTime = Clock.realTimestamp
-    MotorChecker.periodic()
+//    MotorChecker.periodic()
     Logger.getInstance()
       .recordOutput(
         "LoggedRobot/Subsystems/MotorCheckerLoopTimeMS",

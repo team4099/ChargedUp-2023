@@ -130,7 +130,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     )
 
   var odometryPose: Pose2d
-    get() = Pose2d(swerveDrivePoseEstimator.getLatestPose().x, swerveDrivePoseEstimator.getLatestPose().y, 180.degrees)
+    get() = swerveDrivePoseEstimator.getLatestPose()
     set(value) {
       swerveDrivePoseEstimator.resetPose(value)
 

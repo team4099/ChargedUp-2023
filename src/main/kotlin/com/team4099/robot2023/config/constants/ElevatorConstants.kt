@@ -30,7 +30,7 @@ object ElevatorConstants {
 
   val RAMP_RATE = 0.5.percent.perSecond
 
-  val REAL_KP = 0.85.volts / 1.inches
+  val REAL_KP = 1.0.volts / 1.inches
   val REAL_KI = 0.0.volts / (1.inches * 1.seconds)
   val REAL_KD = 0.0.volts / (1.inches.perSecond)
 
@@ -78,7 +78,7 @@ object ElevatorConstants {
   val ELEVATOR_SOFT_LIMIT_RETRACTION = 0.5.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION = 45.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION = 5.inches
-  val ELEVATOR_IDLE_HEIGHT = 1.0.inches
+  val ELEVATOR_IDLE_HEIGHT = 1.5.inches
 
   val FIRST_STAGE_HEIGHT = 25.05.inches
   val SECOND_STAGE_HEIGHT = 24.inches

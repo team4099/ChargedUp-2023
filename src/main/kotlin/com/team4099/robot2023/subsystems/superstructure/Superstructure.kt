@@ -221,6 +221,8 @@ class Superstructure(
         nextState = SuperstructureStates.HOME_PREP
       }
       SuperstructureStates.IDLE -> {
+        var a = 0.0.inches
+
         if (DriverStation.isAutonomous()) {
           led.state = LEDMode.AUTO
         } else if (DriverStation.isDisabled()) {
@@ -266,6 +268,8 @@ class Superstructure(
               )
           }
         } else {
+          a = 0.75.inches
+
           groundIntake.currentRequest =
             Request.GroundIntakeRequest.TargetingPosition(
               GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(),
@@ -283,7 +287,7 @@ class Superstructure(
           ) {
             elevator.currentRequest =
               Request.ElevatorRequest.TargetingPosition(
-                Elevator.TunableElevatorHeights.minPosition.get()
+                Elevator.TunableElevatorHeights.minPosition.get() + a
               )
           }
         } else {

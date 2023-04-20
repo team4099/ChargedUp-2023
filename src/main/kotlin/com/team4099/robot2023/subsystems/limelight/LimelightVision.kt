@@ -164,7 +164,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
       val closestPose = node.findClosestPose(*searchList.toTypedArray())
 
-      if (closestPose.toTransform3d().within(node.toTransform3d(), 5.inches)) {
+      if (closestPose.toTransform3d().within(node.toTransform3d(), 8.inches)) {
 
         trueVisibleNodes.add(closestPose)
 
@@ -192,6 +192,12 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
         }
       }
     }
+
+    // TODO add the thing
+    if (true){
+      visionConsumer.accept(timestampedVisionUpdates)
+    }
+
 
     Logger.getInstance()
       .recordOutput(
