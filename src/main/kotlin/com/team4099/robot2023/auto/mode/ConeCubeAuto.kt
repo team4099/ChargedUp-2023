@@ -77,7 +77,7 @@ class ConeCubeAuto(val drivetrain: Drivetrain, val superstructure: Superstructur
                 0.0.degrees.inRotation2ds
               ),
               Waypoint(
-                Translation2d(3.139.meters, 4.8.meters).translation2d,
+                Translation2d(3.139.meters, 5.0.meters).translation2d,
                 null,
                 180.degrees.inRotation2ds
               ),

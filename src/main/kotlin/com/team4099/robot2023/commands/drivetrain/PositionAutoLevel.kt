@@ -49,7 +49,7 @@ class PositionAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
           (
             FieldConstants.Community.chargingStationCorners[3].x +
               FieldConstants.Community.chargingStationCorners[0].x
-            ) / 2 + 0.5.meters
+            ) / 2
           )
           .inMeters,
         (

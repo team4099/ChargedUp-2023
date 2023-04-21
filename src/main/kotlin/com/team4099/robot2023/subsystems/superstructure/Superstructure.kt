@@ -363,8 +363,14 @@ class Superstructure(
 
         // Transition
         if (elevator.isHomed && manipulator.isHomed) {
-          nextState = SuperstructureStates.IDLE
+          nextState = SuperstructureStates.HOME_EXIT
         }
+      }
+      SuperstructureStates.HOME_EXIT -> {
+        elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(Elevator.TunableElevatorHeights.minPosition.get())
+        manipulator.currentRequest = Request.ManipulatorRequest.TargetingPosition(Manipulator.TunableManipulatorStates.minExtension.get(), 0.0.volts)
+
+        nextState = SuperstructureStates.IDLE
       }
       SuperstructureStates.GROUND_INTAKE_CUBE_PREP -> {
         led.state = LEDMode.INTAKE
@@ -1701,6 +1707,7 @@ class Superstructure(
       IDLE, // maybe separate idle state for ground intake stowed out vs in
       HOME_PREP,
       HOME,
+      HOME_EXIT,
       GROUND_INTAKE_CUBE_PREP,
       GROUND_INTAKE_CUBE,
       GROUND_INTAKE_CUBE_CLEANUP,
