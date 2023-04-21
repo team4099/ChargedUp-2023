@@ -62,7 +62,7 @@ class ConeCubeOverChargeStationAuto(
               ),
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[1]!!.x + 1.meters,
+                  FieldConstants.StagingLocations.translations[1]!!.x,
                   FieldConstants.StagingLocations.translations[1]!!.y
                 )
                   .translation2d,
@@ -82,7 +82,7 @@ class ConeCubeOverChargeStationAuto(
             listOf(
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[1]!!.x + 1.5.meters,
+                  FieldConstants.StagingLocations.translations[1]!!.x,
                   FieldConstants.StagingLocations.translations[1]!!.y
                 )
                   .translation2d,
@@ -90,9 +90,9 @@ class ConeCubeOverChargeStationAuto(
                 -45.0.degrees.inRotation2ds
               ),
               Waypoint(
-                Translation2d(5.4.meters, 2.0.meters).translation2d,
+                Translation2d(5.4.meters, 2.5.meters).translation2d,
                 null,
-                180.degrees.inRotation2ds
+                135.degrees.inRotation2ds
               ),
               Waypoint(
                 Translation2d(
