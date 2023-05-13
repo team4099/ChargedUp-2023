@@ -17,6 +17,8 @@ def TEAM = 4099
 def ROBOT_MAIN_CLASS = "com.team4099.robot2023.Main"
 def includeDesktopSupport = true
 
+final MAX_JAVA_HEAP_SIZE_MB = 100;
+
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
 deploy {
