@@ -34,7 +34,26 @@ deploy {
 				// getTargetTypeClass is a shortcut to get the class type using a string
 
 				frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+					gcType = 'other'
+
+					jvmArgs.add("-XX:+UnlockExperimentalVMOptions")
+					jvmArgs.add("-Xmx" + MAX_JAVA_HEAP_SIZE_MB + "M")
+					jvmArgs.add("-Xms" + MAX_JAVA_HEAP_SIZE_MB + "M")
+					// Set the minimum heap size to the maximum heap size to avoid resizing
+					jvmArgs.add("-Djoml.fastmath=false")
+					// Disable fast math for JOML (it causes all sorts of weird issues)
+					jvmArgs.add("-ea") // Enable assertions
+					jvmArgs.add("-XX:+UseG1GC")
+					// Higher than the default 1ms, but allows for more consistent performance
+					jvmArgs.add("-XX:MaxGCPauseMillis=10")
+					jvmArgs.add("-XX:+AlwaysPreTouch")// Pre-touch memory pages used by the JVM during initialization
+					//jvmArgs.add("-XX:+ParallelRefProcEnabled") // Use multiple threads to clean up reference objects
+					// Causes GC to write to file system which can cause major latency if disk IO is high -- See https://www.evanjones.ca/jvm-mmap-pause.html
+					jvmArgs.add("-XX:+PerfDisableSharedMem")
+					//jvmArgs.add("-Xlog:gc*:/home/lvuser/gclogs/gc.log:time,uptime:filecount=5,filesize=1M")
+					// Log GC events to a file
 				}
+
 
 				// Static files artifact
 				frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
