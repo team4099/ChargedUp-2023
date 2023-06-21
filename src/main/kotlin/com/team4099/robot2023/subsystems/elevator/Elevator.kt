@@ -279,6 +279,7 @@ class Elevator(val io: ElevatorIO) {
         is ElevatorRequest.TargetingPosition -> {
           elevatorPositionTarget = value.position
           elevatorVelocityTarget = value.finalVelocity
+          elevatorContinueBuffer = value.canContinueBuffer
         }
         else -> {}
       }
@@ -287,6 +288,8 @@ class Elevator(val io: ElevatorIO) {
 
   var elevatorPositionTarget = 0.0.inches
     private set
+
+  var elevatorContinueBuffer: Length = 0.0.inches
 
   var elevatorVelocityTarget = 0.0.inches.perSecond
     private set
@@ -332,12 +335,11 @@ class Elevator(val io: ElevatorIO) {
 
   val canContinueSafely: Boolean
     get() =
-      currentRequest is ElevatorRequest.TargetingPosition &&
-        (
-          ((inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <= 5.inches) ||
-            elevatorProfile.isFinished(Clock.fpgaTime - timeProfileGeneratedAt)
-          ) &&
-        lastRequestedPosition == elevatorPositionTarget
+      (
+        currentRequest is ElevatorRequest.TargetingPosition &&
+          (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <= elevatorContinueBuffer
+        ) ||
+        (TunableElevatorHeights.enableElevator.get() != 1.0)
 
   init {
     TunableElevatorHeights
@@ -412,6 +414,16 @@ class Elevator(val io: ElevatorIO) {
       .recordOutput("Elevator/currentRequest", currentRequest.javaClass.simpleName)
 
     if (Constants.Tuning.DEBUGING_MODE) {
+      Logger.getInstance()
+        .recordOutput(
+          "Elevator/distFromTarget",
+          (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue.inInches < 8
+        )
+      Logger.getInstance()
+        .recordOutput(
+          "Elevator/distFromTargetUnits",
+          (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue.inInches
+        )
       Logger.getInstance().recordOutput("Elevator/isHomed", isHomed)
       Logger.getInstance().recordOutput("Elevator/canContinueSafely", canContinueSafely)
 
@@ -439,6 +451,8 @@ class Elevator(val io: ElevatorIO) {
       Logger.getInstance().recordOutput("Elevator/forwardLimitReached", forwardLimitReached)
       Logger.getInstance().recordOutput("Elevator/reverseLimitReached", reverseLimitReached)
     }
+
+    canContinueSafely
 
     var nextState = currentState
     when (currentState) {

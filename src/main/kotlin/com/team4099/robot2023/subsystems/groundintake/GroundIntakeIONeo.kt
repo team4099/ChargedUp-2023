@@ -95,7 +95,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
     rollerSparkMax.idleMode = CANSparkMax.IdleMode.kCoast
 
-    rollerSparkMax.openLoopRampRate = 0.0
+    rollerSparkMax.setOpenLoopRampRate(0.1)
     rollerSparkMax.burnFlash()
 
     armSparkMax.restoreFactoryDefaults()

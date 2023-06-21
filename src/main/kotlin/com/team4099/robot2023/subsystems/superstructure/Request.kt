@@ -50,7 +50,8 @@ sealed interface Request {
   sealed interface ElevatorRequest : Request {
     class TargetingPosition(
       val position: Length,
-      val finalVelocity: LinearVelocity = 0.0.inches.perSecond
+      val finalVelocity: LinearVelocity = 0.0.inches.perSecond,
+      val canContinueBuffer: Length = 5.0.inches
     ) : ElevatorRequest
     class OpenLoop(val voltage: ElectricalPotential) : ElevatorRequest
     class Home : ElevatorRequest

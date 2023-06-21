@@ -339,7 +339,7 @@ class GroundIntake(private val io: GroundIntakeIO) {
 
         val profileOutput = armProfile.calculate(timeElapsed)
 
-        if (armProfile.isFinished(timeElapsed)) {
+        if (Math.abs((armPositionTarget - inputs.armPosition).inDegrees).degrees < 5.degrees) {
           setRollerVoltage(rollerVoltageTarget)
         }
 

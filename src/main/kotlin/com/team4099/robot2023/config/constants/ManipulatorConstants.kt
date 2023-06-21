@@ -23,7 +23,7 @@ object ManipulatorConstants {
 
   // TODO(Maybe tune feedforward constants)
   val ARM_KS = 0.4.volts
-  val ARM_KV = 0.2.volts / 1.0.inches.perSecond
+  val ARM_KV = 0.30.volts / 1.0.inches.perSecond
   val ARM_KA = 0.0.volts / 1.0.inches.perSecond.perSecond
 
   val SIM_ARM_KP = 20.volts / 1.0.inches

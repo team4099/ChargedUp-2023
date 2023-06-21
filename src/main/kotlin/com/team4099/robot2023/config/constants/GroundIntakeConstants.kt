@@ -19,7 +19,7 @@ import org.team4099.lib.units.perSecond
 object GroundIntakeConstants {
 
   object PID {
-    val NEO_KP = 1.5.volts / 1.degrees // 0.5
+    val NEO_KP = 1.0.volts / 1.degrees // 0.5
     val NEO_KI = 0.0.volts / (1.degrees * 1.seconds)
     val NEO_KD = 0.0.volts / (1.degrees.perSecond)
 
@@ -30,7 +30,7 @@ object GroundIntakeConstants {
     val ARM_KS = 0.2.volts
 
     val ARM_KG = 0.86.volts
-    val ARM_KV = 1.8.volts / 1.0.radians.perSecond
+    val ARM_KV = 2.5.volts / 1.0.radians.perSecond
     val ARM_KA = 0.1.volts / 1.0.radians.perSecond.perSecond
   }
 
@@ -64,10 +64,10 @@ object GroundIntakeConstants {
   val ARM_MOMENT_INERTIA = ARM_MASS * ARM_LENGTH.squared * 1 / 3
 
   val MAX_ARM_VELOCITY =
-    360.degrees
+    450.degrees
       .perSecond // todo mess with velocity and arm to get arm movements to sub 0.25 seconds
   // (ish)
-  val MAX_ARM_ACCELERATION = 600.degrees.perSecond.perSecond
+  val MAX_ARM_ACCELERATION = 800.degrees.perSecond.perSecond
 
   val ARM_MAX_ROTATION = 56.6.degrees
   val ARM_MIN_ROTATION = 0.degrees

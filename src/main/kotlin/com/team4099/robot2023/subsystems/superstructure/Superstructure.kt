@@ -23,6 +23,7 @@ import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform3d
 import org.team4099.lib.geometry.Translation3d
+import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
@@ -780,13 +781,15 @@ class Superstructure(
           }
         }
 
-        if (manipulator.isAtTargetedPosition &&
-          elevator.isAtTargetedPosition &&
+        if ((manipulator.isAtTargetedPosition &&
+          (elevator.isAtTargetedPosition || (NodeTier.HIGH == nodeTier && (
+            (elevator.inputs.elevatorPosition - 48.inches).absoluteValue.inInches < 8
+            ))) &&
           (
             groundIntake.isAtTargetedPosition ||
               groundIntake
                 .canContinueSafely
-            )
+            ))
         ) { // because manipulator and elevator will move while we're
           // switching between different cone tiers
           val rollerCommandedVoltage =
@@ -843,7 +846,11 @@ class Superstructure(
 
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(scoreHeight)
 
-          if (elevator.isAtTargetedPosition || elevator.canContinueSafely) {
+          Logger.getInstance().recordOutput("Superstructure/PlsBruh", (elevator.inputs.elevatorPosition - scoreHeight).absoluteValue.inInches)
+
+          if ((elevator.inputs.elevatorPosition - scoreHeight).absoluteValue.inInches < 8 || elevator.isAtTargetedPosition
+
+          ) {
 
             val extension =
               when (nodeTier) {
