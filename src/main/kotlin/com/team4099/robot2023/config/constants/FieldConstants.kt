@@ -1,5 +1,7 @@
 package com.team4099.robot2023.config.constants
 
+import com.team4099.lib.math.Zone2d
+import com.team4099.robot2023.util.AllianceFlipUtil
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.apriltag.AprilTag
@@ -12,6 +14,7 @@ import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.radians
@@ -62,7 +65,7 @@ object FieldConstants {
         )
       ),
       AprilTag(
-        4,
+        5,
         Pose3d(
           (43.125).inches,
           (173.375).inches,
@@ -71,7 +74,7 @@ object FieldConstants {
         )
       ),
       AprilTag(
-        5,
+        4,
         Pose3d(
           (409.5).inches,
           (85.5).inches,
@@ -244,6 +247,24 @@ object FieldConstants {
     }
   }
 
+  fun allianceFlip(zone: Zone2d): Zone2d {
+    return if (DriverStation.getAlliance() == Alliance.Red) {
+      Zone2d(zone.vertices.map { allianceFlip(it) })
+    } else {
+      zone
+    }
+  }
+
+  fun determineZone(zones: List<Zone2d>, pose: Pose2d): Zone2d? {
+    for (zone in zones) {
+      if (AllianceFlipUtil.apply(zone).containsPose(pose)) {
+        return zone
+      }
+    }
+
+    return null
+  }
+
   fun getTagPose(id: Int): Pose3d? {
     return if (Constants.Universal.REAL_FIELD) aprilTags.firstOrNull { it.id == id }?.pose
     else homeAprilTags.firstOrNull { it.id == id }?.pose
@@ -411,5 +432,116 @@ object FieldConstants {
         translations[i] = Translation2d(positionX, firstY + separationY * i)
       }
     }
+  }
+
+  object Zones {
+    val closeCommunity: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Grids.outerX, Community.rightY),
+          Translation2d(Community.chargingStationInnerX, Community.rightY),
+          Translation2d(Community.chargingStationInnerX, Community.leftY),
+          Translation2d(Grids.outerX, Community.leftY)
+        )
+      )
+
+    val farCommunity: Zone2d = AllianceFlipUtil.apply(closeCommunity, force=true)
+
+    val closeLoadingZoneLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d((132.25).inches, LoadingZone.rightY),
+          Translation2d(fieldLength / 2, LoadingZone.rightY),
+          Translation2d(fieldLength / 2, fieldWidth),
+          Translation2d((264.25).inches, fieldWidth),
+          Translation2d((264.25).inches, LoadingZone.midY),
+          Translation2d((132.25).inches, LoadingZone.midY)
+        )
+      )
+
+    val farLoadingZoneLane: Zone2d = AllianceFlipUtil.apply(closeLoadingZoneLane, force=true)
+
+    val closeLeftLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationLeftY),
+          Translation2d(fieldLength / 2, Community.chargingStationLeftY),
+          Translation2d(fieldLength / 2, Community.leftY),
+          Translation2d(Community.chargingStationInnerX, Community.leftY)
+        )
+      )
+
+    val farLeftLane: Zone2d = AllianceFlipUtil.apply(closeLeftLane, force=true)
+
+    val closeRightLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Community.chargingStationInnerX, 0.meters),
+          Translation2d(fieldLength / 2, 0.meters),
+          Translation2d(fieldLength / 2, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationRightY)
+        )
+      )
+
+    val farRightLane: Zone2d = AllianceFlipUtil.apply(closeRightLane, force=true)
+
+    val closeCenterLeftLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(
+            Community.chargingStationOuterX,
+            Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(
+            fieldLength / 2, Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(fieldLength / 2, Community.chargingStationLeftY),
+          Translation2d(Community.chargingStationOuterX, Community.chargingStationLeftY)
+        )
+      )
+
+    val farCenterLeftLane: Zone2d = AllianceFlipUtil.apply(closeCenterLeftLane, force=true)
+
+    val closeCenterRightLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(
+            Community.chargingStationOuterX,
+            Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(
+            fieldLength / 2, Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(fieldLength / 2, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationOuterX, Community.chargingStationRightY)
+        )
+      )
+
+    val farCenterRightLane: Zone2d = AllianceFlipUtil.apply(closeCenterRightLane, force=true)
+
+    val farLoadingZone: Zone2d =
+      Zone2d( // done
+        LoadingZone.regionCorners.toList()
+      )
+
+    val closeLoadingZone: Zone2d = AllianceFlipUtil.apply(farLoadingZone, force=true)
+
+    val allZones =
+      listOf<Zone2d>(
+        closeCommunity,
+        farCommunity,
+        closeLoadingZone,
+        farLoadingZone,
+        closeLoadingZoneLane,
+        farLoadingZoneLane,
+        closeLeftLane,
+        farLeftLane,
+        closeCenterLeftLane,
+        farCenterLeftLane,
+        closeCenterRightLane,
+        farCenterRightLane,
+        closeRightLane,
+        farRightLane
+      )
   }
 }

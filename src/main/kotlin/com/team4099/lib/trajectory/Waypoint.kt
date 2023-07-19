@@ -10,8 +10,8 @@ import java.util.Optional
 class Waypoint {
   /** Returns the translation component of the waypoint. */
   val translation: Translation2d
-  private val driveRotation: Rotation2d?
-  private val holonomicRotation: Rotation2d?
+  val driveRotation: Rotation2d?
+  val holonomicRotation: Rotation2d?
 
   /**
    * Constructs a Waypoint with a translation, drive rotation, and holonomic rotation.
