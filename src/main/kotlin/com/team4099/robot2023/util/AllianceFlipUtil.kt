@@ -1,6 +1,8 @@
 package com.team4099.robot2023.util
 
+import com.team4099.lib.math.Zone2d
 import com.team4099.lib.trajectory.RotationSequence
+import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.config.constants.FieldConstants
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.trajectory.Trajectory
@@ -23,8 +25,8 @@ import org.team4099.lib.units.derived.sin
  */
 object AllianceFlipUtil {
   /** Flips a translation to the correct side of the field based on the current alliance color. */
-  fun apply(translation: Translation2d): Translation2d {
-    return if (shouldFlip()) {
+  fun apply(translation: Translation2d, force: Boolean = false): Translation2d {
+    return if (shouldFlip() || force) {
       Translation2d(FieldConstants.fieldLength - translation.x, translation.y)
     } else {
       translation
@@ -68,6 +70,14 @@ object AllianceFlipUtil {
     }
   }
 
+  fun apply(waypoint: Waypoint): Waypoint {
+    return if (shouldFlip()) {
+      Waypoint(apply(waypoint.translation), waypoint.driveRotation, waypoint.holonomicRotation)
+    } else {
+      waypoint
+    }
+  }
+
   /**
    * Flips a trajectory state to the correct side of the field based on the current alliance color.
    */
@@ -87,6 +97,14 @@ object AllianceFlipUtil {
       )
     } else {
       state
+    }
+  }
+
+  fun apply(zone: Zone2d, force: Boolean = false): Zone2d {
+    return if (shouldFlip() || force) {
+      Zone2d(zone.vertices.map { AllianceFlipUtil.apply(it, force) })
+    } else {
+      zone
     }
   }
 

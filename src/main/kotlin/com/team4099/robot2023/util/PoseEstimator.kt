@@ -6,6 +6,7 @@ import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.numbers.N1
 import edu.wpi.first.math.numbers.N3
 import edu.wpi.first.wpilibj.Timer
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Twist2d
 import org.team4099.lib.units.base.Time
@@ -45,7 +46,12 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
   fun addVisionData(visionData: List<TimestampedVisionUpdate>) {
     for (timestampedVisionUpdate in visionData) {
       val timestamp: Double = timestampedVisionUpdate.timestamp.inSeconds
-      val visionUpdate = VisionUpdate(timestampedVisionUpdate.pose, timestampedVisionUpdate.stdDevs)
+      val visionUpdate =
+        VisionUpdate(
+          timestampedVisionUpdate.pose,
+          timestampedVisionUpdate.stdDevs,
+          timestampedVisionUpdate.fromVision
+        )
       if (updates.containsKey(timestamp)) {
         // There was already an update at this timestamp, add to it
         val oldVisionUpdates: ArrayList<VisionUpdate> = updates[timestamp]!!.visionUpdates
@@ -97,6 +103,17 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
     latestPose = basePose
     for (updateEntry in updates.entries) {
       latestPose = updateEntry.value.apply(latestPose, q)
+    }
+
+    for (update in updates) {
+      if (update.value.visionUpdates.size > 0 && update.value.visionUpdates[0].fromVision) {
+        Logger.getInstance().recordOutput("Vision/Buffer/Vision", update.key)
+
+        Logger.getInstance()
+          .recordOutput("Vision/Buffer/VisionPose", update.value.visionUpdates[0].pose.pose2d)
+      } else {
+        Logger.getInstance().recordOutput("Vision/Buffer/Drivetrain", update.key)
+      }
     }
   }
 
@@ -154,7 +171,11 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
   }
 
   /** Represents a single vision pose with associated standard deviations. */
-  class VisionUpdate(val pose: Pose2d, val stdDevs: Matrix<N3, N1>) {
+  class VisionUpdate(
+    val pose: Pose2d,
+    val stdDevs: Matrix<N3, N1>,
+    val fromVision: Boolean = false
+  ) {
     companion object {
       val compareDescStdDev = Comparator { a: VisionUpdate, b: VisionUpdate ->
         -(a.stdDevs.get(0, 0) + a.stdDevs.get(1, 0)).compareTo(
@@ -165,7 +186,12 @@ class PoseEstimator(stateStdDevs: Matrix<N3?, N1?>) {
   }
 
   /** Represents a single vision pose with a timestamp and associated standard deviations. */
-  class TimestampedVisionUpdate(val timestamp: Time, val pose: Pose2d, val stdDevs: Matrix<N3, N1>)
+  class TimestampedVisionUpdate(
+    val timestamp: Time,
+    val pose: Pose2d,
+    val stdDevs: Matrix<N3, N1>,
+    val fromVision: Boolean = false
+  )
   companion object {
     private const val historyLengthSecs = 0.3
   }
