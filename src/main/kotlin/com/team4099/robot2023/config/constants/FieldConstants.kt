@@ -435,17 +435,41 @@ object FieldConstants {
   }
 
   object Zones {
-    val closeCommunity: Zone2d =
+    val closeLeftCommunity: Zone2d =
       Zone2d( // done
         listOf(
-          Translation2d(Grids.outerX, Community.rightY),
-          Translation2d(Community.chargingStationInnerX, Community.rightY),
+          Translation2d(Grids.outerX, Community.chargingStationLeftY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationLeftY),
           Translation2d(Community.chargingStationInnerX, Community.leftY),
           Translation2d(Grids.outerX, Community.leftY)
         )
       )
 
-    val farCommunity: Zone2d = AllianceFlipUtil.apply(closeCommunity, force=true)
+    val farLeftCommunity: Zone2d = AllianceFlipUtil.apply(closeLeftCommunity, force = true)
+
+    val closeCenterCommunity: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Grids.outerX, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationLeftY),
+          Translation2d(Grids.outerX, Community.chargingStationLeftY)
+        )
+      )
+
+    val farCenterCommunity: Zone2d = AllianceFlipUtil.apply(closeCenterCommunity, force = true)
+
+    val closeRightCommunity: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Grids.outerX, Community.rightY),
+          Translation2d(Community.chargingStationInnerX, Community.rightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationRightY),
+          Translation2d(Grids.outerX, Community.chargingStationRightY)
+        )
+      )
+
+    val farRightCommunity: Zone2d = AllianceFlipUtil.apply(closeRightCommunity, force = true)
 
     val closeLoadingZoneLane: Zone2d =
       Zone2d( // done
@@ -459,7 +483,7 @@ object FieldConstants {
         )
       )
 
-    val farLoadingZoneLane: Zone2d = AllianceFlipUtil.apply(closeLoadingZoneLane, force=true)
+    val farLoadingZoneLane: Zone2d = AllianceFlipUtil.apply(closeLoadingZoneLane, force = true)
 
     val closeLeftLane: Zone2d =
       Zone2d( // done
@@ -471,7 +495,7 @@ object FieldConstants {
         )
       )
 
-    val farLeftLane: Zone2d = AllianceFlipUtil.apply(closeLeftLane, force=true)
+    val farLeftLane: Zone2d = AllianceFlipUtil.apply(closeLeftLane, force = true)
 
     val closeRightLane: Zone2d =
       Zone2d( // done
@@ -483,7 +507,7 @@ object FieldConstants {
         )
       )
 
-    val farRightLane: Zone2d = AllianceFlipUtil.apply(closeRightLane, force=true)
+    val farRightLane: Zone2d = AllianceFlipUtil.apply(closeRightLane, force = true)
 
     val closeCenterLeftLane: Zone2d =
       Zone2d( // done
@@ -500,7 +524,7 @@ object FieldConstants {
         )
       )
 
-    val farCenterLeftLane: Zone2d = AllianceFlipUtil.apply(closeCenterLeftLane, force=true)
+    val farCenterLeftLane: Zone2d = AllianceFlipUtil.apply(closeCenterLeftLane, force = true)
 
     val closeCenterRightLane: Zone2d =
       Zone2d( // done
@@ -517,19 +541,23 @@ object FieldConstants {
         )
       )
 
-    val farCenterRightLane: Zone2d = AllianceFlipUtil.apply(closeCenterRightLane, force=true)
+    val farCenterRightLane: Zone2d = AllianceFlipUtil.apply(closeCenterRightLane, force = true)
 
     val farLoadingZone: Zone2d =
       Zone2d( // done
         LoadingZone.regionCorners.toList()
       )
 
-    val closeLoadingZone: Zone2d = AllianceFlipUtil.apply(farLoadingZone, force=true)
+    val closeLoadingZone: Zone2d = AllianceFlipUtil.apply(farLoadingZone, force = true)
 
     val allZones =
       listOf<Zone2d>(
-        closeCommunity,
-        farCommunity,
+        closeLeftCommunity,
+        farLeftCommunity,
+        closeCenterCommunity,
+        farCenterCommunity,
+        closeRightCommunity,
+        farRightCommunity,
         closeLoadingZone,
         farLoadingZone,
         closeLoadingZoneLane,

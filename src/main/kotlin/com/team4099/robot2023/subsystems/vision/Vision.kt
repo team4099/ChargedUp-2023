@@ -289,7 +289,6 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
     Logger.getInstance()
       .recordOutput("Vision/allTagPoses", *allTagPoses.map { it.pose3d }.toTypedArray())
 
-
     visionConsumer.accept(visionUpdates)
 
     Logger.getInstance()

@@ -42,22 +42,25 @@ class AutoIntakeCommand(val drivetrain: Drivetrain, val superstructure: Superstr
             AllianceFlipUtil.apply(it)
           }
         if (intermediaryWaypoints.isEmpty()) {
-          intermediaryWaypoints = listOf<Waypoint>(
-            Waypoint(
-              drivePose.pose2d.translation,
-              if (drivetrain.fieldVelocity.magnitude.absoluteValue < 0.25.meters.perSecond)
-                null
-              else heading.inRotation2ds,
-              drivePose.rotation.inRotation2ds
+          intermediaryWaypoints =
+            listOf<Waypoint>(
+              Waypoint(
+                drivePose.pose2d.translation,
+                if (drivetrain.fieldVelocity.magnitude.absoluteValue <
+                  0.25.meters.perSecond
+                )
+                  null
+                else heading.inRotation2ds,
+                drivePose.rotation.inRotation2ds
+              )
             )
-          )
         }
 
-        for (vertex in FieldConstants.Zones.farLeftLane.vertices){
+        for (vertex in FieldConstants.Zones.farLeftLane.vertices) {
           println("${vertex.x}, ${vertex.y}")
         }
         println("------")
-        for (vertex in FieldConstants.Zones.closeLeftLane.vertices){
+        for (vertex in FieldConstants.Zones.closeLeftLane.vertices) {
           println("${vertex.x}, ${vertex.y}")
         }
       })
