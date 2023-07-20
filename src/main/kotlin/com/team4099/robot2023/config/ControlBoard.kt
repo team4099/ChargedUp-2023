@@ -62,12 +62,21 @@ object ControlBoard {
   val scoreOuttake = Trigger { driver.xButton }
   val groundIntakeCube = Trigger { driver.rightShoulderButton }
 
-  val increaseRollerVoltage = Trigger { operator.dPadUp }
-  val decreaseRollerVoltage = Trigger { operator.dPadDown }
+<<<<<<< Updated upstream
+//  val increaseRollerVoltage = Trigger { operator.dPadUp }
+//  val decreaseRollerVoltage = Trigger { operator.dPadDown }
 
   val groundIntakeCone = Trigger { driver.yButton }
-  val autoScore = Trigger { driver.rightTriggerAxis > 0.5 }
-  val dpadDown = Trigger { driver.dPadDown }
+  val autoScore = Trigger { driver.dPadDown}
+//  val dpadDown = Trigger { driver.dPadDown }
+=======
+  //  val increaseRollerVoltage = Trigger { operator.dPadUp }
+  //  val decreaseRollerVoltage = Trigger { operator.dPadDown }
+
+  val groundIntakeCone = Trigger { driver.yButton }
+  val autoScore = Trigger { driver.dPadDown }
+  //  val dpadDown = Trigger { driver.dPadDown }
+>>>>>>> Stashed changes
 
   val ejectGamePiece = Trigger { operator.dPadRight }
 
