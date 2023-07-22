@@ -2,7 +2,6 @@ package com.team4099.robot2023.subsystems.superstructure
 
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.NodeTier
-import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearVelocity
@@ -75,7 +74,8 @@ sealed interface Request {
     ) : DrivetrainRequest
     class ClosedLoop(
       val chassisSpeeds: ChassisSpeeds,
-      val chassisAccels: ChassisSpeeds = edu.wpi.first.math.kinematics.ChassisSpeeds(0.0, 0.0, 0.0)
+      val chassisAccels: ChassisSpeeds =
+        edu.wpi.first.math.kinematics.ChassisSpeeds(0.0, 0.0, 0.0)
     ) : DrivetrainRequest
     class ZeroSensors() : DrivetrainRequest
   }

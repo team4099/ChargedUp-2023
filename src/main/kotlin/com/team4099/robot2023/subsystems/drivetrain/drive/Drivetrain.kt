@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
-import org.team4099.lib.controller.TrapezoidProfile
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Rotation3d
@@ -43,12 +42,9 @@ import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
-import org.team4099.lib.units.derived.volts
-import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
 import java.util.function.Supplier
@@ -86,12 +82,11 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   var targetedDriveVector = Pair(0.meters.perSecond, 0.meters.perSecond)
 
-  var fieldOrientation = true  // true denotes that when driving, it'll be field oriented.
+  var fieldOrientation = true // true denotes that when driving, it'll be field oriented.
 
   var targetedChassisSpeeds = edu.wpi.first.math.kinematics.ChassisSpeeds(0.0, 0.0, 0.0)
 
   var targetedChassisAccels = edu.wpi.first.math.kinematics.ChassisSpeeds(0.0, 0.0, 0.0)
-
 
   var currentState: DrivetrainState = DrivetrainState.UNINITIALIZED
 
@@ -306,32 +301,32 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         // Transitions
         nextState = DrivetrainState.ZEROING_SENSORS
       }
-
       DrivetrainState.ZEROING_SENSORS -> {
         zeroSensors()
 
         // Transitions
-        nextState = Drivetrain.fromRequestToState(currentRequest)
+        nextState = fromRequestToState(currentRequest)
       }
-
       DrivetrainState.OPEN_LOOP -> {
         // Outputs
         setOpenLoop(velocityTarget, targetedDriveVector, fieldOrientation)
 
         // Transitions
-        nextState = Drivetrain.fromRequestToState(currentRequest)
+        nextState = fromRequestToState(currentRequest)
       }
-
       DrivetrainState.CLOSED_LOOP -> {
         // Outputs
         setClosedLoop(targetedChassisSpeeds, targetedChassisAccels)
 
         // Transitions
-        nextState = Drivetrain.fromRequestToState(currentRequest)
+        nextState = fromRequestToState(currentRequest)
       }
     }
 
     currentState = nextState
+
+    // Log the current state
+    Logger.getInstance().recordOutput("Drivetrain/requestedState", currentState.toString())
   }
 
   private fun updateOdometry() {
@@ -655,7 +650,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       inline fun equivalentToRequest(request: Request.DrivetrainRequest): Boolean {
         return (
           (request is Request.DrivetrainRequest.ZeroSensors && this == ZEROING_SENSORS) ||
-          (request is Request.DrivetrainRequest.OpenLoop && this == OPEN_LOOP) ||
+            (request is Request.DrivetrainRequest.OpenLoop && this == OPEN_LOOP) ||
             (request is Request.DrivetrainRequest.ClosedLoop && this == CLOSED_LOOP)
           )
       }
