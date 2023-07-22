@@ -9,6 +9,7 @@ import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.LedConstants.LEDMode
 import com.team4099.robot2023.config.constants.ManipulatorConstants
 import com.team4099.robot2023.config.constants.NodeTier
+import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.elevator.Elevator
 import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
@@ -1699,7 +1700,7 @@ class Superstructure(
       SCORE_PREP,
       SCORE_CUBE,
       SCORE_CONE,
-      SCORE_CLEANUP,
+      SCORE_CLEANUP
     }
   }
 }
