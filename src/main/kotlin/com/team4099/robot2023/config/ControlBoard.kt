@@ -69,7 +69,6 @@ object ControlBoard {
   val autoScore = Trigger { driver.rightTriggerAxis > 0.5 }
   val dpadDown = Trigger { driver.dPadDown }
 
-
   val ejectGamePiece = Trigger { operator.dPadRight }
 
   // val armCharacterization = Trigger { operator.yButton }

@@ -1,7 +1,7 @@
 package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
-import com.team4099.robot2023.commands.AutoIntakeCommand
+import com.team4099.robot2023.commands.AutoScoreCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -203,7 +203,7 @@ object RobotContainer {
     )
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
-    ControlBoard.autoScore.whileTrue(AutoIntakeCommand(drivetrain, superstructure))
+    ControlBoard.autoScore.whileTrue(AutoScoreCommand(drivetrain, superstructure))
 
     ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
