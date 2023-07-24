@@ -12,16 +12,19 @@ import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.PoseEstimator
 import com.team4099.robot2023.util.Velocity2d
 import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.networktables.NetworkTablesJNI
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation2dWPILIB
 import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
@@ -39,7 +42,6 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
@@ -116,7 +118,16 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       backRightWheelLocation.translation2d
     )
 
-  var swerveDrivePoseEstimator = PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.00001))
+  // var swerveDrivePoseEstimator = PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.00001))
+  var swerveDrivePoseEstimator =
+    SwerveDrivePoseEstimator(
+      swerveDriveKinematics,
+      gyroInputs.gyroYaw.inRotation2ds,
+      generateSwerveModuleStates(),
+      Pose2d().pose2d,
+      VecBuilder.fill(0.003, 0.003, 0.00001),
+      VecBuilder.fill(0.07, 0.07, 0.75)
+    )
 
   var swerveDriveOdometry =
     SwerveDriveOdometry(
@@ -131,16 +142,18 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     )
 
   var odometryPose: Pose2d
-    //get() = swerveDrivePoseEstimator.getLatestPose()
-    get() {
-      return Pose2d(
-        42.875.inches + 79.centi.meters + 14.inches + 2.75.inches,
-        113.25.inches + 1.inches,
-        180.degrees
-      )
-    }
+    get() = Pose2d(swerveDrivePoseEstimator.estimatedPosition)
+    //    get() {
+    //      return Pose2d(
+    //        42.875.inches + 79.centi.meters + 14.inches + 2.75.inches,
+    //        113.25.inches + 1.inches,
+    //        180.degrees
+    //      )
+    //    }
     set(value) {
-      swerveDrivePoseEstimator.resetPose(value)
+      swerveDrivePoseEstimator.resetPosition(
+        Rotation2dWPILIB(value.rotation.inRadians), generateSwerveModuleStates(), value.pose2d
+      )
 
       if (RobotBase.isReal()) {} else {
         undriftedPose = odometryPose
@@ -181,6 +194,8 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   var lastGyroYaw = 0.0.radians
 
   override fun periodic() {
+    Logger.getInstance().recordOutput("Drivetrain/timestamp", NetworkTablesJNI.now())
+
     val startTime = Clock.realTimestamp
     gyroNotConnectedAlert.set(!gyroInputs.gyroConnected)
     gyroIO.updateInputs(gyroInputs)
@@ -325,7 +340,13 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       Logger.getInstance().recordOutput(VisionConstants.SIM_POSE_TOPIC_NAME, undriftedPose.pose2d)
     }
 
-    swerveDrivePoseEstimator.addDriveData(Clock.fpgaTime.inSeconds, Twist2d(driveTwist))
+    swerveDrivePoseEstimator.updateWithTime(
+      Clock.fpgaTime.inSeconds,
+      gyroInputs.gyroYaw.inRotation2ds,
+      generateSwerveModuleStates(),
+    )
+
+    Logger.getInstance().recordOutput("Vision/drivetrainTimestamp", Clock.fpgaTime.inSeconds)
   }
 
   /**
@@ -546,7 +567,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   fun zeroGyroYaw(toAngle: Angle = 0.degrees) {
     gyroIO.zeroGyroYaw(toAngle)
 
-    swerveDrivePoseEstimator.resetPose(Pose2d(odometryPose.x, odometryPose.y, gyroInputs.gyroYaw))
+    odometryPose = Pose2d(odometryPose.x, odometryPose.y, gyroInputs.gyroYaw)
 
     if (RobotBase.isSimulation()) {
       swerveDriveOdometry.resetPosition(
@@ -579,7 +600,32 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     swerveModules.forEach { it.zeroDrive() }
   }
 
+  private fun generateSwerveModuleStates(): Array<SwerveModulePosition> {
+    var moduleStates = mutableListOf<SwerveModulePosition>()
+    for (module in swerveModules) {
+      moduleStates.add(
+        SwerveModulePosition(
+          module.inputs.drivePosition.inMeters,
+          Rotation2dWPILIB(module.inputs.steeringPosition.inRadians)
+        )
+      )
+    }
+
+    return moduleStates.toTypedArray()
+  }
+
   fun addVisionData(visionData: List<PoseEstimator.TimestampedVisionUpdate>) {
-    swerveDrivePoseEstimator.addVisionData(visionData)
+    var count = 0.0
+    var time = mutableListOf<Number>()
+    for (poseEstimate in visionData) {
+      Logger.getInstance()
+        .recordOutput("Vision/glitch_instance/${count}_instance", poseEstimate.pose.pose2d)
+      swerveDrivePoseEstimator.addVisionMeasurement(
+        poseEstimate.pose.pose2d, poseEstimate.timestamp.inSeconds
+      )
+      count += 1
+      time.add(poseEstimate.timestamp.inSeconds)
+    }
+    Logger.getInstance().recordOutput("Vision/glitch_instance/total_count", count)
   }
 }

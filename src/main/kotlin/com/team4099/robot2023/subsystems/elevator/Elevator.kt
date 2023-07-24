@@ -337,9 +337,9 @@ class Elevator(val io: ElevatorIO) {
     get() =
       (
         currentRequest is ElevatorRequest.TargetingPosition &&
-          (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <= elevatorContinueBuffer
-        ) ||
-        (TunableElevatorHeights.enableElevator.get() != 1.0)
+          (inputs.elevatorPosition - elevatorPositionTarget).absoluteValue <=
+          elevatorContinueBuffer
+        ) || (TunableElevatorHeights.enableElevator.get() != 1.0)
 
   init {
     TunableElevatorHeights

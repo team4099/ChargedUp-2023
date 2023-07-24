@@ -86,7 +86,7 @@ object Robot : LoggedRobot() {
         Constants.Universal.POWER_DISTRIBUTION_HUB_ID, PowerDistribution.ModuleType.kRev
       )
     } else {
-      when (Constants.Universal.SIM_MODE) {
+      when (Constants.Tuning.SimType.SIM) {
         Constants.Tuning.SimType.SIM -> {
           logger.addDataReceiver(NTSafePublisher())
           logSimulationAlert.set(true)

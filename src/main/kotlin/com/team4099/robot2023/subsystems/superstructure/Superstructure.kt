@@ -747,7 +747,7 @@ class Superstructure(
           }
         } else {
           if (scoringConeWithoutLoweringGroundIntake) { // previously scored without lowering ground
-            // intake so we need to retract manipulator
+            // intake, so we need to retract manipulator
             // and lower elevator
             val rollerCommandedVoltage =
               when (usingGamePiece) {
@@ -781,16 +781,23 @@ class Superstructure(
           }
         }
 
-        if ((manipulator.isAtTargetedPosition &&
-          (elevator.isAtTargetedPosition || (NodeTier.HIGH == nodeTier && (
-            (elevator.inputs.elevatorPosition - 48.inches).absoluteValue.inInches < 8
-            ))) &&
-          (
-            groundIntake.isAtTargetedPosition ||
-              groundIntake
-                .canContinueSafely
-            ))
-        ) { // because manipulator and elevator will move while we're
+        if ((
+          manipulator.isAtTargetedPosition &&
+            (
+              elevator.isAtTargetedPosition ||
+                (
+                  NodeTier.HIGH == nodeTier &&
+                    ((elevator.inputs.elevatorPosition - 48.inches).absoluteValue.inInches < 8)
+                  )
+              ) &&
+            (
+              groundIntake.isAtTargetedPosition ||
+                groundIntake
+                  .canContinueSafely
+              )
+          )
+        ) { // because manipulator and elevator will move while
+          // we're
           // switching between different cone tiers
           val rollerCommandedVoltage =
             when (usingGamePiece) {
@@ -846,10 +853,14 @@ class Superstructure(
 
           elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(scoreHeight)
 
-          Logger.getInstance().recordOutput("Superstructure/PlsBruh", (elevator.inputs.elevatorPosition - scoreHeight).absoluteValue.inInches)
+          Logger.getInstance()
+            .recordOutput(
+              "Superstructure/PlsBruh",
+              (elevator.inputs.elevatorPosition - scoreHeight).absoluteValue.inInches
+            )
 
-          if ((elevator.inputs.elevatorPosition - scoreHeight).absoluteValue.inInches < 8 || elevator.isAtTargetedPosition
-
+          if ((elevator.inputs.elevatorPosition - scoreHeight).absoluteValue.inInches < 8 ||
+            elevator.isAtTargetedPosition
           ) {
 
             val extension =
@@ -1166,6 +1177,28 @@ class Superstructure(
         .until { currentState == SuperstructureStates.SINGLE_SUBSTATION_INTAKE_CLEANUP }
 
     returnCommand.name = "SingleSubIntakeConeCommand"
+    return returnCommand
+  }
+
+  fun intakeFromSubstationCommand(): CommandBase {
+    val returnCommand =
+      if (objective.substation in
+        setOf(
+            Constants.Universal.Substation.DOUBLE_SUBSTATION_LEFT,
+            Constants.Universal.Substation.DOUBLE_SUBSTATION_RIGHT
+          )
+      ) {
+        runOnce {
+          currentRequest = SuperstructureRequest.DoubleSubstationIntakePrep(GamePiece.CONE)
+        }
+          .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP }
+      } else {
+        runOnce { currentRequest = SuperstructureRequest.GroundIntakeCone() }.until {
+          isAtRequestedState && currentState == SuperstructureStates.GROUND_INTAKE_CONE
+        }
+      }
+
+    returnCommand.name = "IntakeFromSubstationCommand"
     return returnCommand
   }
 

@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.util.PoseEstimator
 import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
@@ -29,17 +30,17 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
   val inputs = List(io.size) { CameraIO.CameraInputs() }
 
   companion object {
-    val ambiguityThreshold = 0.15
+    val ambiguityThreshold = 1.6
     val targetLogTime = 0.05.seconds
     val cameraPoses = VisionConstants.CAMERA_TRANSFORMS
 
-    val xyStdDevCoeffecient = 0.01
+    val xyStdDevCoeffecient = 0.1
     val thetaStdDevCoefficient = 0.75
   }
 
-  private val xyStdDevCoefficient = TunableNumber("Vision/xystdev", 0.1)
+  private val xyStdDevCoefficient = TunableNumber("Vision/xystdev", Vision.xyStdDevCoeffecient)
 
-  private val thetaStdDev = TunableNumber("Vision/thetaStdDev", 0.75)
+  private val thetaStdDev = TunableNumber("Vision/thetaStdDev", Vision.thetaStdDevCoefficient)
 
   private var poseSupplier = Supplier<Pose2d> { Pose2d() }
   private var visionConsumer: Consumer<List<PoseEstimator.TimestampedVisionUpdate>> = Consumer {}
@@ -86,7 +87,6 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
     val visionUpdates = mutableListOf<PoseEstimator.TimestampedVisionUpdate>()
 
     for (instance in io.indices) {
-
       for (frameIndex in inputs[instance].timestamps.indices) {
         lastFrameTimes[instance] = Clock.fpgaTime
         val timestamp = inputs[instance].timestamps[frameIndex]
@@ -185,6 +185,19 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
           }
         }
 
+        val rejectPose: Boolean =
+          (
+            robotPose != null &&
+              (
+                (
+                  (currentPose - robotPose).translation.magnitude.meters > 2.meters &&
+                    DriverStation.isEnabled()
+                  )
+                )
+            )
+
+        Logger.getInstance().recordOutput("Vision/rejectPose", rejectPose)
+
         if (cameraPose == null || robotPose == null) {
           continue
         }
@@ -212,30 +225,41 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
         val xyStdDev = xyStdDevCoefficient.get() * averageDistance.inMeters.pow(2) / tagPoses.size
         val thetaStdDev = thetaStdDev.get() * averageDistance.inMeters.pow(2) / tagPoses.size
 
+        Logger.getInstance().recordOutput("Vision/timestamp", (timestamp).inMilliseconds)
+
         visionUpdates.add(
           PoseEstimator.TimestampedVisionUpdate(
-            timestamp, robotPose, VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
+            timestamp, robotPose, VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev), true
           )
         )
+
         robotPoses.add(robotPose)
 
-        Logger.getInstance()
-          .recordOutput(
-            "Vision/${VisionConstants.CAMERA_NAMES[instance]}/latencyMS",
-            (Clock.fpgaTime - timestamp).inMilliseconds
-          )
+        if (!DriverStation.isEStopped()) {
+          Logger.getInstance()
+            .recordOutput(
+              "Vision/${VisionConstants.CAMERA_NAMES[instance]}/latencyMS",
+              (Clock.fpgaTime - timestamp).inMilliseconds
+            )
 
-        Logger.getInstance()
-          .recordOutput(
-            "Vision/${VisionConstants.CAMERA_NAMES[instance]}/estimatedRobotPose",
-            robotPose.pose2d
-          )
+          Logger.getInstance()
+            .recordOutput(
+              "Vision/${VisionConstants.CAMERA_NAMES[instance]}/estimatedRobotPose",
+              robotPose.pose2d
+            )
 
-        Logger.getInstance()
-          .recordOutput(
-            "Vision/${VisionConstants.CAMERA_NAMES[instance]}/tagPoses",
-            *tagPoses.map { it.pose3d }.toTypedArray()
-          )
+          Logger.getInstance()
+            .recordOutput(
+              "Vision/${VisionConstants.CAMERA_NAMES[instance]}/estimatedRobotPoseDistance",
+              robotPose.x.inMeters
+            )
+
+          Logger.getInstance()
+            .recordOutput(
+              "Vision/${VisionConstants.CAMERA_NAMES[instance]}/tagPoses",
+              *tagPoses.map { it.pose3d }.toTypedArray()
+            )
+        }
       }
 
       if (inputs[instance].timestamps.isEmpty()) {
