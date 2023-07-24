@@ -1180,6 +1180,28 @@ class Superstructure(
     return returnCommand
   }
 
+  fun intakeFromSubstationCommand(): CommandBase {
+    val returnCommand =
+      if (objective.substation in
+        setOf(
+            Constants.Universal.Substation.DOUBLE_SUBSTATION_LEFT,
+            Constants.Universal.Substation.DOUBLE_SUBSTATION_RIGHT
+          )
+      ) {
+        runOnce {
+          currentRequest = SuperstructureRequest.DoubleSubstationIntakePrep(GamePiece.CONE)
+        }
+          .until { currentState == SuperstructureStates.DOUBLE_SUBSTATION_CLEANUP }
+      } else {
+        runOnce { currentRequest = SuperstructureRequest.GroundIntakeCone() }.until {
+          isAtRequestedState && currentState == SuperstructureStates.GROUND_INTAKE_CONE
+        }
+      }
+
+    returnCommand.name = "IntakeFromSubstationCommand"
+    return returnCommand
+  }
+
   fun score(): CommandBase {
     var stateToBeChecked: SuperstructureStates
     if (usingGamePiece == GamePiece.CUBE) {

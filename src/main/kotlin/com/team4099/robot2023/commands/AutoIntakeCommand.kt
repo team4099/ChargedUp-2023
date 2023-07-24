@@ -140,7 +140,7 @@ class AutoIntakeCommand(val drivetrain: Drivetrain, val superstructure: Superstr
         keepTrapping = true,
         flipForAlliances = false
       ),
-      superstructure.groundIntakeConeCommand()
+      superstructure.intakeFromSubstationCommand()
     )
   }
 
