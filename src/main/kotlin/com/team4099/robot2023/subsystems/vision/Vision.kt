@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.vision.camera.CameraIO
 import com.team4099.robot2023.util.PoseEstimator
 import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.SubsystemBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
@@ -19,6 +20,7 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import java.util.function.Consumer
 import java.util.function.Supplier
@@ -29,17 +31,17 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
   val inputs = List(io.size) { CameraIO.CameraInputs() }
 
   companion object {
-    val ambiguityThreshold = 0.15
+    val ambiguityThreshold = 0.7
     val targetLogTime = 0.05.seconds
     val cameraPoses = VisionConstants.CAMERA_TRANSFORMS
 
-    val xyStdDevCoeffecient = 0.01
-    val thetaStdDevCoefficient = 0.75
+    val xyStdDevCoeffecient = 0.05
+    val thetaStdDevCoefficient = 1.5
   }
 
-  private val xyStdDevCoefficient = TunableNumber("Vision/xystdev", 0.1)
+  private val xyStdDevCoefficient = TunableNumber("Vision/xystdev", xyStdDevCoeffecient)
 
-  private val thetaStdDev = TunableNumber("Vision/thetaStdDev", 0.75)
+  private val thetaStdDev = TunableNumber("Vision/thetaStdDev", thetaStdDevCoefficient)
 
   private var poseSupplier = Supplier<Pose2d> { Pose2d() }
   private var visionConsumer: Consumer<List<PoseEstimator.TimestampedVisionUpdate>> = Consumer {}
@@ -109,6 +111,7 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
             // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
 
             robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
+            println("CameraPoseX: ${cameraPose.x}, transformX: ${cameraPoses[instance].x}, robotPoseX: ${robotPose.x}")
           }
           2.0 -> {
             val error0 = values[1]
@@ -186,6 +189,10 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
         }
 
         if (cameraPose == null || robotPose == null) {
+          continue
+        }
+
+        if ((robotPose.rotation - currentPose.rotation).absoluteValue > 7.degrees && DriverStation.isEnabled()){
           continue
         }
 

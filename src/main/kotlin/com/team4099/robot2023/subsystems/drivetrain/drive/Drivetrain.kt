@@ -116,13 +116,13 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
       backRightWheelLocation.translation2d
     )
 
-  var swerveDrivePoseEstimator = PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.00001))
+  var swerveDrivePoseEstimator = PoseEstimator(VecBuilder.fill(0.003, 0.003, 0.0001))
 
   var swerveDriveOdometry =
     SwerveDriveOdometry(
       swerveDriveKinematics,
       gyroInputs.gyroYaw.inRotation2ds,
-      swerveModules.map { it.modulePosition }.toTypedArray()
+      swerveModules.map { it. modulePosition }.toTypedArray()
     )
 
   var setPointStates =
@@ -131,14 +131,14 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     )
 
   var odometryPose: Pose2d
-    //get() = swerveDrivePoseEstimator.getLatestPose()
-    get() {
-      return Pose2d(
-        42.875.inches + 79.centi.meters + 14.inches + 2.75.inches,
-        113.25.inches + 1.inches,
-        180.degrees
-      )
-    }
+    get() = swerveDrivePoseEstimator.getLatestPose()
+//    get() {
+//      return Pose2d(
+//        42.875.inches + 79.centi.meters + 14.inches + 2.75.inches,
+//        113.25.inches + 1.inches,
+//        180.degrees
+//      )
+//    }
     set(value) {
       swerveDrivePoseEstimator.resetPose(value)
 
@@ -318,7 +318,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
             swerveModules[i].modulePosition.angle
           )
       }
-      swerveDriveOdometry.update(gyroInputs.gyroYaw.inRotation2ds, undriftedModules)
+      swerveDriveOdometry.update((gyroInputs.gyroYaw).inRotation2ds, undriftedModules)
 
       drift = undriftedPose.minus(odometryPose)
 

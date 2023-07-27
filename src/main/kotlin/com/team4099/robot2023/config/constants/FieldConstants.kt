@@ -12,8 +12,11 @@ import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 
@@ -35,61 +38,50 @@ object FieldConstants {
   val homeAprilTags: List<AprilTag> =
     listOf(
       AprilTag(
-        1,
-        Pose3d(
-          40.inches,
-          (104.125).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-        )
-      ),
-      AprilTag(
-        2,
-        Pose3d(
-          (43.125).inches,
-          (40.875).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-        )
-      ),
-      AprilTag(
-        3,
-        Pose3d(
-          (42.875).inches,
-          (113.25).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-        )
-      ),
-      AprilTag(
         4,
         Pose3d(
-          (43.125).inches,
-          (173.375).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+          (103.5).inches,
+          (-2.5).inches,
+          (51.5).centi.meters,
+          Rotation3d(0.0.radians, 0.0.radians, 90.degrees)
         )
       ),
       AprilTag(
         5,
         Pose3d(
-          (409.5).inches,
-          (85.5).inches,
-          (27.833).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+          (1).centi.meters,
+          (87.5).inches,
+          (89.3).centi.meters,
+          Rotation3d()
+        )
+      ),
+      AprilTag(
+        2,
+        Pose3d(
+          (1).centi.meters,
+          (87.5).inches + 91.6.centi.meters,
+          (89.1).centi.meters,
+          Rotation3d()
         )
       ),
       AprilTag(
         6,
         Pose3d(
-          (40.45).inches,
-          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
-          (18.22).inches,
+          (1).centi.meters,
+          (87.5).inches + 183.3.centi.meters, // FIRST's diagram has a typo (it says 147.19) // 91.8
+          (89.9).centi.meters,
           Rotation3d()
         )
       ),
-      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
-      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
+      AprilTag(
+        0,
+        Pose3d(
+          (1).centi.meters,
+          (87.5).inches + 274.8.centi.meters,
+          (91.5).centi.meters,
+          Rotation3d()
+        )
+      )
     )
 
   //  val homeAprilTags: List<AprilTag> =
