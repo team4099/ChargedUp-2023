@@ -322,7 +322,9 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         // Transitions
         nextState = fromRequestToState(currentRequest)
       }
-      DrivetrainState.IDLE -> {}
+      DrivetrainState.IDLE -> {
+        nextState = fromRequestToState(currentRequest)
+      }
     }
 
     currentState = nextState
