@@ -77,7 +77,8 @@ sealed interface Request {
       val chassisAccels: ChassisSpeeds =
         edu.wpi.first.math.kinematics.ChassisSpeeds(0.0, 0.0, 0.0)
     ) : DrivetrainRequest
-    class ZeroSensors() : DrivetrainRequest
+    class ZeroSensors : DrivetrainRequest
+    class Idle : DrivetrainRequest
   }
 }
 

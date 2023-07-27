@@ -305,6 +305,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         zeroSensors()
 
         // Transitions
+        currentRequest = DrivetrainRequest.Idle()
         nextState = fromRequestToState(currentRequest)
       }
       DrivetrainState.OPEN_LOOP -> {
@@ -321,6 +322,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
         // Transitions
         nextState = fromRequestToState(currentRequest)
       }
+      DrivetrainState.IDLE -> {}
     }
 
     currentState = nextState
@@ -643,24 +645,27 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   companion object {
     enum class DrivetrainState {
       UNINITIALIZED,
+      IDLE,
       ZEROING_SENSORS,
       OPEN_LOOP,
       CLOSED_LOOP;
 
       inline fun equivalentToRequest(request: Request.DrivetrainRequest): Boolean {
         return (
-          (request is Request.DrivetrainRequest.ZeroSensors && this == ZEROING_SENSORS) ||
-            (request is Request.DrivetrainRequest.OpenLoop && this == OPEN_LOOP) ||
-            (request is Request.DrivetrainRequest.ClosedLoop && this == CLOSED_LOOP)
+          (request is DrivetrainRequest.ZeroSensors && this == ZEROING_SENSORS) ||
+            (request is DrivetrainRequest.OpenLoop && this == OPEN_LOOP) ||
+            (request is DrivetrainRequest.ClosedLoop && this == CLOSED_LOOP) ||
+            (request is DrivetrainRequest.Idle && this == IDLE)
           )
       }
     }
 
     inline fun fromRequestToState(request: Request.DrivetrainRequest): DrivetrainState {
       return when (request) {
-        is Request.DrivetrainRequest.OpenLoop -> DrivetrainState.OPEN_LOOP
-        is Request.DrivetrainRequest.ClosedLoop -> DrivetrainState.CLOSED_LOOP
-        is Request.DrivetrainRequest.ZeroSensors -> DrivetrainState.ZEROING_SENSORS
+        is DrivetrainRequest.OpenLoop -> DrivetrainState.OPEN_LOOP
+        is DrivetrainRequest.ClosedLoop -> DrivetrainState.CLOSED_LOOP
+        is DrivetrainRequest.ZeroSensors -> DrivetrainState.ZEROING_SENSORS
+        is DrivetrainRequest.Idle -> DrivetrainState.IDLE
       }
     }
   }
