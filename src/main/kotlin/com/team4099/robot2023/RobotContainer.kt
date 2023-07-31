@@ -126,7 +126,7 @@ object RobotContainer {
   }
 
   fun zeroSensors() {
-    drivetrain.zeroSensors()
+    drivetrain.currentRequest = Request.DrivetrainRequest.ZeroSensors()
     superstructure.groundIntakeZeroArm()
   }
 

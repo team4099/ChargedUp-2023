@@ -1699,7 +1699,7 @@ class Superstructure(
       SCORE_PREP,
       SCORE_CUBE,
       SCORE_CONE,
-      SCORE_CLEANUP,
+      SCORE_CLEANUP
     }
   }
 }

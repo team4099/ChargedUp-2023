@@ -4,6 +4,7 @@ import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
+import com.team4099.robot2023.subsystems.superstructure.Request
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.ProfiledPIDController
@@ -99,7 +100,10 @@ class GyroAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   override fun execute() {
     Logger.getInstance().recordOutput("ActiveCommands/AutoLevelCommand", true)
 
-    drivetrain.setOpenLoop(0.0.radians.perSecond, gyroFeedback, fieldOriented = true)
+    drivetrain.currentRequest =
+      Request.DrivetrainRequest.OpenLoop(
+        0.0.radians.perSecond, gyroFeedback, fieldOriented = true
+      )
 
     Logger.getInstance()
       .recordOutput(
@@ -129,6 +133,9 @@ class GyroAutoLevel(val drivetrain: Drivetrain) : CommandBase() {
   }
 
   override fun end(interrupted: Boolean) {
-    drivetrain.setOpenLoop(0.0.radians.perSecond, Pair(0.0.meters.perSecond, 0.0.meters.perSecond))
+    drivetrain.currentRequest =
+      Request.DrivetrainRequest.OpenLoop(
+        0.0.radians.perSecond, Pair(0.0.meters.perSecond, 0.0.meters.perSecond)
+      )
   }
 }

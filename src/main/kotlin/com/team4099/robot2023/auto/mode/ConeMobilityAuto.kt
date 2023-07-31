@@ -5,6 +5,7 @@ import com.team4099.robot2023.commands.drivetrain.ResetPoseCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
+import com.team4099.robot2023.subsystems.superstructure.Request
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.util.FMSData
 import edu.wpi.first.wpilibj.DriverStation
@@ -37,22 +38,24 @@ class ConeMobilityAuto(val drivetrain: Drivetrain, val superstructure: Superstru
         if (FMSData.allianceColor == DriverStation.Alliance.Blue)
           RunCommand(
             {
-              drivetrain.setOpenLoop(
-                0.degrees.perSecond,
-                Pair(10.0.feet.perSecond, 0.0.feet.perSecond),
-                fieldOriented = true
-              )
+              drivetrain.currentRequest =
+                Request.DrivetrainRequest.OpenLoop(
+                  0.degrees.perSecond,
+                  Pair(10.0.feet.perSecond, 0.0.feet.perSecond),
+                  fieldOriented = true
+                )
             },
             drivetrain
           )
         else
           RunCommand(
             {
-              drivetrain.setOpenLoop(
-                0.degrees.perSecond,
-                Pair(-10.0.feet.perSecond, 0.0.feet.perSecond),
-                fieldOriented = true
-              )
+              drivetrain.currentRequest =
+                Request.DrivetrainRequest.OpenLoop(
+                  0.degrees.perSecond,
+                  Pair(-10.0.feet.perSecond, 0.0.feet.perSecond),
+                  fieldOriented = true
+                )
             },
             drivetrain
           ),
