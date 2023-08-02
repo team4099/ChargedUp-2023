@@ -39,7 +39,6 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inSeconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
@@ -122,7 +121,7 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
     SwerveDriveOdometry(
       swerveDriveKinematics,
       gyroInputs.gyroYaw.inRotation2ds,
-      swerveModules.map { it. modulePosition }.toTypedArray()
+      swerveModules.map { it.modulePosition }.toTypedArray()
     )
 
   var setPointStates =
@@ -132,13 +131,13 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   var odometryPose: Pose2d
     get() = swerveDrivePoseEstimator.getLatestPose()
-//    get() {
-//      return Pose2d(
-//        42.875.inches + 79.centi.meters + 14.inches + 2.75.inches,
-//        113.25.inches + 1.inches,
-//        180.degrees
-//      )
-//    }
+    //    get() {
+    //      return Pose2d(
+    //        42.875.inches + 79.centi.meters + 14.inches + 2.75.inches,
+    //        113.25.inches + 1.inches,
+    //        180.degrees
+    //      )
+    //    }
     set(value) {
       swerveDrivePoseEstimator.resetPose(value)
 

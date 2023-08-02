@@ -30,6 +30,8 @@ import org.team4099.lib.units.derived.perMeterPerSecond
 import org.team4099.lib.units.derived.perMeterPerSecondPerSecond
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inMetersPerSecond
+import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 import kotlin.math.IEEErem
 import kotlin.math.withSign
@@ -146,6 +148,17 @@ class SwerveModule(val io: SwerveModuleIO) {
     //        "${io.label}/steeringValueDegreesWithMod",
     //        inputs.steeringPosition.inDegrees.IEEErem(360.0)
     //      )
+
+    Logger.getInstance().recordOutput("SwerveModule/SpeedSetPoint", speedSetPoint.inMetersPerSecond)
+    Logger.getInstance().recordOutput("SwerveModule/SteeringSetPoint", steeringSetPoint.inRadians)
+    Logger.getInstance()
+      .recordOutput(
+        "SwerveModule/AccelerationSetPoint", accelerationSetPoint.inMetersPerSecondPerSecond
+      )
+    Logger.getInstance()
+      .recordOutput(
+        "SwerveModule/SteeringError", (steeringSetPoint - inputs.steeringPosition).inRadians
+      )
   }
 
   /**

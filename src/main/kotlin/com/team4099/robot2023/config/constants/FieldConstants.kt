@@ -46,15 +46,7 @@ object FieldConstants {
           Rotation3d(0.0.radians, 0.0.radians, 90.degrees)
         )
       ),
-      AprilTag(
-        5,
-        Pose3d(
-          (1).centi.meters,
-          (87.5).inches,
-          (89.3).centi.meters,
-          Rotation3d()
-        )
-      ),
+      AprilTag(5, Pose3d((1).centi.meters, (87.5).inches, (89.3).centi.meters, Rotation3d())),
       AprilTag(
         2,
         Pose3d(
@@ -68,7 +60,8 @@ object FieldConstants {
         6,
         Pose3d(
           (1).centi.meters,
-          (87.5).inches + 183.3.centi.meters, // FIRST's diagram has a typo (it says 147.19) // 91.8
+          (87.5).inches +
+            183.3.centi.meters, // FIRST's diagram has a typo (it says 147.19) // 91.8
           (89.9).centi.meters,
           Rotation3d()
         )
