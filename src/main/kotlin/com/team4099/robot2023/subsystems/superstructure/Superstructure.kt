@@ -747,7 +747,7 @@ class Superstructure(
           }
         } else {
           if (scoringConeWithoutLoweringGroundIntake) { // previously scored without lowering ground
-            // intake so we need to retract manipulator
+            // intake, so we need to retract manipulator
             // and lower elevator
             val rollerCommandedVoltage =
               when (usingGamePiece) {

@@ -1,11 +1,13 @@
 package com.team4099.robot2023.commands
 
+import com.team4099.lib.math.Zone2d
 import com.team4099.lib.trajectory.Waypoint
 import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.NodeTier
+import com.team4099.robot2023.config.constants.WaypointConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
@@ -26,6 +28,8 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
   lateinit var drivePose: Pose2d
   lateinit var finalPose: Pose2d
   lateinit var postAlignPose: Pose2d
+  lateinit var intermediaryWaypoints: List<Waypoint>
+  var currentZone: Zone2d? = null
   var heading: Angle = 0.0.degrees
   lateinit var gamePiece: GamePiece
   lateinit var nodeTier: NodeTier
@@ -58,6 +62,16 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
             )
           )
         heading = drivetrain.fieldVelocity.heading
+
+        // Determine the current zone and calculate the trajectory
+        currentZone = FieldConstants.determineZone(FieldConstants.Zones.allZones, drivePose)
+        intermediaryWaypoints =
+          WaypointConstants.CommunityPaths.getPath(currentZone).map {
+            AllianceFlipUtil.apply(it)
+          }
+
+        println(currentZone == FieldConstants.Zones.closeCenterRightLane)
+
         gamePiece =
           if (superstructure.objective.isConeNode()) Constants.Universal.GamePiece.CONE
           else GamePiece.CUBE
@@ -78,11 +92,16 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
                 null
               else heading.inRotation2ds,
               drivePose.rotation.inRotation2ds
-            ),
-            Waypoint(
-              finalPose.translation.translation2d, null, finalPose.rotation.inRotation2ds
             )
-          )
+          ) +
+            intermediaryWaypoints +
+            listOf(
+              Waypoint(
+                finalPose.translation.translation2d,
+                null,
+                finalPose.rotation.inRotation2ds
+              )
+            )
         },
         keepTrapping = true,
         flipForAlliances = false

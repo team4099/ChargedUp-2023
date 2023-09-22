@@ -1,5 +1,7 @@
 package com.team4099.robot2023.config.constants
 
+import com.team4099.lib.math.Zone2d
+import com.team4099.robot2023.util.AllianceFlipUtil
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.apriltag.AprilTag
@@ -13,10 +15,8 @@ import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
-import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
-import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 
@@ -38,43 +38,44 @@ object FieldConstants {
   val homeAprilTags: List<AprilTag> =
     listOf(
       AprilTag(
-        4,
+        1,
         Pose3d(
-          (103.5).inches,
-          (-2.5).inches,
-          (51.5).centi.meters,
-          Rotation3d(0.0.radians, 0.0.radians, 90.degrees)
+          40.inches,
+          (104.125).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
       ),
       AprilTag(5, Pose3d((1).centi.meters, (87.5).inches, (89.3).centi.meters, Rotation3d())),
       AprilTag(
-        2,
+        3,
         Pose3d(
-          (1).centi.meters,
-          (87.5).inches + 91.6.centi.meters,
-          (89.1).centi.meters,
-          Rotation3d()
+          (42.875).inches,
+          (113.25).inches,
+          (18.22).inches,
+          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+        )
+      ),
+      AprilTag(
+        4,
+        Pose3d(
+          (409.5).inches,
+          (85.5).inches,
+          (27.833).inches,
+          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
       ),
       AprilTag(
         6,
         Pose3d(
-          (1).centi.meters,
-          (87.5).inches +
-            183.3.centi.meters, // FIRST's diagram has a typo (it says 147.19) // 91.8
-          (89.9).centi.meters,
+          (40.45).inches,
+          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+          (18.22).inches,
           Rotation3d()
         )
       ),
-      AprilTag(
-        0,
-        Pose3d(
-          (1).centi.meters,
-          (87.5).inches + 274.8.centi.meters,
-          (91.5).centi.meters,
-          Rotation3d()
-        )
-      )
+      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
+      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
     )
 
   //  val homeAprilTags: List<AprilTag> =
@@ -227,6 +228,24 @@ object FieldConstants {
     } else {
       pose
     }
+  }
+
+  fun allianceFlip(zone: Zone2d): Zone2d {
+    return if (DriverStation.getAlliance() == Alliance.Red) {
+      Zone2d(zone.vertices.map { allianceFlip(it) })
+    } else {
+      zone
+    }
+  }
+
+  fun determineZone(zones: List<Zone2d>, pose: Pose2d): Zone2d? {
+    for (zone in zones) {
+      if (AllianceFlipUtil.apply(zone).containsPose(pose)) {
+        return zone
+      }
+    }
+
+    return null
   }
 
   fun getTagPose(id: Int): Pose3d? {
@@ -396,5 +415,144 @@ object FieldConstants {
         translations[i] = Translation2d(positionX, firstY + separationY * i)
       }
     }
+  }
+
+  object Zones {
+    val closeLeftCommunity: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Grids.outerX, Community.chargingStationLeftY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationLeftY),
+          Translation2d(Community.chargingStationInnerX, Community.leftY),
+          Translation2d(Grids.outerX, Community.leftY)
+        )
+      )
+
+    val farLeftCommunity: Zone2d = AllianceFlipUtil.apply(closeLeftCommunity, force = true)
+
+    val closeCenterCommunity: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Grids.outerX, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationLeftY),
+          Translation2d(Grids.outerX, Community.chargingStationLeftY)
+        )
+      )
+
+    val farCenterCommunity: Zone2d = AllianceFlipUtil.apply(closeCenterCommunity, force = true)
+
+    val closeRightCommunity: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Grids.outerX, Community.rightY),
+          Translation2d(Community.chargingStationInnerX, Community.rightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationRightY),
+          Translation2d(Grids.outerX, Community.chargingStationRightY)
+        )
+      )
+
+    val farRightCommunity: Zone2d = AllianceFlipUtil.apply(closeRightCommunity, force = true)
+
+    val closeLoadingZoneLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d((132.25).inches, LoadingZone.rightY),
+          Translation2d(fieldLength / 2, LoadingZone.rightY),
+          Translation2d(fieldLength / 2, fieldWidth),
+          Translation2d((264.25).inches, fieldWidth),
+          Translation2d((264.25).inches, LoadingZone.midY),
+          Translation2d((132.25).inches, LoadingZone.midY)
+        )
+      )
+
+    val farLoadingZoneLane: Zone2d = AllianceFlipUtil.apply(closeLoadingZoneLane, force = true)
+
+    val closeLeftLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationLeftY),
+          Translation2d(fieldLength / 2, Community.chargingStationLeftY),
+          Translation2d(fieldLength / 2, Community.leftY),
+          Translation2d(Community.chargingStationInnerX, Community.leftY)
+        )
+      )
+
+    val farLeftLane: Zone2d = AllianceFlipUtil.apply(closeLeftLane, force = true)
+
+    val closeRightLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(Community.chargingStationInnerX, 0.meters),
+          Translation2d(fieldLength / 2, 0.meters),
+          Translation2d(fieldLength / 2, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationInnerX, Community.chargingStationRightY)
+        )
+      )
+
+    val farRightLane: Zone2d = AllianceFlipUtil.apply(closeRightLane, force = true)
+
+    val closeCenterLeftLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(
+            Community.chargingStationOuterX,
+            Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(
+            fieldLength / 2, Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(fieldLength / 2, Community.chargingStationLeftY),
+          Translation2d(Community.chargingStationOuterX, Community.chargingStationLeftY)
+        )
+      )
+
+    val farCenterLeftLane: Zone2d = AllianceFlipUtil.apply(closeCenterLeftLane, force = true)
+
+    val closeCenterRightLane: Zone2d =
+      Zone2d( // done
+        listOf(
+          Translation2d(
+            Community.chargingStationOuterX,
+            Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(
+            fieldLength / 2, Community.rightY + Community.chargingStationWidth / 2
+          ),
+          Translation2d(fieldLength / 2, Community.chargingStationRightY),
+          Translation2d(Community.chargingStationOuterX, Community.chargingStationRightY)
+        )
+      )
+
+    val farCenterRightLane: Zone2d = AllianceFlipUtil.apply(closeCenterRightLane, force = true)
+
+    val farLoadingZone: Zone2d =
+      Zone2d( // done
+        LoadingZone.regionCorners.toList()
+      )
+
+    val closeLoadingZone: Zone2d = AllianceFlipUtil.apply(farLoadingZone, force = true)
+
+    val allZones =
+      listOf<Zone2d>(
+        closeLeftCommunity,
+        farLeftCommunity,
+        closeCenterCommunity,
+        farCenterCommunity,
+        closeRightCommunity,
+        farRightCommunity,
+        closeLoadingZone,
+        farLoadingZone,
+        closeLoadingZoneLane,
+        farLoadingZoneLane,
+        closeLeftLane,
+        farLeftLane,
+        closeCenterLeftLane,
+        farCenterLeftLane,
+        closeCenterRightLane,
+        farCenterRightLane,
+        closeRightLane,
+        farRightLane
+      )
   }
 }
