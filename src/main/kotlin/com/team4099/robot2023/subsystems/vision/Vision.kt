@@ -111,7 +111,9 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
             // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
 
             robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
-            println("CameraPoseX: ${cameraPose.x}, transformX: ${cameraPoses[instance].x}, robotPoseX: ${robotPose.x}")
+            println(
+              "CameraPoseX: ${cameraPose.x}, transformX: ${cameraPoses[instance].x}, robotPoseX: ${robotPose.x}"
+            )
           }
           2.0 -> {
             val error0 = values[1]
@@ -192,7 +194,9 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
           continue
         }
 
-        if ((robotPose.rotation - currentPose.rotation).absoluteValue > 7.degrees && DriverStation.isEnabled()){
+        if ((robotPose.rotation - currentPose.rotation).absoluteValue > 7.degrees &&
+          DriverStation.isEnabled()
+        ) {
           continue
         }
 
