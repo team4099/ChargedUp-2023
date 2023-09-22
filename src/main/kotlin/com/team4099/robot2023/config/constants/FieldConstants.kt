@@ -46,29 +46,12 @@ object FieldConstants {
           Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
       ),
-      AprilTag(
-        2,
-        Pose3d(
-          (43.125).inches,
-          (40.875).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-        )
-      ),
+      AprilTag(5, Pose3d((1).centi.meters, (87.5).inches, (89.3).centi.meters, Rotation3d())),
       AprilTag(
         3,
         Pose3d(
           (42.875).inches,
           (113.25).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-        )
-      ),
-      AprilTag(
-        5,
-        Pose3d(
-          (43.125).inches,
-          (173.375).inches,
           (18.22).inches,
           Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
         )
