@@ -26,7 +26,7 @@ class TestAutoPath(val drivetrain: Drivetrain) : SequentialCommandGroup() {
             Waypoint(
               Translation2d(2.0.meters, 0.0.meters).translation2d,
               null,
-              0.0.degrees.inRotation2ds
+              90.0.degrees.inRotation2ds
             ),
             Waypoint(
               Translation2d(0.0.meters, 1.0.meters).translation2d,

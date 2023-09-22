@@ -15,6 +15,7 @@ import org.team4099.lib.units.base.feet
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.radians
@@ -74,8 +75,24 @@ object FieldConstants {
           Rotation3d()
         )
       ),
-      AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
-      AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
+      AprilTag(
+        0,
+        Pose3d(
+          (1).centi.meters,
+          (87.5).inches + 274.8.centi.meters,
+          (91.5).centi.meters,
+          Rotation3d()
+        )
+      ),
+      AprilTag(
+        8,
+        Pose3d(
+          (0).inches,
+          (0).inches,
+          (0).inches,
+          Rotation3d()
+        )
+      )
     )
 
   //  val homeAprilTags: List<AprilTag> =

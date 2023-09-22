@@ -77,10 +77,10 @@ object DrivetrainConstants {
   val DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT = 80.0.amps
   val DRIVE_STATOR_TRIGGER_THRESHOLD_TIME = 1.0.seconds
 
-  val FRONT_LEFT_MODULE_ZERO = 1.33.radians
-  val FRONT_RIGHT_MODULE_ZERO = 4.51.radians
-  val BACK_LEFT_MODULE_ZERO = 3.20.radians
-  val BACK_RIGHT_MODULE_ZERO = 0.94.radians
+  val FRONT_LEFT_MODULE_ZERO = 1.3.radians + 180.degrees
+  val FRONT_RIGHT_MODULE_ZERO = 4.49.radians + 180.degrees
+  val BACK_LEFT_MODULE_ZERO = 3.22.radians + 180.degrees
+  val BACK_RIGHT_MODULE_ZERO = 0.99.radians - 180.degrees
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
@@ -117,15 +117,15 @@ object DrivetrainConstants {
 
     val AUTO_THETA_ALLOWED_ERROR = 3.degrees
 
-    val AUTO_THETA_PID_KP = 10.degrees.perSecond / 1.degrees
+    val AUTO_THETA_PID_KP = 1.degrees.perSecond / 1.degrees
     val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val AUTO_THETA_PID_KD =
-      (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+      (0.1.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
-    val SIM_AUTO_THETA_PID_KP = 7.degrees.perSecond / 1.degrees
+    val SIM_AUTO_THETA_PID_KP = 15.degrees.perSecond / 1.degrees
     val SIM_AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val SIM_AUTO_THETA_PID_KD =
-      (0.5.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+      (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val AUTO_LEVEL_KP = 1.meters.perSecond / 1.0.degrees // tune this
     val AUTO_LEVEL_KI = 0.0.meters.perSecond / (1.0.degrees * 1.seconds) // tune this

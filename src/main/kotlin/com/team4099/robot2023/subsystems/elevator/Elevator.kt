@@ -78,7 +78,7 @@ class Elevator(val io: ElevatorIO) {
     val enableElevator =
       LoggedTunableNumber("Elevator/enableMovementElevator", ElevatorConstants.ENABLE_ELEVATOR)
 
-    val minPosition =
+    val  minPosition =
       LoggedTunableValue(
         "Elevator/minPosition",
         ElevatorConstants.ELEVATOR_IDLE_HEIGHT,

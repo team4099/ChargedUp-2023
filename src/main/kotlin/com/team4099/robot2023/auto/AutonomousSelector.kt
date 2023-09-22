@@ -47,7 +47,7 @@ object AutonomousSelector {
     //    orientationChooser.addOption("Right", 270.degrees)
     //    autoTab.add("Starting Orientation", orientationChooser)
 
-    // autonomousModeChooser.addOption("Test", AutonomousMode.TEST_AUTO_PATH)
+    autonomousModeChooser.addOption("Test", AutonomousMode.TEST_AUTO_PATH)
     // autonomousModeChooser.addOption("Characterize Elevator",
     // AutonomousMode.ELEVATOR_CHARACTERIZE)
 
@@ -89,6 +89,8 @@ object AutonomousSelector {
     // AutonomousMode.CONE_MOBILITY_AUTO)
 
     autonomousModeChooser.addOption("Score Preload Cone", AutonomousMode.PRELOAD_SCORE_AUTO)
+
+
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 

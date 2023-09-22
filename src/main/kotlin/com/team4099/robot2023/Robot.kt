@@ -11,9 +11,11 @@ import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.NTSafePublisher
 import edu.wpi.first.hal.AllianceStationID
+import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
+import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
@@ -45,6 +47,13 @@ object Robot : LoggedRobot() {
   val logSimulationAlert = Alert("Running in simulation", AlertType.INFO)
   val logTuningModeEnabled =
     Alert("Tuning Mode Enabled. Expect loop times to be greater", AlertType.WARNING)
+  /*
+  val port0 = AnalogInput(0)
+  val port1 = AnalogInput(1)
+  val port2 = AnalogInput(2)
+  val port3 = AnalogInput(3)
+
+   */
 
   override fun robotInit() {
     val logger = Logger.getInstance()
@@ -126,6 +135,8 @@ object Robot : LoggedRobot() {
     CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
       Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
+
+
   }
 
   override fun disabledExit() {
@@ -176,6 +187,14 @@ object Robot : LoggedRobot() {
 
     Logger.getInstance()
       .recordOutput("LoggedRobot/totalMS", (Clock.realTimestamp - startTime).inMilliseconds)
+
+    /*
+    Logger.getInstance().recordOutput("LoggedRobot/port0", port0.voltage)
+    Logger.getInstance().recordOutput("LoggedRobot/port1", port1.voltage)
+    Logger.getInstance().recordOutput("LoggedRobot/port2", port2.voltage)
+    Logger.getInstance().recordOutput("LoggedRobot/port3", port3.voltage)
+
+     */
   }
 
   override fun teleopInit() {

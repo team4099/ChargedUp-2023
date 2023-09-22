@@ -97,7 +97,7 @@ object ManipulatorConstants {
   val ROLLER_VOLTAGE_TOLERANCE = 0.4.volts
 
   val IDLE_VOLTAGE = 0.0.volts
-  val CONE_IDLE = 6.volts
+  val CONE_IDLE = 7.volts
   val CUBE_IDLE = -3.volts
   val CONE_IN = 12.volts
   val CUBE_IN = -6.volts
@@ -107,7 +107,7 @@ object ManipulatorConstants {
   // TODO(test voltage values)
   enum class RollerStates(val voltage: ElectricalPotential) {
     NO_SPIN(0.volts),
-    CONE_IDLE(2.4.volts),
+    CONE_IDLE(3.5.volts),
     CUBE_IDLE(-1.2.volts),
     CONE_IN(12.volts),
     CUBE_IN(-9.6.volts),
@@ -135,7 +135,7 @@ object ManipulatorConstants {
   val ENABLE_ROLLER = 1.0
   val ENABLE_EXTENSION = 1.0
 
-  val MIN_EXTENSION = 1.25.inches
+  val MIN_EXTENSION = 1.0.inches
   val SINGLE_SUBSTATION_INTAKE_EXTENSION = 1.0.inches
   val DOUBLE_SUBSTATION_SHELF_INTAKE_EXTENSION = 7.0.inches
   val LOW_CUBE_SCORE_EXTENSION = 1.3.inches

@@ -1,5 +1,6 @@
 package com.team4099.robot2023.config.constants
 
+import edu.wpi.first.wpilibj.AnalogInput
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
 
@@ -11,7 +12,7 @@ typealias NodeTier = Constants.Universal.NodeTier
 
 object Constants {
   object Universal {
-    val SIM_MODE = Tuning.SimType.REPLAY
+    val SIM_MODE = Tuning.SimType.SIM
     const val REAL_FIELD = false
 
     const val CTRE_CONFIG_TIMEOUT = 0
@@ -23,6 +24,9 @@ object Constants {
 
     val LOOP_PERIOD_TIME = 20.milli.seconds
     val POWER_DISTRIBUTION_HUB_ID = 1
+
+
+
 
     enum class GamePiece {
       CUBE,
@@ -74,19 +78,19 @@ object Constants {
   object Drivetrain {
     const val FRONT_LEFT_DRIVE_ID = 11
     const val FRONT_LEFT_STEERING_ID = 21
-    const val FRONT_LEFT_ANALOG_POTENTIOMETER = 0
+    const val FRONT_LEFT_ANALOG_POTENTIOMETER = 1
 
     val FRONT_LEFT_MODULE_NAME = "Front Left Wheel"
 
     const val FRONT_RIGHT_DRIVE_ID = 12
     const val FRONT_RIGHT_STEERING_ID = 22
-    const val FRONT_RIGHT_ANALOG_POTENTIOMETER = 1
+    const val FRONT_RIGHT_ANALOG_POTENTIOMETER = 2
 
     val FRONT_RIGHT_MODULE_NAME = "Front Right Wheel"
 
     const val BACK_LEFT_DRIVE_ID = 13
     const val BACK_LEFT_STEERING_ID = 23
-    const val BACK_LEFT_ANALOG_POTENTIOMETER = 2
+    const val BACK_LEFT_ANALOG_POTENTIOMETER = 0
 
     val BACK_LEFT_MODULE_NAME = "Back Left Wheel"
 

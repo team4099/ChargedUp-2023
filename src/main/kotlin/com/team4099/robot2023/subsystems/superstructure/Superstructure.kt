@@ -237,7 +237,7 @@ class Superstructure(
         val rollerVoltage =
           when (theoreticalGamePiece) {
             GamePiece.NONE -> {
-              0.0.volts
+              3.0.volts
             }
             GamePiece.CONE -> {
               Manipulator.TunableManipulatorStates.coneIdleVoltage.get()
@@ -279,10 +279,20 @@ class Superstructure(
             )
 
           if (manipulator.isAtTargetedPosition) {
-            elevator.currentRequest =
-              Request.ElevatorRequest.TargetingPosition(
-                Elevator.TunableElevatorHeights.minPosition.get()
-              )
+            if (manipulator.hasCube){
+              elevator.currentRequest =
+                Request.ElevatorRequest.TargetingPosition(
+                  4.inches
+                )
+            } else {
+              elevator.currentRequest =
+                Request.ElevatorRequest.TargetingPosition(
+                  3.inches
+                )
+            }
+
+
+            
           }
         } else {
           manipulator.currentRequest =
@@ -761,17 +771,13 @@ class Superstructure(
                 Manipulator.TunableManipulatorStates.minExtension.get(), rollerCommandedVoltage
               )
             if (manipulator.isAtTargetedPosition) {
-              elevator.currentRequest =
-                Request.ElevatorRequest.TargetingPosition(
-                  Elevator.TunableElevatorHeights.minPosition.get()
+
+              groundIntake.currentRequest =
+                Request.GroundIntakeRequest.TargetingPosition(
+                  GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
                 )
-              if (elevator.isAtTargetedPosition) {
-                groundIntake.currentRequest =
-                  Request.GroundIntakeRequest.TargetingPosition(
-                    GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
-                  )
-                scoringConeWithoutLoweringGroundIntake = false
-              }
+              scoringConeWithoutLoweringGroundIntake = false
+
             }
           } else {
             groundIntake.currentRequest =
@@ -855,7 +861,7 @@ class Superstructure(
 
           Logger.getInstance()
             .recordOutput(
-              "Superstructure/PlsBruh",
+              "Superstructure/distanceFromHeight",
               (elevator.inputs.elevatorPosition - scoreHeight).absoluteValue.inInches
             )
 

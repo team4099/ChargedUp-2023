@@ -78,7 +78,7 @@ object ElevatorConstants {
   val ELEVATOR_SOFT_LIMIT_RETRACTION = 0.5.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_EXTENSION = 45.inches
   val ELEVATOR_OPEN_LOOP_SOFTLIMIT_RETRACTION = 5.inches
-  val ELEVATOR_IDLE_HEIGHT = 1.0.inches
+  val ELEVATOR_IDLE_HEIGHT = 3.0.inches
 
   val FIRST_STAGE_HEIGHT = 25.05.inches
   val SECOND_STAGE_HEIGHT = 24.inches
