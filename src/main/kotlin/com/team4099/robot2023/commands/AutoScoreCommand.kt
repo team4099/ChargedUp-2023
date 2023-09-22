@@ -38,6 +38,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
 
     val setupCommand =
       runOnce({
+        Logger.getInstance().recordOutput("Auto/isAutoDriving", true)
         drivePose = drivetrain.odometryPose
         finalPose =
           AllianceFlipUtil.apply(

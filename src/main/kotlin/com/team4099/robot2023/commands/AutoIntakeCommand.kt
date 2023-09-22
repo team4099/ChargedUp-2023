@@ -12,6 +12,7 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.util.AllianceFlipUtil
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
@@ -33,6 +34,7 @@ class AutoIntakeCommand(val drivetrain: Drivetrain, val superstructure: Superstr
   init {
     val setupCommand =
       runOnce({
+        Logger.getInstance().recordOutput("Auto/isAutoDriving", true)
         drivePose = drivetrain.odometryPose
         heading = drivetrain.fieldVelocity.heading
         currentZone = FieldConstants.determineZone(FieldConstants.Zones.allZones, drivePose)
@@ -86,4 +88,5 @@ class AutoIntakeCommand(val drivetrain: Drivetrain, val superstructure: Superstr
       superstructure.groundIntakeConeCommand()
     )
   }
+
 }

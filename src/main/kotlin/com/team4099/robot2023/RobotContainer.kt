@@ -34,6 +34,7 @@ import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
 import edu.wpi.first.wpilibj.RobotBase
+import org.littletonrobotics.junction.Logger
 import org.team4099.lib.smoothDeadband
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -203,7 +204,9 @@ object RobotContainer {
     )
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
-    ControlBoard.autoScore.whileTrue(AutoScoreCommand(drivetrain, superstructure))
+    ControlBoard.autoScore.whileTrue(AutoScoreCommand(drivetrain, superstructure)
+      .finallyDo {  Logger.getInstance().recordOutput("Auto/isAutoDriving", false) }
+    )
 
     ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
