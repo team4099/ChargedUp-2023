@@ -15,6 +15,7 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.angle
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.inVoltsPerDegree
@@ -34,6 +35,7 @@ import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 import kotlin.math.IEEErem
+import kotlin.math.abs
 import kotlin.math.withSign
 
 class SwerveModule(val io: SwerveModuleIO) {
@@ -130,24 +132,24 @@ class SwerveModule(val io: SwerveModuleIO) {
     }
 
     Logger.getInstance().processInputs(io.label, inputs)
-    //    Logger.getInstance()
-    //      .recordOutput(
-    //        "${io.label}/driveSpeedSetpointMetersPerSecond",
-    //        if (!shouldInvert) speedSetPoint.inMetersPerSecond
-    //        else -speedSetPoint.inMetersPerSecond
-    //      )
-    //    Logger.getInstance()
-    //      .recordOutput(
-    //        "${io.label}/driveAccelSetpointMetersPerSecondSq",
-    //        accelerationSetPoint.inMetersPerSecondPerSecond
-    //      )
-    //    Logger.getInstance()
-    //      .recordOutput("${io.label}/steeringSetpointDegrees", steeringSetPoint.inDegrees)
-    //    Logger.getInstance()
-    //      .recordOutput(
-    //        "${io.label}/steeringValueDegreesWithMod",
-    //        inputs.steeringPosition.inDegrees.IEEErem(360.0)
-    //      )
+        Logger.getInstance()
+          .recordOutput(
+            "${io.label}/driveSpeedSetpointMetersPerSecond",
+            if (!shouldInvert) speedSetPoint.inMetersPerSecond
+            else -speedSetPoint.inMetersPerSecond
+          )
+        Logger.getInstance()
+          .recordOutput(
+            "${io.label}/driveAccelSetpointMetersPerSecondSq",
+            accelerationSetPoint.inMetersPerSecondPerSecond
+          )
+        Logger.getInstance()
+          .recordOutput("${io.label}/steeringSetpointRadians", steeringSetPoint.inRadians)
+        Logger.getInstance()
+          .recordOutput(
+            "${io.label}/steeringValueDegreesWithMod",
+            inputs.steeringPosition.inDegrees.IEEErem(360.0)
+          )
 
     Logger.getInstance().recordOutput("SwerveModule/SpeedSetPoint", speedSetPoint.inMetersPerSecond)
     Logger.getInstance().recordOutput("SwerveModule/SteeringSetPoint", steeringSetPoint.inRadians)
@@ -238,13 +240,13 @@ class SwerveModule(val io: SwerveModuleIO) {
         optimizedState
           .speedMetersPerSecond
           .meters
-          .perSecond // consider desaturating wheel speeds here if it doesn't work
+          .perSecond * Math.cos(abs((optimizedState.angle.angle - inputs.steeringPosition).inRadians))// consider desaturating wheel speeds here if it doesn't work
         // from drivetrain
       )
       Logger.getInstance()
         .recordOutput("${io.label}/steeringSetpointOptimized", optimizedState.angle.degrees)
     } else {
-      io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond.meters.perSecond)
+      io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond.meters.perSecond * Math.cos(abs((desiredState.angle.angle - inputs.steeringPosition).inRadians)))
       Logger.getInstance()
         .recordOutput("${io.label}/steeringSetpointNonOptimized", desiredState.angle.degrees)
     }
@@ -266,19 +268,28 @@ class SwerveModule(val io: SwerveModuleIO) {
   ) {
     if (optimize) {
       val optimizedVelState =
-        SwerveModuleState.optimize(desiredVelState, inputs.steeringPosition.inRotation2ds)
+         SwerveModuleState.optimize(desiredVelState, inputs.steeringPosition.inRotation2ds)
       val optimizedAccelState =
         SwerveModuleState.optimize(desiredAccelState, inputs.steeringPosition.inRotation2ds)
+
+      steeringSetPoint = optimizedVelState.angle.angle
+      speedSetPoint = optimizedVelState.speedMetersPerSecond.meters.perSecond
+      accelerationSetPoint = optimizedAccelState.speedMetersPerSecond.meters.perSecond.perSecond
+
       io.setClosedLoop(
-        optimizedVelState.angle.angle,
-        optimizedVelState.speedMetersPerSecond.meters.perSecond,
-        optimizedAccelState.speedMetersPerSecond.meters.perSecond.perSecond
+        steeringSetPoint,
+        speedSetPoint,
+        accelerationSetPoint
       )
     } else {
+      steeringSetPoint = desiredVelState.angle.angle
+      speedSetPoint = desiredVelState.speedMetersPerSecond.meters.perSecond
+      accelerationSetPoint = desiredAccelState.speedMetersPerSecond.meters.perSecond.perSecond
+
       io.setClosedLoop(
-        desiredVelState.angle.angle,
-        desiredVelState.speedMetersPerSecond.meters.perSecond,
-        desiredAccelState.speedMetersPerSecond.meters.perSecond.perSecond
+        steeringSetPoint,
+        speedSetPoint,
+        accelerationSetPoint
       )
     }
   }

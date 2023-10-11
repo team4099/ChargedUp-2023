@@ -4,6 +4,8 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.util.driver.DriverProfile
 import edu.wpi.first.wpilibj2.command.CommandBase
 import org.littletonrobotics.junction.Logger
+import java.util.function.DoubleSupplier
+import java.util.function.Supplier
 
 class TeleopDriveCommand(
   val driver: DriverProfile,

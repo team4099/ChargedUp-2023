@@ -55,7 +55,7 @@ object Constants {
 
   object Tuning {
 
-    const val TUNING_MODE = false
+    const val TUNING_MODE = true
     const val DEBUGING_MODE = true
     const val SIMULATE_DRIFT = false
     const val DRIFT_CONSTANT = 0.001

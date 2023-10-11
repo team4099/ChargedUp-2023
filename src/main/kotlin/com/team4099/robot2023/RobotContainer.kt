@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.AutoScoreCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
+import com.team4099.robot2023.commands.drivetrain.SwerveModuleTuningCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
@@ -120,6 +121,18 @@ object RobotContainer {
         { ControlBoard.slowMode },
         drivetrain
       )
+
+
+    /*
+    module steeing tuning
+
+    drivetrain.defaultCommand =
+      SwerveModuleTuningCommand(
+        drivetrain,
+        { (ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) * 180).degrees },
+      )
+
+     */
   }
 
   fun requestSuperstructureIdle() {
