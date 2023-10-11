@@ -2,6 +2,8 @@ package com.team4099.robot2023.commands
 
 import com.team4099.lib.math.Zone2d
 import com.team4099.lib.trajectory.Waypoint
+import com.team4099.robot2023.RobotContainer
+import com.team4099.robot2023.commands.drivetrain.DriveBrakeModeCommand
 import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
@@ -13,6 +15,7 @@ import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
@@ -20,6 +23,7 @@ import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.perSecond
 
@@ -38,12 +42,13 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
 
     val setupCommand =
       runOnce({
+
         Logger.getInstance().recordOutput("Auto/isAutoDriving", true)
         drivePose = drivetrain.odometryPose
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              1.875.meters, // slightly offset in the x
+              2.16.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -54,7 +59,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         postAlignPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              1.5.meters, // slightly offset in the x
+              1.8.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -81,8 +86,19 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         Logger.getInstance().recordOutput("AutoScore/selectedNodeTier", nodeTier.name)
       })
 
+    val breakCommand =
+      runOnce({
+        drivetrain.swerveModules.forEach() { it.setDriveBrakeMode(true) }
+      })
+
+    val coastCommand =
+      runOnce({
+        drivetrain.swerveModules.forEach() { it.setDriveBrakeMode(false) }
+      })
+
     addCommands(
       setupCommand,
+      breakCommand,
       DrivePathCommand(
         drivetrain,
         {
@@ -99,8 +115,13 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
             listOf(
               Waypoint(
                 finalPose.translation.translation2d,
-                null,
+
                 finalPose.rotation.inRotation2ds
+              ),
+              Waypoint(
+                postAlignPose.translation.translation2d,
+
+                postAlignPose.rotation.inRotation2ds
               )
             )
         },
@@ -108,6 +129,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         flipForAlliances = false
       ),
       superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+      coastCommand
       //      ParallelCommandGroup(
       //        superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
       //        DrivePathCommand(

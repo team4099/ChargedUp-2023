@@ -2,6 +2,7 @@ package com.team4099.robot2023
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.commands.AutoIntakeCommand
 import com.team4099.robot2023.commands.AutoScoreCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
@@ -77,7 +78,7 @@ object RobotContainer {
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIONeo),
+          GroundIntake(object : GroundIntakeIO {}),
           Manipulator(ManipulatorIONeo),
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
@@ -163,7 +164,7 @@ object RobotContainer {
   }
 
   fun mapTeleopControls() {
-    ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain, toAngle = 180.degrees))
+    ControlBoard.resetGyro.whileTrue(ResetGyroYawCommand(drivetrain, toAngle = 0.degrees))
     //    ControlBoard.autoLevel.whileActiveContinuous(
     //      GoToAngle(drivetrain).andThen(AutoLevel(drivetrain))
     //    )
@@ -218,8 +219,11 @@ object RobotContainer {
     ControlBoard.autoScore.whileTrue(AutoScoreCommand(drivetrain, superstructure)
       .finallyDo {  Logger.getInstance().recordOutput("Auto/isAutoDriving", false) }
     )
+    ControlBoard.autoIntake.whileTrue(AutoIntakeCommand(drivetrain, superstructure)
+      .finallyDo {  Logger.getInstance().recordOutput("Auto/isAutoDriving", false) }
+    )
 
-    //ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())
+    ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())
     //    ControlBoard.dpadDown.whileTrue(PickupFromSubstationCommand(drivetrain, superstructure))
 
     //    ControlBoard.doubleSubstationIntake.whileTrue(AutoScoreCommand(drivetrain,

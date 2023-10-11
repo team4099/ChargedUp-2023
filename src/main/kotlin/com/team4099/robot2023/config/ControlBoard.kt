@@ -59,14 +59,15 @@ object ControlBoard {
 
   val doubleSubstationIntake = Trigger { driver.aButton }
   val singleSubstationIntake = Trigger { driver.bButton }
-  val scoreOuttake = Trigger { operator.dPadUp }
-  val groundIntakeCube = Trigger { operator.dPadRight }
+  val scoreOuttake = Trigger { driver.rightTriggerAxis > 0.5 }
+  val groundIntakeCube = Trigger { driver.rightShoulderButton }
 
   val increaseRollerVoltage = Trigger { operator.dPadUp }
   val decreaseRollerVoltage = Trigger { operator.dPadDown }
 
   val groundIntakeCone = Trigger { driver.yButton }
-  val autoScore = Trigger { driver.rightTriggerAxis > 0.5 }
+  val autoScore = Trigger { driver.dPadDown }
+  val autoIntake = Trigger { driver.dPadUp }
   val dpadDown = Trigger { driver.dPadDown }
 
   val ejectGamePiece = Trigger { operator.dPadRight }

@@ -36,64 +36,68 @@ object FieldConstants {
 
   val aprilTagLength = 6.0.inches
 
-  val homeAprilTags: List<AprilTag> =
-    listOf(
-      AprilTag(
-        1,
-        Pose3d(
-          40.inches,
-          (104.125).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-        )
-      ),
-      AprilTag(5, Pose3d((1).centi.meters, (87.5).inches, (89.3).centi.meters, Rotation3d())),
-      AprilTag(
-        3,
-        Pose3d(
-          (42.875).inches,
-          (113.25).inches,
-          (18.22).inches,
-          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-        )
-      ),
-      AprilTag(
-        4,
-        Pose3d(
-          (409.5).inches,
-          (85.5).inches,
-          (27.833).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-        )
-      ),
-      AprilTag(
-        6,
-        Pose3d(
-          (40.45).inches,
-          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
-          (18.22).inches,
-          Rotation3d()
-        )
-      ),
-      AprilTag(
-        0,
-        Pose3d(
-          (1).centi.meters,
-          (87.5).inches + 274.8.centi.meters,
-          (91.5).centi.meters,
-          Rotation3d()
-        )
-      ),
-      AprilTag(
-        8,
-        Pose3d(
-          (0).inches,
-          (0).inches,
-          (0).inches,
-          Rotation3d()
-        )
-      )
-    )
+  // Pranav's Home (Active)
+
+//  val homeAprilTags: List<AprilTag> =
+//    listOf(
+//      AprilTag(
+//        1,
+//        Pose3d(
+//          40.inches,
+//          (104.125).inches,
+//          (18.22).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+//        )
+//      ),
+//      AprilTag(5, Pose3d((1).centi.meters, (87.5).inches, (89.3).centi.meters, Rotation3d())),
+//      AprilTag(
+//        3,
+//        Pose3d(
+//          (42.875).inches,
+//          (113.25).inches,
+//          (18.22).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+//        )
+//      ),
+//      AprilTag(
+//        4,
+//        Pose3d(
+//          (409.5).inches,
+//          (85.5).inches,
+//          (27.833).inches,
+//          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+//        )
+//      ),
+//      AprilTag(
+//        6,
+//        Pose3d(
+//          (40.45).inches,
+//          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+//          (18.22).inches,
+//          Rotation3d()
+//        )
+//      ),
+//      AprilTag(
+//        0,
+//        Pose3d(
+//          (1).centi.meters,
+//          (87.5).inches + 274.8.centi.meters,
+//          (91.5).centi.meters,
+//          Rotation3d()
+//        )
+//      ),
+//      AprilTag(
+//        8,
+//        Pose3d(
+//          (0).inches,
+//          (0).inches,
+//          (0).inches,
+//          Rotation3d()
+//        )
+//      )
+//    )
+
+  // Church (Inactive)
 
   //  val homeAprilTags: List<AprilTag> =
   //    listOf(
@@ -157,72 +161,23 @@ object FieldConstants {
   //    )
 
   //church tags
-  val aprilTags: List<AprilTag> =
+  val homeAprilTags: List<AprilTag> =
     listOf(
-      AprilTag(
-        0,
-        Pose3d(
-          0.inches,
-          30.inches + (4.25).inches,
-          24.875.inches + 5.5.inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-        )
-      ),
-
+      AprilTag(0, Pose3d((40.45).inches, (108.19).inches, (45).centi.meters, Rotation3d())),
       AprilTag(
         1,
         Pose3d(
-          0.inches,
-          62.25.inches + (3*4.25).inches,
-          25.25.inches + 5.5.inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-        )
-      ),
-
-      AprilTag(
-        2,
-        Pose3d(
-          0.inches,
-          94.35.inches + (5*4.25).inches,
-          25.inches + 5.5.inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-        )
-      ),
-
-      AprilTag(
-        3,
-        Pose3d(
-          0.inches,
-          160.inches,
-          135.60.inches + (7*4.25).inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-        )
-      ),
-
-      AprilTag(
-        4,
-        Pose3d(
-          0.inches,
-          168.1.inches + (9*4.25).inches,
-          24.875.inches + 5.5.inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-        )
-      ),
-
-      AprilTag(
-        5,
-        Pose3d(
-          0.inches,
-          199.35.inches + (11*4.25).inches,
-          25.125.inches + 5.5.inches,
-          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+          (40.45).inches,
+          (108.19).inches + 99.centi.meters + 3.inches,
+          (46).centi.meters,
+          Rotation3d()
         )
       )
     )
 
   // AprilTag locations (do not flip for red alliance)
 
-  /*
+
   val aprilTags: List<AprilTag> =
     listOf(
       AprilTag(
@@ -278,7 +233,7 @@ object FieldConstants {
       AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
     )
 
-   */
+
 
   val wpilibAprilTags =
     if (Constants.Universal.REAL_FIELD) aprilTags.map { it.apriltagWpilib }

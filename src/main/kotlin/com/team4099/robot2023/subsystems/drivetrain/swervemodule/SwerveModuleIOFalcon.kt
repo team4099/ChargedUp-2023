@@ -35,6 +35,7 @@ import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
+import org.team4099.lib.units.inMetersPerSecond
 import java.lang.Math.PI
 
 class SwerveModuleIOFalcon(
@@ -111,7 +112,7 @@ class SwerveModuleIOFalcon(
       driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
     driveConfiguration.slot0.kD =
       driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
-    driveConfiguration.slot0.kF = 0.05425
+    driveConfiguration.slot0.kF = 0.0435
     //      driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
     driveConfiguration.supplyCurrLimit.currentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
@@ -209,6 +210,8 @@ class SwerveModuleIOFalcon(
       feedforward.inVolts / 12.0
     )
     setSteeringSetpoint(steering)
+    Logger.getInstance()
+      .recordOutput("$label/setpointVelocity", speed.inMetersPerSecond)
   }
 
   /**

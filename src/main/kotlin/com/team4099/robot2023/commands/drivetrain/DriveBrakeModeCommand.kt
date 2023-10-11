@@ -6,7 +6,7 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.perSecond
 
-class DriveBrakeModeCommand(val drivetrain: Drivetrain) : CommandBase() {
+class DriveBrakeModeCommand(val drivetrain: Drivetrain, val isBreakMode: Boolean = true) : CommandBase() {
   init {
     addRequirements(drivetrain)
   }

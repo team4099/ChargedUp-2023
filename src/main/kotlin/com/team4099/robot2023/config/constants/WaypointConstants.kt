@@ -9,11 +9,13 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
 
 object WaypointConstants {
+  val DISTANCE_FROM_COMMUNITY = 2.16.meters
+
   enum class SubstationPoints(val waypoints: List<Waypoint>) {
     CloseLeftCommunity(
       listOf(
         Waypoint(
-          Translation2d(3.meters, 4.64.meters).translation2d,
+          Translation2d(DISTANCE_FROM_COMMUNITY, 4.64.meters).translation2d,
           holonomicRotation = Rotation2d(180.degrees.inRadians)
         )
       )
@@ -21,7 +23,7 @@ object WaypointConstants {
     CloseCenterCommunity(
       listOf(
         Waypoint(
-          Translation2d(2.01.meters, 3.48.meters).translation2d,
+          Translation2d(DISTANCE_FROM_COMMUNITY, 3.48.meters).translation2d,
           holonomicRotation = Rotation2d(180.degrees.inRadians)
         )
       )
@@ -29,7 +31,7 @@ object WaypointConstants {
     CloseRightCommunity(
       listOf(
         Waypoint(
-          Translation2d(2.01.meters, 1.47.meters).translation2d,
+          Translation2d(DISTANCE_FROM_COMMUNITY, 1.47.meters).translation2d,
           holonomicRotation = Rotation2d(180.degrees.inRadians)
         )
       )
@@ -71,7 +73,7 @@ object WaypointConstants {
     CloseLeftCommunity(
       listOf(
         Waypoint(
-          Translation2d(2.01.meters, 4.meters).translation2d,
+          Translation2d(DISTANCE_FROM_COMMUNITY, 4.4.meters).translation2d,
           holonomicRotation = Rotation2d(180.degrees.inRadians)
         )
       )
@@ -79,7 +81,7 @@ object WaypointConstants {
     CloseRightCommunity(
       listOf(
         Waypoint(
-          Translation2d(2.01.meters, 0.85.meters).translation2d,
+          Translation2d(DISTANCE_FROM_COMMUNITY, 0.85.meters).translation2d,
           holonomicRotation = Rotation2d(180.degrees.inRadians)
         )
       )
