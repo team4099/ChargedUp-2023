@@ -1,10 +1,8 @@
 package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 
-import com.ctre.phoenix.motorcontrol.ControlMode
-import com.ctre.phoenix.motorcontrol.DemandType
-import com.ctre.phoenix.motorcontrol.NeutralMode
-import com.ctre.phoenix.motorcontrol.can.TalonFX
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
+import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.hardware.TalonFX
+import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.subsystems.falconspin.Falcon500
@@ -74,65 +72,56 @@ class SwerveModuleIOFalcon(
     }
 
   init {
-    driveFalcon.configFactoryDefault()
-    steeringFalcon.configFactoryDefault()
+    driveFalcon.configurator.apply(TalonFXConfiguration())
+    steeringFalcon.configurator.apply(TalonFXConfiguration())
 
     driveFalcon.clearStickyFaults()
     steeringFalcon.clearStickyFaults()
 
-    steeringConfiguration.slot0.kP =
+    steeringConfiguration.Slot0.kP =
       steeringSensor.proportionalPositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KP)
-    steeringConfiguration.slot0.kI =
+    steeringConfiguration.Slot0.kI =
       steeringSensor.integralPositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KI)
-    steeringConfiguration.slot0.kD =
+    steeringConfiguration.Slot0.kD =
       steeringSensor.derivativePositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
-    steeringConfiguration.slot0.kF =
+    steeringConfiguration.Slot0.kV
+    =
       steeringSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.STEERING_KFF)
-    steeringConfiguration.motionCruiseVelocity =
+    steeringConfiguration.MotionMagic.MotionMagicCruiseVelocity =
       steeringSensor.velocityToRawUnits(DrivetrainConstants.STEERING_VEL_MAX)
-    steeringConfiguration.motionAcceleration =
+    steeringConfiguration.MotionMagic.MotionMagicAcceleration =
       steeringSensor.accelerationToRawUnits(DrivetrainConstants.STEERING_ACCEL_MAX)
-    steeringConfiguration.peakOutputForward = 1.0
-    steeringConfiguration.peakOutputReverse = -1.0
-    steeringConfiguration.supplyCurrLimit.currentLimit =
+    steeringConfiguration.MotorOutput.PeakForwardDutyCycle = 1.0
+    steeringConfiguration.MotorOutput.PeakForwardDutyCycle = -1.0
+    steeringConfiguration.CurrentLimits.SupplyCurrentLimit =
       DrivetrainConstants.STEERING_SUPPLY_CURRENT_LIMIT.inAmperes
-    steeringConfiguration.supplyCurrLimit.enable = true
+    steeringConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
 
-    steeringFalcon.setNeutralMode(NeutralMode.Brake) // change back to coast maybe?
+    steeringConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake // change back to coast maybe?
     steeringFalcon.inverted = true
-    steeringFalcon.configAllSettings(steeringConfiguration)
-    steeringFalcon.configAllowableClosedloopError(
-      0, steeringSensor.positionToRawUnits(DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR)
-    )
+    steeringFalcon.configurator.apply(steeringConfiguration)
 
-    driveConfiguration.slot0.kP =
+    driveConfiguration.Slot0.kP =
       driveSensor.proportionalVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KP)
-    driveConfiguration.slot0.kI =
+    driveConfiguration.Slot0.kI =
       driveSensor.integralVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KI)
-    driveConfiguration.slot0.kD =
+    driveConfiguration.Slot0.kD =
       driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
-    driveConfiguration.slot0.kF = 0.05425
+    driveConfiguration.Slot0.kV = 0.05425
     //      driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
-    driveConfiguration.supplyCurrLimit.currentLimit =
+    driveConfiguration.CurrentLimits.SupplyCurrentLimit  =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
-    driveConfiguration.supplyCurrLimit.triggerThresholdCurrent =
+    driveConfiguration.CurrentLimits.SupplyCurrentThreshold =
       DrivetrainConstants.DRIVE_THRESHOLD_CURRENT_LIMIT.inAmperes
-    driveConfiguration.supplyCurrLimit.triggerThresholdTime =
+    driveConfiguration.CurrentLimits.SupplyTimeThreshold =
       DrivetrainConstants.DRIVE_TRIGGER_THRESHOLD_TIME.inSeconds
-    driveConfiguration.supplyCurrLimit.enable = true
-    driveConfiguration.statorCurrLimit.currentLimit =
+    driveConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
+    driveConfiguration.CurrentLimits.StatorCurrentLimit =
       DrivetrainConstants.DRIVE_STATOR_CURRENT_LIMIT.inAmperes
-    driveConfiguration.statorCurrLimit.triggerThresholdCurrent =
-      DrivetrainConstants.DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT.inAmperes
-    driveConfiguration.statorCurrLimit.triggerThresholdTime =
-      DrivetrainConstants.DRIVE_STATOR_TRIGGER_THRESHOLD_TIME.inSeconds
-    driveConfiguration.statorCurrLimit.enable = false // TODO tune
-    driveConfiguration.voltageCompSaturation = 12.0
+    driveConfiguration.CurrentLimits.StatorCurrentLimitEnable = false // TODO tune
 
-    driveFalcon.configAllSettings(driveConfiguration)
-    driveFalcon.enableVoltageCompensation(true)
-
-    driveFalcon.setNeutralMode(NeutralMode.Brake)
+    driveConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake
+    driveFalcon.configurator.apply(driveConfiguration)
 
     MotorChecker.add(
       "Drivetrain",

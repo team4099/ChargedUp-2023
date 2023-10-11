@@ -72,6 +72,7 @@ object ElevatorConstants {
 
   val ENABLE_ELEVATOR = 1.0
 
+
   val ELEVATOR_MAX_EXTENSION = 54.8.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches
   val ELEVATOR_SOFT_LIMIT_EXTENSION = 54.5.inches
