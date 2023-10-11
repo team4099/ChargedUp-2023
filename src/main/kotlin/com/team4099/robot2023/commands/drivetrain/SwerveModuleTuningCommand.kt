@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.inRotation2ds
 
-class SwerveModuleTuningCommand(val drivetrain: Drivetrain, val steeringPosition: Angle) :
+class SwerveModuleTuningCommand(val drivetrain: Drivetrain, val steeringPosition: () -> Angle) :
   CommandBase() {
   init {
     addRequirements(drivetrain)
@@ -15,8 +15,8 @@ class SwerveModuleTuningCommand(val drivetrain: Drivetrain, val steeringPosition
   override fun execute() {
     for (module in drivetrain.swerveModules) {
       module.setPositionClosedLoop(
-        SwerveModuleState(0.0, steeringPosition.inRotation2ds),
-        SwerveModuleState(0.0, steeringPosition.inRotation2ds),
+        SwerveModuleState(0.0, steeringPosition().inRotation2ds),
+        SwerveModuleState(0.0, steeringPosition().inRotation2ds),
         false
       )
     }
