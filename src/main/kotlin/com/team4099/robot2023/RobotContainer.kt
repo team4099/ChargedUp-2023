@@ -113,6 +113,7 @@ object RobotContainer {
   }
 
   fun mapDefaultCommands() {
+
     drivetrain.defaultCommand =
       TeleopDriveCommand(
         driver = Ryan(),
@@ -124,16 +125,15 @@ object RobotContainer {
       )
 
 
-    /*
-    module steeing tuning
+  /*
 
     drivetrain.defaultCommand =
       SwerveModuleTuningCommand(
         drivetrain,
         { (ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) * 180).degrees },
       )
+  */
 
-     */
   }
 
   fun requestSuperstructureIdle() {

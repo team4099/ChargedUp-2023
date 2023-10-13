@@ -25,7 +25,8 @@ class TeleopDriveCommand(
   override fun execute() {
     val speed = driver.driveSpeedClampedSupplier(driveX, driveY, slowMode)
     val rotation = driver.rotationSpeedClampedSupplier(turn, slowMode)
-    drivetrain.setOpenLoop(rotation, speed)
+    drivetrain.setClosedLoop(rotation, speed)
+
     Logger.getInstance().recordOutput("ActiveCommands/TeleopDriveCommand", true)
   }
   override fun isFinished(): Boolean {
