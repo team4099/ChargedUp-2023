@@ -1,6 +1,8 @@
 package com.team4099.robot2023.config.constants
 
 import edu.wpi.first.wpilibj.RobotBase
+import org.team4099.lib.units.Fraction
+import org.team4099.lib.units.Value
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
@@ -13,6 +15,8 @@ import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.DerivativeGain
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
+import org.team4099.lib.units.derived.RADIANS_PER_DEGREES
+import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.meterSquared
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
@@ -89,6 +93,13 @@ object DrivetrainConstants {
   val STEERING_WHEEL_INERTIA = 0.004096955.kilo.grams.meterSquared
 
   object PID {
+    val DOUBLE_SUB_AUTO_ALIGN_KP: ProportionalGain<Radian, Velocity<Radian>> =
+      0.0.degrees.perSecond / 5.0.degrees
+    val DOUBLE_SUB_AUTO_ALIGN_KI: IntegralGain<Radian, Velocity<Radian>> =
+      0.degrees.perSecond / (0.0.degrees * 1.0.seconds)
+    val DOUBLE_SUB_AUTO_ALIGN_KD: DerivativeGain<Radian, Velocity<Radian>> =
+      (0.degrees.perSecond / (0.0.degrees.perSecond)).degreesPerSecondPerDegreesPerSecond
+
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
@@ -168,3 +179,6 @@ object DrivetrainConstants {
     val SIM_STEERING_KD = 0.0.volts.perDegreePerSecond
   }
 }
+
+inline val Double.degreesPerSecondPerDegreesPerSecond
+  get() = Value<Fraction<Velocity<Radian>, Velocity<Radian>>>(this * RADIANS_PER_DEGREES)

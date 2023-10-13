@@ -2,6 +2,7 @@ package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.commands.AutoScoreCommand
+import com.team4099.robot2023.commands.DoubleSubIntakeCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
@@ -46,6 +47,13 @@ object RobotContainer {
 
   val rumbleState: Boolean
     get() = superstructure.rumbleState
+
+  val driveX: () -> Double = {
+    ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND)
+  }
+  val driveY = { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) }
+  val turn = { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) }
+  val slowMode = { ControlBoard.slowMode }
 
   init {
     if (RobotBase.isReal()) {
@@ -99,14 +107,7 @@ object RobotContainer {
 
   fun mapDefaultCommands() {
     drivetrain.defaultCommand =
-      TeleopDriveCommand(
-        driver = Ryan(),
-        { ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-        { ControlBoard.strafe.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) },
-        { ControlBoard.turn.smoothDeadband(Constants.Joysticks.TURN_DEADBAND) },
-        { ControlBoard.slowMode },
-        drivetrain
-      )
+      TeleopDriveCommand(driver = Ryan(), driveX, driveY, turn, slowMode, drivetrain)
   }
 
   fun requestSuperstructureIdle() {
@@ -190,7 +191,11 @@ object RobotContainer {
     ControlBoard.scoreOuttake.whileTrue(superstructure.score())
     ControlBoard.singleSubstationIntake.whileTrue(superstructure.singleSubConeCommand())
     ControlBoard.groundIntakeCube.whileTrue(superstructure.groundIntakeCubeCommand())
-    ControlBoard.doubleSubstationIntake.whileTrue(superstructure.doubleSubConeCommand())
+    ControlBoard.doubleSubstationIntake.whileTrue(
+      DoubleSubIntakeCommand(
+        drivetrain, superstructure, driveX, driveY, slowMode, driver = Ryan()
+      )
+    )
     ControlBoard.prepScore.whileTrue(
       superstructure.prepScoreCommand(
         {
