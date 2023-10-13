@@ -34,6 +34,7 @@ class ConeCubeOverChargeStationAuto(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
       superstructure.score(),
+      WaitCommand(0.5),
       ParallelCommandGroup(
         DrivePathCommand(
           drivetrain,
@@ -89,9 +90,9 @@ class ConeCubeOverChargeStationAuto(
                 -45.0.degrees.inRotation2ds
               ),
               Waypoint(
-                Translation2d(5.4.meters, 2.0.meters).translation2d,
+                Translation2d(5.4.meters, 2.5.meters).translation2d,
                 null,
-                180.degrees.inRotation2ds
+                135.degrees.inRotation2ds
               ),
               Waypoint(
                 Translation2d(
@@ -112,6 +113,7 @@ class ConeCubeOverChargeStationAuto(
         Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
       ),
       superstructure.score(),
+      WaitCommand(0.5),
       PositionAutoLevel(drivetrain)
     )
   }

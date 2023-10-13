@@ -14,6 +14,7 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.cos
+import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.sin
 
@@ -31,6 +32,8 @@ object FieldConstants {
   val tapeWidth = 2.0.inches
 
   val aprilTagLength = 6.0.inches
+
+  val chargeStationEngageAngle = 5.5.degrees
 
   val homeAprilTags: List<AprilTag> =
     listOf(

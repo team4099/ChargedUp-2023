@@ -7,6 +7,8 @@ import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation2dWPILIB
 import org.team4099.lib.units.base.Length
@@ -55,6 +57,18 @@ object AllianceFlipUtil {
     } else {
       rotation
     }
+  }
+
+  /** Flips a pose to the correct side of the field regardless of current alliance color. */
+  fun forceApply(pose: Pose3d): Pose3d {
+    return Pose3d(
+      FieldConstants.fieldLength - pose.x,
+      pose.y,
+      pose.z,
+      Rotation3d(
+        pose.rotation.x, pose.rotation.y, Angle(-pose.rotation.z.cos, pose.rotation.z.sin)
+      )
+    )
   }
 
   /** Flips a pose to the correct side of the field based on the current alliance color. */

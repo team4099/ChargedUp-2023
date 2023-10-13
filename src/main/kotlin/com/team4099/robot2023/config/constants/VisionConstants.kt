@@ -62,12 +62,13 @@ object VisionConstants {
     val LIMELIGHT_NAME = "limelight-zapdos"
     val HORIZONTAL_FOV = 59.6.degrees
     val VERITCAL_FOV = 45.7.degrees
-    val HIGH_TAPE_HEIGHT = 43.875.inches + 1.inches
-    val MID_TAPE_HEIGHT = 23.905.inches + 1.inches
+    val HIGH_TAPE_HEIGHT = 43.875.inches
+    val MID_TAPE_HEIGHT = 23.905.inches
     val LL_TRANSFORM =
       Transform3d(
         Translation3d(1.1438.inches, 10.3966.inches, 12.9284.inches),
-        Rotation3d(8.159.degrees, -90.degrees + 61.610.degrees, -14.1254.degrees)
+        Rotation3d(0.0.degrees, -90.degrees + 61.610.degrees, -20.2.degrees)
+        //        Rotation3d(8.159.degrees, -90.degrees + 61.610.degrees, -14.1254.degrees)
       )
     const val RES_WIDTH = 320
     const val RES_HEIGHT = 240 // no clue what these numbers should be but usnig these for now

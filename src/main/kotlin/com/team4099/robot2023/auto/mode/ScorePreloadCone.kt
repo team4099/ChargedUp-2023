@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.meters
@@ -24,7 +25,8 @@ class ScorePreloadCone(val drivetrain: Drivetrain, val superstructure: Superstru
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HIGH
       ),
-      superstructure.score()
+      superstructure.score(),
+      WaitCommand(0.5)
     )
   }
 

@@ -19,6 +19,8 @@ import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.seconds
+import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.radians
 import java.util.function.Consumer
 import java.util.function.Supplier
@@ -109,6 +111,11 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
             // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
 
             robotPose = cameraPose.transformBy(cameraPoses[instance].inverse()).toPose2d()
+
+            if (robotPose.rotation - (currentPose.rotation) >= 10.degrees){
+              cameraPose = null
+              robotPose = null
+            }
           }
           2.0 -> {
             val error0 = values[1]
@@ -169,6 +176,7 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
 
               val robotPose1 = cameraPose1.transformBy(cameraPoses[instance].inverse()).toPose2d()
 
+
               if (robotPose0.rotation.minus(currentPose.rotation).absoluteValue <
                 robotPose1.rotation.minus(currentPose.rotation).absoluteValue
               ) {
@@ -179,10 +187,19 @@ class Vision(vararg cameras: CameraIO) : SubsystemBase() {
                 robotPose = robotPose1
               }
 
+              if ((robotPose - currentPose).rotation.absoluteValue >= 10.degrees){
+                cameraPose = null
+                robotPose = null
+              }
+
               //
               // Logger.getInstance().recordOutput("Vision/${VisionConstants.CAMERA_NAMES[instance]}_transform", cameraPose.relativeTo(tuningPosition.toPose3d()).pose3d)
             }
           }
+        }
+
+        if (instance == 1){
+          println((robotPose?.rotation?.minus(currentPose.rotation))?.inDegrees)
         }
 
         if (cameraPose == null || robotPose == null) {

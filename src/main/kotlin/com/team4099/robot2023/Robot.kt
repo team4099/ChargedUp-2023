@@ -137,6 +137,7 @@ object Robot : LoggedRobot() {
     FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.setDriveBrakeMode()
     RobotContainer.setSteeringBrakeMode()
+    RobotContainer.regenerateProfiles()
     RobotContainer.getAutonomousCommand().schedule()
   }
 
@@ -162,7 +163,7 @@ object Robot : LoggedRobot() {
 
     // motor checker stuff
     val motorCheckerStartTime = Clock.realTimestamp
-    MotorChecker.periodic()
+//    MotorChecker.periodic()
     Logger.getInstance()
       .recordOutput(
         "LoggedRobot/Subsystems/MotorCheckerLoopTimeMS",
@@ -188,6 +189,7 @@ object Robot : LoggedRobot() {
       RobotContainer.mapTunableCommands()
     }
     RobotContainer.zeroArm()
+    RobotContainer.zeroSteering()
   }
 
   override fun testInit() {

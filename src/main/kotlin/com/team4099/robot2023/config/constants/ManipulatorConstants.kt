@@ -98,7 +98,7 @@ object ManipulatorConstants {
 
   val IDLE_VOLTAGE = 0.0.volts
   val CONE_IDLE = 6.volts
-  val CUBE_IDLE = -3.volts
+  val CUBE_IDLE = -2.5.volts
   val CONE_IN = 12.volts
   val CUBE_IN = -6.volts
   val CONE_OUT = -12.volts
@@ -141,7 +141,7 @@ object ManipulatorConstants {
   val LOW_CUBE_SCORE_EXTENSION = 1.3.inches
   val MID_CUBE_SCORE_EXTENSION = 3.0.inches
   val HIGH_CUBE_SCORE_EXTENSION = 8.6.inches
-  val LOW_CONE_SCORE_EXTENSION = 7.5.inches
+  val LOW_CONE_SCORE_EXTENSION = 5.0.inches
   val MID_CONE_SCORE_EXTENSION = 5.0.inches
   val HIGH_CONE_SCORE_EXTENSION = 7.8.inches
   val INTAKE_CUBE_FROM_GROUND_EXTENSION = 1.0.inches
