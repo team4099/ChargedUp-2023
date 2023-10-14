@@ -9,7 +9,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
 
 object WaypointConstants {
-  val DISTANCE_FROM_COMMUNITY = 2.16.meters
+  val DISTANCE_FROM_COMMUNITY = 2.5.meters
 
   enum class SubstationPoints(val waypoints: List<Waypoint>) {
     CloseLeftCommunity(

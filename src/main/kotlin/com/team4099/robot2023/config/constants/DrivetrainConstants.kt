@@ -54,8 +54,8 @@ object DrivetrainConstants {
   val SLOW_AUTO_VEL = 2.meters.perSecond
   val SLOW_AUTO_ACCEL = 2.0.meters.perSecond.perSecond
 
-  val MAX_AUTO_VEL = 2.meters.perSecond // 4
-  val MAX_AUTO_ACCEL = 1.meters.perSecond.perSecond // 3
+  val MAX_AUTO_VEL = 3.meters.perSecond // 4
+  val MAX_AUTO_ACCEL = 2.meters.perSecond.perSecond // 3
 
   val MAX_AUTO_BRAKE_VEL = 0.5.meters.perSecond // 4
   val MAX_AUTO_BRAKE_ACCEL = 0.5.meters.perSecond.perSecond // 3
@@ -92,7 +92,7 @@ object DrivetrainConstants {
     val AUTO_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 0.5.meters.perSecond / 1.0.meters // todo:4
+          return 2.1.meters.perSecond / 1.0.meters // todo:4
         } else {
           return 7.0.meters.perSecond / 1.0.meters
         }
@@ -109,7 +109,7 @@ object DrivetrainConstants {
     val AUTO_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.2.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond // todo: 0.25
+          return (0.4.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
@@ -117,7 +117,7 @@ object DrivetrainConstants {
 
     val AUTO_THETA_ALLOWED_ERROR = 3.degrees
 
-    val AUTO_THETA_PID_KP = 0.1.degrees.perSecond / 1.degrees
+    val AUTO_THETA_PID_KP = 0.8.degrees.perSecond / 1.degrees
     val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val AUTO_THETA_PID_KD =
       (0.025.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
@@ -136,15 +136,15 @@ object DrivetrainConstants {
     val MAX_AUTO_ANGULAR_VEL = 270.0.degrees.perSecond
     val MAX_AUTO_ANGULAR_ACCEL = 600.0.degrees.perSecond.perSecond
 
-    val STEERING_KP = 10.0.volts / 45.degrees
+    val STEERING_KP = 0.22.volts.perDegree
     val STEERING_KI = 0.0.volts.perDegreeSeconds
     val STEERING_KD = 0.0.volts.perDegreePerSecond
 
     val STEERING_KFF = 0.0.volts / 1.0.radians.perSecond // 0.0375
 
-    val DRIVE_KP = 0.volts / 1.meters.perSecond
+    val DRIVE_KP = 0.0.volts / 1.meters.perSecond
     val DRIVE_KI = 0.0.volts / (1.meters.perSecond * 1.seconds)
-    val DRIVE_KD = 0.1.volts / 1.meters.perSecond.perSecond
+    val DRIVE_KD = 0.0.volts / 1.meters.perSecond.perSecond
 
     val DRIVE_KFF = 12.0.volts / 3.8.meters.perSecond
 
