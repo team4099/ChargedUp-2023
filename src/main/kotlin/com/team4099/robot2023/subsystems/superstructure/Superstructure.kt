@@ -279,20 +279,11 @@ class Superstructure(
             )
 
           if (manipulator.isAtTargetedPosition) {
-            if (manipulator.hasCube){
-              elevator.currentRequest =
-                Request.ElevatorRequest.TargetingPosition(
-                  4.inches
-                )
+            if (manipulator.hasCube) {
+              elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(4.inches)
             } else {
-              elevator.currentRequest =
-                Request.ElevatorRequest.TargetingPosition(
-                  3.inches
-                )
+              elevator.currentRequest = Request.ElevatorRequest.TargetingPosition(3.inches)
             }
-
-
-            
           }
         } else {
           manipulator.currentRequest =
@@ -777,7 +768,6 @@ class Superstructure(
                   GroundIntake.TunableGroundIntakeStates.stowedDownAngle.get(), rollerVoltage
                 )
               scoringConeWithoutLoweringGroundIntake = false
-
             }
           } else {
             groundIntake.currentRequest =

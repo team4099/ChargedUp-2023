@@ -8,9 +8,6 @@ import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.driven
-import org.team4099.lib.units.derived.driving
-import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.kilo
@@ -44,17 +41,15 @@ object GroundIntakeConstants {
 
   val ABSOLUTE_ENCODER_OFFSET = (-196.87).degrees
   // From encoder to intake
-  val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).gearRatio
+  val ROLLER_GEAR_RATIO = (36.0 / 18.0)
 
   // units are kg * m^2'
   val ROLLER_MOMENT_INERTIA = 0.00313.kilo.grams * 1.0.meters.squared
 
   // gear reduction from absolute encoder to output
-  val ARM_ENCODER_GEAR_RATIO = (32.0.driven / 16.0.driving).gearRatio
+  val ARM_ENCODER_GEAR_RATIO = (32.0 / 16.0)
   // gear reduction from motor to output
-  val ARM_OUTPUT_GEAR_RATIO =
-    ((60.0.driven / 12.0.driving) * (80.0.driven / 18.0.driving) * (32.0.driven / 16.0.driving))
-      .gearRatio
+  val ARM_OUTPUT_GEAR_RATIO = ((60.0 / 12.0) * (80.0 / 18.0) * (32.0 / 16.0))
 
   val ARM_LENGTH = 12.695.inches // TODO figure out via cad (this should be distance to com)
 

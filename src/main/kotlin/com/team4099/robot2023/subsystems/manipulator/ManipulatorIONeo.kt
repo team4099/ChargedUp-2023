@@ -19,7 +19,6 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxAngularMechanismSensor
@@ -32,7 +31,7 @@ object ManipulatorIONeo : ManipulatorIO {
   private val rollerSensor =
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
-      ManipulatorConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
+      ManipulatorConstants.ROLLER_GEAR_RATIO,
       ManipulatorConstants.ROLLER_VOLTAGE_COMPENSATION
     )
   private val armSparkMax =
@@ -40,7 +39,7 @@ object ManipulatorIONeo : ManipulatorIO {
   private val armSensor =
     sparkMaxLinearMechanismSensor(
       armSparkMax,
-      ManipulatorConstants.ARM_GEAR_RATIO.asDrivenOverDriving,
+      ManipulatorConstants.ARM_GEAR_RATIO,
       ManipulatorConstants.ARM_SPOOL_RADIUS * 2,
       ManipulatorConstants.ARM_VOLTAGE_COMPENSATION
     )

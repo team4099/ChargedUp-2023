@@ -1,6 +1,12 @@
 package com.team4099.robot2023.subsystems.drivetrain.swervemodule
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs
+import com.ctre.phoenix6.configs.MotorOutputConfigs
+import com.ctre.phoenix6.configs.Slot0Configs
 import com.ctre.phoenix6.configs.TalonFXConfiguration
+import com.ctre.phoenix6.controls.DutyCycleOut
+import com.ctre.phoenix6.controls.PositionDutyCycle
+import com.ctre.phoenix6.controls.VelocityDutyCycle
 import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.NeutralModeValue
 import com.team4099.robot2023.config.constants.Constants
@@ -84,20 +90,18 @@ class SwerveModuleIOFalcon(
       steeringSensor.integralPositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KI)
     steeringConfiguration.Slot0.kD =
       steeringSensor.derivativePositionGainToRawUnits(DrivetrainConstants.PID.STEERING_KD)
-    steeringConfiguration.Slot0.kV
-    =
+    steeringConfiguration.Slot0.kV =
       steeringSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.STEERING_KFF)
     steeringConfiguration.MotionMagic.MotionMagicCruiseVelocity =
       steeringSensor.velocityToRawUnits(DrivetrainConstants.STEERING_VEL_MAX)
     steeringConfiguration.MotionMagic.MotionMagicAcceleration =
       steeringSensor.accelerationToRawUnits(DrivetrainConstants.STEERING_ACCEL_MAX)
-    steeringConfiguration.MotorOutput.PeakForwardDutyCycle = 1.0
-    steeringConfiguration.MotorOutput.PeakForwardDutyCycle = -1.0
     steeringConfiguration.CurrentLimits.SupplyCurrentLimit =
       DrivetrainConstants.STEERING_SUPPLY_CURRENT_LIMIT.inAmperes
     steeringConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true
 
-    steeringConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake // change back to coast maybe?
+    steeringConfiguration.MotorOutput.NeutralMode =
+      NeutralModeValue.Brake // change back to coast maybe?
     steeringFalcon.inverted = true
     steeringFalcon.configurator.apply(steeringConfiguration)
 
@@ -109,7 +113,7 @@ class SwerveModuleIOFalcon(
       driveSensor.derivativeVelocityGainToRawUnits(DrivetrainConstants.PID.DRIVE_KD)
     driveConfiguration.Slot0.kV = 0.05425
     //      driveSensor.velocityFeedforwardToRawUnits(DrivetrainConstants.PID.DRIVE_KFF)
-    driveConfiguration.CurrentLimits.SupplyCurrentLimit  =
+    driveConfiguration.CurrentLimits.SupplyCurrentLimit =
       DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT.inAmperes
     driveConfiguration.CurrentLimits.SupplyCurrentThreshold =
       DrivetrainConstants.DRIVE_THRESHOLD_CURRENT_LIMIT.inAmperes
@@ -127,7 +131,6 @@ class SwerveModuleIOFalcon(
       "Drivetrain",
       "Drive",
       MotorCollection(
-
         mutableListOf(Falcon500(driveFalcon, "$label Drive Motor")),
         DrivetrainConstants.DRIVE_SUPPLY_CURRENT_LIMIT,
         90.celsius,
@@ -150,13 +153,14 @@ class SwerveModuleIOFalcon(
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {
-    inputs.driveAppliedVoltage = driveFalcon.motorOutputVoltage.volts
-    inputs.steeringAppliedVoltage = steeringFalcon.motorOutputVoltage.volts
+    inputs.driveAppliedVoltage = (driveFalcon.get() * RobotController.getBatteryVoltage()).volts
+    inputs.steeringAppliedVoltage =
+      (steeringFalcon.get() * RobotController.getBatteryVoltage()).volts
 
-    inputs.driveStatorCurrent = driveFalcon.statorCurrent.amps
-    inputs.driveSupplyCurrent = driveFalcon.supplyCurrent.amps
-    inputs.steeringStatorCurrent = steeringFalcon.statorCurrent.amps
-    inputs.steeringSupplyCurrent = steeringFalcon.statorCurrent.amps
+    inputs.driveStatorCurrent = driveFalcon.statorCurrent.value.amps
+    inputs.driveSupplyCurrent = driveFalcon.supplyCurrent.value.amps
+    inputs.steeringStatorCurrent = steeringFalcon.statorCurrent.value.amps
+    inputs.steeringSupplyCurrent = steeringFalcon.statorCurrent.value.amps
 
     inputs.drivePosition = driveSensor.position
     inputs.steeringPosition = steeringSensor.position
@@ -164,8 +168,9 @@ class SwerveModuleIOFalcon(
     inputs.driveVelocity = driveSensor.velocity
     inputs.steeringVelocity = steeringSensor.velocity
 
-    inputs.driveTemp = driveFalcon.temperature.celsius
-    inputs.steeringTemp = steeringFalcon.temperature.celsius
+    // processor temp is also something we may want to log ?
+    inputs.driveTemp = driveFalcon.deviceTemp.value.celsius
+    inputs.steeringTemp = steeringFalcon.deviceTemp.value.celsius
 
     inputs.potentiometerOutputRaw =
       potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
@@ -177,13 +182,11 @@ class SwerveModuleIOFalcon(
         (inputs.potentiometerOutputRadians - zeroOffset).inRadians
       )
 
-    Logger.getInstance()
-      .recordOutput("$label/sensorVelocityRawUnits", driveFalcon.selectedSensorVelocity)
-    Logger.getInstance().recordOutput("$label/motorOutput", driveFalcon.motorOutputPercent)
+    Logger.getInstance().recordOutput("$label/motorOutput", driveFalcon.get())
   }
 
   override fun setSteeringSetpoint(angle: Angle) {
-    steeringFalcon.set(ControlMode.Position, steeringSensor.positionToRawUnits(angle))
+    steeringFalcon.setControl(PositionDutyCycle(steeringSensor.positionToRawUnits(angle)))
   }
 
   override fun setClosedLoop(
@@ -192,12 +195,12 @@ class SwerveModuleIOFalcon(
     acceleration: LinearAcceleration
   ) {
     val feedforward = DrivetrainConstants.PID.DRIVE_KS * speed.sign
-    driveFalcon.set(
-      ControlMode.Velocity,
-      driveSensor.velocityToRawUnits(speed),
-      DemandType.ArbitraryFeedForward,
-      feedforward.inVolts / 12.0
+    driveFalcon.setControl(
+      VelocityDutyCycle(
+        driveSensor.velocityToRawUnits(speed), false, feedforward.inVolts / 12.0, 0, false
+      )
     )
+
     setSteeringSetpoint(steering)
   }
 
@@ -208,7 +211,7 @@ class SwerveModuleIOFalcon(
    * @param speed: Desired speed
    */
   override fun setOpenLoop(steering: Angle, speed: LinearVelocity) {
-    driveFalcon.set(ControlMode.PercentOutput, speed / DrivetrainConstants.DRIVE_SETPOINT_MAX)
+    driveFalcon.setControl(DutyCycleOut(speed / DrivetrainConstants.DRIVE_SETPOINT_MAX))
     setSteeringSetpoint(steering)
   }
 
@@ -217,19 +220,20 @@ class SwerveModuleIOFalcon(
   }
 
   override fun zeroSteering() {
-    steeringFalcon.selectedSensorPosition =
+    steeringFalcon.setRotorPosition(
       steeringSensor.positionToRawUnits(
         if (label != Constants.Drivetrain.BACK_RIGHT_MODULE_NAME)
           (potentiometerOutput.radians) - zeroOffset
         else (2 * PI).radians - (potentiometerOutput.radians - zeroOffset)
       )
+    )
     Logger.getInstance()
       .recordOutput("$label/zeroPositionRadians", steeringSensor.position.inRadians)
-    println("Loading Zero for Module $label (${steeringFalcon.selectedSensorPosition})")
+    println("Loading Zero for Module $label (${steeringFalcon.position.value})")
   }
 
   override fun zeroDrive() {
-    driveFalcon.selectedSensorPosition = 0.0
+    driveFalcon.setRotorPosition(0.0)
   }
 
   override fun configureDrivePID(
@@ -237,9 +241,14 @@ class SwerveModuleIOFalcon(
     kI: IntegralGain<Velocity<Meter>, Volt>,
     kD: DerivativeGain<Velocity<Meter>, Volt>
   ) {
-    driveFalcon.config_kP(0, driveSensor.proportionalVelocityGainToRawUnits(kP))
-    driveFalcon.config_kI(0, driveSensor.integralVelocityGainToRawUnits(kI))
-    driveFalcon.config_kD(0, driveSensor.derivativeVelocityGainToRawUnits(kD))
+    val PIDConfig = Slot0Configs()
+
+    PIDConfig.kP = driveSensor.proportionalVelocityGainToRawUnits(kP)
+    PIDConfig.kI = driveSensor.integralVelocityGainToRawUnits(kI)
+    PIDConfig.kD = driveSensor.derivativeVelocityGainToRawUnits(kD)
+    PIDConfig.kV = 0.05425
+
+    driveFalcon.configurator.apply(PIDConfig)
   }
 
   override fun configureSteeringPID(
@@ -247,32 +256,50 @@ class SwerveModuleIOFalcon(
     kI: IntegralGain<Radian, Volt>,
     kD: DerivativeGain<Radian, Volt>
   ) {
-    steeringFalcon.config_kP(0, steeringSensor.proportionalPositionGainToRawUnits(kP))
-    steeringFalcon.config_kI(0, steeringSensor.integralPositionGainToRawUnits(kI))
-    steeringFalcon.config_kD(0, steeringSensor.derivativePositionGainToRawUnits(kD))
+    val PIDConfig = Slot0Configs()
+
+    PIDConfig.kP = steeringSensor.proportionalPositionGainToRawUnits(kP)
+    PIDConfig.kI = steeringSensor.integralPositionGainToRawUnits(kI)
+    PIDConfig.kD = steeringSensor.derivativePositionGainToRawUnits(kD)
+    PIDConfig.kV = 0.05425
+
+    driveFalcon.configurator.apply(PIDConfig)
   }
 
   override fun configureSteeringMotionMagic(
     maxVel: AngularVelocity,
     maxAccel: AngularAcceleration
   ) {
-    steeringConfiguration.motionCruiseVelocity = steeringSensor.velocityToRawUnits(maxVel)
-    steeringConfiguration.motionAcceleration = steeringSensor.accelerationToRawUnits(maxAccel)
+
+    val motionMagicConfig = MotionMagicConfigs()
+
+    motionMagicConfig.MotionMagicCruiseVelocity = steeringSensor.velocityToRawUnits(maxVel)
+    motionMagicConfig.MotionMagicAcceleration = steeringSensor.accelerationToRawUnits(maxAccel)
+
+    steeringFalcon.configurator.apply(motionMagicConfig)
   }
 
   override fun setDriveBrakeMode(brake: Boolean) {
+    val motorOutputConfig = MotorOutputConfigs()
+
     if (brake) {
-      driveFalcon.setNeutralMode(NeutralMode.Brake)
+      motorOutputConfig.NeutralMode = NeutralModeValue.Brake
     } else {
-      driveFalcon.setNeutralMode(NeutralMode.Coast)
+      motorOutputConfig.NeutralMode = NeutralModeValue.Coast
     }
+    driveFalcon.configurator.apply(motorOutputConfig)
   }
 
   override fun setSteeringBrakeMode(brake: Boolean) {
+    val motorOutputConfig = MotorOutputConfigs()
+
     if (brake) {
-      steeringFalcon.setNeutralMode(NeutralMode.Brake)
+      motorOutputConfig.NeutralMode = NeutralModeValue.Brake
     } else {
-      steeringFalcon.setNeutralMode(NeutralMode.Coast)
+      motorOutputConfig.NeutralMode = NeutralModeValue.Coast
     }
+    steeringFalcon.configurator.apply(motorOutputConfig)
+    // motor output configs might overwrite invert?
+    steeringFalcon.inverted = true
   }
 }

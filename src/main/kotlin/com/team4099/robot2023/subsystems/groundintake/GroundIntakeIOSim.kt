@@ -28,7 +28,6 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.asDrivingOverDriven
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inKilogramsMeterSquared
@@ -45,14 +44,14 @@ object GroundIntakeIOSim : GroundIntakeIO {
   val rollerSim =
     FlywheelSim(
       DCMotor.getNEO(1),
-      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivingOverDriven,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO,
       GroundIntakeConstants.ROLLER_MOMENT_INERTIA.inKilogramsMeterSquared
     )
 
   val armSim =
     SingleJointedArmSim(
       DCMotor.getNEO(1),
-      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivingOverDriven,
+      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO,
       GroundIntakeConstants.ARM_MOMENT_INERTIA.inKilogramsMeterSquared,
       GroundIntakeConstants.ARM_LENGTH.inMeters,
       -15.degrees.inRadians,

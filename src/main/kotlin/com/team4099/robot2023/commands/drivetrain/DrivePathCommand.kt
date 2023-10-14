@@ -32,10 +32,10 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegree
+import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreePerSecond
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreeSeconds
-import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreesPerSecond
 import org.team4099.lib.units.derived.inMetersPerSecondPerMeter
-import org.team4099.lib.units.derived.inMetersPerSecondPerMeterSecond
+import org.team4099.lib.units.derived.inMetersPerSecondPerMeterSeconds
 import org.team4099.lib.units.derived.inMetersPerSecondPerMetersPerSecond
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.metersPerSecondPerMetersPerSecond
@@ -96,7 +96,7 @@ class DrivePathCommand(
       "Pathfollow/thetakD",
       DrivetrainConstants.PID.AUTO_THETA_PID_KD,
       Pair(
-        { it.inDegreesPerSecondPerDegreesPerSecond },
+        { it.inDegreesPerSecondPerDegreePerSecond },
         { it.degrees.perSecond.perDegreePerSecond }
       )
     )
@@ -116,7 +116,7 @@ class DrivePathCommand(
     LoggedTunableValue(
       "Pathfollow/poskI",
       DrivetrainConstants.PID.AUTO_POS_KI,
-      Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+      Pair({ it.inMetersPerSecondPerMeterSeconds }, { it.meters.perSecond.perMeterSeconds })
     )
   val poskD =
     LoggedTunableValue(

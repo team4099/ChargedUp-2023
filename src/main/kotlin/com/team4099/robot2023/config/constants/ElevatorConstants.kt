@@ -14,7 +14,6 @@ import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.cos
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.sin
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
@@ -23,7 +22,7 @@ import kotlin.math.PI
 object ElevatorConstants {
 
   const val SENSOR_CPR = 42
-  val GEAR_RATIO = ((58.0 / 14.0) * (84.0 / 58.0) * (28.0 / 84.0)).gearRatio
+  val GEAR_RATIO = ((58.0 / 14.0) * (84.0 / 58.0) * (28.0 / 84.0))
   val CARRIAGE_MASS = 10.pounds
 
   const val FOLLOW_MOTOR_INVERTED = true
@@ -71,7 +70,6 @@ object ElevatorConstants {
   val MAX_ACCELERATION = 415.inches.perSecond.perSecond // 225
 
   val ENABLE_ELEVATOR = 1.0
-
 
   val ELEVATOR_MAX_EXTENSION = 54.8.inches
   val ELEVATOR_MAX_RETRACTION = 0.0.inches

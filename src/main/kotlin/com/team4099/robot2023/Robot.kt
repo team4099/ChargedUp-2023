@@ -11,11 +11,9 @@ import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.NTSafePublisher
 import edu.wpi.first.hal.AllianceStationID
-import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
@@ -135,8 +133,6 @@ object Robot : LoggedRobot() {
     CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
       Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
-
-
   }
 
   override fun disabledExit() {

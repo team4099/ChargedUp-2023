@@ -21,7 +21,6 @@ import org.team4099.lib.units.derived.ElectricalPotential
 import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.sparkMaxLinearMechanismSensor
@@ -35,7 +34,7 @@ object ElevatorIONeo : ElevatorIO {
   private val leaderSensor =
     sparkMaxLinearMechanismSensor(
       leaderSparkMax,
-      ElevatorConstants.GEAR_RATIO.asDrivenOverDriving,
+      ElevatorConstants.GEAR_RATIO,
       ElevatorConstants.SPOOL_RADIUS * 2,
       ElevatorConstants.VOLTAGE_COMPENSATION
     )

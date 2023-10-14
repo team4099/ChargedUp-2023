@@ -1,12 +1,12 @@
 package com.team4099.robot2023.subsystems.falconspin
 
-import com.ctre.phoenix.ErrorCode
-import com.ctre.phoenix.motorcontrol.StickyFaults
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration
-import com.ctre.phoenix.motorcontrol.can.TalonFX
+import com.ctre.phoenix6.StatusCode
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs
+import com.ctre.phoenix6.hardware.TalonFX
 import com.revrobotics.CANSparkMax
 import com.revrobotics.REVLibError
 import edu.wpi.first.math.Num
+import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.simulation.LinearSystemSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import org.team4099.lib.units.base.Current
@@ -178,19 +178,19 @@ class Falcon500(
 ) : Motor<Falcon>() {
 
   override val appliedVoltage: ElectricalPotential
-    get() = falcon500.motorOutputVoltage.volts
+    get() = (falcon500.get() * RobotController.getBatteryVoltage()).volts
 
   override val busVoltage: ElectricalPotential
-    get() = falcon500.busVoltage.volts
+    get() = falcon500.supplyVoltage.value.volts
 
   override val temperature: Temperature
-    get() = falcon500.temperature.celsius
+    get() = falcon500.deviceTemp.value.celsius
 
   override val statorCurrent: Current
-    get() = falcon500.statorCurrent.amps
+    get() = falcon500.statorCurrent.value.amps
 
   override val supplyCurrent: Current
-    get() = falcon500.supplyCurrent.amps
+    get() = falcon500.supplyCurrent.value.amps
 
   override val id: Int
     get() = falcon500.deviceID
@@ -199,48 +199,61 @@ class Falcon500(
 
   override val stickyFaults: List<String>
     get() {
-      val faults = StickyFaults()
-      falcon500.getStickyFaults(faults)
       val retVal = mutableListOf<String>()
 
-      if (faults.UnderVoltage) {
+      if (falcon500.stickyFault_Hardware.value) {
+        retVal.add("HardwareFault")
+      }
+      if (falcon500.stickyFault_ProcTemp.value) {
+        retVal.add("ProcessorTemperature")
+      }
+      if (falcon500.stickyFault_DeviceTemp.value) {
+        retVal.add("DeviceTemperature")
+      }
+      if (falcon500.stickyFault_Undervoltage.value) {
         retVal.add("UnderVoltage")
       }
-      if (faults.ForwardLimitSwitch) {
+      if (falcon500.stickyFault_BootDuringEnable.value) {
+        retVal.add("DeviceBootDuringEnable")
+      }
+      if (falcon500.stickyFault_UnlicensedFeatureInUse.value) {
+        retVal.add("Unlicensed")
+      }
+      if (falcon500.stickyFault_OverSupplyV.value) {
+        retVal.add("OverSupplyVoltage")
+      }
+      if (falcon500.stickyFault_UnstableSupplyV.value) {
+        retVal.add("UnstableSupplyVoltage")
+      }
+      if (falcon500.stickyFault_UnstableSupplyV.value) {
+        retVal.add("UnstableSupplyVoltage")
+      }
+      if (falcon500.stickyFault_ForwardHardLimit.value) {
         retVal.add("ForwardLimitSwitch")
       }
-      if (faults.ReverseLimitSwitch) {
+      if (falcon500.stickyFault_ReverseHardLimit.value) {
         retVal.add("ReverseLimitSwitch")
       }
-      if (faults.ForwardSoftLimit) {
+      if (falcon500.stickyFault_ForwardSoftLimit.value) {
         retVal.add("ForwardSoftLimit")
       }
-      if (faults.ReverseSoftLimit) {
+      if (falcon500.stickyFault_ReverseSoftLimit.value) {
         retVal.add("ReverseSoftLimit")
       }
-      if (faults.ResetDuringEn) {
-        retVal.add("ResetDuringEn")
+      if (falcon500.stickyFault_MissingRemoteSensor.value) {
+        retVal.add("MissingRemoteSensor")
       }
-      if (faults.SensorOverflow) {
-        retVal.add("SensorOverflow")
+      if (falcon500.stickyFault_FusedSensorOutOfSync.value) {
+        retVal.add("MissingRemoteSensor")
       }
-      if (faults.SensorOutOfPhase) {
-        retVal.add("SensorOutOfPhase")
+      if (falcon500.stickyFault_StatorCurrLimit.value) {
+        retVal.add("StatorCurrentLimit")
       }
-      if (faults.HardwareESDReset) {
-        retVal.add("HardwareESDReset")
+      if (falcon500.stickyFault_SupplyCurrLimit.value) {
+        retVal.add("SupplyCurrentLimit")
       }
-      if (faults.RemoteLossOfSignal) {
-        retVal.add("RemoteLossOfSignal")
-      }
-      if (faults.APIError) {
-        retVal.add("APIError")
-      }
-      if (faults.SupplyOverV) {
-        retVal.add("SupplyOverV")
-      }
-      if (faults.SupplyUnstable) {
-        retVal.add("SupplyUnstable")
+      if (falcon500.stickyFault_UsingFusedCANcoderWhileUnlicensed.value) {
+        retVal.add("UsingFusedCANcoderWhileUnlicensed")
       }
 
       return retVal
@@ -252,14 +265,13 @@ class Falcon500(
     thresholdTime: Time?
   ): Boolean {
     if (thresholdLimit != null && thresholdTime != null) {
-      val supplyCurrentConfigSuccess =
-        falcon500.configSupplyCurrentLimit(
-          SupplyCurrentLimitConfiguration(
-            true, limit.inAmperes, thresholdLimit.inAmperes, thresholdTime.inSeconds
-          )
-        )
+      val supplyCurrentConfig = CurrentLimitsConfigs()
+      supplyCurrentConfig.SupplyCurrentLimit = limit.inAmperes
+      supplyCurrentConfig.SupplyCurrentThreshold = thresholdLimit.inAmperes
+      supplyCurrentConfig.SupplyTimeThreshold = thresholdTime.inSeconds
+      val supplyCurrentConfigSuccess = falcon500.configurator.apply(supplyCurrentConfig)
 
-      if (supplyCurrentConfigSuccess == ErrorCode.OK) {
+      if (supplyCurrentConfigSuccess == StatusCode.OK) {
         if (limit == firstStageCurrentLimit) {
           currentLimitStage = CURRENT_STAGE_LIMIT.FIRST
         } else if (limit == baseCurrentLimit) {
@@ -267,7 +279,7 @@ class Falcon500(
         }
       }
 
-      return supplyCurrentConfigSuccess == ErrorCode.OK
+      return supplyCurrentConfigSuccess == StatusCode.OK
     }
     return false
   }

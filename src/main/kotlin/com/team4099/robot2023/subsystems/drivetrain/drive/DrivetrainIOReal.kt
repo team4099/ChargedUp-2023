@@ -1,6 +1,6 @@
 package com.team4099.robot2023.subsystems.drivetrain.drive
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX
+import com.ctre.phoenix6.hardware.TalonFX
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.Constants.Universal.CANIVORE_NAME
 import com.team4099.robot2023.config.constants.DrivetrainConstants

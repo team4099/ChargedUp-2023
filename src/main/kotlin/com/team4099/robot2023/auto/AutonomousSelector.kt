@@ -90,8 +90,6 @@ object AutonomousSelector {
 
     autonomousModeChooser.addOption("Score Preload Cone", AutonomousMode.PRELOAD_SCORE_AUTO)
 
-
-
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
     autoEngageWidgit =

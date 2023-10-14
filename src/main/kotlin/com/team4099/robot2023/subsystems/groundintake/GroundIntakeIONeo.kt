@@ -21,7 +21,6 @@ import org.team4099.lib.units.derived.IntegralGain
 import org.team4099.lib.units.derived.ProportionalGain
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.Volt
-import org.team4099.lib.units.derived.asDrivenOverDriving
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inVolts
@@ -42,14 +41,14 @@ object GroundIntakeIONeo : GroundIntakeIO {
   private val rollerSensor =
     sparkMaxAngularMechanismSensor(
       rollerSparkMax,
-      GroundIntakeConstants.ROLLER_GEAR_RATIO.asDrivenOverDriving,
+      GroundIntakeConstants.ROLLER_GEAR_RATIO,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
   private val armSensor =
     sparkMaxAngularMechanismSensor(
       armSparkMax,
-      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving,
+      GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO,
       GroundIntakeConstants.VOLTAGE_COMPENSATION
     )
 
@@ -65,7 +64,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
       var output =
         (
           (-throughBoreEncoder.absolutePosition.rotations) *
-            GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO.asDrivenOverDriving
+            GroundIntakeConstants.ARM_ENCODER_GEAR_RATIO
           )
 
       if (output in (-55).degrees..0.0.degrees) {
@@ -171,8 +170,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
     Logger.getInstance()
       .recordOutput(
         "GroundIntake/armSensorVelocity",
-        armSparkMax.encoder.velocity *
-          GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO.asDrivenOverDriving
+        armSparkMax.encoder.velocity * GroundIntakeConstants.ARM_OUTPUT_GEAR_RATIO
       )
   }
 

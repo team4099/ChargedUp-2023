@@ -15,8 +15,8 @@ import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegree
+import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreePerSecond
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreeSeconds
-import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreesPerSecond
 import org.team4099.lib.units.derived.perDegree
 import org.team4099.lib.units.derived.perDegreePerSecond
 import org.team4099.lib.units.derived.perDegreeSeconds
@@ -44,7 +44,7 @@ class GoToAngle(val drivetrain: Drivetrain) : CommandBase() {
     LoggedTunableValue(
       "Pathfollow/thetakD",
       Pair(
-        { it.inDegreesPerSecondPerDegreesPerSecond },
+        { it.inDegreesPerSecondPerDegreePerSecond },
         { it.degrees.perSecond.perDegreePerSecond }
       )
     )

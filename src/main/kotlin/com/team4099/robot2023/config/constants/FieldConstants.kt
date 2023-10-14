@@ -84,15 +84,7 @@ object FieldConstants {
           Rotation3d()
         )
       ),
-      AprilTag(
-        8,
-        Pose3d(
-          (0).inches,
-          (0).inches,
-          (0).inches,
-          Rotation3d()
-        )
-      )
+      AprilTag(8, Pose3d((0).inches, (0).inches, (0).inches, Rotation3d()))
     )
 
   //  val homeAprilTags: List<AprilTag> =
@@ -156,7 +148,7 @@ object FieldConstants {
   // Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)))
   //    )
 
-  //church tags
+  // church tags
   val aprilTags: List<AprilTag> =
     listOf(
       AprilTag(
@@ -168,52 +160,47 @@ object FieldConstants {
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
       ),
-
       AprilTag(
         1,
         Pose3d(
           0.inches,
-          62.25.inches + (3*4.25).inches,
+          62.25.inches + (3 * 4.25).inches,
           25.25.inches + 5.5.inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
       ),
-
       AprilTag(
         2,
         Pose3d(
           0.inches,
-          94.35.inches + (5*4.25).inches,
+          94.35.inches + (5 * 4.25).inches,
           25.inches + 5.5.inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
       ),
-
       AprilTag(
         3,
         Pose3d(
           0.inches,
           160.inches,
-          135.60.inches + (7*4.25).inches,
+          135.60.inches + (7 * 4.25).inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
       ),
-
       AprilTag(
         4,
         Pose3d(
           0.inches,
-          168.1.inches + (9*4.25).inches,
+          168.1.inches + (9 * 4.25).inches,
           24.875.inches + 5.5.inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )
       ),
-
       AprilTag(
         5,
         Pose3d(
           0.inches,
-          199.35.inches + (11*4.25).inches,
+          199.35.inches + (11 * 4.25).inches,
           25.125.inches + 5.5.inches,
           Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
         )

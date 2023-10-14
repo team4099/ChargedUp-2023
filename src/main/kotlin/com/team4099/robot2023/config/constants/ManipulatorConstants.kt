@@ -8,9 +8,6 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.base.pounds
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.ElectricalPotential
-import org.team4099.lib.units.derived.driven
-import org.team4099.lib.units.derived.driving
-import org.team4099.lib.units.derived.gearRatio
 import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.kilo
@@ -66,8 +63,8 @@ object ManipulatorConstants {
 
   const val SENSOR_CPR = 42.0
 
-  val ARM_GEAR_RATIO = ((84.0.driven / 29.0.driving) * (60.0.driven / 16.0.driving)).gearRatio
-  val ROLLER_GEAR_RATIO = 20.0.gearRatio
+  val ARM_GEAR_RATIO = ((84.0 / 29.0) * (60.0 / 16.0))
+  val ROLLER_GEAR_RATIO = 20.0
 
   // TODO: Change current thresholds
   val CONE_CURRENT_THRESHOLD = 25.amps
