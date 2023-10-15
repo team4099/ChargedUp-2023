@@ -240,13 +240,13 @@ class SwerveModule(val io: SwerveModuleIO) {
         optimizedState
           .speedMetersPerSecond
           .meters
-          .perSecond * Math.cos(abs((optimizedState.angle.angle - inputs.steeringPosition).inRadians))// consider desaturating wheel speeds here if it doesn't work
+          .perSecond/* * Math.cos(abs((optimizedState.angle.angle - inputs.steeringPosition).inRadians) ) */ // consider desaturating wheel speeds here if it doesn't work
         // from drivetrain
       )
       Logger.getInstance()
         .recordOutput("${io.label}/steeringSetpointOptimized", optimizedState.angle.degrees)
     } else {
-      io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond.meters.perSecond * Math.cos(abs((desiredState.angle.angle - inputs.steeringPosition).inRadians)))
+      io.setOpenLoop(desiredState.angle.angle, desiredState.speedMetersPerSecond.meters.perSecond /* * Math.cos(abs((desiredState.angle.angle - inputs.steeringPosition).inRadians)) */)
       Logger.getInstance()
         .recordOutput("${io.label}/steeringSetpointNonOptimized", desiredState.angle.degrees)
     }

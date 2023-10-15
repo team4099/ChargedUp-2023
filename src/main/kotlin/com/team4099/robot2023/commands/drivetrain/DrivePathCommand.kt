@@ -106,22 +106,43 @@ class DrivePathCommand(
   val thetaMaxAccel =
     LoggedTunableValue("Pathfollow/thetaMaxAccel", DrivetrainConstants.PID.MAX_AUTO_ANGULAR_ACCEL)
 
-  val poskP =
+  val poskPX =
     LoggedTunableValue(
-      "Pathfollow/poskP",
-      DrivetrainConstants.PID.AUTO_POS_KP,
+      "Pathfollow/poskPX",
+      DrivetrainConstants.PID.AUTO_POS_KPX,
       Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
     )
-  val poskI =
+  val poskIX =
     LoggedTunableValue(
-      "Pathfollow/poskI",
-      DrivetrainConstants.PID.AUTO_POS_KI,
+      "Pathfollow/poskIX",
+      DrivetrainConstants.PID.AUTO_POS_KIX,
       Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
     )
-  val poskD =
+  val poskDX =
     LoggedTunableValue(
-      "Pathfollow/poskD",
-      DrivetrainConstants.PID.AUTO_POS_KD,
+      "Pathfollow/poskDX",
+      DrivetrainConstants.PID.AUTO_POS_KDX,
+      Pair(
+        { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
+      )
+    )
+
+  val poskPY =
+    LoggedTunableValue(
+      "Pathfollow/poskPY",
+      DrivetrainConstants.PID.AUTO_POS_KPY,
+      Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
+    )
+  val poskIY =
+    LoggedTunableValue(
+      "Pathfollow/poskIY",
+      DrivetrainConstants.PID.AUTO_POS_KIY,
+      Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+    )
+  val poskDY =
+    LoggedTunableValue(
+      "Pathfollow/poskDY",
+      DrivetrainConstants.PID.AUTO_POS_KDY,
       Pair(
         { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
       )
@@ -161,8 +182,8 @@ class DrivePathCommand(
   init {
     addRequirements(drivetrain)
 
-    xPID = PIDController(poskP.get(), poskI.get(), poskD.get())
-    yPID = PIDController(poskP.get(), poskI.get(), poskD.get())
+    xPID = PIDController(poskPX.get(), poskIX.get(), poskDX.get())
+    yPID = PIDController(poskPY.get(), poskIY.get(), poskDY.get())
     thetaPID =
       PIDController(
         thetakP.get(),
@@ -292,17 +313,17 @@ class DrivePathCommand(
     if (thetakI.hasChanged()) thetaPID.integralGain = thetakI.get()
     if (thetakD.hasChanged()) thetaPID.derivativeGain = thetakD.get()
 
-    if (poskP.hasChanged()) {
-      xPID.proportionalGain = poskP.get()
-      yPID.proportionalGain = poskP.get()
+    if (poskPX.hasChanged() || poskPY.hasChanged()) {
+      xPID.proportionalGain = poskPX.get()
+      yPID.proportionalGain = poskPY.get()
     }
-    if (poskI.hasChanged()) {
-      xPID.integralGain = poskI.get()
-      yPID.integralGain = poskI.get()
+    if (poskIX.hasChanged() || poskIY.hasChanged()) {
+      xPID.integralGain = poskIX.get()
+      yPID.integralGain = poskIY.get()
     }
-    if (poskD.hasChanged()) {
-      xPID.derivativeGain = poskD.get()
-      yPID.derivativeGain = poskD.get()
+    if (poskDX.hasChanged() || poskDY.hasChanged()) {
+      xPID.derivativeGain = poskDX.get()
+      yPID.derivativeGain = poskDY.get()
     }
   }
 

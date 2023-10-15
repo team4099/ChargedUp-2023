@@ -31,7 +31,7 @@ object WaypointConstants {
     CloseRightCommunity(
       listOf(
         Waypoint(
-          Translation2d(DISTANCE_FROM_COMMUNITY, 1.47.meters).translation2d,
+          Translation2d(DISTANCE_FROM_COMMUNITY, 1.8.meters).translation2d,
           holonomicRotation = Rotation2d(180.degrees.inRadians)
         )
       )

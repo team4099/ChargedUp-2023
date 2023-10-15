@@ -163,9 +163,9 @@ object FieldConstants {
   //church tags
   val homeAprilTags: List<AprilTag> =
     listOf(
-      AprilTag(0, Pose3d((40.45).inches, (108.19).inches, (45).centi.meters, Rotation3d())),
+      AprilTag(1, Pose3d((40.45).inches, (108.19).inches, (45).centi.meters, Rotation3d())),
       AprilTag(
-        1,
+        0,
         Pose3d(
           (40.45).inches,
           (108.19).inches + 99.centi.meters + 3.inches,

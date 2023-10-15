@@ -127,7 +127,8 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         keepTrapping = true,
         flipForAlliances = false
       ),
-      superstructure.prepScoreCommand({ gamePiece }, { nodeTier })
+      superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
+      superstructure.score()
       //      ParallelCommandGroup(
       //        superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
       //        DrivePathCommand(
