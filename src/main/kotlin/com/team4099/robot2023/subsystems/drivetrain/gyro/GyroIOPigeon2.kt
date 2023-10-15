@@ -70,7 +70,7 @@ object GyroIOPigeon2 : GyroIO {
   val gyroPitchRate: AngularVelocity
     get() {
       if (isConnected) {
-        return pigeon2.angularVelocityX.value.degrees.perSecond
+        return pigeon2.angularVelocityY.value.degrees.perSecond
       } else {
         return -1.337.degrees.perSecond
       }
@@ -79,7 +79,7 @@ object GyroIOPigeon2 : GyroIO {
   val gyroRollRate: AngularVelocity
     get() {
       if (isConnected) {
-        return pigeon2.angularVelocityY.value.degrees.perSecond
+        return pigeon2.angularVelocityX.value.degrees.perSecond
       } else {
         return -1.337.degrees.perSecond
       }
