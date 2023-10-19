@@ -9,7 +9,7 @@ import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
 
 object WaypointConstants {
-  val DISTANCE_FROM_COMMUNITY = 2.5.meters
+  val DISTANCE_FROM_COMMUNITY = 2.1.meters
 
   enum class SubstationPoints(val waypoints: List<Waypoint>) {
     CloseLeftCommunity(
@@ -81,16 +81,16 @@ object WaypointConstants {
     CloseRightCommunity(
       listOf(
         Waypoint(
-          Translation2d(DISTANCE_FROM_COMMUNITY, 0.85.meters).translation2d,
+          Translation2d(DISTANCE_FROM_COMMUNITY, 0.76.meters).translation2d,
           holonomicRotation = Rotation2d(180.degrees.inRadians)
         )
       )
     ),
-    CloseLeftLane(listOf(Waypoint(Translation2d(3.85.meters, 4.79.meters).translation2d))),
+    CloseLeftLane(listOf(Waypoint(Translation2d(3.1.meters, 4.79.meters).translation2d))),
     CloseLoadingZoneLane(listOf(Waypoint(Translation2d(5.79.meters, 5.93.meters).translation2d))),
     CloseCenterLeftLane(listOf(Waypoint(Translation2d(5.79.meters, 4.79.meters).translation2d))),
     CloseCenterRightLane(listOf(Waypoint(Translation2d(5.79.meters, 0.85.meters).translation2d))),
-    CloseRightLane(listOf(Waypoint(Translation2d(3.15.meters, 0.85.meters).translation2d))),
+    CloseRightLane(listOf(Waypoint(Translation2d(3.31.meters, 0.76.meters).translation2d))),
     FarRightLane(listOf(Waypoint(Translation2d(10.16.meters, 0.85.meters).translation2d))),
     FarCenterLeftLane(
       listOf(

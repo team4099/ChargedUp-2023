@@ -77,10 +77,10 @@ object DrivetrainConstants {
   val DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT = 80.0.amps
   val DRIVE_STATOR_TRIGGER_THRESHOLD_TIME = 1.0.seconds
 
-  val FRONT_LEFT_MODULE_ZERO = 1.3.radians + 180.degrees  + 180.degrees
-  val FRONT_RIGHT_MODULE_ZERO = 4.49.radians + 180.degrees  + 180.degrees
-  val BACK_LEFT_MODULE_ZERO = 3.22.radians + 180.degrees  + 180.degrees
-  val BACK_RIGHT_MODULE_ZERO = 0.99.radians - 180.degrees  + 180.degrees
+  val FRONT_LEFT_MODULE_ZERO = 1.3.radians + 180.degrees + 180.degrees
+  val FRONT_RIGHT_MODULE_ZERO = 4.49.radians + 180.degrees + 180.degrees
+  val BACK_LEFT_MODULE_ZERO = 3.22.radians + 180.degrees + 180.degrees
+  val BACK_RIGHT_MODULE_ZERO = 0.99.radians - 180.degrees + 180.degrees
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
@@ -109,7 +109,8 @@ object DrivetrainConstants {
     val AUTO_POS_KDX: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.1.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond // todo: 0.25
+          return (0.1.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
@@ -135,7 +136,8 @@ object DrivetrainConstants {
     val AUTO_POS_KDY: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.025.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond // todo: 0.25
+          return (0.025.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }

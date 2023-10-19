@@ -210,8 +210,7 @@ class SwerveModuleIOFalcon(
       feedforward.inVolts / 12.0
     )
     setSteeringSetpoint(steering)
-    Logger.getInstance()
-      .recordOutput("$label/setpointVelocity", speed.inMetersPerSecond)
+    Logger.getInstance().recordOutput("$label/setpointVelocity", speed.inMetersPerSecond)
   }
 
   /**
