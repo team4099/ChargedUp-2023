@@ -168,7 +168,7 @@ object FieldConstants {
         0,
         Pose3d(
           (40.45).inches,
-          (108.19).inches + 99.centi.meters + 3.inches,
+          (108.19).inches + 114.centi.meters,
           (46).centi.meters,
           Rotation3d()
         )

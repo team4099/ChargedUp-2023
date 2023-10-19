@@ -45,17 +45,6 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
 
         Logger.getInstance().recordOutput("Auto/isAutoDriving", true)
         drivePose = drivetrain.odometryPose
-        finalPose =
-          AllianceFlipUtil.apply(
-            Pose2d(
-              2.16.meters, // slightly offset in the x
-              FieldConstants.Grids.nodeFirstY +
-                FieldConstants.Grids.nodeSeparationY *
-                if (FMSData.isBlue) superstructure.objective.nodeColumn
-                else 8 - superstructure.objective.nodeColumn,
-              180.degrees
-            )
-          )
         postAlignPose =
           AllianceFlipUtil.apply(
             Pose2d(
@@ -67,6 +56,20 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
               180.degrees
             )
           )
+
+
+        finalPose =
+          AllianceFlipUtil.apply(
+            Pose2d(
+              2.16.meters, // slightly offset in the x
+              FieldConstants.Grids.nodeFirstY +
+                FieldConstants.Grids.nodeSeparationY *
+                (if (FMSData.isBlue) superstructure.objective.nodeColumn
+                else 8 - superstructure.objective.nodeColumn),
+              180.degrees
+            )
+          )
+
         heading = drivetrain.fieldVelocity.heading
 
         // Determine the current zone and calculate the trajectory
@@ -114,12 +117,10 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
             listOf(
               Waypoint(
                 finalPose.translation.translation2d,
-
                 finalPose.rotation.inRotation2ds
               ),
               Waypoint(
                 postAlignPose.translation.translation2d,
-
                 postAlignPose.rotation.inRotation2ds
               )
             )

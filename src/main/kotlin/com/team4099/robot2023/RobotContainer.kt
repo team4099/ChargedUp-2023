@@ -79,7 +79,7 @@ object RobotContainer {
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(object: GroundIntakeIO {}),
+          GroundIntake(GroundIntakeIONeo),
           Manipulator(ManipulatorIONeo),
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
