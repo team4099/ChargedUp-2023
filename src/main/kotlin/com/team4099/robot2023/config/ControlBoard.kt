@@ -66,8 +66,8 @@ object ControlBoard {
   val decreaseRollerVoltage = Trigger { operator.dPadDown }
 
   val groundIntakeCone = Trigger { driver.yButton }
-  val autoScore = Trigger { driver.dPadDown }
-  val autoIntake = Trigger { driver.dPadUp }
+  val autoScore = Trigger { driver.leftTriggerAxis > 0.5 }
+  val autoIntake = Trigger { false }
   val dpadDown = Trigger { driver.dPadDown }
 
   val ejectGamePiece = Trigger { operator.dPadRight }
