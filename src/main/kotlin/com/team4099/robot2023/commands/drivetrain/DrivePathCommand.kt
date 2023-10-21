@@ -64,6 +64,8 @@ class DrivePathCommand(
   val endPathOnceAtReference: Boolean = true,
   val leaveOutYAdjustment: Boolean = false,
   val endVelocity: Velocity2d = Velocity2d(),
+  val tolerance: Pose2d = Pose2d(1.inches, 1.inches, 1.degrees),
+  val forceRobotVelocityCheck: Boolean = false
 ) : CommandBase() {
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
@@ -198,7 +200,7 @@ class DrivePathCommand(
         xPID.wpiPidController, yPID.wpiPidController, thetaPID.wpiPidController
       )
 
-    swerveDriveController.setTolerance(Pose2d(3.inches, 3.inches, 3.degrees).pose2d)
+    swerveDriveController.setTolerance(tolerance.pose2d)
   }
 
   override fun initialize() {
@@ -331,11 +333,14 @@ class DrivePathCommand(
     trajCurTime = Clock.fpgaTime - trajStartTime
     return endPathOnceAtReference &&
       (!keepTrapping || swerveDriveController.atReference()) &&
-      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds
+      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds && (
+        drivetrain.fieldVelocity.magnitude < 0.1.meters.perSecond || !forceRobotVelocityCheck
+        )
   }
 
   override fun end(interrupted: Boolean) {
     Logger.getInstance().recordOutput("ActiveCommands/DrivePathCommand", false)
+    drivetrain.setOpenLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))
     if (interrupted) {
       // Stop where we are if interrupted
       drivetrain.setOpenLoop(0.degrees.perSecond, Pair(0.meters.perSecond, 0.meters.perSecond))

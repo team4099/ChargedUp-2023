@@ -15,11 +15,14 @@ import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
+import com.team4099.robot2023.util.Velocity2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -30,6 +33,7 @@ import org.team4099.lib.units.perSecond
 class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstructure) :
   SequentialCommandGroup() {
   lateinit var drivePose: Pose2d
+  lateinit var finalDrivePose: Pose2d
   lateinit var finalPose: Pose2d
   lateinit var postAlignPose: Pose2d
   lateinit var intermediaryWaypoints: List<Waypoint>
@@ -61,7 +65,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
-              2.16.meters, // slightly offset in the x
+              2.00.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
                 (if (FMSData.isBlue) superstructure.objective.nodeColumn
@@ -99,6 +103,10 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         drivetrain.swerveModules.forEach() { it.setDriveBrakeMode(false) }
       })
 
+    val updatedDrivePose = runOnce({
+      finalDrivePose = drivetrain.odometryPose
+    })
+
     addCommands(
       setupCommand,
       DrivePathCommand(
@@ -106,30 +114,52 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         {
           listOf(
             Waypoint(
-              drivePose.pose2d.translation,
+              drivetrain.odometryPose.pose2d.translation,
               if (drivetrain.fieldVelocity.magnitude.absoluteValue < 0.25.meters.perSecond)
                 null
               else heading.inRotation2ds,
-              drivePose.rotation.inRotation2ds
+              drivetrain.odometryPose.rotation.inRotation2ds
             )
           ) +
-            intermediaryWaypoints +
+            //intermediaryWaypoints +
             listOf(
               Waypoint(
                 finalPose.translation.translation2d,
+                null,
                 finalPose.rotation.inRotation2ds
-              ),
+              )
+            )
+        },
+        keepTrapping = false,
+        flipForAlliances = false,
+        endVelocity= Velocity2d(0.meters.perSecond, 0.0.meters.perSecond),
+        tolerance = Pose2d(5.inches, 3.inches, 3.degrees),
+        forceRobotVelocityCheck=true
+      ),
+      updatedDrivePose,
+      DrivePathCommand(
+        drivetrain,
+        {
+          listOf(
+            Waypoint(
+              finalDrivePose.pose2d.translation,
+              null,
+              finalDrivePose.rotation.inRotation2ds
+            )
+          ) +
+            //intermediaryWaypoints +
+            listOf(
               Waypoint(
                 postAlignPose.translation.translation2d,
+                null,
                 postAlignPose.rotation.inRotation2ds
               )
             )
         },
-        keepTrapping = true,
+        keepTrapping = false,
         flipForAlliances = false
       ),
-      superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
-      superstructure.score()
+      superstructure.prepScoreCommand({ gamePiece }, { nodeTier })
       //      ParallelCommandGroup(
       //        superstructure.prepScoreCommand({ gamePiece }, { nodeTier }),
       //        DrivePathCommand(

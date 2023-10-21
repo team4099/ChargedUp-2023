@@ -42,7 +42,7 @@ object GroundIntakeConstants {
   const val ROLLER_MOTOR_INVERTED = true
   const val ARM_MOTOR_INVERTED = false
 
-  val ABSOLUTE_ENCODER_OFFSET = (-159.87).degrees
+  val ABSOLUTE_ENCODER_OFFSET = (-165.87).degrees
   // From encoder to intake
   val ROLLER_GEAR_RATIO = (36.0.driven / 18.0.driving).gearRatio
 

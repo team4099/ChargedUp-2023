@@ -54,8 +54,8 @@ object DrivetrainConstants {
   val SLOW_AUTO_VEL = 2.meters.perSecond
   val SLOW_AUTO_ACCEL = 2.0.meters.perSecond.perSecond
 
-  val MAX_AUTO_VEL = 2.meters.perSecond // 4
-  val MAX_AUTO_ACCEL = 1.meters.perSecond.perSecond // 3
+  val MAX_AUTO_VEL = 3.meters.perSecond // 4
+  val MAX_AUTO_ACCEL = 3.5.meters.perSecond.perSecond // 3
 
   val MAX_AUTO_BRAKE_VEL = 0.5.meters.perSecond // 4
   val MAX_AUTO_BRAKE_ACCEL = 0.5.meters.perSecond.perSecond // 3
@@ -92,7 +92,7 @@ object DrivetrainConstants {
     val AUTO_POS_KPX: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 0.meters.perSecond / 1.0.meters // todo:4
+          return 0.25.meters.perSecond / 1.0.meters // todo:4
         } else {
           return 7.0.meters.perSecond / 1.0.meters
         }
