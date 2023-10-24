@@ -413,6 +413,9 @@ class Elevator(val io: ElevatorIO) {
     Logger.getInstance()
       .recordOutput("Elevator/currentRequest", currentRequest.javaClass.simpleName)
 
+    Logger.getInstance()
+      .recordOutput("Elevator/lastHomingStatorCurrentTripTime", lastHomingStatorCurrentTripTime.inSeconds)
+
     if (Constants.Tuning.DEBUGING_MODE) {
       Logger.getInstance()
         .recordOutput(

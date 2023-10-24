@@ -108,6 +108,7 @@ object GroundIntakeIONeo : GroundIntakeIO {
 
     armSparkMax.burnFlash()
 
+    /*
     MotorChecker.add(
       "Ground Intake",
       "Roller",
@@ -115,10 +116,11 @@ object GroundIntakeIONeo : GroundIntakeIO {
         mutableListOf(Neo(rollerSparkMax, "Roller Motor")),
         GroundIntakeConstants.ROLLER_CURRENT_LIMIT,
         70.celsius,
-        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 0.amps,
+        GroundIntakeConstants.ROLLER_CURRENT_LIMIT - 5.amps,
         90.celsius
       ),
     )
+    */
 
     MotorChecker.add(
       "Ground Intake",

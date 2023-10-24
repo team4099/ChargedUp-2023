@@ -78,9 +78,9 @@ object RobotContainer {
         )
       superstructure =
         Superstructure(
-          Elevator(object: ElevatorIO {}),
-          GroundIntake(object: GroundIntakeIO {}),
-          Manipulator(object: ManipulatorIO {}),
+          Elevator(ElevatorIONeo),
+          GroundIntake(GroundIntakeIONeo),
+          Manipulator(ManipulatorIONeo),
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
         )
@@ -138,6 +138,10 @@ object RobotContainer {
 
   fun requestSuperstructureIdle() {
     superstructure.currentRequest = Request.SuperstructureRequest.Idle()
+  }
+
+  fun requestSuperstructureHome() {
+    superstructure.currentRequest = Request.SuperstructureRequest.Home()
   }
 
   fun zeroArm() {

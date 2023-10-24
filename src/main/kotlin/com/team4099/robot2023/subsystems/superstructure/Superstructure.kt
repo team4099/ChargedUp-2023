@@ -233,6 +233,13 @@ class Superstructure(
           }
         }
 
+        if (elevator.currentRequest is Request.ElevatorRequest.Home){
+          elevator.currentRequest =
+            Request.ElevatorRequest.TargetingPosition(
+              3.inches
+            )
+        }
+
         // Outputs
         val rollerVoltage =
           when (theoreticalGamePiece) {
@@ -282,7 +289,7 @@ class Superstructure(
             if (manipulator.hasCube){
               elevator.currentRequest =
                 Request.ElevatorRequest.TargetingPosition(
-                  4.inches
+                  6.inches
                 )
             } else {
               elevator.currentRequest =
@@ -298,6 +305,10 @@ class Superstructure(
           manipulator.currentRequest =
             Request.ManipulatorRequest.TargetingPosition(
               manipulator.armPositionTarget, rollerVoltage
+            )
+          elevator.currentRequest =
+            Request.ElevatorRequest.TargetingPosition(
+              elevator.elevatorPositionTarget
             )
         }
 

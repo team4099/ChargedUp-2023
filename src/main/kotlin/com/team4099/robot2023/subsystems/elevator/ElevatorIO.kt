@@ -41,7 +41,7 @@ interface ElevatorIO {
     var leaderRawPosition = 0.0
     var followerRawPosition = 0.0
 
-    var isSimulating = false
+    var isSimulating = true
 
     override fun toLog(table: LogTable) {
       table?.put("elevatorPositionInches", elevatorPosition.inInches)

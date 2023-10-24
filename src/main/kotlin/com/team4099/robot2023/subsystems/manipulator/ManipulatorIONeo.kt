@@ -78,6 +78,7 @@ object ManipulatorIONeo : ManipulatorIO {
     armSparkMax.idleMode = CANSparkMax.IdleMode.kBrake
     armSparkMax.burnFlash()
 
+    /*
     MotorChecker.add(
       "Manipulator",
       "ExtensionMotor",
@@ -85,10 +86,11 @@ object ManipulatorIONeo : ManipulatorIO {
         mutableListOf(Neo(armSparkMax, "Extension Motor")),
         ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT,
         70.celsius,
-        ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT - 30.amps,
+        ManipulatorConstants.ARM_STATOR_CURRENT_LIMIT - 10.amps,
         90.celsius
       )
     )
+     */
 
     MotorChecker.add(
       "Manipulator",

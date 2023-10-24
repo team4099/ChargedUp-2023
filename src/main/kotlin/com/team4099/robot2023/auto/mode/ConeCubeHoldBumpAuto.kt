@@ -51,7 +51,7 @@ class ConeCubeHoldBumpAuto(val drivetrain: Drivetrain, val superstructure: Super
               // pick up cube
               Waypoint(
                 Translation2d(
-                  FieldConstants.StagingLocations.translations[0]!!.x,
+                  FieldConstants.StagingLocations.translations[0]!!.x + 1.5.meters,
                   FieldConstants.StagingLocations.translations[0]!!.y
                 )
                   .translation2d,

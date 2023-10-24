@@ -77,6 +77,7 @@ object ElevatorIONeo : ElevatorIO {
     leaderSparkMax.burnFlash()
     followerSparkMax.burnFlash()
 
+    /*
     MotorChecker.add(
       "Elevator",
       "Extension",
@@ -91,6 +92,7 @@ object ElevatorIONeo : ElevatorIO {
         90.celsius
       ),
     )
+     */
   }
 
   override fun updateInputs(inputs: ElevatorIO.ElevatorInputs) {
@@ -139,7 +141,7 @@ object ElevatorIONeo : ElevatorIO {
    */
   override fun setOutputVoltage(voltage: ElectricalPotential) {
     // divide by 2 cause full power elevator is scary
-    leaderSparkMax.setVoltage(voltage.inVolts)
+    leaderSparkMax.set(voltage.inVolts / 12)
   }
 
   /**

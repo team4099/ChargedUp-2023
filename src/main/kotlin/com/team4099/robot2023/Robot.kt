@@ -148,6 +148,7 @@ object Robot : LoggedRobot() {
     FMSData.allianceColor = DriverStation.getAlliance()
     RobotContainer.setDriveBrakeMode()
     RobotContainer.setSteeringBrakeMode()
+    RobotContainer.requestSuperstructureIdle()
     RobotContainer.getAutonomousCommand().schedule()
   }
 

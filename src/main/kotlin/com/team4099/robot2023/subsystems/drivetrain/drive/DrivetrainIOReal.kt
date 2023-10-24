@@ -39,9 +39,6 @@ object DrivetrainIOReal : DrivetrainIO {
         )
       ),
       SwerveModule(
-        //        object: SwerveModuleIO {
-        //          override val label: String = Constants.Drivetrain.BACK_RIGHT_MODULE_NAME
-        //        }
         SwerveModuleIOFalcon(
           TalonFX(Constants.Drivetrain.BACK_RIGHT_STEERING_ID, CANIVORE_NAME),
           TalonFX(Constants.Drivetrain.BACK_RIGHT_DRIVE_ID, CANIVORE_NAME),

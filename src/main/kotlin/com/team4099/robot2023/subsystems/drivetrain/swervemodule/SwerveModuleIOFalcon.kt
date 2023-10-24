@@ -135,6 +135,7 @@ class SwerveModuleIOFalcon(
 
     driveFalcon.setNeutralMode(NeutralMode.Brake)
 
+    /*
     MotorChecker.add(
       "Drivetrain",
       "Drive",
@@ -158,11 +159,12 @@ class SwerveModuleIOFalcon(
         110.celsius
       )
     )
+    */
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {
-    inputs.driveAppliedVoltage = driveFalcon.motorOutputVoltage.volts
-    inputs.steeringAppliedVoltage = steeringFalcon.motorOutputVoltage.volts
+    inputs.driveAppliedVoltage = driveFalcon.motorOutputVoltage.volts //no
+    inputs.steeringAppliedVoltage = steeringFalcon.motorOutputVoltage.volts //no
 
     inputs.driveStatorCurrent = driveFalcon.statorCurrent.amps
     inputs.driveSupplyCurrent = driveFalcon.supplyCurrent.amps
@@ -175,12 +177,13 @@ class SwerveModuleIOFalcon(
     inputs.driveVelocity = driveSensor.velocity
     inputs.steeringVelocity = steeringSensor.velocity
 
-    inputs.driveTemp = driveFalcon.temperature.celsius
-    inputs.steeringTemp = steeringFalcon.temperature.celsius
+    inputs.driveTemp = driveFalcon.temperature.celsius  //no
+    inputs.steeringTemp = steeringFalcon.temperature.celsius //no
 
     inputs.potentiometerOutputRaw =
       potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
     inputs.potentiometerOutputRadians = potentiometerOutput.radians
+
 
     Logger.getInstance()
       .recordOutput(

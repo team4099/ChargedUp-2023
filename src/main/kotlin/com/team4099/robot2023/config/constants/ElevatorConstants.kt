@@ -67,8 +67,8 @@ object ElevatorConstants {
   // circumference / 2pi = radius
   val SPOOL_RADIUS = 0.005.meters * 32.0 / (2 * PI)
 
-  val MAX_VELOCITY = 140.inches.perSecond // 75
-  val MAX_ACCELERATION = 415.inches.perSecond.perSecond // 225
+  val MAX_VELOCITY = 100.inches.perSecond // 75
+  val MAX_ACCELERATION = 300.inches.perSecond.perSecond // 225
 
   val ENABLE_ELEVATOR = 1.0
 
@@ -86,7 +86,7 @@ object ElevatorConstants {
   // TODO(do tests to figure out what these values should be)
   val CUBE_DROP_POSITION_DELTA = 3.2.inches
   val CONE_DROP_POSITION_DELTA = 0.0.inches
-  val GROUND_INTAKE_CUBE_HEIGHT = 6.0.inches
+  val GROUND_INTAKE_CUBE_HEIGHT = 8.5.inches
   val DOUBLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
   val DOUBLE_SUBSTATION_CONE_OFFSET = 11.0.inches
   val SINGLE_SUBSTATION_CUBE_OFFSET = 0.0.inches
