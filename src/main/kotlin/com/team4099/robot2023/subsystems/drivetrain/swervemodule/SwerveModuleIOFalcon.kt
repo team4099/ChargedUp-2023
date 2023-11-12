@@ -186,7 +186,7 @@ class SwerveModuleIOFalcon(
   }
 
   override fun setSteeringSetpoint(angle: Angle) {
-    steeringFalcon.setControl(PositionDutyCycle(steeringSensor.positionToRawUnits(angle)))
+    steeringFalcon.setControl(PositionDutyCycle(steeringSensor.positionToRawUnits(angle), DrivetrainConstants.FOC_ENABLED, 0.0, 0, false))
   }
 
   override fun setClosedLoop(
@@ -197,7 +197,7 @@ class SwerveModuleIOFalcon(
     val feedforward = DrivetrainConstants.PID.DRIVE_KS * speed.sign
     driveFalcon.setControl(
       VelocityDutyCycle(
-        driveSensor.velocityToRawUnits(speed), false, feedforward.inVolts / 12.0, 0, false
+        driveSensor.velocityToRawUnits(speed), DrivetrainConstants.FOC_ENABLED, feedforward.inVolts / 12.0, 0, false
       )
     )
 
@@ -211,7 +211,7 @@ class SwerveModuleIOFalcon(
    * @param speed: Desired speed
    */
   override fun setOpenLoop(steering: Angle, speed: LinearVelocity) {
-    driveFalcon.setControl(DutyCycleOut(speed / DrivetrainConstants.DRIVE_SETPOINT_MAX))
+    driveFalcon.setControl(DutyCycleOut(speed / DrivetrainConstants.DRIVE_SETPOINT_MAX, DrivetrainConstants.FOC_ENABLED, false))
     setSteeringSetpoint(steering)
   }
 

@@ -28,6 +28,7 @@ import org.team4099.lib.units.perSecond
 import kotlin.math.sqrt
 
 object DrivetrainConstants {
+  const val FOC_ENABLED = false
   const val MINIMIZE_SKEW = false
 
   const val WHEEL_COUNT = 4
