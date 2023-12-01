@@ -3,15 +3,9 @@ package com.team4099.robot2023.subsystems.limelight
 import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.TunableNumber
 import com.team4099.lib.vision.TargetCorner
-import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
-import com.team4099.robot2023.subsystems.gameboy.objective.Objective
-import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
-import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.LimelightReading
 import com.team4099.robot2023.util.PoseEstimator
-import com.team4099.robot2023.util.findClosestPose
 import com.team4099.robot2023.util.rotateBy
 import com.team4099.robot2023.util.toPose3d
 import com.team4099.robot2023.util.toTransform3d
@@ -33,7 +27,6 @@ import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inRadians
-import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.tan
 import java.util.function.Consumer
 import kotlin.math.hypot
@@ -46,10 +39,6 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
   var poseSupplier: () -> Pose2d = { Pose2d() }
   var visionConsumer: Consumer<List<PoseEstimator.TimestampedVisionUpdate>> = Consumer {}
-  var nodeToLookFor: () -> Objective = { Objective() }
-
-  val midConeNodePoses = mutableListOf<Pose3d>()
-  val highConeNodePoses = mutableListOf<Pose3d>()
 
   // i think we need this for camera project to irl coordinates
   val vpw = (2.0 * (VisionConstants.Limelight.HORIZONTAL_FOV / 2).tan)
@@ -57,27 +46,6 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
   private val xyStdDevCoefficient = TunableNumber("LimelightVision/xystdev", 0.05)
   private val thetaStdDev = TunableNumber("LimelightVision/thetaStdDev", 0.75)
-
-  init {
-    for (nodeIndex in listOf(0, 2, 3, 5, 6, 8)) {
-      midConeNodePoses.add(
-        Pose3d(
-          FieldConstants.Grids.midX,
-          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * nodeIndex,
-          VisionConstants.Limelight.MID_TAPE_HEIGHT,
-          Rotation3d()
-        )
-      )
-      highConeNodePoses.add(
-        Pose3d(
-          FieldConstants.Grids.highX,
-          FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * nodeIndex,
-          VisionConstants.Limelight.HIGH_TAPE_HEIGHT,
-          Rotation3d()
-        )
-      )
-    }
-  }
 
   override fun periodic() {
     val startTime = Clock.realTimestamp
@@ -87,88 +55,60 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     var currentPose: Pose2d = poseSupplier.invoke()
 
-    val visibleNodes = mutableListOf<Pose3d>()
+    val visibleGamePieces = mutableListOf<Pose3d>()
 
-    // mathematically figure out which nodes we're looking at based on limelight fov
+    // mathematically figure out which game pieces we're looking at based on limelight neural
+    // network detector
 
     // process transform outputs from LL and get the target corners
 
-    // calculating true node position
-    val nodeX =
-      when (nodeToLookFor.invoke().nodeTier) {
-        Constants.Universal.NodeTier.HYBRID -> FieldConstants.Grids.lowX
-        Constants.Universal.NodeTier.MID -> FieldConstants.Grids.midX
-        Constants.Universal.NodeTier.HIGH -> FieldConstants.Grids.highX
-        else -> -1337.meters
-      }
-
-    val nodeColumn =
-      if (FMSData.isBlue) nodeToLookFor.invoke().nodeColumn
-      else 8 - nodeToLookFor.invoke().nodeColumn
-    val nodeY = FieldConstants.Grids.nodeFirstY + FieldConstants.Grids.nodeSeparationY * nodeColumn
-
-    val nodeZ =
-      when (nodeToLookFor.invoke().nodeTier) {
-        Constants.Universal.NodeTier.HYBRID -> 0.0.meters
-        Constants.Universal.NodeTier.MID -> VisionConstants.Limelight.MID_TAPE_HEIGHT
-        Constants.Universal.NodeTier.HIGH -> VisionConstants.Limelight.HIGH_TAPE_HEIGHT
-        else -> -1337.meters
-      }
-
-    val nodeRotation =
-      Rotation3d(0.0.radians, 0.0.radians, if (FMSData.isBlue) 0.0.degrees else 180.degrees)
-
-    val nodePose = Pose3d(nodeX, nodeY, nodeZ, nodeRotation)
-
+    // calculating true game piece position
     val robotPoses = mutableListOf<Pose2d>()
 
     if (inputs.validReading) {
 
-      for (target in inputs.retroTargets) {
-        visibleNodes.add(solveTargetPoseFromAngle(currentPose, target, nodeZ))
+      for (target in inputs.gamePieceTargets) {
+        visibleGamePieces.add(
+          solveTargetPoseFromAngle(
+            currentPose,
+            target,
+            (
+              if (target.className == "cone") VisionConstants.Limelight.CONE_HEIGHT / 2
+              else VisionConstants.Limelight.CUBE_HEIGHT / 2
+              )
+          )
+        )
       }
       // this is adding where we think they are,, not where they actually are
     }
 
     val timestampedVisionUpdates = mutableListOf<PoseEstimator.TimestampedVisionUpdate>()
 
-    val trueVisibleNodes = mutableListOf<Pose3d>()
-
-    for (node in visibleNodes) {
-      val searchList =
-        if (nodeZ == VisionConstants.Limelight.MID_TAPE_HEIGHT) midConeNodePoses
-        else highConeNodePoses
-
-      val closestPose = node.findClosestPose(*searchList.toTypedArray())
-
-      trueVisibleNodes.add(closestPose)
-
+    for (gamePiecePose in visibleGamePieces) {
       // find inverse translation from the detected pose to robot
       val targetToCamera =
-        closestPose
+        gamePiecePose
           .relativeTo(
             currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
           )
           .toTransform3d()
           .inverse()
 
-      val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
+      val trueNodePoseToRobot = gamePiecePose.transformBy(targetToCamera)
 
       // Add to vision updates
       val xyStdDev = xyStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
       val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
 
-      if (nodeToLookFor.invoke().isConeNode()) {
-        robotPoses.add(trueNodePoseToRobot.toPose2d())
+      robotPoses.add(trueNodePoseToRobot.toPose2d())
 
-        timestampedVisionUpdates.add(
-          PoseEstimator.TimestampedVisionUpdate(
-            inputs.timestamp,
-            trueNodePoseToRobot.toPose2d(),
-            VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
-          )
+      timestampedVisionUpdates.add(
+        PoseEstimator.TimestampedVisionUpdate(
+          inputs.timestamp,
+          trueNodePoseToRobot.toPose2d(),
+          VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
         )
-      }
+      )
     }
 
     Logger.getInstance()
@@ -178,11 +118,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     Logger.getInstance()
       .recordOutput(
-        "LimelightVision/robotVisibleNodes", *visibleNodes.map { it.pose3d }.toTypedArray()
-      )
-    Logger.getInstance()
-      .recordOutput(
-        "LimelightVision/trueVisibleNodes", *trueVisibleNodes.map { it.pose3d }.toTypedArray()
+        "LimelightVision/robotVisiblePieces",
+        *visibleGamePieces.map { it.pose3d }.toTypedArray()
       )
 
     Logger.getInstance()

@@ -78,7 +78,7 @@ class Elevator(val io: ElevatorIO) {
     val enableElevator =
       LoggedTunableNumber("Elevator/enableMovementElevator", ElevatorConstants.ENABLE_ELEVATOR)
 
-    val  minPosition =
+    val minPosition =
       LoggedTunableValue(
         "Elevator/minPosition",
         ElevatorConstants.ELEVATOR_IDLE_HEIGHT,
@@ -414,7 +414,9 @@ class Elevator(val io: ElevatorIO) {
       .recordOutput("Elevator/currentRequest", currentRequest.javaClass.simpleName)
 
     Logger.getInstance()
-      .recordOutput("Elevator/lastHomingStatorCurrentTripTime", lastHomingStatorCurrentTripTime.inSeconds)
+      .recordOutput(
+        "Elevator/lastHomingStatorCurrentTripTime", lastHomingStatorCurrentTripTime.inSeconds
+      )
 
     if (Constants.Tuning.DEBUGING_MODE) {
       Logger.getInstance()

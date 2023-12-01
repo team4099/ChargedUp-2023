@@ -7,9 +7,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
-import com.team4099.robot2023.subsystems.falconspin.Falcon500
-import com.team4099.robot2023.subsystems.falconspin.MotorChecker
-import com.team4099.robot2023.subsystems.falconspin.MotorCollection
 import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj.RobotController
 import org.littletonrobotics.junction.Logger
@@ -163,8 +160,8 @@ class SwerveModuleIOFalcon(
   }
 
   override fun updateInputs(inputs: SwerveModuleIO.SwerveModuleIOInputs) {
-    inputs.driveAppliedVoltage = driveFalcon.motorOutputVoltage.volts //no
-    inputs.steeringAppliedVoltage = steeringFalcon.motorOutputVoltage.volts //no
+    inputs.driveAppliedVoltage = driveFalcon.motorOutputVoltage.volts // no
+    inputs.steeringAppliedVoltage = steeringFalcon.motorOutputVoltage.volts // no
 
     inputs.driveStatorCurrent = driveFalcon.statorCurrent.amps
     inputs.driveSupplyCurrent = driveFalcon.supplyCurrent.amps
@@ -177,13 +174,12 @@ class SwerveModuleIOFalcon(
     inputs.driveVelocity = driveSensor.velocity
     inputs.steeringVelocity = steeringSensor.velocity
 
-    inputs.driveTemp = driveFalcon.temperature.celsius  //no
-    inputs.steeringTemp = steeringFalcon.temperature.celsius //no
+    inputs.driveTemp = driveFalcon.temperature.celsius // no
+    inputs.steeringTemp = steeringFalcon.temperature.celsius // no
 
     inputs.potentiometerOutputRaw =
       potentiometer.voltage / RobotController.getVoltage5V() * 2.0 * Math.PI
     inputs.potentiometerOutputRadians = potentiometerOutput.radians
-
 
     Logger.getInstance()
       .recordOutput(
@@ -213,8 +209,7 @@ class SwerveModuleIOFalcon(
       feedforward.inVolts / 12.0
     )
     setSteeringSetpoint(steering)
-    Logger.getInstance()
-      .recordOutput("$label/setpointVelocity", speed.inMetersPerSecond)
+    Logger.getInstance().recordOutput("$label/setpointVelocity", speed.inMetersPerSecond)
   }
 
   /**

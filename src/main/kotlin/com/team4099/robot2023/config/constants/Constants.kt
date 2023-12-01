@@ -1,6 +1,5 @@
 package com.team4099.robot2023.config.constants
 
-import edu.wpi.first.wpilibj.AnalogInput
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
 
@@ -24,9 +23,6 @@ object Constants {
 
     val LOOP_PERIOD_TIME = 20.milli.seconds
     val POWER_DISTRIBUTION_HUB_ID = 1
-
-
-
 
     enum class GamePiece {
       CUBE,

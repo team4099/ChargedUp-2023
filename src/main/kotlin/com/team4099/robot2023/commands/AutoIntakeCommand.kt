@@ -88,5 +88,4 @@ class AutoIntakeCommand(val drivetrain: Drivetrain, val superstructure: Superstr
       superstructure.groundIntakeConeCommand()
     )
   }
-
 }

@@ -333,9 +333,8 @@ class DrivePathCommand(
     trajCurTime = Clock.fpgaTime - trajStartTime
     return endPathOnceAtReference &&
       (!keepTrapping || swerveDriveController.atReference()) &&
-      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds && (
-        drivetrain.fieldVelocity.magnitude < 0.1.meters.perSecond || !forceRobotVelocityCheck
-        )
+      trajCurTime > trajectoryGenerator.driveTrajectory.totalTimeSeconds.seconds &&
+      (drivetrain.fieldVelocity.magnitude < 0.1.meters.perSecond || !forceRobotVelocityCheck)
   }
 
   override fun end(interrupted: Boolean) {
