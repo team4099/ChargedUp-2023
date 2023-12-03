@@ -1,13 +1,16 @@
 package com.team4099.robot2023.subsystems.gameboy.objective
 
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.config.constants.NodeTier
 import com.team4099.robot2023.config.constants.Substation
 
 data class Objective(
   var nodeColumn: Int = -1,
   var nodeTier: NodeTier = NodeTier.NONE,
-  var substation: Substation = Substation.NONE
+  var substation: Substation = Substation.NONE,
+  var autoStagingLocation: Int = -1,
+  var gamePiece: GamePiece = GamePiece.NONE
 )
 
 fun Objective.isValidObjective(): Boolean {
