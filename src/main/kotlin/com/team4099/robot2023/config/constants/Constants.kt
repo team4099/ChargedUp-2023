@@ -27,7 +27,15 @@ object Constants {
     enum class GamePiece {
       CUBE,
       CONE,
-      NONE
+      NONE;
+
+      inline fun toClassName(): String {
+        return when (this) {
+          CUBE -> "cube"
+          CONE -> "cone"
+          else -> "none"
+        }
+      }
     }
 
     enum class NodeTier {
@@ -43,7 +51,6 @@ object Constants {
       SINGLE_SUBSTATION,
       NONE,
     }
-
   }
 
   object AprilTagIds {

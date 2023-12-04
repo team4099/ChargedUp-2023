@@ -57,12 +57,21 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   private val xyStdDevCoefficient = TunableNumber("LimelightVision/xystdev", 0.05)
   private val thetaStdDev = TunableNumber("LimelightVision/thetaStdDev", 0.75)
 
-  init  {
-    for (locationIndex in  listOf(0, 1, 2, 3) ) {
+  val limelightState: LimelightStates = LimelightStates.AUTO_POSE_ESTIMATION
+
+  var targetGamePiecePose = Pose3d()
+
+  enum class LimelightStates {
+    AUTO_POSE_ESTIMATION,
+    TELEOP_GAME_PIECE_DETECTION
+  }
+
+  init {
+    for (locationIndex in listOf(0, 1, 2, 3)) {
       conePoses.add(
         Pose3d(
           FieldConstants.StagingLocations.positionX,
-          FieldConstants.StagingLocations.translations[locationIndex].y,
+          FieldConstants.StagingLocations.translations[locationIndex]?.y ?: 0.meters,
           VisionConstants.Limelight.CONE_HEIGHT,
           Rotation3d()
         )
@@ -71,7 +80,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       cubePoses.add(
         Pose3d(
           FieldConstants.StagingLocations.positionX,
-          FieldConstants.StagingLocations.translations[locationIndex].y,
+          FieldConstants.StagingLocations.translations[locationIndex]?.y ?: 0.meters,
           VisionConstants.Limelight.CUBE_HEIGHT,
           Rotation3d()
         )
@@ -89,89 +98,120 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     val visibleGamePieces = mutableListOf<Pose3d>()
 
+    val timestampedVisionUpdates = mutableListOf<PoseEstimator.TimestampedVisionUpdate>()
+
     // mathematically figure out which game pieces we're looking at based on limelight neural
     // network detector
 
     // process transform outputs from LL and get the target corners
 
-    // calculating true game piece position
-    val gamePieceX = FieldConstants.StagingLocations.positionX
+    if (limelightState == LimelightStates.AUTO_POSE_ESTIMATION) {
+      // calculating true game piece position
+      val gamePieceX = FieldConstants.StagingLocations.positionX
 
-    val gamePieceLocationIndex = if (FMSData.isBlue) gamePieceToLookFor.invoke().autoStagingLocation
-    else 3 - gamePieceToLookFor.invoke().autoStagingLocation
+      val gamePieceLocationIndex =
+        if (FMSData.isBlue) gamePieceToLookFor.invoke().autoStagingLocation
+        else 3 - gamePieceToLookFor.invoke().autoStagingLocation
 
-    val gamePieceY = FieldConstants.StagingLocations.firstY + FieldConstants.StagingLocations.separationY * gamePieceLocationIndex
+      val gamePieceY =
+        FieldConstants.StagingLocations.firstY +
+          FieldConstants.StagingLocations.separationY * gamePieceLocationIndex
 
-    val gamePieceZ =
-      when (gamePieceToLookFor.invoke().gamePiece) {
-        Constants.Universal.GamePiece.CONE -> VisionConstants.Limelight.CONE_HEIGHT / 2
-        Constants.Universal.GamePiece.CUBE -> VisionConstants.Limelight.CUBE_HEIGHT / 2
-        else -> -1337.meters
+      val gamePieceZ =
+        when (gamePieceToLookFor.invoke().gamePiece) {
+          Constants.Universal.GamePiece.CONE -> VisionConstants.Limelight.CONE_HEIGHT / 2
+          Constants.Universal.GamePiece.CUBE -> VisionConstants.Limelight.CUBE_HEIGHT / 2
+          else -> -1337.meters
+        }
+
+      val gamePieceRotation =
+        Rotation3d(0.0.radians, 0.0.radians, if (FMSData.isBlue) 0.0.degrees else 180.degrees)
+
+      val gamePiecePose = Pose3d(gamePieceX, gamePieceY, gamePieceZ, gamePieceRotation)
+
+      val robotPoses = mutableListOf<Pose2d>()
+
+      if (inputs.validReading) {
+
+        for (target in inputs.gamePieceTargets) {
+          visibleGamePieces.add(
+            solveTargetPoseFromAngle(
+              currentPose,
+              target,
+              (
+                if (target.className == "cone") VisionConstants.Limelight.CONE_HEIGHT / 2
+                else VisionConstants.Limelight.CUBE_HEIGHT / 2
+                )
+            )
+          )
+        }
+        // this is adding where we think they are,, not where they actually are
       }
 
-    val gamePieceRotation = Rotation3d(0.0.radians, 0.0.radians, if (FMSData.isBlue) 0.0.degrees else 180.degrees)
+      val trueGamePieces = mutableListOf<Pose3d>()
 
-    val gamePiecePose = Pose3d(gamePieceX, gamePieceY, gamePieceZ, gamePieceRotation)
+      for ((index, gamePiecePose) in visibleGamePieces.withIndex()) {
+        val searchList =
+          if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
+        val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
 
-    val robotPoses = mutableListOf<Pose2d>()
+        trueGamePieces.add(closestPose)
 
-    if (inputs.validReading) {
+        // find inverse translation from the detected pose to robot
+        val targetToCamera =
+          gamePiecePose
+            .relativeTo(
+              currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
+            )
+            .toTransform3d()
+            .inverse()
 
-      for (target in inputs.gamePieceTargets) {
-        visibleGamePieces.add(
-          solveTargetPoseFromAngle(
-            currentPose,
-            target,
-            (
-              if (target.className == "cone") VisionConstants.Limelight.CONE_HEIGHT / 2
-              else VisionConstants.Limelight.CUBE_HEIGHT / 2
-              )
+        val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
+
+        // Add to vision updates
+        val xyStdDev = xyStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
+        val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
+
+        robotPoses.add(trueNodePoseToRobot.toPose2d())
+
+        timestampedVisionUpdates.add(
+          PoseEstimator.TimestampedVisionUpdate(
+            inputs.timestamp,
+            trueNodePoseToRobot.toPose2d(),
+            VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
           )
         )
       }
-      // this is adding where we think they are,, not where they actually are
-    }
 
-    val timestampedVisionUpdates = mutableListOf<PoseEstimator.TimestampedVisionUpdate>()
-
-    val trueGamePieces = mutableListOf<Pose3d>()
-
-    for ((index, gamePiecePose) in visibleGamePieces.withIndex()) {
-      val searchList = if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
-      val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
-
-      trueGamePieces.add(closestPose)
-
-      // find inverse translation from the detected pose to robot
-      val targetToCamera =
-        gamePiecePose
-          .relativeTo(
-            currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
-          )
-          .toTransform3d()
-          .inverse()
-
-      val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
-
-      // Add to vision updates
-      val xyStdDev = xyStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
-      val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
-
-      robotPoses.add(trueNodePoseToRobot.toPose2d())
-
-      timestampedVisionUpdates.add(
-        PoseEstimator.TimestampedVisionUpdate(
-          inputs.timestamp,
-          trueNodePoseToRobot.toPose2d(),
-          VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
+      Logger.getInstance()
+        .recordOutput(
+          "LimelightVision/estimatedRobotPoses", *robotPoses.map { it.pose2d }.toTypedArray()
         )
-      )
-    }
 
-    Logger.getInstance()
-      .recordOutput(
-        "LimelightVision/estimatedRobotPoses", *robotPoses.map { it.pose2d }.toTypedArray()
-      )
+      visionConsumer.accept(timestampedVisionUpdates)
+    } else if (limelightState == LimelightStates.TELEOP_GAME_PIECE_DETECTION) {
+      if (inputs.validReading) {
+        for (target in inputs.gamePieceTargets) {
+          visibleGamePieces.add(
+            solveTargetPoseFromAngle(
+              currentPose,
+              target,
+              (
+                if (target.className == "cone") VisionConstants.Limelight.CONE_HEIGHT / 2
+                else VisionConstants.Limelight.CUBE_HEIGHT / 2
+                )
+            )
+          )
+        }
+
+        val searchList =
+          visibleGamePieces.filterIndexed({ index, pose ->
+            inputs.gamePieceTargets[index].className ==
+              gamePieceToLookFor.invoke().gamePiece.toClassName()
+          })
+        targetGamePiecePose = currentPose.toPose3d().findClosestPose(*searchList.toTypedArray())
+      }
+    }
 
     Logger.getInstance()
       .recordOutput(
@@ -190,8 +230,6 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
         "LoggedRobot/Subsystems/LimelightLoopTimeMS",
         (Clock.realTimestamp - startTime).inMilliseconds
       )
-
-    //    visionConsumer.accept(timestampedVisionUpdates)
   }
 
   fun solveTargetPoseFromAngle(
@@ -257,6 +295,11 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     val targetToCameraHeight = targetHeight - VisionConstants.Limelight.LL_TRANSFORM.z
 
     return targetToCameraHeight / tan(angleToGoal)
+  }
+
+  fun angleYawFromTarget(currentPose: Pose2d, targetPose: Pose3d): Angle {
+    val robotToTarget = targetPose.toPose2d().relativeTo(currentPose)
+    return Math.asin((robotToTarget.y.inMeters / robotToTarget.translation.magnitude)).radians
   }
 
   // based off of angles

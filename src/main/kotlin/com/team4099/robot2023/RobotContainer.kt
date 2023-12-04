@@ -95,10 +95,10 @@ object RobotContainer {
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
+    limelight.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
     drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
     drivetrain.objectiveSupplier = Supplier { superstructure.objective }
-    limelight.poseSupplier = { drivetrain.odometryPose }
-    limelight.nodeToLookFor = { superstructure.objective }
+    limelight.gamePieceToLookFor = { superstructure.objective }
   }
 
   fun mapDefaultCommands() {
