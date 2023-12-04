@@ -265,6 +265,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           180.0.degrees
         } else {
           // we are looking at a blue node which is facing towards 0 degrees
+
           0.degrees
         }
       )
