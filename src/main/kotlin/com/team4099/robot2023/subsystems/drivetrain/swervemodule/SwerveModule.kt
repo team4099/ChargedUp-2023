@@ -43,10 +43,14 @@ class SwerveModule(val io: SwerveModuleIO) {
 
   var modulePosition = SwerveModulePosition()
 
+  var positionDeltas: Array<SwerveModulePosition?>
+
   private var speedSetPoint: LinearVelocity = 0.feet.perSecond
   private var accelerationSetPoint: LinearAcceleration = 0.feet.perSecond.perSecond
 
   private var steeringSetPoint: Angle = 0.degrees
+
+  private var lastDrivePosition = 0.meters
 
   private var shouldInvert = false
 
@@ -110,10 +114,29 @@ class SwerveModule(val io: SwerveModuleIO) {
       drivekI.initDefault(DrivetrainConstants.PID.SIM_DRIVE_KI)
       drivekD.initDefault(DrivetrainConstants.PID.SIM_DRIVE_KD)
     }
+
+    positionDeltas = arrayOf()
+  }
+
+  fun updateInputs() {
+    io.updateInputs(inputs)
   }
 
   fun periodic() {
     io.updateInputs(inputs)
+
+    val deltaCount =
+      Math.min(inputs.odometryDrivePositions.size, inputs.odometrySteeringPositions.size)
+    positionDeltas = arrayOfNulls(deltaCount)
+    for (i in 0..deltaCount) {
+      val newDrivePosition = inputs.odometryDrivePositions[i]
+      val newSteeringAngle = inputs.odometrySteeringPositions[i]
+      positionDeltas[i] =
+        SwerveModulePosition(
+          (newDrivePosition - lastDrivePosition).inMeters, newSteeringAngle.inRotation2ds
+        )
+      lastDrivePosition = newDrivePosition
+    }
 
     // Updating SwerveModulePosition every loop cycle
     modulePosition.distanceMeters = inputs.drivePosition.inMeters

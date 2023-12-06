@@ -46,6 +46,8 @@ import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.perSecond
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import java.util.function.Supplier
 
 class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemBase() {
@@ -57,6 +59,17 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   val gyroInputs = GyroIO.GyroIOInputs()
   val swerveModules = swerveModuleIOs.getSwerveModules() // FL, FR, BL, BR
+
+  companion object {
+    var odometryLock: Lock = ReentrantLock()
+    fun setOdometryLock(Locked: Boolean) {
+      if (Locked) {
+        odometryLock.lock()
+      } else {
+        odometryLock.unlock()
+      }
+    }
+  }
 
   var gyroYawOffset = 0.0.radians
 
@@ -181,8 +194,15 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
   override fun periodic() {
     val startTime = Clock.realTimestamp
-    gyroNotConnectedAlert.set(!gyroInputs.gyroConnected)
+
+    odometryLock.lock(); // Prevents odometry updates while reading data
+
     gyroIO.updateInputs(gyroInputs)
+    swerveModules.forEach { it.updateInputs() }
+
+    odometryLock.unlock()
+
+    gyroNotConnectedAlert.set(!gyroInputs.gyroConnected)
 
     swerveModules.forEach { it.periodic() }
 
@@ -272,35 +292,31 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
   }
 
   private fun updateOdometry() {
-    val wheelDeltas =
-      mutableListOf(
-        SwerveModulePosition(),
-        SwerveModulePosition(),
-        SwerveModulePosition(),
-        SwerveModulePosition()
-      )
-    for (i in 0 until 4) {
-      wheelDeltas[i] =
-        SwerveModulePosition(
-          swerveModules[i].inputs.drivePosition.inMeters -
-            lastModulePositions[i].distanceMeters,
-          swerveModules[i].inputs.steeringPosition.inRotation2ds
-        )
-      lastModulePositions[i] =
-        SwerveModulePosition(
-          swerveModules[i].inputs.drivePosition.inMeters,
-          swerveModules[i].inputs.steeringPosition.inRotation2ds
-        )
+
+    var deltaCount =
+      if (gyroInputs.gyroConnected) gyroInputs.odometryYawPositions.size else Integer.MAX_VALUE
+    for (i in 0..4) {
+      deltaCount = Math.min(deltaCount, swerveModules[i].positionDeltas.size)
     }
+    for (deltaIndex in 0..deltaCount) {
+      // Read wheel deltas from each module
+      val wheelDeltas = arrayOfNulls<SwerveModulePosition>(4)
+      for (moduleIndex in 0..4) {
+        wheelDeltas[moduleIndex] = swerveModules[moduleIndex].positionDeltas[deltaIndex]
+      }
 
-    var driveTwist = swerveDriveKinematics.toTwist2d(*wheelDeltas.toTypedArray())
+      var driveTwist = swerveDriveKinematics.toTwist2d(*wheelDeltas)
 
-    if (gyroInputs.gyroConnected) {
-      driveTwist =
-        edu.wpi.first.math.geometry.Twist2d(
-          driveTwist.dx, driveTwist.dy, (gyroInputs.rawGyroYaw - lastGyroYaw).inRadians
-        )
-      lastGyroYaw = gyroInputs.rawGyroYaw
+      if (gyroInputs.gyroConnected) {
+        driveTwist =
+          edu.wpi.first.math.geometry.Twist2d(
+            driveTwist.dx, driveTwist.dy, (gyroInputs.rawGyroYaw - lastGyroYaw).inRadians
+          )
+        lastGyroYaw = gyroInputs.rawGyroYaw
+      }
+
+      swerveDrivePoseEstimator.addDriveData(Clock.fpgaTime.inSeconds, Twist2d(driveTwist))
+      odometryPose = odometryPose.exp(Twist2d(driveTwist))
     }
 
     // reversing the drift to store the ground truth pose
@@ -323,8 +339,6 @@ class Drivetrain(val gyroIO: GyroIO, swerveModuleIOs: DrivetrainIO) : SubsystemB
 
       Logger.getInstance().recordOutput(VisionConstants.SIM_POSE_TOPIC_NAME, undriftedPose.pose2d)
     }
-
-    swerveDrivePoseEstimator.addDriveData(Clock.fpgaTime.inSeconds, Twist2d(driveTwist))
   }
 
   /**

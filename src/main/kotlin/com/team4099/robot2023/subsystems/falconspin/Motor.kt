@@ -240,8 +240,8 @@ class Falcon500(
       if (falcon500.stickyFault_ReverseSoftLimit.value) {
         retVal.add("ReverseSoftLimit")
       }
-      if (falcon500.stickyFault_MissingRemoteSensor.value) {
-        retVal.add("MissingRemoteSensor")
+      if (falcon500.stickyFault_MissingDifferentialFX.value) {
+        retVal.add("MissingDifferentialFX")
       }
       if (falcon500.stickyFault_FusedSensorOutOfSync.value) {
         retVal.add("MissingRemoteSensor")

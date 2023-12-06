@@ -31,6 +31,8 @@ object DrivetrainConstants {
   const val FOC_ENABLED = false
   const val MINIMIZE_SKEW = false
 
+  const val OMOMETRY_UPDATE_FREQUENCY = 250.0
+
   const val WHEEL_COUNT = 4
   val WHEEL_DIAMETER = 3.827.inches
   val DRIVETRAIN_LENGTH = 22.750.inches
