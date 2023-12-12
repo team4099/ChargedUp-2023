@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.gameboy.objective.Objective
+import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.LimelightReading
 import com.team4099.robot2023.util.PoseEstimator
@@ -28,6 +29,7 @@ import org.team4099.lib.geometry.Translation3dWPILIB
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -66,7 +68,6 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     AUTO_POSE_ESTIMATION,
     TELEOP_GAME_PIECE_DETECTION
   }
-
   init {
     for (locationIndex in listOf(0, 1, 2, 3)) {
       conePoses.add(
@@ -154,7 +155,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       for ((index, gamePiecePose) in visibleGamePieces.withIndex()) {
         val searchList =
           if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
-        val closestPose = searchList[0]
+        val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
 
         trueGamePieces.add(closestPose)
 

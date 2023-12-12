@@ -35,9 +35,14 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Transform2d
+import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import java.util.function.Supplier
@@ -96,7 +101,7 @@ object RobotContainer {
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
-    limelight.setDataInterfaces({ drivetrain.odometryPose }, { it })
+    limelight.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
     LimelightVisionIOSim.poseSupplier = { drivetrain.odometryPose }
     drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
     drivetrain.objectiveSupplier = Supplier { superstructure.objective }
