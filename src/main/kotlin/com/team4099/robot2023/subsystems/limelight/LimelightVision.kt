@@ -7,7 +7,6 @@ import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
 import com.team4099.robot2023.subsystems.gameboy.objective.Objective
-import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.LimelightReading
 import com.team4099.robot2023.util.PoseEstimator
@@ -29,7 +28,6 @@ import org.team4099.lib.geometry.Translation3dWPILIB
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
-import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -192,14 +190,27 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
       Logger.getInstance()
         .recordOutput(
-          "LimelightVision/distanceToGamePieceX", robotPoses.getOrNull(0)?.minus(conePoses.getOrNull(0)?.toPose2d() ?: Pose2d())?.translation?.translation2d?.x ?: 0.0
+          "LimelightVision/distanceToGamePieceX",
+          robotPoses
+            .getOrNull(0)
+            ?.minus(conePoses.getOrNull(0)?.toPose2d() ?: Pose2d())
+            ?.translation
+            ?.translation2d
+            ?.x
+            ?: 0.0
         )
 
       Logger.getInstance()
         .recordOutput(
-          "LimelightVision/distanceToGamePieceY", robotPoses.getOrNull(0)?.minus(conePoses.getOrNull(0)?.toPose2d() ?: Pose2d())?.translation?.translation2d?.y ?: 0.0
+          "LimelightVision/distanceToGamePieceY",
+          robotPoses
+            .getOrNull(0)
+            ?.minus(conePoses.getOrNull(0)?.toPose2d() ?: Pose2d())
+            ?.translation
+            ?.translation2d
+            ?.y
+            ?: 0.0
         )
-
 
       visionConsumer.accept(timestampedVisionUpdates)
     } else if (limelightState == LimelightStates.TELEOP_GAME_PIECE_DETECTION) {
@@ -316,7 +327,11 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
     return currentPose
       .toPose3d()
       .transformBy(VisionConstants.Limelight.LL_TRANSFORM)
-      .transformBy(Transform3d(Translation3d(targetTranslation), Rotation3d(0.degrees, 0.degrees, 180.0.degrees)))
+      .transformBy(
+        Transform3d(
+          Translation3d(targetTranslation), Rotation3d(0.degrees, 0.degrees, 180.0.degrees)
+        )
+      )
   }
 
   fun xyDistanceFromTarget(target: LimelightReading, targetHeight: Length): Length {
