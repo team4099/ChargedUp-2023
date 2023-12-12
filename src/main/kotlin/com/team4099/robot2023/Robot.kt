@@ -5,6 +5,7 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
@@ -157,6 +158,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun robotPeriodic() {
+
     //    RobotContainer.measurementsWithTimestamps.forEach {
     // RobotContainer.addVisionMeasurement(it) }
 
@@ -192,6 +194,9 @@ object Robot : LoggedRobot() {
     Logger.getInstance().recordOutput("LoggedRobot/port3", port3.voltage)
 
      */
+
+    Logger.getInstance().recordOutput("AprilTagPose/0", FieldConstants.homeAprilTags[0].pose.pose3d)
+    Logger.getInstance().recordOutput("AprilTagPose/1", FieldConstants.homeAprilTags[1].pose.pose3d)
   }
 
   override fun teleopInit() {
