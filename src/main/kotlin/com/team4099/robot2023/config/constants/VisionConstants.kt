@@ -69,8 +69,8 @@ object VisionConstants {
 
     val LL_TRANSFORM =
       Transform3d(
-        Translation3d(1.1438.inches, 10.3966.inches, 12.9284.inches),
-        Rotation3d(8.159.degrees, -90.degrees + 61.610.degrees, -14.1254.degrees)
+        Translation3d(11.6569.inches, -2.999.inches, 37.0768.inches),
+        Rotation3d(0.degrees, 90.0.degrees - 49.678.degrees, 0.degrees)
       )
     const val RES_WIDTH = 320
     const val RES_HEIGHT = 240 // no clue what these numbers should be but usnig these for now

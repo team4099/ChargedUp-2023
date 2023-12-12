@@ -31,6 +31,7 @@ import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.derived.tan
@@ -111,7 +112,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
       val gamePieceLocationIndex =
         if (FMSData.isBlue) gamePieceToLookFor.invoke().autoStagingLocation
-        else 3 - gamePieceToLookFor.invoke().autoStagingLocation
+        else 3 - gamePieceToLookFor().autoStagingLocation
 
       val gamePieceY =
         FieldConstants.StagingLocations.firstY +
@@ -153,7 +154,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       for ((index, gamePiecePose) in visibleGamePieces.withIndex()) {
         val searchList =
           if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
-        val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
+        val closestPose = searchList[0]
 
         trueGamePieces.add(closestPose)
 
@@ -188,6 +189,17 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           "LimelightVision/estimatedRobotPoses", *robotPoses.map { it.pose2d }.toTypedArray()
         )
 
+      Logger.getInstance()
+        .recordOutput(
+          "LimelightVision/distanceToGamePieceX", robotPoses.getOrNull(0)?.minus(conePoses.getOrNull(0)?.toPose2d() ?: Pose2d())?.translation?.translation2d?.x ?: 0.0
+        )
+
+      Logger.getInstance()
+        .recordOutput(
+          "LimelightVision/distanceToGamePieceY", robotPoses.getOrNull(0)?.minus(conePoses.getOrNull(0)?.toPose2d() ?: Pose2d())?.translation?.translation2d?.y ?: 0.0
+        )
+
+
       visionConsumer.accept(timestampedVisionUpdates)
     } else if (limelightState == LimelightStates.TELEOP_GAME_PIECE_DETECTION) {
       if (inputs.validReading) {
@@ -215,6 +227,18 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     Logger.getInstance()
       .recordOutput(
+        "LimelightVision/RawLimelightReadingsTx",
+        inputs.gamePieceTargets.map { it.tx.inDegrees }.toDoubleArray()
+      )
+
+    Logger.getInstance()
+      .recordOutput(
+        "LimelightVision/RawLimelightReadingsTy",
+        inputs.gamePieceTargets.map { it.ty.inDegrees }.toDoubleArray()
+      )
+
+    Logger.getInstance()
+      .recordOutput(
         "LimelightVision/robotVisiblePieces",
         *visibleGamePieces.map { it.pose3d }.toTypedArray()
       )
@@ -229,6 +253,24 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       .recordOutput(
         "LoggedRobot/Subsystems/LimelightLoopTimeMS",
         (Clock.realTimestamp - startTime).inMilliseconds
+      )
+    Logger.getInstance().recordOutput("LimelightVision/LimeLightState", limelightState.name)
+    Logger.getInstance()
+      .recordOutput(
+        "LimelightVision/test",
+        Pose3d(
+          FieldConstants.StagingLocations.positionX,
+          FieldConstants.StagingLocations.translations[0]?.y ?: 0.meters,
+          VisionConstants.Limelight.CONE_HEIGHT / 2,
+          Rotation3d()
+        )
+          .relativeTo(
+            LimelightVisionIOSim.poseSupplier
+              .invoke()
+              .toPose3d()
+              .transformBy(VisionConstants.Limelight.LL_TRANSFORM)
+          )
+          .pose3d
       )
   }
 
@@ -262,18 +304,18 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           0.degrees..180.degrees
         ) {
           // we are looking at a red node which is facing towards 180 degrees
-          180.0.degrees
+          0.degrees
         } else {
           // we are looking at a blue node which is facing towards 0 degrees
 
-          0.degrees
+          180.degrees
         }
       )
 
     return currentPose
       .toPose3d()
       .transformBy(VisionConstants.Limelight.LL_TRANSFORM)
-      .transformBy(Transform3d(Translation3d(targetTranslation), targetRotation))
+      .transformBy(Transform3d(Translation3d(targetTranslation), Rotation3d(0.degrees, 0.degrees, 180.0.degrees)))
   }
 
   fun xyDistanceFromTarget(target: LimelightReading, targetHeight: Length): Length {
@@ -320,6 +362,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
     val xDistanceFromTargetToCamera =
       (targetHeight - cameraTransform.z) / verticalAngleFromCamera.tan
+
     val yDistanceFromTargetToCamera = xDistanceFromTargetToCamera * horizontalAngleFromCamera.tan
 
     val translationFromTargetToCamera =
