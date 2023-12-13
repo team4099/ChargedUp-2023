@@ -20,6 +20,7 @@ import com.team4099.robot2023.subsystems.gameboy.GameBoy
 import com.team4099.robot2023.subsystems.gameboy.GameboyIOServer
 import com.team4099.robot2023.subsystems.gameboy.objective.isConeNode
 import com.team4099.robot2023.subsystems.groundintake.GroundIntake
+import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIO
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIONeo
 import com.team4099.robot2023.subsystems.groundintake.GroundIntakeIOSim
 import com.team4099.robot2023.subsystems.led.Led
@@ -36,9 +37,16 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import java.util.function.Supplier
@@ -70,7 +78,7 @@ object RobotContainer {
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(GroundIntakeIONeo),
+          GroundIntake(object : GroundIntakeIO {}),
           Manipulator(ManipulatorIONeo),
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
@@ -104,6 +112,14 @@ object RobotContainer {
     limelight.gamePieceToLookFor = { superstructure.objective }
 
 
+  }
+
+  fun resetPose() {
+    drivetrain.odometryPose = Pose2d(
+      (68.45).inches,
+      (108.19).inches + 114.centi.meters,
+      0.0.degrees
+    )
   }
 
   fun mapDefaultCommands() {

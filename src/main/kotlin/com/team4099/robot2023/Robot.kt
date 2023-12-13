@@ -30,7 +30,12 @@ import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.inputs.LoggedPowerDistribution
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
+import org.team4099.lib.units.derived.degrees
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -209,6 +214,8 @@ object Robot : LoggedRobot() {
       RobotContainer.mapTunableCommands()
     }
     RobotContainer.zeroArm()
+
+    RobotContainer.resetPose()
   }
 
   override fun testInit() {

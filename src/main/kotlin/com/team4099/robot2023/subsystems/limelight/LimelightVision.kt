@@ -1,6 +1,8 @@
 package com.team4099.robot2023.subsystems.limelight
 
 import com.team4099.lib.hal.Clock
+import com.team4099.lib.logging.LoggedTunableNumber
+import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.logging.TunableNumber
 import com.team4099.lib.vision.TargetCorner
 import com.team4099.robot2023.config.constants.Constants
@@ -55,8 +57,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   val vpw = (2.0 * (VisionConstants.Limelight.HORIZONTAL_FOV / 2).tan)
   val vph = (2.0 * (VisionConstants.Limelight.VERITCAL_FOV / 2).tan)
 
-  private val xyStdDevCoefficient = TunableNumber("LimelightVision/xystdev", 0.05)
-  private val thetaStdDev = TunableNumber("LimelightVision/thetaStdDev", 0.75)
+  private val xyStdDevCoefficient = LoggedTunableNumber("LimelightVision/xystdev", 0.0)
+  private val thetaStdDev = LoggedTunableNumber("LimelightVision/thetaStdDev", 0.0)
 
   val limelightState: LimelightStates = LimelightStates.AUTO_POSE_ESTIMATION
 
@@ -155,7 +157,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
         val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
 
-        trueGamePieces.add(closestPose)
+
+        trueGamePieces.add(closestPose.findClosestPose(*searchList.toTypedArray()))
 
         // find inverse translation from the detected pose to robot
         val targetToCamera =
@@ -211,6 +214,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
             ?.y
             ?: 0.0
         )
+
+      Logger.getInstance().recordOutput("LimelightVision/trueGamePiecePoses", *trueGamePieces.map { it.pose3d }.toTypedArray())
 
       visionConsumer.accept(timestampedVisionUpdates)
     } else if (limelightState == LimelightStates.TELEOP_GAME_PIECE_DETECTION) {
@@ -329,7 +334,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       .transformBy(VisionConstants.Limelight.LL_TRANSFORM)
       .transformBy(
         Transform3d(
-          Translation3d(targetTranslation), Rotation3d(0.degrees, 0.degrees, 180.0.degrees)
+          Translation3d(targetTranslation), Rotation3d(0.degrees, 0.degrees, 0.0.degrees)
         )
       )
   }
