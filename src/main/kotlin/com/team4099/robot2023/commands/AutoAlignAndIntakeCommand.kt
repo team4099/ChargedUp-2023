@@ -57,6 +57,8 @@ class AutoAlignAndIntakeCommand(
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
 
+  private var yawLock = 0.degrees
+
   val intakeDistance = LoggedTunableValue("AutoAlign/intakeDistance",
     4.0.inches,
     Pair({ it.inInches }, { it.inches})
@@ -147,10 +149,10 @@ class AutoAlignAndIntakeCommand(
       Commands.run({
         val angle =
           limelight.angleYawFromTarget(drivetrain.odometryPose, limelight.targetGamePiecePose)
-        val rotationFeedback = alignPID.calculate(angle, 0.radians)
+        val thetaFeedback = alignPID.calculate(angle, 0.radians)
 
         drivetrain.setClosedLoop(
-          ChassisSpeeds(0.0, 0.0, rotationFeedback.inRadiansPerSecond),
+          ChassisSpeeds(0.0, 0.0, thetaFeedback.inRadiansPerSecond),
           ChassisAccels(
             0.0.meters.perSecond.perSecond,
             0.0.meters.perSecond.perSecond,
@@ -159,26 +161,24 @@ class AutoAlignAndIntakeCommand(
             .chassisAccelsWPILIB
         )
         if (alignPID.isAtSetpoint) {
+          yawLock = drivetrain.odometryPose.rotation
           this.end(false)
         }
       })
 
     val intakeCommand =
-      Commands.run({
-        val angle =
-          limelight.angleYawFromTarget(drivetrain.odometryPose, limelight.targetGamePiecePose)
-
+     Commands.run({
         val intakeOffsetTransform = Transform2d(Translation2d(DrivetrainConstants.DRIVETRAIN_WIDTH/2 + intakeDistance.get(), 0.0.meters), 0.0.degrees)
 
-        val rotationFeedback = alignPID.calculate(angle, 0.radians)
         val xFeedback = xPID.calculate(drivetrain.odometryPose.transformBy(intakeOffsetTransform).x, limelight.targetGamePiecePose.x)
         val yFeedback = yPID.calculate(drivetrain.odometryPose.transformBy(intakeOffsetTransform).y, limelight.targetGamePiecePose.y)
+        val thetaFeedback = alignPID.calculate(drivetrain.odometryPose.rotation, yawLock)
 
         drivetrain.setClosedLoop(
           ChassisSpeeds.fromFieldRelativeSpeeds(
             xFeedback.inMetersPerSecond,
             yFeedback.inMetersPerSecond,
-            rotationFeedback.inRadiansPerSecond,
+            thetaFeedback.inRadiansPerSecond,
             drivetrain.odometryPose.rotation.inRotation2ds
           ),
           ChassisAccels(

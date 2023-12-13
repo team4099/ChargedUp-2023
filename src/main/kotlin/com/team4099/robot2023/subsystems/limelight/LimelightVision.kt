@@ -30,6 +30,7 @@ import org.team4099.lib.geometry.Translation3dWPILIB
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -153,37 +154,41 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
       val trueGamePieces = mutableListOf<Pose3d>()
 
       for ((index, gamePiecePose) in visibleGamePieces.withIndex()) {
-        val searchList =
-          if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
-        val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
+        if (inputs.gamePieceTargets[index].className == "cone" || inputs.gamePieceTargets[index].className == "cube") {
+          val searchList =
+            if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
+          val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
+          if (closestPose.relativeTo(gamePiecePose).pose3d.translation.toTranslation2d().norm <= 5.inches.inMeters) {
 
+            trueGamePieces.add(closestPose.findClosestPose(*searchList.toTypedArray()))
 
-        trueGamePieces.add(closestPose.findClosestPose(*searchList.toTypedArray()))
+            // find inverse translation from the detected pose to robot
+            val targetToCamera =
+              gamePiecePose
+                .relativeTo(
+                  currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
+                )
+                .toTransform3d()
+                .inverse()
 
-        // find inverse translation from the detected pose to robot
-        val targetToCamera =
-          gamePiecePose
-            .relativeTo(
-              currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
+            val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
+
+            // Add to vision updates
+            val xyStdDev =
+              xyStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
+            val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
+
+            robotPoses.add(trueNodePoseToRobot.toPose2d())
+
+            timestampedVisionUpdates.add(
+              PoseEstimator.TimestampedVisionUpdate(
+                inputs.timestamp,
+                trueNodePoseToRobot.toPose2d(),
+                VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
+              )
             )
-            .toTransform3d()
-            .inverse()
-
-        val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
-
-        // Add to vision updates
-        val xyStdDev = xyStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
-        val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
-
-        robotPoses.add(trueNodePoseToRobot.toPose2d())
-
-        timestampedVisionUpdates.add(
-          PoseEstimator.TimestampedVisionUpdate(
-            inputs.timestamp,
-            trueNodePoseToRobot.toPose2d(),
-            VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
-          )
-        )
+          }
+        }
       }
 
       Logger.getInstance()
