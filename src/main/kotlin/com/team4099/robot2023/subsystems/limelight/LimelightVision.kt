@@ -12,6 +12,7 @@ import com.team4099.robot2023.subsystems.gameboy.objective.Objective
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.LimelightReading
 import com.team4099.robot2023.util.PoseEstimator
+import com.team4099.robot2023.util.closerToInTranslation
 import com.team4099.robot2023.util.findClosestPose
 import com.team4099.robot2023.util.rotateBy
 import com.team4099.robot2023.util.toPose3d
@@ -58,14 +59,17 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   val vpw = (2.0 * (VisionConstants.Limelight.HORIZONTAL_FOV / 2).tan)
   val vph = (2.0 * (VisionConstants.Limelight.VERITCAL_FOV / 2).tan)
 
-  private val xyStdDevCoefficient = LoggedTunableNumber("LimelightVision/xystdev", 0.0)
-  private val thetaStdDev = LoggedTunableNumber("LimelightVision/thetaStdDev", 0.0)
+  private val xyStdDevCoefficient = LoggedTunableNumber("LimelightVision/xystdev", 0.1)
+  private val thetaStdDev = LoggedTunableNumber("LimelightVision/thetaStdDev", 3.0)
 
-  val limelightState: LimelightStates = LimelightStates.AUTO_POSE_ESTIMATION
+  var limelightState: LimelightStates = LimelightStates.UNINITIALIZED
 
-  var targetGamePiecePose = Pose3d()
+  var targetGamePiecePose: Pose3d? = null
+
+  var targetGamePieceTx = 0.0.degrees
 
   enum class LimelightStates {
+    UNINITIALIZED,
     AUTO_POSE_ESTIMATION,
     TELEOP_GAME_PIECE_DETECTION
   }
@@ -94,12 +98,16 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   override fun periodic() {
     val startTime = Clock.realTimestamp
 
+
+
     io.updateInputs(inputs)
     Logger.getInstance().processInputs("LimelightVision", inputs)
 
     var currentPose: Pose2d = poseSupplier.invoke()
 
     val visibleGamePieces = mutableListOf<Pose3d>()
+
+    var visibleGamePiecesTx: List<Angle>
 
     val timestampedVisionUpdates = mutableListOf<PoseEstimator.TimestampedVisionUpdate>()
 
@@ -158,7 +166,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           val searchList =
             if (inputs.gamePieceTargets[index].className == "cone") conePoses else cubePoses
           val closestPose = gamePiecePose.findClosestPose(*searchList.toTypedArray())
-          if (closestPose.relativeTo(gamePiecePose).pose3d.translation.toTranslation2d().norm <= 5.inches.inMeters) {
+
 
             trueGamePieces.add(closestPose.findClosestPose(*searchList.toTypedArray()))
 
@@ -187,7 +195,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
                 VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
               )
             )
-          }
+
         }
       }
 
@@ -238,12 +246,21 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
           )
         }
 
+
+
         val searchList =
           visibleGamePieces.filterIndexed({ index, pose ->
             inputs.gamePieceTargets[index].className ==
               gamePieceToLookFor.invoke().gamePiece.toClassName()
           })
-        targetGamePiecePose = currentPose.toPose3d().findClosestPose(*searchList.toTypedArray())
+
+        visibleGamePiecesTx = inputs.gamePieceTargets.filter( {reading ->
+          reading.className == gamePieceToLookFor().gamePiece.toClassName()
+        }).map({x -> x.tx})
+        if (!searchList.isEmpty()) {
+          targetGamePiecePose = currentPose.toPose3d().findClosestPose(*searchList.toTypedArray())
+          targetGamePieceTx = visibleGamePiecesTx[searchList.indexOf(targetGamePiecePose)]
+        }
       }
     }
 

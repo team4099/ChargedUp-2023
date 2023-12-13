@@ -1,6 +1,7 @@
 package com.team4099.robot2023
 
 import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.commands.AutoAlignAndIntakeCommand
 import com.team4099.robot2023.commands.AutoIntakeCommand
 import com.team4099.robot2023.commands.AutoScoreCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
@@ -78,7 +79,7 @@ object RobotContainer {
       superstructure =
         Superstructure(
           Elevator(ElevatorIONeo),
-          GroundIntake(object : GroundIntakeIO {}),
+          GroundIntake(GroundIntakeIONeo),
           Manipulator(ManipulatorIONeo),
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
@@ -120,6 +121,10 @@ object RobotContainer {
       (108.19).inches + 114.centi.meters,
       0.0.degrees
     )
+  }
+
+  fun setLimelightState(state: LimelightVision.LimelightStates) {
+    limelight.limelightState = state
   }
 
   fun mapDefaultCommands() {
@@ -247,9 +252,15 @@ object RobotContainer {
       }
     )
     ControlBoard.autoIntake.whileTrue(
-      AutoIntakeCommand(drivetrain, superstructure).finallyDo {
+      AutoAlignAndIntakeCommand(drivetrain, superstructure, limelight, Constants.Universal.GamePiece.CONE).finallyDo {
         Logger.getInstance().recordOutput("Auto/isAutoDriving", false)
       }
+    )
+
+    ControlBoard.driverEject.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HYBRID
+      )
     )
 
     ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())

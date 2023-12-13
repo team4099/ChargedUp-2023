@@ -1,9 +1,9 @@
 package com.team4099.robot2023.commands
 
 import com.team4099.lib.logging.LoggedTunableValue
+import com.team4099.lib.math.purelyTranslateBy
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
-import com.team4099.robot2023.config.constants.GamePiece
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
@@ -14,17 +14,18 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Transform2d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.kinematics.ChassisAccels
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.inInches
+import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
+import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegree
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreeSeconds
 import org.team4099.lib.units.derived.inDegreesPerSecondPerDegreesPerSecond
@@ -42,6 +43,7 @@ import org.team4099.lib.units.derived.radians
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
 import org.team4099.lib.units.perSecond
+import kotlin.math.PI
 
 class AutoAlignAndIntakeCommand(
   val drivetrain: Drivetrain,
@@ -52,7 +54,7 @@ class AutoAlignAndIntakeCommand(
   lateinit var drivePose: Pose2d
   var heading: Angle = 0.0.degrees
 
-  private val alignPID: PIDController<Radian, Velocity<Radian>>
+  private val thetaPID: PIDController<Radian, Velocity<Radian>>
 
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
@@ -64,134 +66,125 @@ class AutoAlignAndIntakeCommand(
     Pair({ it.inInches }, { it.inches})
   )
 
-  val alignkP =
+  val thetakP =
     LoggedTunableValue(
       "AutoAlign/alignkP",
-      DrivetrainConstants.PID.AUTO_ALIGN_KP,
+      DrivetrainConstants.PID.AUTO_THETA_PID_KP,
       Pair({ it.inDegreesPerSecondPerDegree }, { it.degrees.perSecond.perDegree })
     )
-  val alignkI =
+  val thetakI =
     LoggedTunableValue(
       "AutoAlign/alignkI",
-      DrivetrainConstants.PID.AUTO_ALIGN_KI,
+      DrivetrainConstants.PID.AUTO_THETA_PID_KI,
       Pair(
         { it.inDegreesPerSecondPerDegreeSeconds }, { it.degrees.perSecond.perDegreeSeconds }
       )
     )
-  val alignkD =
+  val thetakD =
     LoggedTunableValue(
       "AutoAlign/alignkD",
-      DrivetrainConstants.PID.AUTO_ALIGN_KD,
+      DrivetrainConstants.PID.AUTO_THETA_PID_KD,
       Pair(
         { it.inDegreesPerSecondPerDegreesPerSecond },
         { it.degrees.perSecond.perDegreePerSecond }
       )
     )
 
-  val poskPX =
+  val poskP =
     LoggedTunableValue(
-      "Pathfollow/poskPX",
-      DrivetrainConstants.PID.AUTO_POS_KPX,
+      "AutoAlign/poskP",
+      DrivetrainConstants.PID.AUTO_ALIGN_POS_KP,
       Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
     )
-  val poskIX =
+  val poskI =
     LoggedTunableValue(
-      "Pathfollow/poskIX",
-      DrivetrainConstants.PID.AUTO_POS_KIX,
+      "AutoAlign/poskI",
+      DrivetrainConstants.PID.AUTO_ALIGN_POS_KI,
       Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
     )
-  val poskDX =
+  val poskD =
     LoggedTunableValue(
-      "Pathfollow/poskDX",
-      DrivetrainConstants.PID.AUTO_POS_KDX,
+      "AutoAlign/poskD",
+      DrivetrainConstants.PID.AUTO_ALIGN_POS_KD,
       Pair(
         { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
       )
     )
 
-  val poskPY =
-    LoggedTunableValue(
-      "Pathfollow/poskPY",
-      DrivetrainConstants.PID.AUTO_POS_KPY,
-      Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
-    )
-  val poskIY =
-    LoggedTunableValue(
-      "Pathfollow/poskIY",
-      DrivetrainConstants.PID.AUTO_POS_KIY,
-      Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
-    )
-  val poskDY =
-    LoggedTunableValue(
-      "Pathfollow/poskDY",
-      DrivetrainConstants.PID.AUTO_POS_KDY,
-      Pair(
-        { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
-      )
-    )
 
   init {
 
-    alignPID = PIDController(alignkP.get(), alignkI.get(), alignkD.get())
-    alignPID.errorTolerance = DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR
+    thetaPID = PIDController(thetakP.get(), thetakI.get(), thetakD.get())
+    thetaPID.errorTolerance = DrivetrainConstants.ALLOWED_STEERING_ANGLE_ERROR
 
-    xPID = PIDController(poskPX.get(), poskIX.get(), poskDX.get())
-    yPID = PIDController(poskPY.get(), poskIY.get(), poskDY.get())
+    thetaPID.enableContinuousInput(-PI.radians, PI.radians)
+
+    xPID = PIDController(poskP.get(), poskI.get(), poskD.get())
+    yPID = PIDController(poskP.get(), poskI.get(), poskD.get())
+
+
 
     val setupCommand =
       runOnce({
         Logger.getInstance().recordOutput("Auto/isAutoDriving", true)
         superstructure.objective.gamePiece = gamePiece
-        alignPID
+        thetaPID
       })
 
-    val alignmentCommand =
-      Commands.run({
-        val angle =
-          limelight.angleYawFromTarget(drivetrain.odometryPose, limelight.targetGamePiecePose)
-        val thetaFeedback = alignPID.calculate(angle, 0.radians)
 
-        drivetrain.setClosedLoop(
-          ChassisSpeeds(0.0, 0.0, thetaFeedback.inRadiansPerSecond),
-          ChassisAccels(
-            0.0.meters.perSecond.perSecond,
-            0.0.meters.perSecond.perSecond,
-            0.0.radians.perSecond.perSecond
-          )
-            .chassisAccelsWPILIB
-        )
-        if (alignPID.isAtSetpoint) {
-          yawLock = drivetrain.odometryPose.rotation
-          this.end(false)
-        }
-      })
 
     val intakeCommand =
      Commands.run({
-        val intakeOffsetTransform = Transform2d(Translation2d(DrivetrainConstants.DRIVETRAIN_WIDTH/2 + intakeDistance.get(), 0.0.meters), 0.0.degrees)
+        val intakeOffsetTranslation = Translation2d(DrivetrainConstants.DRIVETRAIN_WIDTH/2 + intakeDistance.get(), 0.0.meters)
 
-        val xFeedback = xPID.calculate(drivetrain.odometryPose.transformBy(intakeOffsetTransform).x, limelight.targetGamePiecePose.x)
-        val yFeedback = yPID.calculate(drivetrain.odometryPose.transformBy(intakeOffsetTransform).y, limelight.targetGamePiecePose.y)
-        val thetaFeedback = alignPID.calculate(drivetrain.odometryPose.rotation, yawLock)
+        if (limelight.targetGamePiecePose != null ) {
+          Logger.getInstance().recordOutput("AutoAlign/driveTrainOdometry", drivetrain.odometryPose.pose2d)
+          Logger.getInstance().recordOutput("AutoAlign/TargetPose", limelight.targetGamePiecePose?.pose3d)
+          Logger.getInstance().recordOutput("AutoAlign/Tx", limelight.targetGamePieceTx.inDegrees)
 
-        drivetrain.setClosedLoop(
-          ChassisSpeeds.fromFieldRelativeSpeeds(
-            xFeedback.inMetersPerSecond,
-            yFeedback.inMetersPerSecond,
-            thetaFeedback.inRadiansPerSecond,
-            drivetrain.odometryPose.rotation.inRotation2ds
-          ),
-          ChassisAccels(
-            0.0.meters.perSecond.perSecond,
-            0.0.meters.perSecond.perSecond,
-            0.0.radians.perSecond.perSecond
-          )
-            .chassisAccelsWPILIB
-        )
+          val xFeedback = xPID.calculate(drivetrain.odometryPose.purelyTranslateBy(intakeOffsetTranslation).x, limelight.targetGamePiecePose?.x ?: 0.0.meters)
+          val yFeedback = yPID.calculate(drivetrain.odometryPose.purelyTranslateBy(intakeOffsetTranslation).y, limelight.targetGamePiecePose?.y ?: 0.0.meters)
+          val thetaFeedback = thetaPID.calculate(limelight.targetGamePieceTx, 0.0.degrees)
+
+          Logger.getInstance().recordOutput("AutoAlign/xError", xPID.error.inMeters)
+          Logger.getInstance().recordOutput("AutoAlign/yError", yPID.error.inMeters)
+          Logger.getInstance().recordOutput("AutoAlign/thetaError", thetaPID.error.inDegrees)
+
+          if (thetaPID.error.absoluteValue >= 10.degrees){
+            drivetrain.setClosedLoop(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                0.0,
+                0.0,
+                thetaFeedback.inRadiansPerSecond,
+                drivetrain.odometryPose.rotation.inRotation2ds
+              ),
+              ChassisAccels(
+                0.0.meters.perSecond.perSecond,
+                0.0.meters.perSecond.perSecond,
+                0.0.radians.perSecond.perSecond
+              )
+                .chassisAccelsWPILIB
+            )
+          } else {
+            drivetrain.setClosedLoop(
+              ChassisSpeeds(
+                xFeedback.absoluteValue.inMetersPerSecond,
+                0.0,
+                thetaFeedback.inRadiansPerSecond,
+              ),
+              ChassisAccels(
+                0.0.meters.perSecond.perSecond,
+                0.0.meters.perSecond.perSecond,
+                0.0.radians.perSecond.perSecond
+              )
+                .chassisAccelsWPILIB
+            )
+          }
+        }
       })
 
     addCommands(
-      setupCommand, alignmentCommand, superstructure.groundIntakeConeCommand(), intakeCommand
+      setupCommand, superstructure.groundIntakeConeCommand(), intakeCommand
     )
   }
 }

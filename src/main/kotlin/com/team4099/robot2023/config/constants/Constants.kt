@@ -12,7 +12,7 @@ typealias NodeTier = Constants.Universal.NodeTier
 object Constants {
   object Universal {
     val SIM_MODE = Tuning.SimType.SIM
-    const val REAL_FIELD = true
+    const val REAL_FIELD = false
 
     const val CTRE_CONFIG_TIMEOUT = 0
     const val EPSILON = 1E-9

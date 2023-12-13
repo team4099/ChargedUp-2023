@@ -7,6 +7,7 @@ import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.limelight.LimelightVision
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
@@ -151,6 +152,7 @@ object Robot : LoggedRobot() {
     RobotContainer.setDriveBrakeMode()
     RobotContainer.setSteeringBrakeMode()
     RobotContainer.requestSuperstructureIdle()
+    RobotContainer.setLimelightState(LimelightVision.LimelightStates.AUTO_POSE_ESTIMATION)
     RobotContainer.getAutonomousCommand().schedule()
   }
 
@@ -214,8 +216,7 @@ object Robot : LoggedRobot() {
       RobotContainer.mapTunableCommands()
     }
     RobotContainer.zeroArm()
-
-    RobotContainer.resetPose()
+    RobotContainer.setLimelightState(LimelightVision.LimelightStates.TELEOP_GAME_PIECE_DETECTION)
   }
 
   override fun testInit() {

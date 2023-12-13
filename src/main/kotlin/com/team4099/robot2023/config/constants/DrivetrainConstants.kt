@@ -143,6 +143,37 @@ object DrivetrainConstants {
         }
       }
 
+
+
+
+    val AUTO_ALIGN_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 2.0.meters.perSecond / 1.0.meters // todo:4
+        } else {
+          return 7.0.meters.perSecond / 1.0.meters
+        }
+      }
+    val AUTO_ALIGN_POS_KI: IntegralGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        } else {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        }
+      }
+
+    val AUTO_ALIGN_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return (0.1.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
+        } else {
+          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        }
+      }
+
+
     val AUTO_THETA_ALLOWED_ERROR = 3.degrees
 
     val AUTO_ALIGN_KP = 0.0.degrees.perSecond / 1.degrees
