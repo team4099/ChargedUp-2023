@@ -14,9 +14,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Transform2d
+import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.kinematics.ChassisAccels
 import org.team4099.lib.units.Velocity
 import org.team4099.lib.units.base.Meter
+import org.team4099.lib.units.base.inInches
+import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
@@ -52,6 +56,11 @@ class AutoAlignAndIntakeCommand(
 
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
+
+  val intakeDistance = LoggedTunableValue("AutoAlign/intakeDistance",
+    4.0.inches,
+    Pair({ it.inInches }, { it.inches})
+  )
 
   val alignkP =
     LoggedTunableValue(
@@ -159,9 +168,11 @@ class AutoAlignAndIntakeCommand(
         val angle =
           limelight.angleYawFromTarget(drivetrain.odometryPose, limelight.targetGamePiecePose)
 
+        val intakeOffsetTransform = Transform2d(Translation2d(DrivetrainConstants.DRIVETRAIN_WIDTH/2 + intakeDistance.get(), 0.0.meters), 0.0.degrees)
+
         val rotationFeedback = alignPID.calculate(angle, 0.radians)
-        val xFeedback = xPID.calculate(drivetrain.odometryPose.x, limelight.targetGamePiecePose.x)
-        val yFeedback = yPID.calculate(drivetrain.odometryPose.y, limelight.targetGamePiecePose.y)
+        val xFeedback = xPID.calculate(drivetrain.odometryPose.transformBy(intakeOffsetTransform).x, limelight.targetGamePiecePose.x)
+        val yFeedback = yPID.calculate(drivetrain.odometryPose.transformBy(intakeOffsetTransform).y, limelight.targetGamePiecePose.y)
 
         drivetrain.setClosedLoop(
           ChassisSpeeds.fromFieldRelativeSpeeds(
