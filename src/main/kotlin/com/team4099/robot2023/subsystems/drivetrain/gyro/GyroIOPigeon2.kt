@@ -23,8 +23,6 @@ object GyroIOPigeon2 : GyroIO {
 
   private val isConnected: Boolean = pigeon2.upTime.value > 0.0
 
-  val phoenixDrive = true
-
   var gyroYawOffset: Angle = 0.0.degrees
   var gyroPitchOffset: Angle = 0.0.degrees
   var gyroRollOffset: Angle = 0.0.degrees
@@ -99,7 +97,7 @@ object GyroIOPigeon2 : GyroIO {
     pigeon2Configuration.MountPose.MountPoseRoll = GyroConstants.mountRoll.inRadians
 
     yawPositionQueue =
-      if (phoenixDrive) {
+      if (Constants.Drivetrain.DRIVETRAIN_TYPE == Constants.Drivetrain.DrivetrainType.PHOENIX_TALON) {
         PhoenixOdometryThread.getInstance().registerSignal(pigeon2, pigeon2.getYaw())
       } else {
         SparkMaxOdometryThread.getInstance().registerSignal {

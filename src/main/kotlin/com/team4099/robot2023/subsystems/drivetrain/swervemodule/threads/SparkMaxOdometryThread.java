@@ -61,7 +61,7 @@ public class SparkMaxOdometryThread {
     }
 
     private void periodic() {
-        Drivetrain.Companion.setOdometryLock(false);
+        Drivetrain.Companion.setOdometryLock(true);
         try {
             for (int i = 0; i < signals.size(); i++) {
                 queues.get(i).offer(signals.get(i).getAsDouble());

@@ -103,7 +103,7 @@ public class PhoenixOdometryThread extends Thread {
                     queues.get(i).offer(signals[i].getValueAsDouble());
                 }
             } finally {
-                Drivetrain.Companion.setOdometryLock(true);
+                Drivetrain.Companion.setOdometryLock(false);
             }
         }
     }

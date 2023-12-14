@@ -72,6 +72,14 @@ object Constants {
   }
 
   object Drivetrain {
+
+    enum class DrivetrainType {
+      PHOENIX_TALON,
+      REV_NEO
+    }
+
+    val DRIVETRAIN_TYPE = DrivetrainType.PHOENIX_TALON
+
     const val FRONT_LEFT_DRIVE_ID = 11
     const val FRONT_LEFT_STEERING_ID = 21
     const val FRONT_LEFT_ANALOG_POTENTIOMETER = 1

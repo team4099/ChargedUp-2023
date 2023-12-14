@@ -42,6 +42,7 @@ import org.team4099.lib.units.derived.Volt
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.derived.inVolts
 import org.team4099.lib.units.derived.radians
+import org.team4099.lib.units.derived.rotations
 import org.team4099.lib.units.derived.volts
 import org.team4099.lib.units.perSecond
 import java.lang.Math.PI
@@ -260,9 +261,9 @@ class SwerveModuleIOFalcon(
       (steeringFalcon.get() * RobotController.getBatteryVoltage()).volts
 
     inputs.driveStatorCurrent = driveStatorCurrentSignal.value.amps
-    inputs.driveSupplyCurrent = driveFalcon.supplyCurrent.value.amps
-    inputs.steeringStatorCurrent = steeringFalcon.statorCurrent.value.amps
-    inputs.steeringSupplyCurrent = steeringFalcon.statorCurrent.value.amps
+    inputs.driveSupplyCurrent = driveSupplyCurrentSignal.value.amps
+    inputs.steeringStatorCurrent = steeringStatorCurrentSignal.value.amps
+    inputs.steeringSupplyCurrent = steeringSupplyCurrentSignal.value.amps
 
     inputs.drivePosition = driveSensor.position
     inputs.steeringPosition = steeringSensor.position
@@ -271,8 +272,8 @@ class SwerveModuleIOFalcon(
     inputs.steeringVelocity = steeringSensor.velocity
 
     // processor temp is also something we may want to log ?
-    inputs.driveTemp = driveFalcon.deviceTemp.value.celsius
-    inputs.steeringTemp = steeringFalcon.deviceTemp.value.celsius
+    inputs.driveTemp = driveTempSignal.value.celsius
+    inputs.steeringTemp = steeringTempSignal.value.celsius
 
     inputs.odometryDrivePositions =
       drivePositionQueue
@@ -289,8 +290,7 @@ class SwerveModuleIOFalcon(
       steeringPositionQueue
       .stream()
       .map { value: Double ->
-        Rotation2d.fromRotations(value / DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO)
-          .radians
+        (value / DrivetrainConstants.STEERING_SENSOR_GEAR_RATIO).rotations
       }
       .toArray() as
       Array<Angle>
@@ -334,7 +334,7 @@ class SwerveModuleIOFalcon(
         driveSensor.velocityToRawUnits(speed),
         driveSensor.accelerationToRawUnits(acceleration),
         DrivetrainConstants.FOC_ENABLED,
-        feedforward.inVolts / 12.0,
+        feedforward.inVolts / DrivetrainConstants.DRIVE_COMPENSATION_VOLTAGE.inVolts,
         0,
         false
       )
@@ -370,6 +370,9 @@ class SwerveModuleIOFalcon(
         else (2 * PI).radians - (potentiometerOutput.radians - zeroOffset)
       )
     )
+
+    drivePositionQueue.clear()
+    steeringPositionQueue.clear()
     Logger.getInstance()
       .recordOutput("$label/zeroPositionRadians", steeringSensor.position.inRadians)
     println("Loading Zero for Module $label (${steeringFalcon.position.value})")
@@ -377,6 +380,8 @@ class SwerveModuleIOFalcon(
 
   override fun zeroDrive() {
     driveFalcon.setPosition(0.0)
+    drivePositionQueue.clear()
+    steeringPositionQueue.clear()
   }
 
   override fun configureDrivePID(
