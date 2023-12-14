@@ -1,5 +1,6 @@
 package com.team4099.robot2023.commands
 
+import com.team4099.lib.hal.Clock
 import com.team4099.lib.logging.LoggedTunableValue
 import com.team4099.lib.math.purelyTranslateBy
 import com.team4099.robot2023.config.constants.Constants
@@ -8,12 +9,15 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.kinematics.ChassisAccels
 import org.team4099.lib.units.Velocity
@@ -22,6 +26,7 @@ import org.team4099.lib.units.base.inInches
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.Radian
 import org.team4099.lib.units.derived.degrees
@@ -62,7 +67,7 @@ class AutoAlignAndIntakeCommand(
   private var yawLock = 0.degrees
 
   val intakeDistance = LoggedTunableValue("AutoAlign/intakeDistance",
-    4.0.inches,
+    (-3).inches,
     Pair({ it.inInches }, { it.inches})
   )
 
@@ -137,20 +142,20 @@ class AutoAlignAndIntakeCommand(
      Commands.run({
         val intakeOffsetTranslation = Translation2d(DrivetrainConstants.DRIVETRAIN_WIDTH/2 + intakeDistance.get(), 0.0.meters)
 
-        if (limelight.targetGamePiecePose != null ) {
+        if (limelight.targetGamePiecePose != null || ((Clock.fpgaTime - limelight.lastSeen) <= 0.5.seconds)) {
           Logger.getInstance().recordOutput("AutoAlign/driveTrainOdometry", drivetrain.odometryPose.pose2d)
           Logger.getInstance().recordOutput("AutoAlign/TargetPose", limelight.targetGamePiecePose?.pose3d)
-          Logger.getInstance().recordOutput("AutoAlign/Tx", limelight.targetGamePieceTx.inDegrees)
+          Logger.getInstance().recordOutput("AutoAlign/Tx", limelight.targetGamePieceTx?.inDegrees ?: 0.0)
 
           val xFeedback = xPID.calculate(drivetrain.odometryPose.purelyTranslateBy(intakeOffsetTranslation).x, limelight.targetGamePiecePose?.x ?: 0.0.meters)
           val yFeedback = yPID.calculate(drivetrain.odometryPose.purelyTranslateBy(intakeOffsetTranslation).y, limelight.targetGamePiecePose?.y ?: 0.0.meters)
-          val thetaFeedback = thetaPID.calculate(limelight.targetGamePieceTx, 0.0.degrees)
+          val thetaFeedback = thetaPID.calculate(limelight.targetGamePieceTx ?: 0.0.degrees, 0.0.degrees)
 
           Logger.getInstance().recordOutput("AutoAlign/xError", xPID.error.inMeters)
           Logger.getInstance().recordOutput("AutoAlign/yError", yPID.error.inMeters)
           Logger.getInstance().recordOutput("AutoAlign/thetaError", thetaPID.error.inDegrees)
 
-          if (thetaPID.error.absoluteValue >= 10.degrees){
+          if (thetaPID.error.absoluteValue >= 6.degrees){
             drivetrain.setClosedLoop(
               ChassisSpeeds.fromFieldRelativeSpeeds(
                 0.0,

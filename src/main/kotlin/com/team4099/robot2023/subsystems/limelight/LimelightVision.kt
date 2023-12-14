@@ -29,10 +29,12 @@ import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.geometry.Translation3d
 import org.team4099.lib.geometry.Translation3dWPILIB
 import org.team4099.lib.units.base.Length
+import org.team4099.lib.units.base.Time
 import org.team4099.lib.units.base.inMeters
 import org.team4099.lib.units.base.inMilliseconds
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.derived.inDegrees
@@ -66,7 +68,9 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
 
   var targetGamePiecePose: Pose3d? = null
 
-  var targetGamePieceTx = 0.0.degrees
+  var targetGamePieceTx: Angle? = null
+
+  var lastSeen: Time = -1337.seconds
 
   enum class LimelightStates {
     UNINITIALIZED,
@@ -260,6 +264,10 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
         if (!searchList.isEmpty()) {
           targetGamePiecePose = currentPose.toPose3d().findClosestPose(*searchList.toTypedArray())
           targetGamePieceTx = visibleGamePiecesTx[searchList.indexOf(targetGamePiecePose)]
+          lastSeen = Clock.fpgaTime
+
+        } else {
+          targetGamePieceTx = null
         }
       }
     }
