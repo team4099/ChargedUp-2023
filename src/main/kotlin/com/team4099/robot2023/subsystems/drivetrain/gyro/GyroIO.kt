@@ -19,6 +19,8 @@ interface GyroIO {
     var gyroPitchRate = 0.0.radians.perSecond
     var gyroRollRate = 0.0.radians.perSecond
 
+    var odometryYawPositions = arrayOf<Angle>()
+
     var gyroConnected = false
 
     override fun toLog(table: LogTable?) {

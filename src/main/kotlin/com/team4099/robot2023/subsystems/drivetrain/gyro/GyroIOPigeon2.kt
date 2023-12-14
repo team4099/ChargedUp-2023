@@ -5,6 +5,8 @@ import com.ctre.phoenix6.hardware.Pigeon2
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.DrivetrainConstants
 import com.team4099.robot2023.config.constants.GyroConstants
+import com.team4099.robot2023.subsystems.drivetrain.swervemodule.threads.PhoenixOdometryThread
+import com.team4099.robot2023.subsystems.drivetrain.swervemodule.threads.SparkMaxOdometryThread
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.derived.Angle
@@ -13,6 +15,7 @@ import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRadians
 import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.perSecond
+import java.util.Queue
 import kotlin.math.IEEErem
 
 object GyroIOPigeon2 : GyroIO {
@@ -23,6 +26,8 @@ object GyroIOPigeon2 : GyroIO {
   var gyroYawOffset: Angle = 0.0.degrees
   var gyroPitchOffset: Angle = 0.0.degrees
   var gyroRollOffset: Angle = 0.0.degrees
+
+  val yawPositionQueue: Queue<Double>
 
   val rawGyro: Angle = 0.0.degrees
 
@@ -91,6 +96,15 @@ object GyroIOPigeon2 : GyroIO {
     pigeon2Configuration.MountPose.MountPoseYaw = GyroConstants.mountYaw.inRadians
     pigeon2Configuration.MountPose.MountPoseRoll = GyroConstants.mountRoll.inRadians
 
+    yawPositionQueue =
+      if (Constants.Drivetrain.DRIVETRAIN_TYPE == Constants.Drivetrain.DrivetrainType.PHOENIX_TALON) {
+        PhoenixOdometryThread.getInstance().registerSignal(pigeon2, pigeon2.getYaw())
+      } else {
+        SparkMaxOdometryThread.getInstance().registerSignal {
+          pigeon2.getYaw().getValueAsDouble()
+        }
+      }
+
     // TODO look into more pigeon configuration stuff
     pigeon2.configurator.apply(pigeon2Configuration)
   }
@@ -108,6 +122,10 @@ object GyroIOPigeon2 : GyroIO {
     inputs.gyroYawRate = gyroYawRate
     inputs.gyroPitchRate = gyroPitchRate
     inputs.gyroRollRate = gyroRollRate
+
+    inputs.odometryYawPositions =
+      yawPositionQueue.stream().map { value: Double -> value.degrees }.toArray() as Array<Angle>
+    yawPositionQueue.clear()
 
     Logger.getInstance().recordOutput("Gyro/rawYawDegrees", pigeon2.yaw.value)
   }

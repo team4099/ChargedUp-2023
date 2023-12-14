@@ -7,6 +7,7 @@ import org.team4099.lib.units.AngularVelocity
 import org.team4099.lib.units.LinearAcceleration
 import org.team4099.lib.units.LinearVelocity
 import org.team4099.lib.units.Velocity
+import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter
 import org.team4099.lib.units.base.amps
 import org.team4099.lib.units.base.celsius
@@ -47,6 +48,9 @@ interface SwerveModuleIO {
 
     var driveTemp = 0.0.celsius
     var steeringTemp = 0.0.celsius
+
+    var odometryDrivePositions = arrayOf<Length>()
+    var odometrySteeringPositions = arrayOf<Angle>()
 
     var potentiometerOutputRaw = 0.0
     var potentiometerOutputRadians = 0.0.radians
