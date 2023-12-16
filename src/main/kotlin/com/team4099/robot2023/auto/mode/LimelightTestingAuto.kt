@@ -44,15 +44,25 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
               ),
               Waypoint(
                 Translation2d(
+                  FieldConstants.StagingLocations.translations[3]!!.x-intakeOffset.get() - 1.meters,
+                  FieldConstants.StagingLocations.translations[3]!!.y-intakeOffset.get()
+                )
+                  .translation2d,
+                null,
+                0.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(
                   FieldConstants.StagingLocations.translations[3]!!.x-intakeOffset.get(),
                   FieldConstants.StagingLocations.translations[3]!!.y-intakeOffset.get()
                 )
                   .translation2d,
-                0.0.degrees.inRotation2ds,
+                null,
                 0.0.degrees.inRotation2ds
               ),
             )
-          }
+          },
+          isAuto = true
         ),
         WaitCommand(1.5).andThen(superstructure.groundIntakeConeCommand())
       ),
@@ -68,7 +78,7 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
                   FieldConstants.StagingLocations.translations[3]!!.y- intakeOffset.get()
                 )
                   .translation2d,
-                0.0.degrees.inRotation2ds,
+                null,
                 0.0.degrees.inRotation2ds
               ),
               Waypoint(
@@ -80,7 +90,7 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
                 Translation2d(
                   endingPosX.get(),
                   FieldConstants.Grids.nodeFirstY +
-                    FieldConstants.Grids.nodeSeparationY * 7
+                    FieldConstants.Grids.nodeSeparationY * 5
                 )
                   .translation2d,
                 null,
@@ -88,26 +98,41 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
               )
             )
           },
-          keepTrapping = true
+          keepTrapping = true,
+          isAuto = true
         )
       ),
       superstructure.prepScoreCommand(
         Constants.Universal.GamePiece.CUBE, Constants.Universal.NodeTier.HIGH
       ),
       superstructure.score(),
-      WaitCommand(0.5),
+      WaitCommand(2.0),
       ParallelCommandGroup(
         DrivePathCommand(
           drivetrain,
           {
             listOf(
               Waypoint(
-                Translation2d(1.9.meters, 3.31.meters).translation2d,
+                Translation2d(
+                  endingPosX.get(),
+                  FieldConstants.Grids.nodeFirstY +
+                    FieldConstants.Grids.nodeSeparationY * 5
+                )
+                  .translation2d,
+                null,
+                180.0.degrees.inRotation2ds
+              ),
+              Waypoint(
+                Translation2d(2.9.meters, 4.8.meters).translation2d,
                 null,
                 0.0.degrees.inRotation2ds
               ),
               Waypoint(
-                Translation2d(2.9.meters, 4.8.meters).translation2d,
+                Translation2d(
+                  FieldConstants.StagingLocations.translations[2]!!.x-intakeOffset.get() - 1.meters,
+                  FieldConstants.StagingLocations.translations[2]!!.y-intakeOffset.get()
+                )
+                  .translation2d,
                 null,
                 0.0.degrees.inRotation2ds
               ),
@@ -117,11 +142,12 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
                   FieldConstants.StagingLocations.translations[2]!!.y-intakeOffset.get()
                 )
                   .translation2d,
-                0.0.degrees.inRotation2ds,
+                null,
                 0.0.degrees.inRotation2ds
               ),
             )
-          }
+          },
+          isAuto = true
         ),
       WaitCommand(1.5).andThen(superstructure.groundIntakeConeCommand())
     ),
@@ -137,7 +163,7 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
                   FieldConstants.StagingLocations.translations[2]!!.y- intakeOffset.get()
                 )
                   .translation2d,
-                0.0.degrees.inRotation2ds,
+                null,
                 0.0.degrees.inRotation2ds
               ),
               Waypoint(
@@ -149,7 +175,7 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
                 Translation2d(
                   endingPosX.get(),
                   FieldConstants.Grids.nodeFirstY +
-                    FieldConstants.Grids.nodeSeparationY * 7
+                    FieldConstants.Grids.nodeSeparationY * 5
                 )
                   .translation2d,
                 null,
@@ -157,7 +183,8 @@ class LimelightTestingAuto(val drivetrain: Drivetrain, val superstructure: Super
               )
             )
           },
-          keepTrapping = true
+          keepTrapping = true,
+          isAuto = true
         )
       )
     )

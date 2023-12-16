@@ -60,9 +60,9 @@ class GoToAngle(val drivetrain: Drivetrain) : CommandBase() {
     addRequirements(drivetrain)
 
     if (RobotBase.isReal()) {
-      thetakP.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KP)
-      thetakI.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KI)
-      thetakD.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+      thetakP.initDefault(DrivetrainConstants.PID.TELEOP_THETA_PID_KP)
+      thetakI.initDefault(DrivetrainConstants.PID.TELEOP_THETA_PID_KI)
+      thetakD.initDefault(DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
     } else {
       thetakP.initDefault(DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KP)
       thetakI.initDefault(DrivetrainConstants.PID.SIM_AUTO_THETA_PID_KI)

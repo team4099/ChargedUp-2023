@@ -9,15 +9,12 @@ import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
 import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
-import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.controller.PIDController
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.geometry.Translation2d
 import org.team4099.lib.kinematics.ChassisAccels
 import org.team4099.lib.units.Velocity
@@ -74,13 +71,13 @@ class AutoAlignAndIntakeCommand(
   val thetakP =
     LoggedTunableValue(
       "AutoAlign/alignkP",
-      DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+      DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
       Pair({ it.inDegreesPerSecondPerDegree }, { it.degrees.perSecond.perDegree })
     )
   val thetakI =
     LoggedTunableValue(
       "AutoAlign/alignkI",
-      DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+      DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
       Pair(
         { it.inDegreesPerSecondPerDegreeSeconds }, { it.degrees.perSecond.perDegreeSeconds }
       )
@@ -88,7 +85,7 @@ class AutoAlignAndIntakeCommand(
   val thetakD =
     LoggedTunableValue(
       "AutoAlign/alignkD",
-      DrivetrainConstants.PID.AUTO_THETA_PID_KD,
+      DrivetrainConstants.PID.TELEOP_THETA_PID_KD,
       Pair(
         { it.inDegreesPerSecondPerDegreesPerSecond },
         { it.degrees.perSecond.perDegreePerSecond }
@@ -147,7 +144,9 @@ class AutoAlignAndIntakeCommand(
           Logger.getInstance().recordOutput("AutoAlign/TargetPose", limelight.targetGamePiecePose?.pose3d)
           Logger.getInstance().recordOutput("AutoAlign/Tx", limelight.targetGamePieceTx?.inDegrees ?: 0.0)
 
-          val xFeedback = xPID.calculate(drivetrain.odometryPose.purelyTranslateBy(intakeOffsetTranslation).x, limelight.targetGamePiecePose?.x ?: 0.0.meters)
+          val error = limelight.targetGamePiecePose?.toPose2d()?.relativeTo(drivetrain.odometryPose.purelyTranslateBy(intakeOffsetTranslation))
+
+          val xFeedback = xPID.calculate(error?.translation?.magnitude?.meters ?: 0.0.meters, 0.0.meters)
           val yFeedback = yPID.calculate(drivetrain.odometryPose.purelyTranslateBy(intakeOffsetTranslation).y, limelight.targetGamePiecePose?.y ?: 0.0.meters)
           val thetaFeedback = thetaPID.calculate(limelight.targetGamePieceTx ?: 0.0.degrees, 0.0.degrees)
 

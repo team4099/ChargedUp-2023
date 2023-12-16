@@ -8,6 +8,7 @@ import com.team4099.lib.vision.TargetCorner
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.config.constants.VisionConstants
+import com.team4099.robot2023.config.constants.WaypointConstants
 import com.team4099.robot2023.subsystems.gameboy.objective.Objective
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.LimelightReading
@@ -61,7 +62,8 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
   val vpw = (2.0 * (VisionConstants.Limelight.HORIZONTAL_FOV / 2).tan)
   val vph = (2.0 * (VisionConstants.Limelight.VERITCAL_FOV / 2).tan)
 
-  private val xyStdDevCoefficient = LoggedTunableNumber("LimelightVision/xystdev", 0.1)
+  private val xStdDevCoefficient = LoggedTunableNumber("LimelightVision/xystdev", 0.05)
+  private val yStdDevCoefficient = LoggedTunableNumber("LimelightVision/xystdev", 0.01)
   private val thetaStdDev = LoggedTunableNumber("LimelightVision/thetaStdDev", 3.0)
 
   var limelightState: LimelightStates = LimelightStates.UNINITIALIZED
@@ -186,19 +188,26 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
             val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
 
             // Add to vision updates
-            val xyStdDev =
-              xyStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
+            val xStdDev =
+              xStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
+            val yStdDev =
+              yStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
             val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
 
             robotPoses.add(trueNodePoseToRobot.toPose2d())
 
-            timestampedVisionUpdates.add(
-              PoseEstimator.TimestampedVisionUpdate(
-                inputs.timestamp,
-                trueNodePoseToRobot.toPose2d(),
-                VecBuilder.fill(xyStdDev, xyStdDev, thetaStdDev)
+            if (!(FieldConstants.Zones.closeCenterCommunity.containsPose(poseSupplier()) ||
+              FieldConstants.Zones.closeLeftCommunity.containsPose(poseSupplier()) ||
+              FieldConstants.Zones.closeRightCommunity.containsPose(poseSupplier())
+              )){
+              timestampedVisionUpdates.add(
+                PoseEstimator.TimestampedVisionUpdate(
+                  inputs.timestamp,
+                  trueNodePoseToRobot.toPose2d(),
+                  VecBuilder.fill(xStdDev, yStdDev, thetaStdDev)
+                )
               )
-            )
+            }
 
         }
       }

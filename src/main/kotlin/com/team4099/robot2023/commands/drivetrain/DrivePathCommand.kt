@@ -50,7 +50,6 @@ import org.team4099.lib.units.inDegreesPerSecond
 import org.team4099.lib.units.inMetersPerSecond
 import org.team4099.lib.units.inMetersPerSecondPerSecond
 import org.team4099.lib.units.inRadiansPerSecond
-import org.team4099.lib.units.inRadiansPerSecondPerSecond
 import org.team4099.lib.units.perSecond
 import java.util.function.Supplier
 import kotlin.math.PI
@@ -65,7 +64,8 @@ class DrivePathCommand(
   val leaveOutYAdjustment: Boolean = false,
   val endVelocity: Velocity2d = Velocity2d(),
   val tolerance: Pose2d = Pose2d(1.inches, 1.inches, 1.degrees),
-  val forceRobotVelocityCheck: Boolean = false
+  val forceRobotVelocityCheck: Boolean = false,
+  val isAuto: Boolean = false
 ) : CommandBase() {
   private val xPID: PIDController<Meter, Velocity<Meter>>
   private val yPID: PIDController<Meter, Velocity<Meter>>
@@ -82,13 +82,13 @@ class DrivePathCommand(
   val thetakP =
     LoggedTunableValue(
       "Pathfollow/thetakP",
-      DrivetrainConstants.PID.AUTO_THETA_PID_KP,
+      DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
       Pair({ it.inDegreesPerSecondPerDegree }, { it.degrees.perSecond.perDegree })
     )
   val thetakI =
     LoggedTunableValue(
       "Pathfollow/thetakI",
-      DrivetrainConstants.PID.AUTO_THETA_PID_KI,
+      DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
       Pair(
         { it.inDegreesPerSecondPerDegreeSeconds }, { it.degrees.perSecond.perDegreeSeconds }
       )
@@ -96,7 +96,7 @@ class DrivePathCommand(
   val thetakD =
     LoggedTunableValue(
       "Pathfollow/thetakD",
-      DrivetrainConstants.PID.AUTO_THETA_PID_KD,
+      DrivetrainConstants.PID.TELEOP_THETA_PID_KD,
       Pair(
         { it.inDegreesPerSecondPerDegreesPerSecond },
         { it.degrees.perSecond.perDegreePerSecond }
@@ -111,19 +111,19 @@ class DrivePathCommand(
   val poskPX =
     LoggedTunableValue(
       "Pathfollow/poskPX",
-      DrivetrainConstants.PID.AUTO_POS_KPX,
+      DrivetrainConstants.PID.TELEOP_POS_KPX,
       Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
     )
   val poskIX =
     LoggedTunableValue(
       "Pathfollow/poskIX",
-      DrivetrainConstants.PID.AUTO_POS_KIX,
+      DrivetrainConstants.PID.TELEOP_POS_KIX,
       Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
     )
   val poskDX =
     LoggedTunableValue(
       "Pathfollow/poskDX",
-      DrivetrainConstants.PID.AUTO_POS_KDX,
+      DrivetrainConstants.PID.TELEOP_POS_KDX,
       Pair(
         { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
       )
@@ -132,19 +132,19 @@ class DrivePathCommand(
   val poskPY =
     LoggedTunableValue(
       "Pathfollow/poskPY",
-      DrivetrainConstants.PID.AUTO_POS_KPY,
+      DrivetrainConstants.PID.TELEOP_POS_KPY,
       Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
     )
   val poskIY =
     LoggedTunableValue(
       "Pathfollow/poskIY",
-      DrivetrainConstants.PID.AUTO_POS_KIY,
+      DrivetrainConstants.PID.TELEOP_POS_KIY,
       Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
     )
   val poskDY =
     LoggedTunableValue(
       "Pathfollow/poskDY",
-      DrivetrainConstants.PID.AUTO_POS_KDY,
+      DrivetrainConstants.PID.TELEOP_POS_KDY,
       Pair(
         { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
       )
@@ -169,7 +169,7 @@ class DrivePathCommand(
         .setEndVelocity(endVelocity.magnitude.inMetersPerSecond)
         .addConstraint(
           CentripetalAccelerationConstraint(
-            DrivetrainConstants.STEERING_ACCEL_MAX.inRadiansPerSecondPerSecond
+            DrivetrainConstants.CENTRIPETAL_ACCEL_MAX.inMetersPerSecondPerSecond
           )
         )
         .addConstraints(constraints)
@@ -184,14 +184,152 @@ class DrivePathCommand(
   init {
     addRequirements(drivetrain)
 
+    if (isAuto) {
+      val thetakP =
+        LoggedTunableValue(
+          "Pathfollow/thetakP",
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
+          Pair({ it.inDegreesPerSecondPerDegree }, { it.degrees.perSecond.perDegree })
+        )
+      val thetakI =
+        LoggedTunableValue(
+          "Pathfollow/thetakI",
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
+          Pair(
+            { it.inDegreesPerSecondPerDegreeSeconds }, { it.degrees.perSecond.perDegreeSeconds }
+          )
+        )
+      val thetakD =
+        LoggedTunableValue(
+          "Pathfollow/thetakD",
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KD,
+          Pair(
+            { it.inDegreesPerSecondPerDegreesPerSecond },
+            { it.degrees.perSecond.perDegreePerSecond }
+          )
+        )
+
+      val poskPX =
+        LoggedTunableValue(
+          "Pathfollow/poskPX",
+          DrivetrainConstants.PID.TELEOP_POS_KPX,
+          Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
+        )
+      val poskIX =
+        LoggedTunableValue(
+          "Pathfollow/poskIX",
+          DrivetrainConstants.PID.TELEOP_POS_KIX,
+          Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+        )
+      val poskDX =
+        LoggedTunableValue(
+          "Pathfollow/poskDX",
+          DrivetrainConstants.PID.TELEOP_POS_KDX,
+          Pair(
+            { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
+          )
+        )
+
+      val poskPY =
+        LoggedTunableValue(
+          "Pathfollow/poskPY",
+          DrivetrainConstants.PID.TELEOP_POS_KPY,
+          Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
+        )
+      val poskIY =
+        LoggedTunableValue(
+          "Pathfollow/poskIY",
+          DrivetrainConstants.PID.TELEOP_POS_KIY,
+          Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+        )
+      val poskDY =
+        LoggedTunableValue(
+          "Pathfollow/poskDY",
+          DrivetrainConstants.PID.TELEOP_POS_KDY,
+          Pair(
+            { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
+          )
+        )
+    }
+    else {
+      val thetakP =
+        LoggedTunableValue(
+          "Pathfollow/thetakP",
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KP,
+          Pair({ it.inDegreesPerSecondPerDegree }, { it.degrees.perSecond.perDegree })
+        )
+      val thetakI =
+        LoggedTunableValue(
+          "Pathfollow/thetakI",
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KI,
+          Pair(
+            { it.inDegreesPerSecondPerDegreeSeconds }, { it.degrees.perSecond.perDegreeSeconds }
+          )
+        )
+      val thetakD =
+        LoggedTunableValue(
+          "Pathfollow/thetakD",
+          DrivetrainConstants.PID.TELEOP_THETA_PID_KD,
+          Pair(
+            { it.inDegreesPerSecondPerDegreesPerSecond },
+            { it.degrees.perSecond.perDegreePerSecond }
+          )
+        )
+
+      val poskPX =
+        LoggedTunableValue(
+          "Pathfollow/poskPX",
+          DrivetrainConstants.PID.TELEOP_POS_KPX,
+          Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
+        )
+      val poskIX =
+        LoggedTunableValue(
+          "Pathfollow/poskIX",
+          DrivetrainConstants.PID.TELEOP_POS_KIX,
+          Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+        )
+      val poskDX =
+        LoggedTunableValue(
+          "Pathfollow/poskDX",
+          DrivetrainConstants.PID.TELEOP_POS_KDX,
+          Pair(
+            { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
+          )
+        )
+
+      val poskPY =
+        LoggedTunableValue(
+          "Pathfollow/poskPY",
+          DrivetrainConstants.PID.TELEOP_POS_KPY,
+          Pair({ it.inMetersPerSecondPerMeter }, { it.meters.perSecond.perMeter })
+        )
+      val poskIY =
+        LoggedTunableValue(
+          "Pathfollow/poskIY",
+          DrivetrainConstants.PID.TELEOP_POS_KIY,
+          Pair({ it.inMetersPerSecondPerMeterSecond }, { it.meters.perSecond.perMeterSeconds })
+        )
+      val poskDY =
+        LoggedTunableValue(
+          "Pathfollow/poskDY",
+          DrivetrainConstants.PID.TELEOP_POS_KDY,
+          Pair(
+            { it.inMetersPerSecondPerMetersPerSecond }, { it.metersPerSecondPerMetersPerSecond }
+          )
+        )
+    }
+
     xPID = PIDController(poskPX.get(), poskIX.get(), poskDX.get())
     yPID = PIDController(poskPY.get(), poskIY.get(), poskDY.get())
+
     thetaPID =
       PIDController(
         thetakP.get(),
         thetakI.get(),
         thetakD.get(),
       )
+
+
 
     thetaPID.enableContinuousInput(-PI.radians, PI.radians)
 
@@ -204,6 +342,52 @@ class DrivePathCommand(
   }
 
   override fun initialize() {
+
+    if (isAuto) {
+      thetakP.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KP)
+      thetakI.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KI)
+      thetakD.initDefault(DrivetrainConstants.PID.AUTO_THETA_PID_KD)
+
+      poskPX.initDefault(DrivetrainConstants.PID.AUTO_POS_KPX)
+      poskIX.initDefault(DrivetrainConstants.PID.AUTO_POS_KIX)
+      poskDX.initDefault(DrivetrainConstants.PID.AUTO_POS_KDX)
+
+      poskPY.initDefault(DrivetrainConstants.PID.AUTO_POS_KPY)
+      poskIY.initDefault(DrivetrainConstants.PID.AUTO_POS_KIY)
+      poskDY.initDefault(DrivetrainConstants.PID.AUTO_POS_KDY)
+    }
+    else {
+      thetakP.initDefault(DrivetrainConstants.PID.TELEOP_THETA_PID_KP)
+      thetakI.initDefault(DrivetrainConstants.PID.TELEOP_THETA_PID_KI)
+      thetakD.initDefault(DrivetrainConstants.PID.TELEOP_THETA_PID_KD)
+
+      poskPX.initDefault(DrivetrainConstants.PID.TELEOP_POS_KPX)
+      poskIX.initDefault(DrivetrainConstants.PID.TELEOP_POS_KIX)
+      poskDX.initDefault(DrivetrainConstants.PID.TELEOP_POS_KDX)
+
+      poskPY.initDefault(DrivetrainConstants.PID.TELEOP_POS_KPY)
+      poskIY.initDefault(DrivetrainConstants.PID.TELEOP_POS_KIY)
+      poskDY.initDefault(DrivetrainConstants.PID.TELEOP_POS_KDY)
+    }
+
+    xPID.setPID(
+      poskPX.get(),
+      poskIX.get(),
+      poskDX.get(),
+    )
+
+    yPID.setPID(
+      poskPY.get(),
+      poskIY.get(),
+      poskDY.get(),
+    )
+
+    thetaPID.setPID(
+      thetakP.get(),
+      thetakI.get(),
+      thetakD.get(),
+    )
+
     // trajectory generation!
     generate(waypoints.get())
 
@@ -228,6 +412,8 @@ class DrivePathCommand(
     if (trajectory.states.size <= 1) {
       return
     }
+
+    Logger.getInstance().recordOutput("Pathfollow/thetakPinDPSPS", thetakP.get().inDegreesPerSecondPerDegree)
 
     trajCurTime = Clock.fpgaTime - trajStartTime
     var desiredState = trajectory.sample(trajCurTime.inSeconds)
@@ -258,6 +444,8 @@ class DrivePathCommand(
       yAccel = 0.0.meters.perSecond.perSecond
     }
 
+    Logger.getInstance().recordOutput("Pathfollow/omegaVelocity", nextDriveState.omegaRadiansPerSecond)
+
     drivetrain.targetPose =
       Pose2d(Pose2dWPILIB(desiredState.poseMeters.translation, desiredRotation.position))
 
@@ -267,9 +455,11 @@ class DrivePathCommand(
         Pose2dWPILIB(desiredState.poseMeters.translation, desiredRotation.position)
       )
 
+    val dtheta = (nextDriveState.omegaRadiansPerSecond.radians.perSecond - drivetrain.gyroInputs.gyroYawRate) / 0.02.seconds
+
     drivetrain.setClosedLoop(
       nextDriveState,
-      ChassisAccels(xAccel, yAccel, 0.0.radians.perSecond.perSecond).chassisAccelsWPILIB
+      ChassisAccels(xAccel, yAccel, dtheta).chassisAccelsWPILIB
     )
 
     Logger.getInstance()
