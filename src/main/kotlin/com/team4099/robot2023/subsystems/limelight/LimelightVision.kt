@@ -177,7 +177,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
             trueGamePieces.add(closestPose.findClosestPose(*searchList.toTypedArray()))
 
             // find inverse translation from the detected pose to robot
-            val targetToCamera =
+            val targetToRobot =
               gamePiecePose
                 .relativeTo(
                   currentPose.toPose3d()
@@ -185,14 +185,14 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
                 .toTransform3d()
                 .inverse()
 
-            val trueNodePoseToRobot = closestPose.transformBy(targetToCamera)
+            val trueNodePoseToRobot = closestPose.transformBy(targetToRobot)
 
             // Add to vision updates
             val xStdDev =
-              xStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
+              xStdDevCoefficient.get() * targetToRobot.translation.norm.inMeters.pow(2)
             val yStdDev =
-              yStdDevCoefficient.get() * targetToCamera.translation.norm.inMeters.pow(2)
-            val thetaStdDev = thetaStdDev.get() * targetToCamera.translation.norm.inMeters.pow(2)
+              yStdDevCoefficient.get() * targetToRobot.translation.norm.inMeters.pow(2)
+            val thetaStdDev = thetaStdDev.get() * targetToRobot.translation.norm.inMeters.pow(2)
 
             robotPoses.add(trueNodePoseToRobot.toPose2d())
 
