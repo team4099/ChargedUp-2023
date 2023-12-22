@@ -6,9 +6,6 @@ import com.revrobotics.SparkMaxPIDController
 import com.team4099.lib.math.clamp
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.ElevatorConstants
-import com.team4099.robot2023.subsystems.falconspin.MotorChecker
-import com.team4099.robot2023.subsystems.falconspin.MotorCollection
-import com.team4099.robot2023.subsystems.falconspin.Neo
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.units.base.Length
 import org.team4099.lib.units.base.Meter

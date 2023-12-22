@@ -1,6 +1,5 @@
 package com.team4099.robot2023.config.constants
 
-import edu.wpi.first.wpilibj.AnalogInput
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.milli
 
@@ -13,7 +12,7 @@ typealias NodeTier = Constants.Universal.NodeTier
 object Constants {
   object Universal {
     val SIM_MODE = Tuning.SimType.SIM
-    const val REAL_FIELD = true
+    const val REAL_FIELD = false
 
     const val CTRE_CONFIG_TIMEOUT = 0
     const val EPSILON = 1E-9
@@ -25,13 +24,18 @@ object Constants {
     val LOOP_PERIOD_TIME = 20.milli.seconds
     val POWER_DISTRIBUTION_HUB_ID = 1
 
-
-
-
     enum class GamePiece {
       CUBE,
       CONE,
-      NONE
+      NONE;
+
+      inline fun toClassName(): String {
+        return when (this) {
+          CUBE -> "cube"
+          CONE -> "cone"
+          else -> "none"
+        }
+      }
     }
 
     enum class NodeTier {
@@ -55,7 +59,7 @@ object Constants {
 
   object Tuning {
 
-    const val TUNING_MODE = false
+    const val TUNING_MODE = true
     const val DEBUGING_MODE = true
     const val SIMULATE_DRIFT = false
     const val DRIFT_CONSTANT = 0.001

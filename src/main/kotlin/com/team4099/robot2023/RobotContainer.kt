@@ -1,26 +1,20 @@
 package com.team4099.robot2023
 
-import com.ctre.phoenix.motorcontrol.can.TalonFX
 import com.team4099.robot2023.auto.AutonomousSelector
+import com.team4099.robot2023.commands.AutoAlignAndIntakeCommand
 import com.team4099.robot2023.commands.AutoIntakeCommand
 import com.team4099.robot2023.commands.AutoScoreCommand
 import com.team4099.robot2023.commands.drivetrain.ResetGyroYawCommand
-import com.team4099.robot2023.commands.drivetrain.SwerveModuleTuningCommand
 import com.team4099.robot2023.commands.drivetrain.TeleopDriveCommand
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
-import com.team4099.robot2023.config.constants.DrivetrainConstants
+import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.drivetrain.drive.Drivetrain
-import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIO
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOReal
 import com.team4099.robot2023.subsystems.drivetrain.drive.DrivetrainIOSim
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIO
 import com.team4099.robot2023.subsystems.drivetrain.gyro.GyroIOPigeon2
-import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModule
-import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModuleIO
-import com.team4099.robot2023.subsystems.drivetrain.swervemodule.SwerveModuleIOFalcon
 import com.team4099.robot2023.subsystems.elevator.Elevator
-import com.team4099.robot2023.subsystems.elevator.ElevatorIO
 import com.team4099.robot2023.subsystems.elevator.ElevatorIONeo
 import com.team4099.robot2023.subsystems.elevator.ElevatorIOSim
 import com.team4099.robot2023.subsystems.gameboy.GameBoy
@@ -34,9 +28,9 @@ import com.team4099.robot2023.subsystems.led.Led
 import com.team4099.robot2023.subsystems.led.LedIO
 import com.team4099.robot2023.subsystems.led.LedIOSim
 import com.team4099.robot2023.subsystems.limelight.LimelightVision
-import com.team4099.robot2023.subsystems.limelight.LimelightVisionIO
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOReal
+import com.team4099.robot2023.subsystems.limelight.LimelightVisionIOSim
 import com.team4099.robot2023.subsystems.manipulator.Manipulator
-import com.team4099.robot2023.subsystems.manipulator.ManipulatorIO
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIONeo
 import com.team4099.robot2023.subsystems.manipulator.ManipulatorIOSim
 import com.team4099.robot2023.subsystems.superstructure.Request
@@ -44,10 +38,16 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.subsystems.vision.Vision
 import com.team4099.robot2023.subsystems.vision.camera.CameraIONorthstar
 import com.team4099.robot2023.util.driver.Ryan
-import edu.wpi.first.wpilibj.AnalogInput
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.RobotBase
 import org.littletonrobotics.junction.Logger
+import org.team4099.lib.geometry.Pose2d
+import org.team4099.lib.geometry.Pose3d
+import org.team4099.lib.geometry.Rotation3d
 import org.team4099.lib.smoothDeadband
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
 import java.util.function.Supplier
@@ -64,7 +64,7 @@ object RobotContainer {
   init {
     if (RobotBase.isReal()) {
       // Real Hardware Implementations
-      //drivetrain = Drivetrain(object: GyroIO {},object: DrivetrainIO {}
+      // drivetrain = Drivetrain(object: GyroIO {},object: DrivetrainIO {}
       drivetrain = Drivetrain(GyroIOPigeon2, DrivetrainIOReal)
       vision =
         Vision(
@@ -84,7 +84,7 @@ object RobotContainer {
           Led(object : LedIO {}),
           GameBoy(GameboyIOServer)
         )
-      limelight = LimelightVision(object : LimelightVisionIO {})
+      limelight = LimelightVision(LimelightVisionIOReal)
     } else {
       // Simulation implementations
       drivetrain = Drivetrain(object : GyroIO {}, DrivetrainIOSim)
@@ -102,14 +102,29 @@ object RobotContainer {
           Led(LedIOSim),
           GameBoy(GameboyIOServer)
         )
-      limelight = LimelightVision(object : LimelightVisionIO {})
+      limelight = LimelightVision(LimelightVisionIOSim)
     }
 
     vision.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
+    limelight.setDataInterfaces({ drivetrain.odometryPose }, { drivetrain.addVisionData(it) })
+    LimelightVisionIOSim.poseSupplier = { drivetrain.odometryPose }
     drivetrain.elevatorHeightSupplier = Supplier { superstructure.elevatorInputs.elevatorPosition }
     drivetrain.objectiveSupplier = Supplier { superstructure.objective }
-    limelight.poseSupplier = { drivetrain.odometryPose }
-    limelight.nodeToLookFor = { superstructure.objective }
+    limelight.gamePieceToLookFor = { superstructure.objective }
+
+
+  }
+
+  fun resetPose() {
+    drivetrain.odometryPose = Pose2d(
+      (68.45).inches,
+      (108.19).inches + 114.centi.meters,
+      0.0.degrees
+    )
+  }
+
+  fun setLimelightState(state: LimelightVision.LimelightStates) {
+    limelight.limelightState = state
   }
 
   fun mapDefaultCommands() {
@@ -124,16 +139,14 @@ object RobotContainer {
         drivetrain
       )
 
+    /*
 
-  /*
-
-    drivetrain.defaultCommand =
-      SwerveModuleTuningCommand(
-        drivetrain,
-        { (ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) * 180).degrees },
-      )
-  */
-
+      drivetrain.defaultCommand =
+        SwerveModuleTuningCommand(
+          drivetrain,
+          { (ControlBoard.forward.smoothDeadband(Constants.Joysticks.THROTTLE_DEADBAND) * 180).degrees },
+        )
+    */
   }
 
   fun requestSuperstructureIdle() {
@@ -233,11 +246,21 @@ object RobotContainer {
     )
 
     ControlBoard.groundIntakeCone.whileTrue(superstructure.groundIntakeConeCommand())
-    ControlBoard.autoScore.whileTrue(AutoScoreCommand(drivetrain, superstructure)
-      .finallyDo {  Logger.getInstance().recordOutput("Auto/isAutoDriving", false) }
+    ControlBoard.autoScore.whileTrue(
+      AutoScoreCommand(drivetrain, superstructure).finallyDo {
+        Logger.getInstance().recordOutput("Auto/isAutoDriving", false)
+      }
     )
-    ControlBoard.autoIntake.whileTrue(AutoIntakeCommand(drivetrain, superstructure)
-      .finallyDo {  Logger.getInstance().recordOutput("Auto/isAutoDriving", false) }
+    ControlBoard.autoIntake.whileTrue(
+      AutoAlignAndIntakeCommand(drivetrain, superstructure, limelight, Constants.Universal.GamePiece.CONE).finallyDo {
+        Logger.getInstance().recordOutput("Auto/isAutoDriving", false)
+      }
+    )
+
+    ControlBoard.driverEject.whileTrue(
+      superstructure.prepScoreCommand(
+        Constants.Universal.GamePiece.CONE, Constants.Universal.NodeTier.HYBRID
+      )
     )
 
     ControlBoard.ejectGamePiece.whileTrue(superstructure.ejectGamePieceCommand())

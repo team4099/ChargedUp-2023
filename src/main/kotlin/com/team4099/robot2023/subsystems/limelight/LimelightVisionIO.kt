@@ -3,7 +3,9 @@ package com.team4099.robot2023.subsystems.limelight
 import com.team4099.robot2023.util.LimelightReading
 import org.littletonrobotics.junction.LogTable
 import org.littletonrobotics.junction.inputs.LoggableInputs
+import org.team4099.lib.units.base.Decimal
 import org.team4099.lib.units.base.inSeconds
+import org.team4099.lib.units.base.percent
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
@@ -15,50 +17,70 @@ interface LimelightVisionIO {
     var timestamp = 0.0.seconds
     var fps = 0.0
     var validReading = false
-    var angle = 0.degrees
-    var retroTargets = listOf<LimelightReading>()
+    var gamePieceTargets = listOf<LimelightReading>()
+    var xAngle = 0.degrees
+    var yAngle = 0.degrees
+    var targetSize = 0.percent
 
     override fun fromLog(table: LogTable?) {
       table?.getDouble("timestampSeconds", timestamp.inSeconds)?.let { timestamp = it.seconds }
       table?.getDouble("fps", fps)?.let { fps = it }
       table?.getBoolean("validReading", validReading)?.let { validReading = it }
-      table?.getDouble("simpleAngleDegrees", angle.inDegrees)?.let { angle = it.degrees }
+      table?.getDouble("xAngleDegrees", xAngle.inDegrees)?.let { xAngle = it.degrees }
+      table?.getDouble("yAngleDegrees", yAngle.inDegrees)?.let { yAngle = it.degrees }
+      table?.getDouble("targetSizePercent", targetSize.value)?.let { targetSize = it.percent }
       val numOfTargets = table?.getInteger("numOfTargets", 0) ?: 0
       val retrievedTargets = mutableListOf<LimelightReading>()
       for (targetIndex in 0 until numOfTargets) {
+        val className: String? = table?.getString("Detection/$targetIndex/class", "")
+        val confidence: Decimal? = table?.getDouble("Detection/$targetIndex/conf", 0.0)?.percent
         val targetTx: Angle? = table?.getDouble("Detection/$targetIndex/tx", 0.0)?.degrees
-        val targetTy: Angle? = table?.getDouble("Detection/$targetIndex/tx", 0.0)?.degrees
-        val targetTxPixels: Double? = table?.getDouble("Detection/$targetIndex/txPixels", 0.0)
-        val targetTyPixels: Double? = table?.getDouble("Detection/$targetIndex/tyPixels", 0.0)
-        val targetTs: Angle? = table?.getDouble("Detection/$targetIndex/tyPixels", 0.0)?.degrees
-        if (targetTx != null &&
+        val targetTy: Angle? = table?.getDouble("Detection/$targetIndex/ty", 0.0)?.degrees
+        val targetTxPixels: Double? = table?.getDouble("Detection/$targetIndex/txp", 0.0)
+        val targetTyPixels: Double? = table?.getDouble("Detection/$targetIndex/typ", 0.0)
+        val targetTa: Decimal? = table?.getDouble("Detection/$targetIndex/ta", 0.0)?.percent
+        if ((className == "cone" || className == "cube") &&
+          confidence != null &&
+          targetTx != null &&
           targetTy != null &&
           targetTxPixels != null &&
           targetTyPixels != null &&
-          targetTs != null
+          targetTa != null
         ) {
           retrievedTargets.add(
-            LimelightReading(targetTx, targetTy, targetTxPixels, targetTyPixels, targetTs)
+            LimelightReading(
+              className,
+              confidence,
+              targetTx,
+              targetTy,
+              targetTxPixels,
+              targetTyPixels,
+              targetTa
+            )
           )
         }
       }
-      retroTargets = retrievedTargets.toList()
+      gamePieceTargets = retrievedTargets.toList()
     }
 
     override fun toLog(table: LogTable?) {
       table?.put("timestampSeconds", timestamp.inSeconds)
       table?.put("fps", fps)
       table?.put("validReading", validReading)
-      table?.put("simpleAngleDegrees", angle.inDegrees)
-      table?.put("numOfTargets", retroTargets.size.toLong())
-      table?.put("cornersX", retroTargets.map { it.txPixel }.toDoubleArray())
-      table?.put("cornersY", retroTargets.map { it.tyPixel }.toDoubleArray())
-      for (i in retroTargets.indices) {
-        table?.put("Detection/$i/txDegrees", retroTargets[i].tx.inDegrees)
-        table?.put("Detection/$i/tyDegrees", retroTargets[i].ty.inDegrees)
-        table?.put("Detection/$i/tyPixels", retroTargets[i].tyPixel)
-        table?.put("Detection/$i/txPixels", retroTargets[i].txPixel)
-        table?.put("Detection/$i/tsDegrees", retroTargets[i].ts.inDegrees)
+      table?.getDouble("xAngleDegrees", xAngle.inDegrees)
+      table?.getDouble("yAngleDegrees", yAngle.inDegrees)
+      table?.getDouble("targetSizePercent", targetSize.value)
+      table?.put("numOfTargets", gamePieceTargets.size.toLong())
+      table?.put("cornersX", gamePieceTargets.map { it.txPixel }.toDoubleArray())
+      table?.put("cornersY", gamePieceTargets.map { it.tyPixel }.toDoubleArray())
+      for (i in gamePieceTargets.indices) {
+        table?.put("Detection/$i/class", gamePieceTargets[i].className)
+        table?.put("Detection/$i/conf", gamePieceTargets[i].confidence.value)
+        table?.put("Detection/$i/tx", gamePieceTargets[i].tx.inDegrees)
+        table?.put("Detection/$i/ty", gamePieceTargets[i].ty.inDegrees)
+        table?.put("Detection/$i/typ", gamePieceTargets[i].tyPixel)
+        table?.put("Detection/$i/txp", gamePieceTargets[i].txPixel)
+        table?.put("Detection/$i/ta", gamePieceTargets[i].ta.value)
       }
     }
   }

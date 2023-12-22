@@ -7,6 +7,7 @@ import com.team4099.utils.LimelightHelpers
 import edu.wpi.first.networktables.NetworkTableEntry
 import edu.wpi.first.networktables.NetworkTableInstance
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.percent
 import org.team4099.lib.units.base.seconds
 import org.team4099.lib.units.derived.degrees
 import org.team4099.lib.units.milli
@@ -25,8 +26,12 @@ object LimelightVisionIOReal : LimelightVisionIO {
     NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("cl")
   private val dataEntry: NetworkTableEntry =
     NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("tcornxy")
-  private val angleEntry: NetworkTableEntry =
+  private val xAngleEntry: NetworkTableEntry =
     NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("tx")
+  private val yAngleEntry: NetworkTableEntry =
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("ty")
+  private val targetSizeEntry: NetworkTableEntry =
+    NetworkTableInstance.getDefault().getTable(LIMELIGHT_NAME).getEntry("ta")
 
   override fun updateInputs(inputs: LimelightVisionIO.LimelightVisionIOInputs) {
     val totalLatency =
@@ -36,12 +41,14 @@ object LimelightVisionIOReal : LimelightVisionIO {
         )
 
     inputs.timestamp = Clock.realTimestamp - totalLatency
-    inputs.angle = angleEntry.getDouble(0.0).degrees
+    inputs.xAngle = xAngleEntry.getDouble(0.0).degrees
+    inputs.yAngle = yAngleEntry.getDouble(0.0).degrees
+    inputs.targetSize = (targetSizeEntry.getDouble(0.0) * 100).percent
     inputs.fps = 1000 / totalLatency.inMilliseconds
     inputs.validReading = true
 
-    inputs.retroTargets =
-      LimelightHelpers.getLatestResults(LIMELIGHT_NAME).targetingResults.targets_Retro.map {
+    inputs.gamePieceTargets =
+      LimelightHelpers.getLatestResults(LIMELIGHT_NAME).targetingResults.targets_Detector.map {
         LimelightReading(it)
       }
   }

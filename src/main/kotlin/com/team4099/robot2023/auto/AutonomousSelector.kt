@@ -10,6 +10,7 @@ import com.team4099.robot2023.auto.mode.ConeCubeLowOverChargeStationAuto
 import com.team4099.robot2023.auto.mode.ConeCubeMobilityAuto
 import com.team4099.robot2023.auto.mode.ConeCubeOverChargeStationAuto
 import com.team4099.robot2023.auto.mode.ConeMobilityAuto
+import com.team4099.robot2023.auto.mode.LimelightTestingAuto
 import com.team4099.robot2023.auto.mode.PreloadOpenLoopChargeStationBalance
 import com.team4099.robot2023.auto.mode.ScorePreloadCone
 import com.team4099.robot2023.auto.mode.TestAutoPath
@@ -85,12 +86,14 @@ object AutonomousSelector {
 
     autonomousModeChooser.addOption("1 Cone + Mobility", AutonomousMode.CONE_MOBILITY_AUTO)
 
+    autonomousModeChooser.addOption(
+      "LimeLight Testing", AutonomousMode.CONE_LIMELIGHT
+    )
+
     // autonomousModeChooser.addOption("1 Cone + Open Loop Charge Station",
     // AutonomousMode.CONE_MOBILITY_AUTO)
 
     autonomousModeChooser.addOption("Score Preload Cone", AutonomousMode.PRELOAD_SCORE_AUTO)
-
-
 
     autoTab.add("Mode", autonomousModeChooser.sendableChooser).withSize(4, 2).withPosition(2, 0)
 
@@ -201,6 +204,9 @@ object AutonomousSelector {
         return WaitCommand(waitTime.inSeconds)
           .andThen(ScorePreloadCone(drivetrain, superstructure))
           .andThen(engageCommand)
+      AutonomousMode.CONE_LIMELIGHT ->
+        return WaitCommand(waitTime.inSeconds)
+          .andThen(LimelightTestingAuto(drivetrain, superstructure))
       else -> println("ERROR: unexpected auto mode: $mode")
     }
     return InstantCommand()
@@ -220,6 +226,7 @@ object AutonomousSelector {
     CO_CU_LAUNCH_MIDDLE_AUTO,
     CONE_MOBILITY_AUTO,
     PRELOAD_SCORE_OPEN_LOOP_CHARGE_STATION_SCORE,
-    PRELOAD_SCORE_AUTO
+    PRELOAD_SCORE_AUTO,
+    CONE_LIMELIGHT
   }
 }

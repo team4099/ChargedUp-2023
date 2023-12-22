@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.trajectory.Trajectory
+import org.littletonrobotics.junction.Logger
 
 /**
  * This holonomic drive controller can be used to follow trajectories using a holonomic drivetrain
@@ -95,6 +96,8 @@ class CustomHolonomicDriveController(
     val xFeedback = m_xController.calculate(currentPose.x, poseRef.x)
     val yFeedback = m_yController.calculate(currentPose.y, poseRef.y)
     val thetaFeedback = m_thetaController.calculate(currentPose.rotation.radians, angleRef.radians)
+    Logger.getInstance().recordOutput("Pathfollow/thetaFeedbackRadians", thetaFeedback)
+    Logger.getInstance().recordOutput("Pathfollow/appliedThetaFeedback", angleVelocityRefRadians + thetaFeedback)
 
     // Return next output.
     return ChassisSpeeds.fromFieldRelativeSpeeds(

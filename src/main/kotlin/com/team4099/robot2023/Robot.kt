@@ -5,17 +5,17 @@ import com.team4099.robot2023.auto.AutonomousSelector
 import com.team4099.robot2023.auto.PathStore
 import com.team4099.robot2023.config.ControlBoard
 import com.team4099.robot2023.config.constants.Constants
+import com.team4099.robot2023.config.constants.FieldConstants
 import com.team4099.robot2023.subsystems.falconspin.MotorChecker
+import com.team4099.robot2023.subsystems.limelight.LimelightVision
 import com.team4099.robot2023.util.Alert
 import com.team4099.robot2023.util.Alert.AlertType
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.NTSafePublisher
 import edu.wpi.first.hal.AllianceStationID
-import edu.wpi.first.wpilibj.AnalogInput
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj.simulation.DriverStationSim
 import edu.wpi.first.wpilibj2.command.Command
@@ -31,7 +31,12 @@ import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.inputs.LoggedPowerDistribution
 import org.littletonrobotics.junction.wpilog.WPILOGReader
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
+import org.team4099.lib.geometry.Pose2d
 import org.team4099.lib.units.base.inMilliseconds
+import org.team4099.lib.units.base.inches
+import org.team4099.lib.units.base.meters
+import org.team4099.lib.units.centi
+import org.team4099.lib.units.derived.degrees
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -135,8 +140,6 @@ object Robot : LoggedRobot() {
     CommandScheduler.getInstance().onCommandInterrupt { command: Command ->
       Logger.getInstance().recordOutput("/ActiveCommands/${command.name}", false)
     }
-
-
   }
 
   override fun disabledExit() {
@@ -149,6 +152,7 @@ object Robot : LoggedRobot() {
     RobotContainer.setDriveBrakeMode()
     RobotContainer.setSteeringBrakeMode()
     RobotContainer.requestSuperstructureIdle()
+    RobotContainer.setLimelightState(LimelightVision.LimelightStates.AUTO_POSE_ESTIMATION)
     RobotContainer.getAutonomousCommand().schedule()
   }
 
@@ -161,6 +165,7 @@ object Robot : LoggedRobot() {
   }
 
   override fun robotPeriodic() {
+
     //    RobotContainer.measurementsWithTimestamps.forEach {
     // RobotContainer.addVisionMeasurement(it) }
 
@@ -196,6 +201,9 @@ object Robot : LoggedRobot() {
     Logger.getInstance().recordOutput("LoggedRobot/port3", port3.voltage)
 
      */
+
+    Logger.getInstance().recordOutput("AprilTagPose/0", FieldConstants.homeAprilTags[0].pose.pose3d)
+    Logger.getInstance().recordOutput("AprilTagPose/1", FieldConstants.homeAprilTags[1].pose.pose3d)
   }
 
   override fun teleopInit() {
@@ -208,6 +216,7 @@ object Robot : LoggedRobot() {
       RobotContainer.mapTunableCommands()
     }
     RobotContainer.zeroArm()
+    RobotContainer.setLimelightState(LimelightVision.LimelightStates.TELEOP_GAME_PIECE_DETECTION)
   }
 
   override fun testInit() {

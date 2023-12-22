@@ -2,8 +2,6 @@ package com.team4099.robot2023.commands
 
 import com.team4099.lib.math.Zone2d
 import com.team4099.lib.trajectory.Waypoint
-import com.team4099.robot2023.RobotContainer
-import com.team4099.robot2023.commands.drivetrain.DriveBrakeModeCommand
 import com.team4099.robot2023.commands.drivetrain.DrivePathCommand
 import com.team4099.robot2023.config.constants.Constants
 import com.team4099.robot2023.config.constants.FieldConstants
@@ -16,17 +14,14 @@ import com.team4099.robot2023.subsystems.superstructure.Superstructure
 import com.team4099.robot2023.util.AllianceFlipUtil
 import com.team4099.robot2023.util.FMSData
 import com.team4099.robot2023.util.Velocity2d
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj2.command.Commands.runOnce
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.littletonrobotics.junction.Logger
 import org.team4099.lib.geometry.Pose2d
-import org.team4099.lib.geometry.Pose3d
 import org.team4099.lib.units.base.inches
 import org.team4099.lib.units.base.meters
 import org.team4099.lib.units.derived.Angle
 import org.team4099.lib.units.derived.degrees
-import org.team4099.lib.units.derived.inDegrees
 import org.team4099.lib.units.derived.inRotation2ds
 import org.team4099.lib.units.perSecond
 
@@ -46,7 +41,6 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
 
     val setupCommand =
       runOnce({
-
         Logger.getInstance().recordOutput("Auto/isAutoDriving", true)
         drivePose = drivetrain.odometryPose
         postAlignPose =
@@ -61,15 +55,16 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
             )
           )
 
-
         finalPose =
           AllianceFlipUtil.apply(
             Pose2d(
               2.00.meters, // slightly offset in the x
               FieldConstants.Grids.nodeFirstY +
                 FieldConstants.Grids.nodeSeparationY *
-                (if (FMSData.isBlue) superstructure.objective.nodeColumn
-                else 8 - superstructure.objective.nodeColumn),
+                (
+                  if (FMSData.isBlue) superstructure.objective.nodeColumn
+                  else 8 - superstructure.objective.nodeColumn
+                  ),
               180.degrees
             )
           )
@@ -94,18 +89,12 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
       })
 
     val breakCommand =
-      runOnce({
-        drivetrain.swerveModules.forEach() { it.setDriveBrakeMode(true) }
-      })
+      runOnce({ drivetrain.swerveModules.forEach() { it.setDriveBrakeMode(true) } })
 
     val coastCommand =
-      runOnce({
-        drivetrain.swerveModules.forEach() { it.setDriveBrakeMode(false) }
-      })
+      runOnce({ drivetrain.swerveModules.forEach() { it.setDriveBrakeMode(false) } })
 
-    val updatedDrivePose = runOnce({
-      finalDrivePose = drivetrain.odometryPose
-    })
+    val updatedDrivePose = runOnce({ finalDrivePose = drivetrain.odometryPose })
 
     addCommands(
       setupCommand,
@@ -121,7 +110,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
               drivetrain.odometryPose.rotation.inRotation2ds
             )
           ) +
-            //intermediaryWaypoints +
+            // intermediaryWaypoints +
             listOf(
               Waypoint(
                 finalPose.translation.translation2d,
@@ -132,9 +121,9 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
         },
         keepTrapping = false,
         flipForAlliances = false,
-        endVelocity= Velocity2d(0.meters.perSecond, 0.0.meters.perSecond),
+        endVelocity = Velocity2d(0.meters.perSecond, 0.0.meters.perSecond),
         tolerance = Pose2d(5.inches, 3.inches, 3.degrees),
-        forceRobotVelocityCheck=true
+        forceRobotVelocityCheck = true
       ),
       updatedDrivePose,
       DrivePathCommand(
@@ -147,7 +136,7 @@ class AutoScoreCommand(val drivetrain: Drivetrain, val superstructure: Superstru
               finalDrivePose.rotation.inRotation2ds
             )
           ) +
-            //intermediaryWaypoints +
+            // intermediaryWaypoints +
             listOf(
               Waypoint(
                 postAlignPose.translation.translation2d,

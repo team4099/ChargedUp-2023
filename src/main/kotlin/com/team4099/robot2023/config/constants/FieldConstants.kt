@@ -38,64 +38,64 @@ object FieldConstants {
 
   // Pranav's Home (Active)
 
-//  val homeAprilTags: List<AprilTag> =
-//    listOf(
-//      AprilTag(
-//        1,
-//        Pose3d(
-//          40.inches,
-//          (104.125).inches,
-//          (18.22).inches,
-//          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-//        )
-//      ),
-//      AprilTag(5, Pose3d((1).centi.meters, (87.5).inches, (89.3).centi.meters, Rotation3d())),
-//      AprilTag(
-//        3,
-//        Pose3d(
-//          (42.875).inches,
-//          (113.25).inches,
-//          (18.22).inches,
-//          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
-//        )
-//      ),
-//      AprilTag(
-//        4,
-//        Pose3d(
-//          (409.5).inches,
-//          (85.5).inches,
-//          (27.833).inches,
-//          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
-//        )
-//      ),
-//      AprilTag(
-//        6,
-//        Pose3d(
-//          (40.45).inches,
-//          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
-//          (18.22).inches,
-//          Rotation3d()
-//        )
-//      ),
-//      AprilTag(
-//        0,
-//        Pose3d(
-//          (1).centi.meters,
-//          (87.5).inches + 274.8.centi.meters,
-//          (91.5).centi.meters,
-//          Rotation3d()
-//        )
-//      ),
-//      AprilTag(
-//        8,
-//        Pose3d(
-//          (0).inches,
-//          (0).inches,
-//          (0).inches,
-//          Rotation3d()
-//        )
-//      )
-//    )
+  //  val homeAprilTags: List<AprilTag> =
+  //    listOf(
+  //      AprilTag(
+  //        1,
+  //        Pose3d(
+  //          40.inches,
+  //          (104.125).inches,
+  //          (18.22).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+  //        )
+  //      ),
+  //      AprilTag(5, Pose3d((1).centi.meters, (87.5).inches, (89.3).centi.meters, Rotation3d())),
+  //      AprilTag(
+  //        3,
+  //        Pose3d(
+  //          (42.875).inches,
+  //          (113.25).inches,
+  //          (18.22).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, 0.0.radians)
+  //        )
+  //      ),
+  //      AprilTag(
+  //        4,
+  //        Pose3d(
+  //          (409.5).inches,
+  //          (85.5).inches,
+  //          (27.833).inches,
+  //          Rotation3d(0.0.radians, 0.0.radians, Math.PI.radians)
+  //        )
+  //      ),
+  //      AprilTag(
+  //        6,
+  //        Pose3d(
+  //          (40.45).inches,
+  //          (174.19).inches, // FIRST's diagram has a typo (it says 147.19)
+  //          (18.22).inches,
+  //          Rotation3d()
+  //        )
+  //      ),
+  //      AprilTag(
+  //        0,
+  //        Pose3d(
+  //          (1).centi.meters,
+  //          (87.5).inches + 274.8.centi.meters,
+  //          (91.5).centi.meters,
+  //          Rotation3d()
+  //        )
+  //      ),
+  //      AprilTag(
+  //        8,
+  //        Pose3d(
+  //          (0).inches,
+  //          (0).inches,
+  //          (0).inches,
+  //          Rotation3d()
+  //        )
+  //      )
+  //    )
 
   // Church (Inactive)
 
@@ -160,10 +160,9 @@ object FieldConstants {
   // Rotation3d(0.0.degrees, 0.0.degrees, 180.degrees)))
   //    )
 
-  //church tags
+  // church tags
   val homeAprilTags: List<AprilTag> =
     listOf(
-      AprilTag(1, Pose3d((40.45).inches, (108.19).inches, (45).centi.meters, Rotation3d())),
       AprilTag(
         0,
         Pose3d(
@@ -172,11 +171,11 @@ object FieldConstants {
           (46).centi.meters,
           Rotation3d()
         )
-      )
+      ),
+      AprilTag(1, Pose3d((40.45).inches, (108.19).inches, (45).centi.meters, Rotation3d()))
     )
 
   // AprilTag locations (do not flip for red alliance)
-
 
   val aprilTags: List<AprilTag> =
     listOf(
@@ -232,8 +231,6 @@ object FieldConstants {
       AprilTag(7, Pose3d((40.45).inches, (108.19).inches, (18.22).inches, Rotation3d())),
       AprilTag(8, Pose3d((40.45).inches, (42.19).inches, (18.22).inches, Rotation3d()))
     )
-
-
 
   val wpilibAprilTags =
     if (Constants.Universal.REAL_FIELD) aprilTags.map { it.apriltagWpilib }

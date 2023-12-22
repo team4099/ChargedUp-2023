@@ -67,10 +67,12 @@ object ControlBoard {
 
   val groundIntakeCone = Trigger { driver.yButton }
   val autoScore = Trigger { driver.leftTriggerAxis > 0.5 }
-  val autoIntake = Trigger { false }
+  val autoIntake = Trigger { driver.dPadUp }
   val dpadDown = Trigger { driver.dPadDown }
 
   val ejectGamePiece = Trigger { operator.dPadRight }
+
+  val driverEject = Trigger { driver.dPadRight }
 
   // val armCharacterization = Trigger { operator.yButton }
 

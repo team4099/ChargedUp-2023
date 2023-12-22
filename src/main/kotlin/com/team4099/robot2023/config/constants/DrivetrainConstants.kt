@@ -47,15 +47,16 @@ object DrivetrainConstants {
 
   // cruise velocity and accel for steering motor
   val STEERING_VEL_MAX = 1393.2.degrees.perSecond
-  val STEERING_ACCEL_MAX = 13932.degrees.perSecond.perSecond
+  val STEERING_ACCEL_MAX = 13932.2.degrees.perSecond.perSecond
+  val CENTRIPETAL_ACCEL_MAX = 150.0.inches.perSecond.perSecond
 
   const val GYRO_RATE_COEFFICIENT = 0.0 // TODO: Change this value
 
   val SLOW_AUTO_VEL = 2.meters.perSecond
   val SLOW_AUTO_ACCEL = 2.0.meters.perSecond.perSecond
 
-  val MAX_AUTO_VEL = 3.meters.perSecond // 4
-  val MAX_AUTO_ACCEL = 3.5.meters.perSecond.perSecond // 3
+  val MAX_AUTO_VEL = 2.meters.perSecond // 4
+  val MAX_AUTO_ACCEL = 2.5.meters.perSecond.perSecond // 3
 
   val MAX_AUTO_BRAKE_VEL = 0.5.meters.perSecond // 4
   val MAX_AUTO_BRAKE_ACCEL = 0.5.meters.perSecond.perSecond // 3
@@ -77,10 +78,10 @@ object DrivetrainConstants {
   val DRIVE_STATOR_THRESHOLD_CURRENT_LIMIT = 80.0.amps
   val DRIVE_STATOR_TRIGGER_THRESHOLD_TIME = 1.0.seconds
 
-  val FRONT_LEFT_MODULE_ZERO = 1.3.radians + 180.degrees  + 180.degrees
-  val FRONT_RIGHT_MODULE_ZERO = 4.49.radians + 180.degrees  + 180.degrees
-  val BACK_LEFT_MODULE_ZERO = 3.22.radians + 180.degrees  + 180.degrees
-  val BACK_RIGHT_MODULE_ZERO = 0.99.radians - 180.degrees  + 180.degrees
+  val FRONT_LEFT_MODULE_ZERO = 1.3.radians + 180.degrees + 180.degrees
+  val FRONT_RIGHT_MODULE_ZERO = 4.49.radians + 180.degrees + 180.degrees
+  val BACK_LEFT_MODULE_ZERO = 3.22.radians + 180.degrees + 180.degrees
+  val BACK_RIGHT_MODULE_ZERO = 0.99.radians - 180.degrees + 180.degrees
 
   val STEERING_COMPENSATION_VOLTAGE = 10.volts
   val DRIVE_COMPENSATION_VOLTAGE = 12.volts
@@ -89,10 +90,94 @@ object DrivetrainConstants {
   val STEERING_WHEEL_INERTIA = 0.004096955.kilo.grams.meterSquared
 
   object PID {
+    val TELEOP_POS_KPX: ProportionalGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 1.meters.perSecond / 1.0.meters // todo:4
+        } else {
+          return 7.0.meters.perSecond / 1.0.meters
+        }
+      }
+    val TELEOP_POS_KIX: IntegralGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        } else {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        }
+      }
+
+    val TELEOP_POS_KDX: DerivativeGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return (0.1.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
+        } else {
+          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        }
+      }
+
+    val TELEOP_POS_KPY: ProportionalGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 1.meters.perSecond / 1.0.meters // todo:4
+        } else {
+          return 7.0.meters.perSecond / 1.0.meters
+        }
+      }
+    val TELEOP_POS_KIY: IntegralGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        } else {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        }
+      }
+
+    val TELEOP_POS_KDY: DerivativeGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return (0.025.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
+        } else {
+          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        }
+      }
+
+
+
+
+    val AUTO_ALIGN_POS_KP: ProportionalGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 1.2.meters.perSecond / 1.0.meters // todo:4
+        } else {
+          return 7.0.meters.perSecond / 1.0.meters
+        }
+      }
+    val AUTO_ALIGN_POS_KI: IntegralGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        } else {
+          return 0.0.meters.perSecond / (1.0.meters * 1.0.seconds)
+        }
+      }
+
+    val AUTO_ALIGN_POS_KD: DerivativeGain<Meter, Velocity<Meter>>
+      get() {
+        if (RobotBase.isReal()) {
+          return (0.1.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
+        } else {
+          return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
+        }
+      }
+
     val AUTO_POS_KPX: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 0.25.meters.perSecond / 1.0.meters // todo:4
+          return 2.meters.perSecond / 1.0.meters // todo:4
         } else {
           return 7.0.meters.perSecond / 1.0.meters
         }
@@ -109,7 +194,8 @@ object DrivetrainConstants {
     val AUTO_POS_KDX: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.1.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond // todo: 0.25
+          return (0.1.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
@@ -118,11 +204,12 @@ object DrivetrainConstants {
     val AUTO_POS_KPY: ProportionalGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return 0.25.meters.perSecond / 1.0.meters // todo:4
+          return 2.meters.perSecond / 1.0.meters // todo:4
         } else {
           return 7.0.meters.perSecond / 1.0.meters
         }
       }
+
     val AUTO_POS_KIY: IntegralGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
@@ -135,23 +222,35 @@ object DrivetrainConstants {
     val AUTO_POS_KDY: DerivativeGain<Meter, Velocity<Meter>>
       get() {
         if (RobotBase.isReal()) {
-          return (0.025.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond // todo: 0.25
+          return (0.025.meters.perSecond / (1.0.meters.perSecond))
+            .metersPerSecondPerMetersPerSecond // todo: 0.25
         } else {
           return (0.0.meters.perSecond / (1.0.meters.perSecond)).metersPerSecondPerMetersPerSecond
         }
       }
 
+
     val AUTO_THETA_ALLOWED_ERROR = 3.degrees
 
-    val AUTO_THETA_PID_KP = 0.8.degrees.perSecond / 1.degrees
-    val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
-    val AUTO_THETA_PID_KD =
+    val AUTO_ALIGN_KP = 0.0.degrees.perSecond / 1.degrees
+    val AUTO_ALIGN_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
+    val AUTO_ALIGN_KD =
+      (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+
+    val TELEOP_THETA_PID_KP = 0.8.degrees.perSecond / 1.degrees
+    val TELEOP_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
+    val TELEOP_THETA_PID_KD =
       (0.025.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val SIM_AUTO_THETA_PID_KP = 15.degrees.perSecond / 1.degrees
     val SIM_AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
     val SIM_AUTO_THETA_PID_KD =
       (0.0.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
+
+    val AUTO_THETA_PID_KP = 0.8.degrees.perSecond / 1.degrees
+    val AUTO_THETA_PID_KI = 0.0.degrees.perSecond / (1.degrees * 1.seconds)
+    val AUTO_THETA_PID_KD =
+      (0.025.degrees.perSecond / (1.degrees / 1.seconds)).radiansPerSecondPerRadiansPerSecond
 
     val AUTO_LEVEL_KP = 1.meters.perSecond / 1.0.degrees // tune this
     val AUTO_LEVEL_KI = 0.0.meters.perSecond / (1.0.degrees * 1.seconds) // tune this
