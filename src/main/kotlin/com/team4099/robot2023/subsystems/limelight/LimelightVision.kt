@@ -180,7 +180,7 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
             val targetToCamera =
               gamePiecePose
                 .relativeTo(
-                  currentPose.toPose3d().transformBy(VisionConstants.Limelight.LL_TRANSFORM)
+                  currentPose.toPose3d()
                 )
                 .toTransform3d()
                 .inverse()
@@ -348,7 +348,6 @@ class LimelightVision(val io: LimelightVisionIO) : SubsystemBase() {
         distanceToTarget.inMeters,
         Rotation3dWPILIB(0.0, -target.ty.inRadians, -target.tx.inRadians)
       )
-
     Logger.getInstance().recordOutput("LimelightVision/distanceToTarget", distanceToTarget.inMeters)
 
     // figure out which way this target is facing using yaw of robot and yaw of camera
